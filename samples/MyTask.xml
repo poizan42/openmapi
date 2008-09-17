@@ -1,0 +1,9 @@
+<mapimetal class="MyTask" namespace="Test">
+	<property type="Property.Subject" load="prefetch">Subject</property>
+	<property type="Property.MessageClass" databind="false" load="prefetch">MessageClass</property>
+	<property type="Property.Priority" load="prefetch">Priority</property>
+	<property type="Property.Body" load="lazy">Body</property>
+
+	<property guid="NMapi.Flags.Outlook.PSETID_Task" type="Property.Subject" load="lazy">xxx</property>
+	<property guid="{03-20-06-00-00-00-00-00-C0-00-00-00-00-00-00-46}" type="Property.Subject" load="lazy">yyy</property>
+</mapimetal>

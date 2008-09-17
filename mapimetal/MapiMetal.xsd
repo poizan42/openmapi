@@ -1,0 +1,57 @@
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - MapiMetal.xsd
+//
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="mapimetal">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="property" maxOccurs="1000000000">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="guid">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:whiteSpace value="collapse" />
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="type">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:whiteSpace value="collapse" />
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="databind">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:whiteSpace value="collapse"/>
+											<xs:enumeration value="true"/>
+											<xs:enumeration value="false"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="load">
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:whiteSpace value="collapse"/>
+											<xs:enumeration value="prefetch"/>
+											<xs:enumeration value="lazy"/>
+											<xs:enumeration value="stream"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="class" type="xs:string" use="required" />
+			<xs:attribute name="namespace" type="xs:string"  />
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+

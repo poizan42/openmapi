@@ -1,0 +1,9 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+
+
+Name: NMapi
+Description: NMapi - C# OpenMapi implementation
+Version: 0.1
+Libs: -r:${libdir}/mono/nmapi/NMapi.dll

@@ -1,0 +1,9 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+
+
+Name: RemoteTea-Sharp
+Description: RemoteTea-Sharp - C# ONC-RPC library
+Version: 0.1
+Libs: -r:${libdir}/mono/remotetea-sharp/RemoteTeaSharp.dll

@@ -1,0 +1,542 @@
+//
+// openmapi.org - NMapi C# Mapi API - ObjectEventSet.cs
+//
+// Copyright 2008 VipCom AG
+//
+// Author (C# port):    Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//
+
+namespace NMapi.Events {
+
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using RemoteTea.OncRpc;
+	using NMapi.Interop;
+
+	using NMapi.Flags;
+	using NMapi.Table;
+
+	/// <summary>
+	///  Base class for Events.
+	/// </summary>
+	public class MapiNotificationEventArgs : EventArgs
+	{
+		private NotificationEventType eventType;
+
+		public NotificationEventType EventType {
+			get { return eventType; }
+			set { eventType = value; }
+		}
+		
+		public MapiNotificationEventArgs (NotificationEventType eventType)
+		{
+			this.eventType = eventType;
+		}
+
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for NewMailNotification.
+	/// </summary>
+	public class NewMailEventArgs : MapiNotificationEventArgs
+	{
+		private NewMailNotification noti;
+
+		public NewMailNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public NewMailEventArgs (NewMailNotification noti)
+			: base (NotificationEventType.NewMail)
+		{
+			this.noti = noti;
+		}
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for ErrorNotification.
+	/// </summary>
+	public class ErrorEventArgs : MapiNotificationEventArgs
+	{
+		private ErrorNotification noti;
+
+		public ErrorNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public ErrorEventArgs (ErrorNotification noti)
+			: base (NotificationEventType.CriticalError)
+		{
+			this.noti = noti;
+		}
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for NewMailNotification.
+	/// </summary>
+	public class TableEventArgs : MapiNotificationEventArgs
+	{
+		private TableNotification noti;
+
+		public TableNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public TableEventArgs (TableNotification noti)
+			: base (NotificationEventType.TableModified)
+		{
+			this.noti = noti;
+		}
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for ObjectNotification.
+	/// </summary>
+	public class ObjectEventArgs : MapiNotificationEventArgs
+	{
+		private ObjectNotification noti;
+
+		public ObjectNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public ObjectEventArgs (ObjectNotification noti, 
+			NotificationEventType eventType) : base (eventType)
+		{
+			this.noti = noti;
+		}
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for StatusObjectNotification.
+	/// </summary>
+	public class StatusObjectEventArgs : MapiNotificationEventArgs
+	{
+		private StatusObjectNotification noti;
+
+		public StatusObjectNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public StatusObjectEventArgs (StatusObjectNotification noti)
+			: base (NotificationEventType.StatusObjectModified) 
+		{
+			this.noti = noti;
+		}
+	}
+
+	/// <summary>
+	///  EventArg-Wrapper for ExtendedNotification.
+	/// </summary>
+	public class ExtendedEventArgs : MapiNotificationEventArgs
+	{
+		private ExtendedNotification noti;
+
+		public ExtendedNotification Notification {
+			get { return noti; }
+			set { noti = value; }
+		}
+
+		public ExtendedEventArgs (ExtendedNotification noti) 
+			: base (NotificationEventType.Extended) {
+			this.noti = noti;
+		}
+	}
+
+
+	/// <summary>
+	/// Provides an interface for events as delegates that may be used 
+	/// alternatively to the classic AdviseSink-method. They are actived 
+	/// indirectly through a special AdviseSink-Object.
+	/// </summary>
+	public class ObjectEventSet
+	{
+		private SBinary entryID;
+		private IAdvisor advisor;
+		private MapiPseudoAdviseSink adviseSink;
+		private int connection = -1;
+
+		public ObjectEventSet (IAdvisor advisor, SBinary entryID)
+		{
+			this.advisor = advisor;
+			this.entryID = entryID;
+		}
+
+
+		private void CheckRegisterAdviseSink ()
+		{
+			if (adviseSink == null) {
+				// TODO: This should be improved for better performance!
+				NotificationEventType eventMask = NotificationEventType.CriticalError |
+						NotificationEventType.NewMail |
+						NotificationEventType.ObjectCreated |
+						NotificationEventType.ObjectDeleted |
+						NotificationEventType.ObjectModified |
+						NotificationEventType.ObjectMoved |
+						NotificationEventType.ObjectCopied |
+						NotificationEventType.SearchComplete |
+						NotificationEventType.TableModified |
+						NotificationEventType.StatusObjectModified |
+						NotificationEventType.ReservedForMapi |
+						NotificationEventType.Extended;
+				adviseSink = new MapiPseudoAdviseSink (this);
+				byte[] eid = null;
+				if (entryID != null && entryID.ByteArray != null)
+					eid = entryID.ByteArray;
+				connection = advisor.Advise (eid, eventMask, adviseSink);
+			}
+		}
+
+		private void CheckUnregisterAdviseSink ()
+		{
+			if (criticalError == null && objectCreated == null && 
+				objectMoved == null && objectDeleted == null && 
+				objectCopied == null && extended == null && 
+				searchComplete == null && tableModified == null && 
+				newMail == null)
+			{
+				advisor.Unadvise (connection);
+				adviseSink = null;
+			}
+		}
+
+		private EventHandler<ErrorEventArgs> criticalError;
+		private EventHandler<ObjectEventArgs> objectCreated;
+		private EventHandler<ObjectEventArgs> objectModified;
+		private EventHandler<ObjectEventArgs> objectMoved;
+		private EventHandler<ObjectEventArgs> objectDeleted;
+		private EventHandler<ObjectEventArgs> objectCopied;
+		private EventHandler<ExtendedEventArgs> extended;
+		private EventHandler<ObjectEventArgs> searchComplete;
+		private EventHandler<TableEventArgs> tableModified;
+		private EventHandler<NewMailEventArgs> newMail;
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ErrorEventArgs> CriticalError {
+			add {
+				CheckRegisterAdviseSink ();
+				criticalError += value;
+			}
+			remove {
+				criticalError -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> ObjectModified {
+			add {
+				CheckRegisterAdviseSink ();
+				objectModified += value;
+			}
+			remove {
+				objectModified -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> ObjectCreated {
+			add {
+				CheckRegisterAdviseSink ();
+				objectCreated += value;
+			}
+			remove {
+				objectCreated -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> ObjectMoved {
+			add {
+				CheckRegisterAdviseSink ();
+				objectMoved += value;
+			}
+			remove {
+				objectMoved -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> ObjectDeleted {
+			add {
+				CheckRegisterAdviseSink ();
+				objectDeleted += value;
+			}
+			remove {
+				objectDeleted -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> ObjectCopied {
+			add {
+				CheckRegisterAdviseSink ();
+				objectCopied += value;
+			}
+			remove {
+				objectCopied -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ExtendedEventArgs> Extended {
+			add {
+				CheckRegisterAdviseSink ();
+				extended += value;
+			}
+			remove {
+				extended -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<ObjectEventArgs> SearchComplete {
+			add {
+				CheckRegisterAdviseSink ();
+				searchComplete += value;
+			}
+			remove {
+				searchComplete -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<TableEventArgs> TableModified {
+			add {
+				CheckRegisterAdviseSink ();
+				tableModified += value;
+			}
+			remove {
+				tableModified -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public event EventHandler<NewMailEventArgs> NewMail {
+			add {
+				CheckRegisterAdviseSink ();
+				newMail += value;
+			}
+			remove {
+				newMail -= value;
+				CheckUnregisterAdviseSink ();
+			}
+		}
+
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnCriticalError (ErrorEventArgs e)
+		{
+			if (criticalError != null)
+				criticalError (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnObjectModified (ObjectEventArgs e)
+		{
+			if (objectModified != null)
+				objectModified (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnObjectCreated (ObjectEventArgs e)
+		{
+			if (objectCreated != null)
+				objectCreated (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnObjectMoved (ObjectEventArgs e)
+		{
+			if (objectMoved != null)
+				objectMoved (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnObjectDeleted (ObjectEventArgs e)
+		{
+			if (objectDeleted != null)
+				objectDeleted (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnObjectCopied (ObjectEventArgs e)
+		{
+			if (objectCopied != null)
+				objectCopied (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnExtended (ExtendedEventArgs e)
+		{
+			if (extended != null)
+				extended (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnSearchComplete (ObjectEventArgs e)
+		{
+			if (searchComplete != null)
+				searchComplete (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnTableModified (TableEventArgs e)
+		{
+			if (tableModified != null)
+				tableModified (this, e);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public virtual void OnNewMail (NewMailEventArgs e)
+		{
+			if (newMail != null)
+				newMail (this, e);
+		}
+
+
+		class MapiPseudoAdviseSink : IMapiAdviseSink
+		{
+			private ObjectEventSet eventSet;
+
+			public MapiPseudoAdviseSink (ObjectEventSet eventSet)
+			{
+				this.eventSet = eventSet;
+			}
+
+			public void OnNotify (Notification [] notifications)
+			{
+				foreach (var noti in notifications) {
+					switch (noti.EventType) {
+						case NotificationEventType.CriticalError:
+							eventSet.OnCriticalError (
+								new ErrorEventArgs (noti.Info.Err));
+						break;
+						case NotificationEventType.NewMail:
+							eventSet.OnNewMail (
+								new NewMailEventArgs (noti.Info.NewMail));
+						break;
+						case NotificationEventType.ObjectCreated:
+							eventSet.OnObjectCreated (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.ObjectCreated));
+						break;
+						case NotificationEventType.ObjectDeleted:
+							eventSet.OnObjectDeleted (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.ObjectDeleted));
+						break;
+						case NotificationEventType.ObjectModified:
+							eventSet.OnObjectModified (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.ObjectModified));
+						break;
+						case NotificationEventType.ObjectMoved:
+							eventSet.OnObjectMoved (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.ObjectMoved));
+						break;
+						case NotificationEventType.ObjectCopied:
+							eventSet.OnObjectCopied (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.ObjectCopied));
+						break;
+						case NotificationEventType.SearchComplete:
+							eventSet.OnSearchComplete (
+								new ObjectEventArgs (noti.Info.Obj,
+								NotificationEventType.SearchComplete));
+						break;
+						case NotificationEventType.TableModified:
+							eventSet.OnTableModified (
+								new TableEventArgs (noti.Info.Tab));
+						break;
+//						case NotificationEventType.StatusObjectModified:
+//							eventSet.OnStatusObjectModified (
+//								new NewMailEventArgs (noti.info.StatObj));
+//						break;
+//						case NotificationEventType.ReservedForMapi:
+//							//TODO: construct args
+//							eventSet.OnCriticalError (args);
+//						break;
+						case NotificationEventType.Extended:
+							eventSet.OnExtended (
+								new ExtendedEventArgs (noti.Info.Ext));
+						break;
+					}
+				}
+			}
+		}
+
+	}
+
+
+}
