@@ -1,3 +1,6 @@
 
+2008-09-18  Johannes Roith <johannes@jroith.de>
+	* NMapi/Linq/BranchExecutor.cs: change license to Ms-PL
+
 2008-09-17  Johannes Roith <johannes@jroith.de>
 	* Initial import.
