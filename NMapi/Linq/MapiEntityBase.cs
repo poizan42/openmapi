@@ -232,7 +232,7 @@ namespace NMapi.Linq {
 				throw new ArgumentException ("MapiProperty-Attribute not set!");
 		}
 
-		private IMapiProp GetAssociatedIMapiProp (int loadMode)
+		public IMapiProp GetAssociatedIMapiProp (int loadMode)
 		{
 			OpenEntryResult entry = null;
 			try {

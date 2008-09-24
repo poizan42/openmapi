@@ -42,22 +42,22 @@ namespace NMapi.Flags {
 	{
 		public const int STORE_UNICODE_OK = 0x00040000; 
 
-		public const int Property_IPM_APPOINTMENT_ENTRYID = ((int) PropertyType.Binary)  | (0x36D0 << 16);
-		public const int Property_IPM_CONTACT_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D1 << 16);
-		public const int Property_IPM_DRAFTS_ENTRYID      = ((int) PropertyType.Binary)  | (0x36D7 << 16);
-		public const int Property_IPM_JOURNAL_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D2 << 16);
-		public const int Property_IPM_NOTE_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D3 << 16);
-		public const int Property_IPM_TASK_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D4 << 16);
-		public const int Property_INTERNET_CPID           = ((int) PropertyType.Long)    | (0x3FDE << 16);
-		public const int Property_MESSAGE_CODEPAGE        = ((int) PropertyType.Long)    | (0x3FFD << 16);
-		public const int Property_INTERNET_MESSAGE_ID_A   = ((int) PropertyType.String8) | (0x1035 << 16);
-		public const int Property_INTERNET_MESSAGE_ID_W   = ((int) PropertyType.Unicode) | (0x1035 << 16);
-		public const int Property_IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
-		public const int Property_IN_REPLY_TO_ID_W        = ((int) PropertyType.Unicode) | (0x1042 << 16);
-		public const int Property_HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
-		public const int Property_ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
-		public const int Property_RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
-		public const int Property_RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
+		[MapiPropDef] public const int Property_IPM_APPOINTMENT_ENTRYID = ((int) PropertyType.Binary)  | (0x36D0 << 16);
+		[MapiPropDef] public const int Property_IPM_CONTACT_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D1 << 16);
+		[MapiPropDef] public const int Property_IPM_DRAFTS_ENTRYID      = ((int) PropertyType.Binary)  | (0x36D7 << 16);
+		[MapiPropDef] public const int Property_IPM_JOURNAL_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D2 << 16);
+		[MapiPropDef] public const int Property_IPM_NOTE_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D3 << 16);
+		[MapiPropDef] public const int Property_IPM_TASK_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D4 << 16);
+		[MapiPropDef] public const int Property_INTERNET_CPID           = ((int) PropertyType.Long)    | (0x3FDE << 16);
+		[MapiPropDef] public const int Property_MESSAGE_CODEPAGE        = ((int) PropertyType.Long)    | (0x3FFD << 16);
+		[MapiPropDef] public const int Property_INTERNET_MESSAGE_ID_A   = ((int) PropertyType.String8) | (0x1035 << 16);
+		[MapiPropDef] public const int Property_INTERNET_MESSAGE_ID_W   = ((int) PropertyType.Unicode) | (0x1035 << 16);
+		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
+		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_W        = ((int) PropertyType.Unicode) | (0x1042 << 16);
+		[MapiPropDef] public const int Property_HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
+		[MapiPropDef] public const int Property_ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
+		[MapiPropDef] public const int Property_RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
+		[MapiPropDef] public const int Property_RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
 
 		//
 		// also NAMED PROP ReponseStatus
@@ -74,19 +74,19 @@ namespace NMapi.Flags {
 		// Exchange 2003
 		//
 
-		public const int Property_ATTACH_MIME_SEQUENCE      = ((int) PropertyType.Long)    | (0x3710 << 16);
-		public const int Property_ATTACH_CONTENT_BASE_A     = ((int) PropertyType.String8) | (0x3711 << 16);
-		public const int Property_ATTACH_CONTENT_BASE_W     = ((int) PropertyType.Unicode) | (0x3711 << 16);
-		public const int Property_ATTACH_CONTENT_ID_A       = ((int) PropertyType.String8) | (0x3712 << 16);
-		public const int Property_ATTACH_CONTENT_ID_W       = ((int) PropertyType.Unicode) | (0x3712 << 16);
-		public const int Property_ATTACH_CONTENT_LOCATION_A = ((int) PropertyType.String8) | (0x3713 << 16);
-		public const int Property_ATTACH_CONTENT_LOCATION_W = ((int) PropertyType.Unicode) | (0x3713 << 16);
-		public const int Property_ATTACH_FLAGS              = ((int) PropertyType.Long)    | (0x3714 << 16);
+		[MapiPropDef] public const int Property_ATTACH_MIME_SEQUENCE      = ((int) PropertyType.Long)    | (0x3710 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_BASE_A     = ((int) PropertyType.String8) | (0x3711 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_BASE_W     = ((int) PropertyType.Unicode) | (0x3711 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_ID_A       = ((int) PropertyType.String8) | (0x3712 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_ID_W       = ((int) PropertyType.Unicode) | (0x3712 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_LOCATION_A = ((int) PropertyType.String8) | (0x3713 << 16);
+		[MapiPropDef] public const int Property_ATTACH_CONTENT_LOCATION_W = ((int) PropertyType.Unicode) | (0x3713 << 16);
+		[MapiPropDef] public const int Property_ATTACH_FLAGS              = ((int) PropertyType.Long)    | (0x3714 << 16);
 		public const int ATT_INVISIBLE_IN_HTML        = 0x1;
 		public const int ATT_INVISIBLE_IN_RTF         = 0x2;
 		public const int ATT_MHTML_REF                = 0x4;
-		public const int Property_ATTACH_DISPOSITION_A      = ((int) PropertyType.String8) | (0x3716 << 16);
-		public const int Property_ATTACH_DISPOSITION_W      = ((int) PropertyType.Unicode) | (0x3716 << 16);
+		[MapiPropDef] public const int Property_ATTACH_DISPOSITION_A      = ((int) PropertyType.String8) | (0x3716 << 16);
+		[MapiPropDef] public const int Property_ATTACH_DISPOSITION_W      = ((int) PropertyType.Unicode) | (0x3716 << 16);
 
 		public static readonly NMapiGuid PSETID_Appointment = Guids.DefineOleGuid (0x00062002, (short) 0x0000, (short) 0x0000);
 

@@ -198,7 +198,7 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		IndigoMapiObjRef IMapiFolder_CreateFolder (IndigoMapiObjRef obj, int folderType, string folderName, string folderComment, NMapiGuid interFace, int flags);
+		IndigoMapiObjRef IMapiFolder_CreateFolder (IndigoMapiObjRef obj, Folder folderType, string folderName, string folderComment, NMapiGuid interFace, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]

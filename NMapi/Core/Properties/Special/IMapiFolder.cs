@@ -78,7 +78,7 @@ namespace NMapi.Properties.Special {
 		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms531288.aspx
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		IMapiFolder CreateFolder (int folderType, string folderName, 
+		IMapiFolder CreateFolder (Folder folderType, string folderName, 
 			string folderComment, NMapiGuid interFace, int flags);
 
 		/// <summary>

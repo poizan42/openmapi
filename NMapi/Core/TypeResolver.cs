@@ -33,7 +33,6 @@ using System.Xml.Schema;
 using System.Text;
 using System.Linq;
 
-using NDesk.Options;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -43,8 +42,7 @@ using NMapi.Table;
 using NMapi.Properties;
 using NMapi.Properties.Special;
 
-namespace NMapi.Linq {
-
+namespace NMapi {
 
 	public sealed class TypeResolver
 	{
@@ -86,9 +84,11 @@ namespace NMapi.Linq {
 					AssemblyDefinition asmDef = resolver.Resolve (asmRef);
 					if (asmDef != null)
 						map [name] = asmDef;
-					else
-						Driver.WriteWarning ("Assembly '" + 
+					else {
+						// TODO: Driver.WriteWarning 
+						Console.WriteLine ("Assembly '" + 
 							asmRef.Name + "' can't be loaded.");
+					}
 				}
 			}
 		}

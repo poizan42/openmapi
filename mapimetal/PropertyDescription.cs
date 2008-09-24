@@ -138,7 +138,7 @@ namespace NMapi.Linq {
 			}
 		}
 
-		public PropertyType DeterminePropertyType ()
+		private int DeterminePropertyTag ()
 		{
 			string[] tmp = TypeResolver.SplitTypeNameAndProperty (PropertyTypeString);
 			string typeName = tmp [0];
@@ -165,8 +165,13 @@ namespace NMapi.Linq {
 				}
 				found = true;
 			}
+			return propValue;
+		}
 
-			return PropertyTypeHelper.PROP_TYPE (propValue);
+		public PropertyType DeterminePropertyType ()
+		{
+			int tag = DeterminePropertyTag ();
+			return PropertyTypeHelper.PROP_TYPE (tag);
 		}
 	}
 

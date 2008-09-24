@@ -394,7 +394,7 @@ namespace NMapi.Server {
 
 		[MapiModableCall (RemoteCall.IMapiFolder_CreateFolder)]
 		[FaultContract (typeof (MapiIndigoFault))]
-		public virtual IndigoMapiObjRef IMapiFolder_CreateFolder (IndigoMapiObjRef obj, int folderType, string folderName, string folderComment, NMapiGuid interFace, int flags)
+		public virtual IndigoMapiObjRef IMapiFolder_CreateFolder (IndigoMapiObjRef obj, Folder folderType, string folderName, string folderComment, NMapiGuid interFace, int flags)
 		{
 			IMapiFolder mapObj = GetIMapiFolder (obj).CreateFolder (folderType, folderName, folderComment, interFace, flags);
 			return AssignIdentifier (mapObj); 

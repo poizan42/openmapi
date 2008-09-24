@@ -52,7 +52,7 @@ namespace NMapi.Flags {
 		public const int NoAccess                = unchecked ((int) 0x80070005);
 
 		public const int NoSupport                   = ErrorPrefix | 0x102;
-		public const int BadCharwidth                = ErrorPrefix | 0x103;
+		public const int BadCharWidth                = ErrorPrefix | 0x103;
 		public const int StringTooLong               = ErrorPrefix | 0x105;
 		public const int UnknownFlags                = ErrorPrefix | 0x106;
 		public const int InvalidEntryid              = ErrorPrefix | 0x107;
@@ -193,7 +193,7 @@ namespace NMapi.Flags {
 				case InterfaceNotSupported: return "MAPI_E_INTERFACE_NOT_SUPPORTED";
 				case NoAccess: return "MAPI_E_NO_ACCESS: Access denied";
 				case NoSupport: return "MAPI_E_NO_SUPPORT";
-				case BadCharwidth: return "MAPI_E_BAD_CHARWITH";
+				case BadCharWidth: return "MAPI_E_BAD_CHARWITH";
 				case StringTooLong: return "MAPI_E_STRING_TOO_LONG";
 				case UnknownFlags: return "MAPI_E_UNKNOWN_FLAGS";
 				case InvalidEntryid: return "MAPI_E_INVALID_ENTRYID";

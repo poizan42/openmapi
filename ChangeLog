@@ -1,6 +1,85 @@
 
+2008-09-24  Johannes Roith <johannes@jroith.de>
+
+	* Makefile: - add mapishell, mapiwait, mapitool targets
+                    - add support for embedded WebServer in mapiserver
+                    - misc
+
+	* server/Driver.cs: Run WebServer
+	* server/MapiOverIndigoService.cs: Fix: use Folder enum
+	* server/aspx:
+	* server/aspx/help.aspx:
+	* server/aspx/index.aspx:
+	* server/aspx/logo.png:
+	* server/aspx/logout.aspx:
+	* server/aspx/logs.aspx:
+	* server/aspx/Master.master:
+	* server/aspx/modules.aspx:
+	* server/aspx/shell.aspx:
+	* server/aspx/style.css:
+	* server/aspx/vusers.aspx: new ASP.NET Proxy Web Server GUI files.
+
+	* mapimetal/PropertyDescription.cs: minor change.
+	* mapimetal/TypeResolver.cs: Moved to NMapi/Core
+
+	* NMapi/Linq/MapiEntityBase.cs: make GetAssociatedIMapiProp() public
+	* NMapi/Linq/Interpreter.cs: bugfix for select method
+	* NMapi/Utility:
+	* NMapi/Utility/CecilUtil.cs: add Cecil Utility.
+	* NMapi/Meta:
+	* NMapi/Meta/IconType.cs:
+	* NMapi/Meta/IMetaHandler.cs:
+	* NMapi/Meta/MatchLevel.cs:
+	* NMapi/Meta/MetaManager.cs:
+	* NMapi/Meta/Handler/MsgCalMeta.cs:
+	* NMapi/Meta/Handler/MsgMailMeta.cs:
+	* NMapi/Meta/Handler/MsgTaskMeta.cs:
+	* NMapi/Meta/Handler/MsgUnknownMeta.cs:
+	* NMapi/Meta/Handler/PropMeta.cs: new MapiObject Meta data providers
+
+	* NMapi/Core/PropertyLookup.cs:
+	* NMapi/Core/ProviderManager.cs:
+
+	* NMapi/Core/IMapiOverIndigo.cs: Fix: Use Folder enum
+	* NMapi/Core/AutoConfigurationFactory.cs: - Change to "Topalis"
+	                                          - added new "MapiFactory" attribute
+
+	* NMapi/Core/Properties/Special/IMapiFolder.cs: Fix: Use Folder enum
+	* NMapi/Core/MapiPropDefAttribute.cs:
+	* NMapi/Core/MapiFactoryAttribute.cs:
+	* NMapi/Core/TypeResolver.cs: Moved from mapimetal
+	* NMapi/Core/KeyRing.cs: added stub
+	* NMapi/Core/MapiUrl.cs: add new class to represent mapi:// urls.
+	* NMapi/Flags/Error.cs: BadCharwidth => BadCharWidth
+	* NMapi/Flags/Property.cs: attach "MapiPropDef" attribute to all properties.
+	* NMapi/Flags/Outlook.cs: attach "MapiPropDef" attribute to all properties.
+
+
+2008-09-24  Johannes Roith <johannes@jroith.de>
+	* lib/Gnome.Keyring:
+	* lib/Gnome.Keyring/AccessRights.cs:
+	* lib/Gnome.Keyring/AttributeType.cs:
+	* lib/Gnome.Keyring/GenericItemData.cs:
+	* lib/Gnome.Keyring/ItemACL.cs:
+	* lib/Gnome.Keyring/ItemData.cs:
+	* lib/Gnome.Keyring/ItemType.cs:
+	* lib/Gnome.Keyring/KeyringException.cs:
+	* lib/Gnome.Keyring/KeyringInfo.cs:
+	* lib/Gnome.Keyring/NetItemData.cs:
+	* lib/Gnome.Keyring/NoteItemData.cs:
+	* lib/Gnome.Keyring/Operation.cs:
+	* lib/Gnome.Keyring/RequestMessage.cs:
+	* lib/Gnome.Keyring/ResponseMessage.cs:
+	* lib/Gnome.Keyring/ResultCode.cs:
+	* lib/Gnome.Keyring/Ring.cs: import Gonzalo Paniagua Javier's 
+	                             Gnome.Keyring library from Tomboy.
+
+	* lib/getline.cs: import Miguel's getline library.
+
+
 2008-09-18  Johannes Roith <johannes@jroith.de>
 	* NMapi/Linq/BranchExecutor.cs: change license to Ms-PL
 
 2008-09-17  Johannes Roith <johannes@jroith.de>
 	* Initial import.
+

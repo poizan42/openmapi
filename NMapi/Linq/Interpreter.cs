@@ -145,7 +145,8 @@ namespace NMapi.Linq {
 
 		private Expression VisitSelectMethod (MethodCallExpression methodCallExpr)
 		{
-			throw new NotImplementedException ("Not implemented!");
+			return methodCallExpr;
+			// TODO throw new NotImplementedException ("Not implemented!");
 		}
 
 		protected Expression VisitWhereMethod (MethodCallExpression methodCallExpr)

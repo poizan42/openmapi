@@ -36,6 +36,10 @@ using System.Collections.Generic;
 using NMapi;
 //using NMapi.WCF.Xmpp;
 
+using Mono.WebServer;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+
 namespace NMapi.Server {
 
 	public class Driver
@@ -55,7 +59,6 @@ namespace NMapi.Server {
 			IMapiOverIndigo proxy = ChannelFactory<IMapiOverIndigo>.CreateChannel (new WSDualHttpBinding(), ep);
 
 			Console.WriteLine (proxy.Handshake ());
-
 		}
 
 
@@ -139,8 +142,69 @@ namespace NMapi.Server {
 		}
 
 
+		private static string GetTempDir ()
+		{
+			return Environment.GetEnvironmentVariable ("temp");
+		}
+
+
 		public void Run ()
 		{
+			int port = 9001;
+			string path = null;
+			do {
+				path = GetTempDir () + "omprxy" + new Random ().Next();
+			} while (Directory.Exists (path));
+			Directory.CreateDirectory (path);
+
+			XSPWebSource websource = new XSPWebSource (IPAddress.Any, port);
+			ApplicationServer WebAppServer = new ApplicationServer (websource);
+
+			Assembly asm = Assembly.GetExecutingAssembly();
+			Stream zipResource = asm.GetManifestResourceStream ("server.zip");
+
+			using (ZipInputStream s = new ZipInputStream (zipResource)) {
+				ZipEntry theEntry;
+				while ((theEntry = s.GetNextEntry ()) != null) {				
+					string directoryName = Path.GetDirectoryName (theEntry.Name);
+					string fileName      = Path.GetFileName (theEntry.Name);
+				
+					if (directoryName.Length > 0 )
+						Directory.CreateDirectory (Path.Combine (path, directoryName));
+
+					if (fileName != String.Empty) {
+						using (FileStream streamWriter = File.Create (Path.Combine (path, theEntry.Name))) {
+							int size = 2048;
+							byte[] data = new byte[2048];
+							while (true) {
+								size = s.Read (data, 0, data.Length);
+								if (size > 0)
+									streamWriter.Write(data, 0, size);
+								else
+									break;
+							}
+						}
+					}
+				}
+			}
+
+			string absPath = Path.GetFullPath (path);
+			WebAppServer.AddApplicationsFromCommandLine (":" + port + ":/:" + absPath);
+			WebAppServer.Start (true);
+			try {
+				var request = WebRequest.Create ("http://localhost:" + port + "/");
+				Action<IAsyncResult> callback = (result) => 
+					Console.WriteLine ("INFO: Request to WebServer finished.");
+
+				request.BeginGetResponse (new AsyncCallback (callback), null);
+			} catch (Exception) {
+				// Do nothing.
+				throw;
+			}
+
+//			WebAppServer.Stop();
+
+
 			DetectModules ();
 
 //			Uri uri = new Uri ("http://localhost:9000/IMapiOverIndigo");

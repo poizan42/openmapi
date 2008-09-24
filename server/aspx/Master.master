@@ -1,0 +1,83 @@
+<% @ Master Language="C#" %>
+<script runat="server">
+//
+// openmapi.org - NMapi C# Mapi API - Master.master
+//
+// Copyright 2008 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//
+
+
+</script>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+  <title>OpenMapi.org Proxy Server</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css" media="all">@import "/style.css";</style>
+</head>
+<body>
+	<div id="head" align="left">
+		<img src="logo.png" alt="openmapi.org" border="0"><br>
+		<span style="background-color:#ffffff;"><big>OpenMapi.org Proxy Server</big></span>
+
+		<div style="padding-left:5px;float:right;">
+	        	<div id="navigation" class="menu withprimary withsecondary ">
+                  		<div id="primary" class="clear-block">
+					<ul class="links-menu">
+						<li class="active"><a href="/" class="active">Administration</a></li>
+						<li><a href="/help.aspx">Help</a></li>
+						<li><a href="/logout.aspx">Logout</a></li>
+					</ul>
+				</div>
+	            	</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div>
+
+
+<table style="margin-top:10px;width:100%;" >
+<tr>
+<td valign="top" id="left">
+	<h1>Start</h1>
+
+	<div id="secondary" class="clear-block">
+		<ul class="links-menu">
+			<li><a href="/index.aspx">Overview</a></li>
+			<li><a href="/shell.aspx">Shell</a></li>
+			<li><a href="/vusers.aspx">Virtual Users</a></li>
+			<li><a href="/modules.aspx">Modules</a></li>
+			<li><a href="/logs.aspx">Logs</a></li>
+		</ul>
+	</div>
+</td>
+<td valign="top">
+
+<asp:contentplaceholder id="Main" runat="server" />
+
+</td>
+</tr></table>
+
+<div id="footer">
+	<b>OpenMapi.org</b> Proxy. - <% Response.Write (DateTime.Now); %>
+</div>
+
+</body>
+</html>
