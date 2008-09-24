@@ -1,6 +1,66 @@
 
 2008-09-24  Johannes Roith <johannes@jroith.de>
 
+	* tools/mapiwait/Driver.cs:
+	* tools/mapiwait/AssemblyInfo.cs: stubs
+
+	* tools/mapishell/default.mss: default init script.
+
+	* tools/mapishell/KeyList.cs: 
+	* tools/mapishell/ShellException.cs:
+	* tools/mapishell/ShellObject.xml
+	* tools/mapishell/Driver.cs:
+	* tools/mapishell/AssemblyInfo.cs
+	* tools/mapishell/CommandArgs.cs:
+	* tools/mapishell/PathHelper.cs:
+	* tools/mapishell/AbstractBaseCommand.cs:
+	* tools/mapishell/StringExtension.cs:
+	* tools/mapishell/ShellUtil.cs:
+	* tools/mapishell/KeyID.cs:
+	* tools/mapishell/Functions.cs:
+	* tools/mapishell/Variables.cs:
+	* tools/mapishell/ShellState.cs: add new tool: MapiShell
+
+	* tools/mapishell/Commands/Stat.cs:
+	* tools/mapishell/Commands/Ls.cs:
+	* tools/mapishell/Commands/Logon.cs:
+	* tools/mapishell/Commands/Expr.cs:
+	* tools/mapishell/Commands/Load.cs:
+	* tools/mapishell/Commands/Find.cs:
+	* tools/mapishell/Commands/Pushd.cs:
+	* tools/mapishell/Commands/Let.cs:
+	* tools/mapishell/Commands/WhoAmI.cs:
+	* tools/mapishell/Commands/Function.cs:
+	* tools/mapishell/Commands/Logging.cs:
+	* tools/mapishell/Commands/Cd.cs:
+	* tools/mapishell/Commands/Help.cs:
+	* tools/mapishell/Commands/Tail.cs:
+	* tools/mapishell/Commands/Pwd.cs:
+	* tools/mapishell/Commands/Info.cs:
+	* tools/mapishell/Commands/Use.cs:
+	* tools/mapishell/Commands/Unlink.cs:
+	* tools/mapishell/Commands/Popd.cs:
+	* tools/mapishell/Commands/Cp.cs:
+	* tools/mapishell/Commands/Cat.cs:
+	* tools/mapishell/Commands/Sleep.cs:
+	* tools/mapishell/Commands/CreateMsg.cs:
+	* tools/mapishell/Commands/Providers.cs:
+	* tools/mapishell/Commands/Rmdir.cs:
+
+	* tools/mapishell/Commands/OpenStore.cs:
+	* tools/mapishell/Commands/Echo.cs:
+	* tools/mapishell/Commands/Get.cs:
+	* tools/mapishell/Commands/Mv.cs:
+	* tools/mapishell/Commands/Quit.cs:
+	* tools/mapishell/Commands/Set.cs:
+	* tools/mapishell/Commands/Grep.cs:
+	* tools/mapishell/Commands/Head.cs:
+	* tools/mapishell/Commands/Props.cs:
+	* tools/mapishell/Commands/Close.cs:
+	* tools/mapishell/Commands/Mkdir.cs: added commands.
+
+2008-09-24  Johannes Roith <johannes@jroith.de>
+
 	* Makefile: - add mapishell, mapiwait, mapitool targets
                     - add support for embedded WebServer in mapiserver
                     - misc

@@ -1,0 +1,23 @@
+<mapimetal class="ShellObject" namespace="NMapi.Tools.Shell">
+
+	<property type="Property.MessageSize" databind="false" load="prefetch">MessageSize</property>
+	<property type="Property.ParentEntryId" databind="false" load="prefetch">ParentEntryId</property>
+	<property type="Property.Access" databind="false" load="prefetch">Access</property>
+	<property type="Property.AccessLevel" databind="false" load="prefetch">AccessLevel</property>
+
+	<property type="Property.MappingSignature" databind="false" load="prefetch">MappingSignature</property>
+	<property type="Property.RecordKey" databind="false" load="prefetch">RecordKey</property>
+	<property type="Property.StoreRecordKey" databind="false" load="prefetch">StoreRecordKey</property>
+	<property type="Property.StoreEntryid" databind="false" load="prefetch">StoreEntryid</property>
+
+
+	<property type="Property.ObjectType" databind="false" load="prefetch">ObjectType</property>
+	<property type="Property.StoreSupportMask" databind="false" load="prefetch">StoreSupportMask</property>
+	<property type="Property.MessageClass" databind="false" load="prefetch">MessageClass</property>
+
+	<property type="Property.Subject" databind="false" load="prefetch">Subject</property>
+
+	<property type="Property.CreationTime" databind="false" load="prefetch">CreationTime</property>
+	<property type="Property.LastModificationTime" databind="false" load="prefetch">LastModificationTime</property>
+
+</mapimetal>
