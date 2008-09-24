@@ -175,14 +175,14 @@ namespace NMapi.Properties.Special {
 				throw new MapiException (res.hr);
 		}
 
-		public IMapiFolder CreateFolder (int folderType, string folderName, 
+		public IMapiFolder CreateFolder (Folder folderType, string folderName, 
 			string folderComment, NMapiGuid interFace, int flags)
 		{
 			var arg = new MAPIFolder_CreateFolder_arg();
 			MAPIFolder_CreateFolder_res res;
 		
 			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFolderType = folderType;
+			arg.ulFolderType = (int) folderType;
 			arg.lpInterface = new LPGuid (interFace);
 			arg.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0) {

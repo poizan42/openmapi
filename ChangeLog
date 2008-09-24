@@ -1,6 +1,16 @@
 
 2008-09-24  Johannes Roith <johannes@jroith.de>
 
+	Fix Build:
+	Forgot to check in "providers". :-(
+
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeMapiFactory.cs: add MapiFactory attribute
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiFolder.cs: fix: Folder enum
+	* providers/NMapi.Provider.Indigo/Properties/Special/IndigoMapiFolder.cs: fix: Folder enum
+	* providers/NMapi.Provider.Indigo/IndigoMapiFactory.cs: add MapiFactory attribute
+
+2008-09-24  Johannes Roith <johannes@jroith.de>
+
 	* tools/mapiwait/Driver.cs:
 	* tools/mapiwait/AssemblyInfo.cs: stubs
 

@@ -77,7 +77,7 @@ namespace NMapi.Provider.Indigo.Properties.Special {
 			}
 		}
 
-		public IMapiFolder CreateFolder (int folderType, string folderName, 
+		public IMapiFolder CreateFolder (Folder folderType, string folderName, 
 			string folderComment, NMapiGuid interFace, int flags)
 		{
 			try {

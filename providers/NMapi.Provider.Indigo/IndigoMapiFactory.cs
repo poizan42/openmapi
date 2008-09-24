@@ -31,6 +31,7 @@ using NMapi.Properties.Special;
 
 namespace NMapi.Provider.Indigo {
 
+	[MapiFactory ("org.openmapi.indigo")]
 	public class IndigoMapiFactory : IMapiFactory
 	{
 

@@ -32,6 +32,7 @@ using NMapi.Properties.Special;
 
 namespace NMapi.Provider.TeamXChange {
 
+	[MapiFactory ("org.openmapi.txc")]
 	public class TeamXChangeMapiFactory : IMapiFactory
 	{
 
