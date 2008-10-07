@@ -1,4 +1,32 @@
 
+
+2008-10-06  Andreas Huegel <andreas.huegel@topalis.com>
+
+	Initial check in Mime API
+     
+	* NMapi/Format/Mime/QPStream.cs
+	* NMapi/Format/Mime/HeaderTokenizer.cs
+	* NMapi/Format/Mime/InternetAddress.cs
+	* NMapi/Format/Mime/MessagingException.cs
+	* NMapi/Format/Mime/MimePart.cs
+	* NMapi/Format/Mime/ParameterList.cs
+	* NMapi/Format/Mime/Base64Stream.cs
+	* NMapi/Format/Mime/ParseException.cs
+	* NMapi/Format/Mime/BStream.cs
+	* NMapi/Format/Mime/InternetHeader.cs
+	* NMapi/Format/Mime/Field.cs
+	* NMapi/Format/Mime/QStream.cs
+	* NMapi/Format/Mime/RecipientType.cs
+	* NMapi/Format/Mime/MimeUtility.cs
+	* NMapi/Format/Mime/MimeBodyPart.cs
+	* NMapi/Format/Mime/MimeMessage.cs
+	* NMapi/Format/Mime/InternetHeaders.cs
+	* NMapi/Format/Mime/BinarySplitter.cs
+	* NMapi/Format/Mime/Base64EncodeStream.cs
+	* NMapi/Format/Mime/StringHelper.cs
+	* NMapi/Format/Mime/MimeMultipart.cs
+
+
 2008-09-24  Johannes Roith <johannes@jroith.de>
 
 	Fix Build:
