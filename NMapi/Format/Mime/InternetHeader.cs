@@ -69,8 +69,14 @@ namespace NMapi.Format.Mime
 		public InternetHeader (String line)
 		{
 			String[] parts = line.Split (new char[] { ':' }, 2);
-			this.name = parts[0];
-			this.value = parts[1];
+			if (parts.Length == 2 && parts[0] != "" && !parts[0].Contains(" "))
+			{
+				this.name = parts[0];
+				this.value = parts[1];
+			} else {
+				this.name = "";
+				this.value = line;
+			}
 		}
 
 		public bool Equals (String name)
@@ -80,11 +86,13 @@ namespace NMapi.Format.Mime
 
 		public override String ToString ()
 		{
-			return name + ":" + value;
+			return name != ""?name + ":" + value:value;
 		}
 
 		/// <summary>
-		/// 
+		/// retrieves the value of an assignment in a header strukture like 
+		/// Content-Type: application/zip; name=zip.zip
+		/// For "name" it would return "zip.zip"
 		/// </summary>
 		public String GetParam (String param)
 		{
@@ -176,7 +184,44 @@ namespace NMapi.Format.Mime
 		}
 
 		/// <summary>
-		/// Get the subtype of a parameter as mixed in "Content-Type: multipart/mixed"
+		/// Get the type of a parameter, e.g. "multipart" in "Content-Type: multipart/mixed"
+		/// </summary>
+		/// <returns></returns>
+		public String GetType ()
+		{
+			HeaderTokenizer ht = new HeaderTokenizer (value, HeaderTokenizer.MIME);
+			HeaderTokenizer.Token token;
+			if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM)
+				return token.Value;
+			return null;
+		}
+
+		/// <summary>
+		/// Set the type of a parameter, e.g. "multipart" in "Content-Type: multipart/mixed"
+		/// </summary>
+		/// <param name="subtype"></param>
+		/// <returns></returns>
+		public void SetType (String subtype)
+		{
+			HeaderTokenizer ht = new HeaderTokenizer (value, HeaderTokenizer.MIME);
+			HeaderTokenizer.Token token;
+			StringBuilder sb = new StringBuilder ();
+			if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM) {
+				// skip existing atom
+				sb.Append (subtype);
+			} else {
+				sb.Append (subtype);
+				sb.Append (token.Value);
+			}
+			sb.Append (ht.GetRemainder ());
+			value = sb.ToString ();
+			Refold();
+			return;
+		}
+		
+		
+		/// <summary>
+		/// Get the subtype of a parameter, e.g. "mixed" in "Content-Type: multipart/mixed"
 		/// </summary>
 		/// <returns></returns>
 		public String GetSubtype ()
@@ -184,14 +229,15 @@ namespace NMapi.Format.Mime
 			HeaderTokenizer ht = new HeaderTokenizer (value, HeaderTokenizer.MIME);
 			HeaderTokenizer.Token token;
 			if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM)
-				if ((token = ht.Next).Value == "/")
-					if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM)
-						return token.Value;
+				token = ht.Next;
+			if (token.Value == "/")
+				if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM)
+					return token.Value;
 			return null;
 		}
 
 		/// <summary>
-		/// Set the subtype of a parameter as mixed in "Content-Type: multipart/mixed"
+		/// Set the subtype of a parameter e.g. "mixed" in "Content-Type: multipart/mixed"
 		/// </summary>
 		/// <param name="subtype"></param>
 		/// <returns></returns>
@@ -200,28 +246,35 @@ namespace NMapi.Format.Mime
 			HeaderTokenizer ht = new HeaderTokenizer (value, HeaderTokenizer.MIME);
 			HeaderTokenizer.Token token;
 			StringBuilder sb = new StringBuilder ();
-			if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM) {
-				sb.Append (token.Value);
-				if ((token = ht.Next).Value == "/") {
+			token = ht.Next;
+			if (token.Type == HeaderTokenizer.Token.ATOM || token.Value == "/") {
+				if (token.Value != "/") {
+					sb.Append (token.Value);
+					token = ht.Next;
+				}
+				if (token.Value == "/") {
 					sb.Append (token.Value);
 					if ((token = ht.Next).Type == HeaderTokenizer.Token.ATOM) {
 						sb.Append (subtype);
 						sb.Append (ht.GetRemainder ());
 						value = sb.ToString ();
+						Refold();
 						return;
 					}
-				}
-				if (token.Value == ";" || token.Type == HeaderTokenizer.Token.EOF) {
+				} else {
 					sb.Append ("/");
-					sb.Append (subtype);
-					sb.Append (token.Value);
-					sb.Append (" ");
-					sb.Append (ht.GetRemainder ());
-					value = sb.ToString ();
-					return;
-				}
-				throw new MessagingException ("Header is not structured correctly");
+				}				
+			} else {
+				sb.Append ("/");
 			}
+			sb.Append (subtype);
+			if (token.Value == ";")
+				sb.Append (token.Value);
+			sb.Append (" ");
+			sb.Append (ht.GetRemainder ());
+			value = sb.ToString ();
+			Refold();
+			return;
 		}
 
 		/// <summary>
@@ -275,7 +328,7 @@ namespace NMapi.Format.Mime
 		public void Refold (String delimiters, String delimiter)
 		{
 			String[] parts = GetParts (delimiters, delimiter);
-			value = Field.AppendItemsFormat<String> (parts, delimiter, name.Length);
+			value = " " + Field.AppendItemsFormat<String> (parts, delimiter, name.Length);
 		}
 
 		public String Delimiter {
