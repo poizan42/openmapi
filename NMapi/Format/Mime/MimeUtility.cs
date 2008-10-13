@@ -268,6 +268,7 @@ namespace NMapi.Format.Mime
 				}
 				try {
 					os.Write (bytes, 0, bytes.Length);
+					os.Flush ();
 					os.Close ();
 				}
 				catch (IOException) {

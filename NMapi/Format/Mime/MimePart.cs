@@ -104,6 +104,7 @@ namespace NMapi.Format.Mime
 		/// </summary>
 		public virtual void RemoveHeader (String name)
 		{
+			headers.RemoveHeader (name);
 		}
 
 		/// <summary>
@@ -197,9 +198,6 @@ namespace NMapi.Format.Mime
 			}
 		}
 
-
-
-
 		/// <summary>
 		///Returns the value of the RFC 822 Content-Type header field, or
 		///"text/plain" if the header is not available.
@@ -207,11 +205,21 @@ namespace NMapi.Format.Mime
 
 		public virtual String ContentType {
 			get {
-				String contentType = GetHeader (CONTENT_TYPE_NAME, "; ").Trim ();
-				if (contentType == null) {
-					contentType = TEXT_PLAIN;
+				String [] h = GetHeaderParts (CONTENT_TYPE_NAME, ";");
+				if (h.Length > 0) {
+					String contentType = h[0].Trim();
+					if (contentType == null) {
+						contentType = TEXT_PLAIN;
+					}
+					return contentType;
 				}
-				return contentType;
+				return null;
+			}
+		}
+		
+		public virtual InternetHeader ContentTypeHeader {
+			get {
+				return headers.GetInternetHeaders(MimePart.CONTENT_TYPE_NAME);
 			}
 		}
 
@@ -280,31 +288,31 @@ namespace NMapi.Format.Mime
 
 				String ct = ContentType;
 				if (ct != null && ct.StartsWith ("text/")) {
-          if (contentString != null && !contentEncoded)
-            return contentString;
-          else {
-  					lock (lockContentStream) {
-  						String charset = CharacterSet;
-  						Encoding encoding = (charset == null) ? Encoding.Default : Encoding.GetEncoding (charset);
-	  					Stream s = ContentStream;
-		  				if (s != null) {
-			  				long position = s.Position;
-				  			// BinaryReader doesn't work with the Base64 and QP Streams 
-					  		// The length calculation would force to analyse the whole content first
-						  	MemoryStream ms = new MemoryStream ();
-							  try {
-  								for (int b = s.ReadByte (); b != -1; b = s.ReadByte ()) {
-	  								ms.WriteByte ((byte)b);
-		  						}
-			  				}
-				  			finally {
-					  			s.Seek (position, SeekOrigin.Begin);
-						  	}
-  							s.Close ();
-	  						s.Dispose ();
-		  					return encoding.GetString (ms.ToArray ());
-			  			}
-            }
+					if (contentString != null && !contentEncoded)
+						return contentString;
+					else {
+	  					lock (lockContentStream) {
+	  						String charset = CharacterSet;
+	  						Encoding encoding = (charset == null) ? Encoding.Default : Encoding.GetEncoding (charset);
+		  					Stream s = ContentStream;
+			  				if (s != null) {
+				  				long position = s.Position;
+					  			// BinaryReader doesn't work with the Base64 and QP Streams 
+						  		// The length calculation would force to analyse the whole content first
+							  	MemoryStream ms = new MemoryStream ();
+								  try {
+	  								for (int b = s.ReadByte (); b != -1; b = s.ReadByte ()) {
+		  								ms.WriteByte ((byte)b);
+			  						}
+				  				}
+					  			finally {
+						  			s.Seek (position, SeekOrigin.Begin);
+							  	}
+	  							s.Close ();
+		  						s.Dispose ();
+			  					return encoding.GetString (ms.ToArray ());
+				  			}
+						}
 					}
 					//                    return Encoding.Default.GetString(new BinaryReader(s).ReadBytes(int.MaxValue));
 				}

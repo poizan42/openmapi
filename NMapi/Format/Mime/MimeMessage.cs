@@ -150,7 +150,7 @@ namespace NMapi.Format.Mime
 
 		public String GetSubject ()
 		{
-			return GetHeader ("Subject", ", ");
+			return GetHeader (SUBJECT_NAME, ", ");
 		}
 
 
@@ -237,32 +237,19 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public override Object Content {
 			get {
-				if (contentObject != null) {
-					return contentObject;
-				}
-
+				Object o = base.Content;
+				if (o != null)
+					return o;
+				
 				String ct = ContentType;
-				if (ct.StartsWith ("text/"))
-					return base.Content;
-
 				if (ct.StartsWith ("multipart/") && content != null)
 					return contentObject = new MimeMultipart ((MimeMessage)this);
-
+				
 				return null;
 			}
 			set {
-				if (value == null) {
-					content = null;
-					contentString = null;
-					contentObject = null;
-					return;
-				}
 				String ct = ContentType;
-				if (ct != null && ct.StartsWith ("text/") && value.GetType () == typeof (String)) {
-					base.Content = value;
-					return;
-				}
-				if (ct != null && ct.StartsWith ("multipart/")) {
+				if (value != null && ct != null && ct.StartsWith ("multipart/")) {
 					if (value.GetType () == typeof (MimeMultipart)){
 						contentObject = value;
 						content = null;
@@ -270,21 +257,10 @@ namespace NMapi.Format.Mime
 						return;
 					}
 				}
-
-				throw new MessagingException ("An unsupported content is tried to by supplied. Check if the Content-Type setting corresponds to your request.");
+				base.Content = value;
 			}
 		}
 
-		public override byte[] RawContent {
-			get { return base.RawContent; }
-			set { base.Content = value; }
-		}
-		
-		public override Stream ContentStream {
-			get { return base.ContentStream; }
-			set { base.ContentStream = value; }
-		}
-		
 		public override void WriteTo (Stream os)
 		{
 			if (ContentType.StartsWith ("multipart")) {

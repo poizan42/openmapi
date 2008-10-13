@@ -38,6 +38,9 @@ namespace NMapi.Format.Mime
 {
 	public class MimeBodyPart : MimePart
 	{
+		/// <summary>
+		/// Encodings, that are supported for feeding a Stream as a data source into a MimeBodyPart. 
+		/// </summary>
 		String[] supportedEncodings = { "base64", "7bit", "8bit", "binary" };
 
 		public MimeBodyPart ()
@@ -49,6 +52,10 @@ namespace NMapi.Format.Mime
 		/// </summary>
 		public MimeBodyPart (Stream inS)
 			: base (inS)
+		{ }
+		
+		public MimeBodyPart (Stream inS, bool quickStream)
+			: base (inS, quickStream)
 		{ }
 
 		protected internal MimeBodyPart (InternetHeaders headers, byte[] content)
@@ -76,18 +83,11 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public override Object Content {
 			get {
-				if (contentObject != null) {
-					return contentObject;
-				}
-
-				if (contentString != null && !contentEncoded) {
-					return contentString;
-				}
+				Object o = base.Content;
+				if (o != null)
+					return o;
 
 				String ct = ContentType;
-				if (ct != null && ct.StartsWith ("text/"))
-					return base.Content;
-
 				if (ct != null && ct.StartsWith ("message/")) {
 					contentObject = new MimeMessage (RawContentStream);
 					contentStream = null;
@@ -114,17 +114,7 @@ namespace NMapi.Format.Mime
 				return null;
 			}
 			set {
-				if (value == null) {
-					content = null;
-					contentString = null;
-					contentObject = null;
-					return;
-				}
 				String ct = ContentType;
-				if (ct != null && ct.StartsWith ("text/") && value.GetType () == typeof (String)) {
-					base.Content = value;
-					return;
-				}
 				if (ct != null && ct.StartsWith ("message/") && value.GetType () == typeof (MimeMessage)) {
 					contentObject = value;
 					contentStream = null;
@@ -149,7 +139,9 @@ namespace NMapi.Format.Mime
 					s.Dispose ();
 					return;
 				}
-			throw new MessagingException ("An unsupported content is tried to by supplied. Check if the Content-Type setting corresponds to your request.");
+
+				base.Content = value;
+				return;
 			}
 		}
 
