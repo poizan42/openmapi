@@ -3,7 +3,7 @@
 
 	Bugfixes
 
-	* InternetHeader.cs:	Bugfixes and extended handling of types/subtypes
+	* InternetHeader.cs: Bugfixes and extended handling of types/subtypes
 	* InternetHeaders.cs
 	* MimeBodyPart.cs
 	* MimeMessage.cs
