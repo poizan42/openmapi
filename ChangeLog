@@ -1,5 +1,16 @@
 
+2008-10-13  Andreas Huegel <andreas.huegel@topalis.com>
 
+	Bugfixes
+
+	* InternetHeader.cs:	Bugfixes and extended handling of types/subtypes
+	* InternetHeaders.cs
+	* MimeBodyPart.cs
+	* MimeMessage.cs
+	* MimePart.cs
+	* MimeUtility.cs
+
+	
 2008-10-06  Andreas Huegel <andreas.huegel@topalis.com>
 
 	Initial check in Mime API
@@ -32,8 +43,8 @@
 	Fix Build:
 	Forgot to check in "providers". :-(
 
-	* providers/NMapi.Provider.TeamXChange/TeamXChangeMapiFactory.cs: add MapiFactory attribute
-	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiFolder.cs: fix: Folder enum
+	* providers/NMapi.Provider.TeamXChange	eamXChangeMapiFactory.cs: add MapiFactory attribute
+	* providers/NMapi.Provider.TeamXChange/Properties/Special	eamXChangeMapiFolder.cs: fix: Folder enum
 	* providers/NMapi.Provider.Indigo/Properties/Special/IndigoMapiFolder.cs: fix: Folder enum
 	* providers/NMapi.Provider.Indigo/IndigoMapiFactory.cs: add MapiFactory attribute
 
@@ -72,7 +83,7 @@
 	* tools/mapishell/Commands/Logging.cs:
 	* tools/mapishell/Commands/Cd.cs:
 	* tools/mapishell/Commands/Help.cs:
-	* tools/mapishell/Commands/Tail.cs:
+	* tools/mapishell/Commands	ail.cs:
 	* tools/mapishell/Commands/Pwd.cs:
 	* tools/mapishell/Commands/Info.cs:
 	* tools/mapishell/Commands/Use.cs:
@@ -118,7 +129,7 @@
 	* server/aspx/vusers.aspx: new ASP.NET Proxy Web Server GUI files.
 
 	* mapimetal/PropertyDescription.cs: minor change.
-	* mapimetal/TypeResolver.cs: Moved to NMapi/Core
+	* mapimetal	ypeResolver.cs: Moved to NMapi/Core
 
 	* NMapi/Linq/MapiEntityBase.cs: make GetAssociatedIMapiProp() public
 	* NMapi/Linq/Interpreter.cs: bugfix for select method
@@ -145,7 +156,7 @@
 	* NMapi/Core/Properties/Special/IMapiFolder.cs: Fix: Use Folder enum
 	* NMapi/Core/MapiPropDefAttribute.cs:
 	* NMapi/Core/MapiFactoryAttribute.cs:
-	* NMapi/Core/TypeResolver.cs: Moved from mapimetal
+	* NMapi/Core	ypeResolver.cs: Moved from mapimetal
 	* NMapi/Core/KeyRing.cs: added stub
 	* NMapi/Core/MapiUrl.cs: add new class to represent mapi:// urls.
 	* NMapi/Flags/Error.cs: BadCharwidth => BadCharWidth
