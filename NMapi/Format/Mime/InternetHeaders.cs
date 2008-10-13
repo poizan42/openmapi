@@ -94,7 +94,7 @@ namespace NMapi.Format.Mime
 				int[] buf = new int[2];
 				StringBuilder sb = new StringBuilder ();
 				// cant use StreamReader here, as it will buffer uncontrollably and
-				// the rest content in inS will be truncated at the beginning
+				// the content part of the stream in inS will be truncated at the beginning
 				for (buf[0] = inS.ReadByte (); buf[0] != -1; ) {
 					if (buf[1] == '\r' && buf[0] == '\n') {
 						String line = trim (sb.ToString ());
@@ -182,8 +182,7 @@ namespace NMapi.Format.Mime
 		public void RemoveHeader (String name)
 		{
 			lock (headers) {
-				int len = headers.Count;
-				for (int i = 0; i < len; i++) {
+				for (int i = 0; i < headers.Count; i++) {
 					InternetHeader header = (InternetHeader)headers[i];
 					if (header.Equals (name)) {
 						headers.RemoveAt (i);
@@ -233,6 +232,10 @@ namespace NMapi.Format.Mime
 			return Field.AppendItemsFormat (myHeaders, delimiter, name.Length);
 		}
 
+		public String GetHeader (String name)
+		{
+			return GetHeader (name, InternetHeader.GetDelimiter (name));
+		}
 
 		/// <summary>
 		/// Get all the headers for this header name, returned as a InternetHeader Object, with headers separated by the delimiter.
@@ -242,28 +245,13 @@ namespace NMapi.Format.Mime
 			return GetInternetHeaders (name, InternetHeader.GetDelimiter (name));
 		}
 
-
 		/// <summary>
 		/// Get all the headers for this header name, returned as a InternetHeader Object, with headers separated by the delimiter.
 		/// </summary>
 		public InternetHeader GetInternetHeaders (String name, String delimiter)
 		{
-			IEnumerable<Object> myHeaders = from h in headers
-											where h.Name.ToLower () == name.ToLower ()
-											select (Object)h.Value;
 			String dels = String.IsNullOrEmpty (delimiter) ? InternetHeader.GetDelimiter (name) : delimiter;
-			return new InternetHeader (name, Field.AppendItemsFormat (myHeaders, dels, name.Length));
-		}
-
-		/// <summary>
-		/// Get all the headers for this header name, returned as a InternetHeader Object, with headers separated by the delimiter.
-		/// The header items are refolded to fit lines optimally
-		/// </summary>
-		public InternetHeader GetInternetHeadersRefold (String name, String delimiter)
-		{
-			String dels = String.IsNullOrEmpty (delimiter) ? InternetHeader.GetDelimiter (name) : delimiter;
-			IEnumerable<Object> myHeaders = GetHeaderParts (name, dels);
-			return new InternetHeader (name, Field.AppendItemsFormat (myHeaders, dels, name.Length));
+			return new InternetHeader (name, GetHeader(name, dels));
 		}
 
 		/// <summary>
@@ -283,8 +271,6 @@ namespace NMapi.Format.Mime
 
 			return ihs.ToArray ();
 		}
-
-
 
 		/// <summary>
 		/// Return all the header lines as an Enumeration of Strings.
