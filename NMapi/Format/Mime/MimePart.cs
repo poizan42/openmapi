@@ -264,7 +264,7 @@ namespace NMapi.Format.Mime
 		{
 			String encoding = TransferEncoding;
 			if (encoding == null || encoding == "") {
-				TransferEncoding = encoding = defaultEncoding;
+				encoding = defaultEncoding;
 			}
 			return encoding;
 		}
@@ -291,6 +291,7 @@ namespace NMapi.Format.Mime
 					if (contentString != null && !contentEncoded)
 						return contentString;
 					else {
+						// return string content by decoding this.content
 	  					lock (lockContentStream) {
 	  						String charset = CharacterSet;
 	  						Encoding encoding = (charset == null) ? Encoding.Default : Encoding.GetEncoding (charset);
@@ -314,6 +315,7 @@ namespace NMapi.Format.Mime
 				  			}
 						}
 					}
+
 					//                    return Encoding.Default.GetString(new BinaryReader(s).ReadBytes(int.MaxValue));
 				}
 
@@ -409,7 +411,8 @@ namespace NMapi.Format.Mime
 		{
 			headers.WriteTo (os);
 
-			if (ContentType.StartsWith ("message")) {
+			String ct = ContentType;
+			if (ct != null && ct.StartsWith ("message")) {
 				((MimeMessage)Content).WriteTo (os);
 			} else if (content != null || contentString != null) {
 				byte[] rc = RawContent;

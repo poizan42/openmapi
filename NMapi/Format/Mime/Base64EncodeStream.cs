@@ -42,7 +42,7 @@ namespace NMapi.Format.Mime
 	/// as well as while writing. The write functionality in Base64Stream has been
 	/// obsoleted. Only the read functionality to decode is left.
 	/// </summary>
-	internal class Base64EncodeStream : Stream
+	public class Base64EncodeStream : Stream
 	{
 		private Stream stream;
 		private byte[] buffer;
@@ -330,7 +330,10 @@ namespace NMapi.Format.Mime
 		}
 
 
-		public override long Position { get { return position; } set { } }
+		public override long Position { 
+			get { return position;	} 
+			set { 	}
+		}
 
 		/// <summary>
 		/// only relevant and usable to reset the Stream to Position 0.

@@ -37,7 +37,7 @@ using System.Text;
 namespace NMapi.Format.Mime
 {
 
-	internal class Base64Stream : Stream
+	public class Base64Stream : Stream
 	{
 		private Stream stream;
 		private byte[] buffer;
@@ -47,6 +47,8 @@ namespace NMapi.Format.Mime
 		// read
 		private int index;
 		private byte[] decodeBuf;
+		private long origStreamPos;
+		private long position;
 
 
 		private static char[] src =
@@ -80,9 +82,6 @@ namespace NMapi.Format.Mime
 		public override bool CanRead { get { return true; } }
 		public override bool CanSeek { get { return false; } }
 		public override bool CanWrite { get { return false; } }
-		public override long Position { get { return -1; } set { } }
-		public override long Seek (long offset, SeekOrigin origin)
-		{ return -1; }
 		public override void SetLength (long value)
 		{ }
 
@@ -109,6 +108,7 @@ namespace NMapi.Format.Mime
 			//this.outLineLength = outLineLen;
 			// read
 			decodeBuf = new byte[4];
+			origStreamPos = stream.Position;
 		}
 
 
@@ -217,10 +217,12 @@ namespace NMapi.Format.Mime
 		{
 			if (index >= buflen) {
 				decode ();
-				if (buflen == 0)
+				if (buflen == 0){
 					return -1;
+				}
 				index = 0;
 			}
+			position++;
 			return buffer[index++] & 0xff;
 		}
 
@@ -234,7 +236,32 @@ namespace NMapi.Format.Mime
 		public override long Length {
 			get { return (stream.Length * 3) / 4 + (buflen - index); }
 		}
+		
+		public override long Position { 
+			get { return position;	} 
+			set { 	}
+		}
 
+
+
+		/// <summary>
+		/// only relevant and usable to reset the Stream to Position 0.
+		/// Is primarily needed to reset the contained stream, so that
+		/// The stream can be repeatedly used to retreive data.
+		/// </summary>
+		public override long Seek (long offset, SeekOrigin origin)
+		{
+			if (offset == 0) {
+				stream.Seek (origStreamPos, SeekOrigin.Begin);
+				buflen = 0;
+				index = 0;
+				position = 0;
+			}
+			return position;
+		}
+
+		
+		
 		//throws IOException
 		private void decode ()
 		{
@@ -253,7 +280,7 @@ namespace NMapi.Format.Mime
 					throw new IOException ("Base64 encoding error");
 				j -= l;
 			}
-
+ 
 			byte b0 = dst[decodeBuf[0] & 0xff];
 			byte b2 = dst[decodeBuf[1] & 0xff];
 			buffer[buflen++] = (byte)(b0 << 2 & 0xfc | b2 >> 4 & 0x3);

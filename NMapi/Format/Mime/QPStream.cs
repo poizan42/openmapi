@@ -35,7 +35,7 @@ using System.Text;
 
 namespace NMapi.Format.Mime
 {
-	internal class QPStream : Stream
+	public class QPStream : Stream
 	{
 
 		///Char array used in decimal to hexidecimal conversion.

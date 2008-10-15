@@ -1,0 +1,41 @@
+
+openMapi - Mime-API
+-------------------
+
+Author: Andreas Huegel
+Date: 20081015
+
+
+Mime-API is a Javamail-Port from  "The Free Software Foundation (Copyright (C) 2008), 
+Author <a href="mailto:dog@gnu.org">Chris Burdess</a>". Topalis AG has done changes to
+it to cut the porting activities to only the amount of functionality that is needed 
+within the openMapi - NMapi project.
+
+Additional Features:
+* minimal parsing: parsing of input can be minimized, so that only the header fields are
+  parsed (quickStream).
+* stream input: content can be added to a MimeBodyPart in form of a stream. The stream
+  will be read not before the content is being used, e.g. by user activity, or the mail
+  is being written to an output stream (WriteTo). This way large attachments and complete
+  attached mails can be added as a stream content.
+  Preconditions are: the stream has to provide the property CanSeek=true. This is required
+  so that the stream can be consumed multiple times.
+  Limitations: a stream can only be provided, if the Content-Transfer-Encoding is one of
+  base64, 7bit, 8bit or binary. It is currently not possible for quoted-printable.
+* input equals output: if a mail is being parsed, the output via WriteTo will yield a
+  mostly unchanged email.
+
+Limitations
+* strict-handling of address-encoding is not provided. Thus, a strict check of RFC822 rules
+  is being neglected
+* Datahandler class is not being implemented. It seems to support drag&drop features of
+  attachments, ..., which will not be applicable in the target environment
+* encondings uuencode and x-uuencode are not supported
+* encodings like
+	„filename*=ISO-8859-15''%4D%56%D6%5F%32%30%30%38%2D%31%39%2E%64%6F%63“
+  (see javaMail class ParameterType.decode) are not supported. Is mainly required for
+  filling the Content-Disposition field.
+* Mime* classes do not support direct file handling. Input must be provided as Byte[] or 
+  Stream. Output is delivered into a stream
+
+

@@ -34,7 +34,7 @@ using System.Text;
 
 namespace NMapi.Format.Mime
 {
-	internal class HeaderTokenizer
+	public class HeaderTokenizer
 	{
 
 

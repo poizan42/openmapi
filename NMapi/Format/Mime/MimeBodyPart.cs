@@ -95,11 +95,15 @@ namespace NMapi.Format.Mime
 					contentString = null;
 					return contentObject;
 				}
+				
+				// return byte Array of decoded content
 				if ((content != null && contentEncoded) || contentStream != null) {
 					lock (lockContentStream) {
 						Stream s = ContentStream;
 						MemoryStream ms = new MemoryStream ();
 						long position = s.Position;
+			  			// BinaryReader doesn't work with the Base64 and QP Streams 
+				  		// The length calculation would force to analyse the whole content first
 						try {
 							for (int b = s.ReadByte (); b != -1; b = s.ReadByte ()) {
 								ms.WriteByte ((byte)b);
@@ -155,6 +159,7 @@ namespace NMapi.Format.Mime
 				if (contentStream != null) {
 					if (contentEncoded) {
 						if (contentStream.GetType () == typeof (Base64EncodeStream))
+							// in this case return the original stream
 							return ((Base64EncodeStream)contentStream).Stream;
 						else {
 							String encoding = getTransferEncodingDefault ("7bit");
@@ -207,7 +212,7 @@ namespace NMapi.Format.Mime
 						return contentStream;
 					else {
 						String encoding = getTransferEncodingDefault ("7bit");
-						if (!supportedEncodings.Contains<String> (getTransferEncodingDefault ("7bit")))
+						if (!supportedEncodings.Contains (encoding))
 							throw new ArgumentException ("Cannot return raw content stream, if stream has not been supplied for these encodings: base64, 7bit, 8bit, binary");
 						return MimeUtility.Encode (contentStream, encoding);
 					}

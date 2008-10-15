@@ -242,15 +242,17 @@ namespace NMapi.Format.Mime
 					return o;
 				
 				String ct = ContentType;
-				if (ct.StartsWith ("multipart/") && content != null)
-					return contentObject = new MimeMultipart ((MimeMessage)this);
-				
+				if (ct.StartsWith ("multipart/") && content != null) {
+					contentObject = new MimeMultipart ((MimeMessage)this);
+					content = null;
+					return contentObject;
+				}
 				return null;
 			}
 			set {
 				String ct = ContentType;
 				if (value != null && ct != null && ct.StartsWith ("multipart/")) {
-					if (value.GetType () == typeof (MimeMultipart)){
+					if (value.GetType () == typeof (MimeMultipart)) {
 						contentObject = value;
 						content = null;
 						contentString = null;
@@ -263,7 +265,8 @@ namespace NMapi.Format.Mime
 
 		public override void WriteTo (Stream os)
 		{
-			if (ContentType.StartsWith ("multipart")) {
+			String ct = ContentType;
+			if (ct != null && ct.StartsWith ("multipart")) {
 				headers.WriteTo (os);
 
 				((MimeMultipart)Content).WriteTo (os);

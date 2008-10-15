@@ -45,7 +45,6 @@ namespace NMapi.Format.Mime
 		
 		String preamble = "";
 
-
 		/// <summary>
 		/// Constructs a MimeMultipart object and its bodyparts from the given DataSource.
 		/// </summary>
@@ -98,7 +97,6 @@ namespace NMapi.Format.Mime
 				Stream x;
 				bool preambleCheck = false;
 				while ((x = bs.ReadToDelimiter (boundaryBytes)) != null) {
-
 					if (!preambleCheck) {
 						preamble = new StreamReader(x,Encoding.ASCII).ReadToEnd();
 						preambleCheck = true;
@@ -108,15 +106,18 @@ namespace NMapi.Format.Mime
 							parts.Add (mp);
 						}
 					}
-					int b;
-					// check if Message-end Sign appears (-- after boundary)
-					if ((b = bs.ReadByte ()) == '-')
-						if ((b = bs.ReadByte ()) == '-') break;
-					// otherwise eliminate LineBreak after Boundary sign
-					if (b != '\r')
-						throw new MessagingException ("No correct line break after boundary sign");
-					if ((b = bs.ReadByte ()) != '\n')
-						throw new MessagingException ("No correct line break after boundary sign");
+					
+					try {
+						int b;
+						// check if Message-end Sign appears (-- after boundary)
+						if ((b = bs.ReadByte ()) == '-')
+							if ((b = bs.ReadByte ()) == '-') break;
+						// otherwise eliminate LineBreak after Boundary sign
+						if (b != '\r')
+							throw new MessagingException ("No correct line break after boundary sign");
+						if ((b = bs.ReadByte ()) != '\n')
+							throw new MessagingException ("No correct line break after boundary sign");
+					} catch (EndOfStreamException e) { }
 				}
 
 				bs.Close ();
@@ -146,7 +147,7 @@ namespace NMapi.Format.Mime
 		/// </summary>
 		[System.Runtime.CompilerServices.IndexerName ("BodyPart")]
 		public MimeBodyPart this[int i] {
-      get { return parts[i]; }
+			get { return parts[i]; }
 			set { AddBodyPart (value, i); }
 		}
 		
@@ -157,13 +158,6 @@ namespace NMapi.Format.Mime
 		public IEnumerator GetEnumerator()
 		{
 			return parts.GetEnumerator();
-		}
-
-		/// <summary>
-		/// Parse the InputStream from our DataSource, constructing the appropriate MimeBodyParts.
-		/// </summary>
-		protected void Parse ()
-		{
 		}
 
 		/// <summary>
@@ -185,7 +179,7 @@ namespace NMapi.Format.Mime
 		/// <summary>
 		/// Set the subtype.
 		/// </summary>
-		String SubType {
+		public String SubType {
 			get 
 			{ 
 				if (parent != null)	{

@@ -73,8 +73,7 @@ namespace NMapi.Format.Mime
 						os.WriteByte ((byte)b);
 					}
 				}
-			} catch (EndOfStreamException) {
-			}
+			} catch (EndOfStreamException) { }
 			long len1 = os1.Length;
 			os.Write (os1.ToArray (), 0, (int)len1);
 			return new MemoryStream (os.ToArray ());

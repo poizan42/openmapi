@@ -3,6 +3,32 @@
 
 	Bugfixes
 
+	* NMapi/Format/Mime/Base64EncodeStream.cs
+	* NMapi/Format/Mime/Base64Stream.cs
+	* NMapi/Format/Mime/BinarySplitter.cs
+	* NMapi/Format/Mime/HeaderTokenizer.cs
+	* NMapi/Format/Mime/MimeBodyPart.cs
+	* NMapi/Format/Mime/MimeMessage.cs
+	* NMapi/Format/Mime/MimeMultipart.cs
+	* NMapi/Format/Mime/MimePart.cs
+	* NMapi/Format/Mime/QPStream.cs
+
+	Tests first check in 
+
+	* tests/nmapi/mime/TestMimeBodyPart.cs
+	* tests/nmapi/mime/TestMime.cs
+	* tests/nmapi/mime/TestMimeMessage.cs
+	* tests/nmapi/mime/TestMimePart.cs
+
+	Description File
+
+	* NMapi/Format/Mime/Mime-API.txt
+
+
+2008-10-13  Andreas Huegel <andreas.huegel@topalis.com>
+
+	Bugfixes
+
 	* InternetHeader.cs: Bugfixes and extended handling of types/subtypes
 	* InternetHeaders.cs
 	* MimeBodyPart.cs
