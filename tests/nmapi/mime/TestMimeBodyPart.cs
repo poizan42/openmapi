@@ -309,7 +309,7 @@ QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
 		{
 			// Test content being an image. Source is input stream
 			String inString = 
-@"Content-Type: application/bmp
+@"Content-Type: application/bmp; name=a.bmp
 Content-Transfer-Encoding: base64
 
 Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
@@ -358,16 +358,14 @@ AP///wCAAAAAQAAAAAA=";
 		{
 			// Test content being an image. Source is Content (Byte Array)
 			String inString = 
-@"Content-Type: application/bmp
+@"Content-Type: application/bmp; name=a.bmp
 Content-Transfer-Encoding: base64
 
 Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
 AP///wCAAAAAQAAAAAA=";
 			inString = inString.Replace("\n", "\r\n");
-			Byte[] b = Encoding.ASCII.GetBytes (inString);
-			MemoryStream inS = new MemoryStream (b);
-			MimeBodyPart mb = new MimeBodyPart(inS);
-			mb.SetHeader ("Content-Type", "application/bmp");
+			MimeBodyPart mb = new MimeBodyPart();
+			mb.SetHeader ("Content-Type", "application/bmp; name=a.bmp");
 			mb.SetHeader ("Content-Transfer-Encoding", "base64");
 			Byte [] bytes = new Byte[] 
 			{ 0x42,0x4d,0x46,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x3e,0x00,0x00,0x00,0x28,0x00,
@@ -408,16 +406,14 @@ AP///wCAAAAAQAAAAAA=";
 		{
 			// Test content being an image. Source is RawContent 
 			String inString = 
-@"Content-Type: application/bmp
+@"Content-Type: application/bmp; name=a.bmp
 Content-Transfer-Encoding: base64
 
 Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
 AP///wCAAAAAQAAAAAA=";
 			inString = inString.Replace("\n", "\r\n");
-			Byte[] b = Encoding.ASCII.GetBytes (inString);
-			MemoryStream inS = new MemoryStream (b);
-			MimeBodyPart mb = new MimeBodyPart(inS);
-			mb.SetHeader ("Content-Type", "application/bmp");
+			MimeBodyPart mb = new MimeBodyPart();
+			mb.SetHeader ("Content-Type", "application/bmp; name=a.bmp");
 			mb.SetHeader ("Content-Transfer-Encoding", "base64");
 			mb.RawContent = Encoding.ASCII.GetBytes ("Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA\r\nAP///wCAAAAAQAAAAAA=");
 			
@@ -458,16 +454,14 @@ AP///wCAAAAAQAAAAAA=";
 		{
 			// Test content being an image. Source is ContentStream 
 			String inString = 
-@"Content-Type: application/bmp
+@"Content-Type: application/bmp; name=a.bmp
 Content-Transfer-Encoding: base64
 
 Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
 AP///wCAAAAAQAAAAAA=";
 			inString = inString.Replace("\n", "\r\n");
-			Byte[] b = Encoding.ASCII.GetBytes (inString);
-			MemoryStream inS = new MemoryStream (b);
-			MimeBodyPart mb = new MimeBodyPart(inS);
-			mb.SetHeader ("Content-Type", "application/bmp");
+			MimeBodyPart mb = new MimeBodyPart();
+			mb.SetHeader ("Content-Type", "application/bmp; name=a.bmp");
 			mb.SetHeader ("Content-Transfer-Encoding", "base64");
 			Byte [] bytes = new Byte[] 
 			{ 0x42,0x4d,0x46,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x3e,0x00,0x00,0x00,0x28,0x00,
@@ -507,16 +501,14 @@ AP///wCAAAAAQAAAAAA=";
 		{
 			// Test content being an image. Source is RawContentStream 
 			String inString = 
-@"Content-Type: application/bmp
+@"Content-Type: application/bmp; name=a.bmp
 Content-Transfer-Encoding: base64
 
 Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
 AP///wCAAAAAQAAAAAA=";
 			inString = inString.Replace("\n", "\r\n");
-			Byte[] b = Encoding.ASCII.GetBytes (inString);
-			MemoryStream inS = new MemoryStream (b);
-			MimeBodyPart mb = new MimeBodyPart(inS);
-			mb.SetHeader ("Content-Type", "application/bmp");
+			MimeBodyPart mb = new MimeBodyPart();
+			mb.SetHeader ("Content-Type", "application/bmp; name=a.bmp");
 			mb.SetHeader ("Content-Transfer-Encoding", "base64");
 			Byte [] bytes = new Byte[] 
 			{ 0x42,0x4d,0x46,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x3e,0x00,0x00,0x00,0x28,0x00,
