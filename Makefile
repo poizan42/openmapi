@@ -29,7 +29,7 @@ code: Mono.Cecil.dll genstubs remotetea nmapi allproviders mapiserver mmetal all
 
 nrpcgen:
 	$(JAVAC) $(NRPCGEN_JAVA_SOURCES)
-	$(JAR) cfm nrpcgen.jar RemoteTea-Sharp/nrpcgen/remotetea/nrpcgen/*.class \
+	$(JAR) cf nrpcgen.jar RemoteTea-Sharp/nrpcgen/remotetea/nrpcgen/*.class \
 	RemoteTea-Sharp/nrpcgen/remotetea/nrpcgen/cup_runtime/*.class \
 	"RemoteTea-Sharp/nrpcgen/remotetea/nrpcgen/CUP\$$JrpcgenParser\$$actions.class" 
 	$(IKVMC) nrpcgen.jar -target:library -out:bin/remotetea.nrpcgen.dll
