@@ -13,7 +13,7 @@ DEBUG= /debug
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
 
 NDESK_OPTIONS=lib/NDesk.Options.cs
-MONO_GETLINE=lib/getline.cs
+MONO_GETLINE=lib/getline/getline.cs
 NRPCGEN_JAVA_SOURCES=$(shell find RemoteTea-Sharp/nrpcgen/remotetea/nrpcgen -name "*.java")
 NRPCGEN_SOURCES=$(shell find RemoteTea-Sharp/nrpcgen -name "*.cs")
 REMOTETEA_SOURCES=$(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
