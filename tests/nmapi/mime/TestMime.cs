@@ -45,7 +45,6 @@ namespace NMapi.Format.Mime
  
 
 
-
 	[TestFixture]
 	public class TestMime
 	{
@@ -261,9 +260,9 @@ namespace NMapi.Format.Mime
 				NMapi.Format.Mime.MimeUtility.GetUniqueBoundaryValue();
 
 			// must return a unique id every time
-			Assert.AreNotEqual(erg,erg2);
-			Assert.Greater(erg.Length,15);
-			Assert.Greater(erg2.Length,15);
+			Assert.IsFalse (erg == erg2);
+			Assert.IsTrue (erg.Length > 15);
+			Assert.IsTrue (erg2.Length > 15);
 		}
 
 		
@@ -939,7 +938,7 @@ AP///wCAAAAAQAAAAAA=
 			MimeMultipart mp = new MimeMultipart(mm);
 			
 			// has boundary been created
-			Assert.AreNotEqual ("", mm.Boundary);
+			Assert.IsFalse ("" == mm.Boundary);
 
 			// append MimeBodyPart
 			MimeBodyPart mb = new MimeBodyPart();
@@ -1367,7 +1366,6 @@ AP///wCAAAAAQAAAAAA=
 			MimeMultipart mp = new MimeMultipart (mm);
 
 //			Console.WriteLine("----------show Message with Multipart");
-//			ObjectDumper.Write(mp,10);
 
 			
 			//--------------
@@ -1384,11 +1382,9 @@ AP///wCAAAAAQAAAAAA=
 			mp.AddBodyPart (mb);
 
 //			Console.WriteLine("----------show Multipart with one Part");
-//			ObjectDumper.Write(mp,10);
 
 			
 //			Console.WriteLine("----------show Bodypart");
-//			ObjectDumper.Write(mb,10);
 
 			mb = new MimeBodyPart ();
 
@@ -1404,7 +1400,6 @@ AP///wCAAAAAQAAAAAA=
 			buf = mb.RawContent;
 
 //			Console.WriteLine("----------show Bodypart after parsing input");
-//			ObjectDumper.Write(mb,10);
 
 			mp.AddBodyPart (mb);
 
@@ -1412,7 +1407,6 @@ AP///wCAAAAAQAAAAAA=
 			MimeBodyPart mp2 = ((MimeMultipart)((MimeMessage)mb.Content).Content)[0];
 
 //			Console.WriteLine("----------show Bodypart retrieved from parsed Message");
-//			ObjectDumper.Write(mp2,10);
 			
 			// change text
 			mp2.Content = "Imported Message, that has been changed afterwards";
@@ -1427,7 +1421,6 @@ AP///wCAAAAAQAAAAAA=
 			ih.SetParam ("name", "img.jpg");
 			mp2.SetHeader (ih);
 
-ObjectDumper.Write(mp2.GetHeaderParts("Content-Transfer-Encoding", ";"),3);
 Console.Write(mp2.GetHeader("Content-Transfer-Encoding", ";"));
 			
 			// fill in different content

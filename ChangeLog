@@ -1,3 +1,11 @@
+2008-12-04  Andreas Huegel <andreas.huegel@topalis.com>
+
+	Bugfixes in Mime tests, nunit version changes
+
+	* tests/nmapi/mime/TestMime.cs
+	* tests/nmapi/mime/TestMimeMessage.cs
+
+
 2008-11-12  Andreas Huegel <andreas.huegel@topalis.com>
 
 	Bugfixes in Mime tests

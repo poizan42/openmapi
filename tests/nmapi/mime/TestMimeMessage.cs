@@ -71,9 +71,9 @@ namespace NMapi.Format.Mime
 			String erg2 = mm.Boundary; 
 
 			// must return a unique id every time
-			Assert.AreNotEqual(erg,erg2);
-			Assert.Greater(erg.Length,15);
-			Assert.Greater(erg2.Length,15);
+			Assert.IsFalse (erg == erg2);
+			Assert.IsTrue (erg.Length > 15);
+			Assert.IsTrue (erg2.Length > 15);
 		}
 
 		/// <summary>
