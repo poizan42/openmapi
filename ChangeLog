@@ -1,3 +1,8 @@
+2008-12-09  Andreas Huegel <andreas.huegel@topalis.com>
+
+	Bugfixes 
+	* NMapi/Core/Properties/Special/MessageCopyHelper.cs
+
 2008-12-04  Andreas Huegel <andreas.huegel@topalis.com>
 
 	Bugfixes in Mime tests, nunit version changes

@@ -64,10 +64,10 @@ namespace NMapi.Properties.Special {
 					                              Guids.IID_IStream,
 					                              0,
 					                              NMAPI.MAPI_CREATE|Mapi.Modify);
-				Stream fs = File.OpenRead (fileName);
+				Stream fs = File.OpenWrite (fileName);
 				streamsrc.GetData (fs);
 				fs.Close ();
-				fs = File.OpenWrite (fileName);
+				fs = File.OpenRead (fileName);
 				streamdst.PutData (fs);
 				fs.Close ();
 			}
@@ -153,7 +153,7 @@ namespace NMapi.Properties.Special {
 		{
 			IAttach attsrc = null, attdst = null;
 			try {
-				attsrc = messageDest.OpenAttach (num, null, 0);
+				attsrc = messageSource.OpenAttach (num, null, 0);
 				attdst = messageDest.CreateAttach (null, 0).Attach;
 				MyMsgCopyAttach (attsrc, attdst);
 			}
