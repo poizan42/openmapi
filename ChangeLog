@@ -1,4 +1,73 @@
 2008-12-09  Andreas Huegel <andreas.huegel@topalis.com>
+	
+	IMAP Gateway, first checkin
+
+	* gateways/imap/AssemblyInfo.cs
+	* gateways/imap/ClientConnection.cs
+	* gateways/imap/CommandAnalyser.cs
+	* gateways/imap/CommandAnalyserParserInterface.cs
+	* gateways/imap/Command.cs
+	* gateways/imap/CommandFetchItem.cs
+	* gateways/imap/CommandProcessor.cs
+	* gateways/imap/commands/AbstractBaseCommandProcessor.cs
+	* gateways/imap/commands/CmdAppend.cs
+	* gateways/imap/commands/CmdAuthenticate.cs
+	* gateways/imap/commands/CmdCapability.cs
+	* gateways/imap/commands/CmdCheck.cs
+	* gateways/imap/commands/CmdClose.cs
+	* gateways/imap/commands/CmdCopy.cs
+	* gateways/imap/commands/CmdCreate.cs
+	* gateways/imap/commands/CmdDelete.cs
+	* gateways/imap/commands/CmdExamine.cs
+	* gateways/imap/commands/CmdExpunge.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* gateways/imap/commands/CmdList.cs
+	* gateways/imap/commands/CmdLogin.cs
+	* gateways/imap/commands/CmdLogout.cs
+	* gateways/imap/commands/CmdLsub.cs
+	* gateways/imap/commands/CmdNoop.cs
+	* gateways/imap/commands/CmdRename.cs
+	* gateways/imap/commands/CmdSearch.cs
+	* gateways/imap/commands/CmdSelect.cs
+	* gateways/imap/commands/CmdStarttls.cs
+	* gateways/imap/commands/CmdStatus.cs
+	* gateways/imap/commands/CmdStore.cs
+	* gateways/imap/commands/CmdSubscribe.cs
+	* gateways/imap/commands/CmdUnsubscribe.cs
+	* gateways/imap/ConversionHelper.cs
+	* gateways/imap/FolderMappingAgent.cs
+	* gateways/imap/HeaderGenerator.cs
+	* gateways/imap/IMAPConnectionState.cs
+	* gateways/imap/IMAPGatewayConfig.cs
+	* gateways/imap/IMAP_Parser/IMAP_lexer.lex
+	* gateways/imap/IMAP_Parser/IMAP_lexer.lex.cs
+	* gateways/imap/IMAP_Parser/parser.cs
+	* gateways/imap/IMAP_Parser/parser.cup
+	* gateways/imap/IMAP_Parser/sym.cs
+	* gateways/imap/Main.cs
+	* gateways/imap/NotificationHandler.cs
+	* gateways/imap/Response.cs
+	* gateways/imap/ResponseManager.cs
+	* gateways/imap/SequenceNumberList.cs
+	* gateways/imap/ServerConnection.cs
+	* lib/cup/Runtime/AssemblyInfo.cs
+	* lib/cup/Runtime/lr_parser.cs
+	* lib/cup/Runtime/Scanner.cs
+	* lib/cup/Runtime/Symbol.cs
+	* lib/cup/Runtime/virtual_parse_stack.cs
+	* NMapi/Format/Mime/Field.cs
+	* NMapi/Format/Mime/InternetAddress.cs
+	* NMapi/Format/Mime/InternetHeaders.cs
+	* NMapi/Format/Mime/MimeMessage.cs
+	* NMapi/Format/Mime/MimeMultipart.cs
+	* NMapi/Format/Mime/MimePart.cs
+	* NMapi/Format/Mime/MimeUtility.cs
+	* NMapi/Utility/PathHelper.cs
+	* NMapi/Utility/PropertyHelper.cs
+	* tests/nmapi/mime/TestMimeMessage.cs
+
+
+2008-12-09  Andreas Huegel <andreas.huegel@topalis.com>
 
 	Bugfixes 
 	* NMapi/Core/Properties/Special/MessageCopyHelper.cs

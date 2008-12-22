@@ -99,6 +99,11 @@ namespace NMapi.Format.Mime
 			this.content = content;
 		}
 
+		public virtual InternetHeaders Headers {
+			get { return headers; }
+			set { headers = value; }
+		}
+
 		/// <summary>
 		/// Remove all headers with this name.
 		/// </summary>
@@ -269,6 +274,25 @@ namespace NMapi.Format.Mime
 			return encoding;
 		}
 
+		/// <summary>
+		/// get or set the boundary value of the Content-Type Mime header
+		/// !!! Set will not use the input value but generate one !!!
+		/// </summary>
+		public String Boundary {
+			get {
+				InternetHeader h = GetInternetHeader (MimePart.CONTENT_TYPE_NAME, "");
+				String b = h.GetParam ("boundary");
+				if (b == null)
+					throw new MessagingException ("Missing boundary parameter");
+				return b;
+			}
+			set {
+				InternetHeader h = GetInternetHeader (MimePart.CONTENT_TYPE_NAME, "");
+				h.SetParam ("boundary", MimeUtility.GetUniqueBoundaryValue ());
+				headers.SetHeader (h.Name, h.Value);
+			}
+		}
+
 
 
 
@@ -286,7 +310,7 @@ namespace NMapi.Format.Mime
 					return contentString;
 				}
 
-				String ct = ContentType;
+				String ct = ContentType.ToLower ();
 				if (ct != null && ct.StartsWith ("text/")) {
 					if (contentString != null && !contentEncoded)
 						return contentString;
@@ -315,8 +339,12 @@ namespace NMapi.Format.Mime
 				  			}
 						}
 					}
-
 					//                    return Encoding.Default.GetString(new BinaryReader(s).ReadBytes(int.MaxValue));
+				}
+				if (ct.StartsWith ("multipart/") && content != null) {
+					contentObject = new MimeMultipart (this);
+					content = null;
+					return contentObject;
 				}
 
 				return null;
@@ -335,6 +363,14 @@ namespace NMapi.Format.Mime
 					content = null;
 					contentStream = null;
 					return;
+				}
+				if (value != null && ct != null && ct.StartsWith ("multipart/")) {
+					if (value.GetType () == typeof (MimeMultipart)) {
+						contentObject = value;
+						content = null;
+						contentString = null;
+						return;
+					}
 				}
 				throw new MessagingException ("An unsupported content is tried to by supplied. Check if the Content-Type setting corresponds to your request.");
 			}
@@ -414,6 +450,8 @@ namespace NMapi.Format.Mime
 			String ct = ContentType;
 			if (ct != null && ct.StartsWith ("message")) {
 				((MimeMessage)Content).WriteTo (os);
+			} else if (ct != null && ct.StartsWith ("multipart")) {
+				((MimeMultipart)Content).WriteTo (os);
 			} else if (content != null || contentString != null) {
 				byte[] rc = RawContent;
 				if (rc != null)

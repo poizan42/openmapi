@@ -71,11 +71,76 @@ namespace NMapi.Format.Mime
 		/// Get the personal name.
 		/// </summary>
 		/// <returns></returns>
-		//public String 	Personal
-		//{
-		//    get { return null; }
-		//    set { }
-		//}
+		public String Personal
+		{
+		    get {
+				string personal = null;
+				
+				int pos = address.IndexOf ('<');
+				if (pos == -1) {
+					if (address.IndexOf ("@") != -1)
+						return null;
+					personal = address;
+				} else {
+					personal = address.Substring (0, pos);
+				}
+				
+				personal = MimeUtility.DecodeText (personal);
+				return personal.Trim ();
+			}
+		    set {
+				string email = null;
+				
+				if (charset == null || charset == "")
+					charset = "utf-8";
+				
+				int pos = address.IndexOf ('<');
+				if (pos == -1) {
+					email = "<" + address + ">";
+				} else {
+					email = address.Substring (pos);
+				}
+				
+					address = MimeUtility.EncodeText (value, charset, "Q");
+					address = address +
+						(address.EndsWith ("=") ? " " : "") +
+						email;
+			}
+		}
+
+		public String Email {
+		    get {
+				int pos = address.IndexOf ('<');
+				int pos2 = address.IndexOf ('>');
+				if (pos == -1) {
+					if (address.IndexOf ("@") == -1)
+						return null;
+					return address;
+				}
+				if (address.Length > pos) {
+					if (pos2 == -1) {
+						return address.Substring (pos + 1);
+					} else {
+						return address.Substring (pos + 1, pos2 - pos - 1);
+					}
+				}
+				return null;					                          
+			}
+
+			set {
+				int pos = address.IndexOf ('<');
+				string personal = address;
+				if (pos != -1)
+					personal = address.Substring (0, pos).Trim ();
+				if (personal == string.Empty || personal.Contains ("@")) {
+					address = value.Trim ();
+					return;
+				} 
+				address = personal +
+							(personal.EndsWith ("=") ? " " : "") + 
+							"<" + value + ">";
+			}
+		}
 
 		/// <summary>
 		///Constructor with an RFC 822 string representation of the address.

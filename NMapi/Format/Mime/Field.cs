@@ -39,7 +39,7 @@ namespace NMapi.Format.Mime
 
 		public static String AppendItemsFormat<T> (IEnumerable<T> items, String delimiter, int offset)
 		{
-			if (items == null) {
+			if (items == null || items.Count () == 0) {
 				return null;
 			}
 

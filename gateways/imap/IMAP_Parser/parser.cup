@@ -1,0 +1,877 @@
+
+/*================================================================*/ 
+/* 
+  JavaCup Specification for the JavaCup Specification Language
+  by Scott Hudson, GVU Center, Georgia Tech, August 1995
+  and Frank Flannery, Department of Computer Science, Princeton Univ,
+  July 1996
+  Bug Fixes: C. Scott Ananian, Dept of Electrical Engineering, Princeton
+  University, October 1996. [later Massachusetts Institute of Technology]
+
+
+  This JavaCup specification is used to implement JavaCup itself.
+  It specifies the parser for the JavaCup specification language.
+  (It also serves as a reasonable example of what a typical JavaCup
+  spec looks like).
+
+  The specification has the following parts:
+    Package and import declarations
+      These serve the same purpose as in a normal Java source file
+      (and will appear in the generated code for the parser). In this 
+      case we are part of the  package and we import both the
+      TUVienna.CS_CUP runtime system and Hashtable from the standard Java
+      utilities package.
+
+    Action code
+      This section provides code that is included with the class encapsulating
+      the various pieces of user code embedded in the grammar (i.e., the
+      semantic actions).  This provides a series of helper routines and
+      data structures that the semantic actions use.
+
+    Parser code    
+      This section provides code included in the parser class itself.  In
+      this case we override the default error reporting routines.
+
+    Init with and scan with 
+      These sections provide small bits of code that initialize, then 
+      indicate how to invoke the scanner.
+
+    Symbols and grammar
+      These sections declare all the terminal and non terminal symbols 
+      and the types of objects that they will be represented by at runtime,
+      then indicate the start symbol of the grammar (), and finally provide
+      the grammar itself (with embedded actions).
+
+    Operation of the parser
+      The parser acts primarily by accumulating data structures representing
+      various parts of the specification.  Various small parts (e.g., single
+      code strings) are stored as static variables of the emit class and
+      in a few cases as variables declared in the action code section.  
+      Terminals, non terminals, and productions, are maintained as collection
+      accessible via static methods of those classes.  In addition, two 
+      symbol tables are kept:  
+	symbols   maintains the name to object mapping for all symbols
+	non_terms maintains a separate mapping containing only the non terms
+
+      Several intermediate working structures are also declared in the action
+      code section.  These include: rhs_parts, rhs_pos, and lhs_nt which
+      build up parts of the current production while it is being parsed.
+	
+  Author(s)
+    Scott Hudson, GVU Center, Georgia Tech.
+    Frank Flannery, Department of Computer Science, Princeton Univ.
+    C. Scott Ananian, Department of Electrical Engineering, Princeton Univ.
+
+  Revisions
+    v0.9a   First released version                     [SEH] 8/29/95
+    v0.9b   Updated for beta language (throws clauses) [SEH] 11/25/95
+    v0.10a  Made many improvements/changes. now offers:
+              return value
+              left/right positions and propagations
+              cleaner label references
+              precedence and associativity for terminals
+              contextual precedence for productions
+              [FF] 7/3/96
+    v0.10b  Fixed %prec directive so it works like it's supposed to.
+              [CSA] 10/10/96
+    v0.10g   Added support for array types on symbols.
+              [CSA] 03/23/98
+    v0.10i  Broaden set of IDs allowed in multipart_id and label_id so
+            that only java reserved words (and not CUP reserved words like
+            'parser' and 'start') are prohibited.  Allow reordering of
+	    action code, parser code, init code, and scan with sections,
+	    and made closing semicolon optional for these sections.
+	    Added 'nonterminal' as a terminal symbol, finally fixing a
+	    spelling mistake that's been around since the beginning.
+	    For backwards compatibility, you can still misspell the
+	    word if you like.
+*/
+/*================================================================*/ 
+
+namespace NMapi.Gateways.IMAP;
+
+// openmapi.org - NMapi C# IMAP Gateway - parser.cs
+//
+// Copyright 2008 Topalis AG
+//
+// Author: Andreas Huegel <andreas.huegel@topalis.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Affero General Public License for more details.
+//
+// This file translates into parser.cs and sym.cs.
+// see http://www.iseclab.org/projects/cuplex/)
+
+using TUVienna.CS_CUP;
+using TUVienna.CS_CUP.Runtime;
+using System.Collections;
+using System;
+using System.IO;
+
+/*----------------------------------------------------------------*/ 
+
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+action code {:
+	private CommandAnalyserParserInterface ParseInt {
+		get { return my_parser.ParseInt; }
+	}
+:}
+
+parser code {:
+  
+  private CommandAnalyserParserInterface parseInt;
+  
+  /** Constructor which sets the default scanner as well as the ParserInterface. */
+  public parser(TUVienna.CS_CUP.Runtime.Scanner s, CommandAnalyserParserInterface parserInterface): base(s) 
+  {
+  	parseInt = parserInterface;
+  }
+  
+  public CommandAnalyserParserInterface ParseInt {
+  	get { return parseInt; }
+  }
+  
+  public void SetNewInput(StreamReader sr)
+  {
+  		((Yylex) getScanner()).newReader(sr);
+  }
+:};
+
+/*----------------------------------------------------------------*/ 
+
+
+/*----------------------------------------------------------------*/ 
+
+terminal
+ BACKSLASH, RPARENT, LPARENT, LBRACK, RBRACK, 
+ LESSTHAN, GREATERTHAN, DOT, SP, CRLF, COLON, COMMA, STAR;
+
+terminal string  
+  CAPABILITY, LOGOUT, NOOP, APPEND, CREATE, DELETE, EXAMINE, LIST, 
+  LSUB, RENAME, SELECT, STATUS, SUBSCRIBE, UNSUBSCRIBE, LOGIN, 
+  AUTHENTICATE, STARTTLS, CHECK, CLOSE, EXPUNGE, COPY, FETCH, STORE, 
+  UID, SEARCH, X_COMMAND,
+  ATOM, ASTRING, LIST_MAILBOX, DATE_TIME,
+  QUOTED, LITERAL, TAG, NZ_NUMBER, NUMBER, OTHER,
+  FETCH_ARG_PRIM, FETCH_ATT, FETCH_ATT_BODY, FETCH_ATT_BODY_PEEK, 
+  FETCH_MSG_TEXT_SINGLE, FETCH_MSG_TEXT_HEADERLIST_KEY, SECTION_TEXT_MIME,
+  FLAG_KEY, FLAG_SIGN, STATUS_ATT;
+
+non terminal
+  command, command_detail, command_any,	command_auth, command_nonauth, command_select,
+  cmd_append, cmd_create, cmd_copy, cmd_delete, cmd_examine, cmd_fetch, cmd_list, cmd_lsub, cmd_login, 
+  cmd_rename, cmd_search, cmd_select, cmd_status, cmd_store, cmd_subscribe, cmd_unsubscribe, 
+  opt_date_time, date_time, opt_flag_list,
+  flag_list, flag_list_elements, flag_list_element, mailbox1, mailbox2, list_mailbox,
+  fetch_att, fetch_att_list, fetch_att_section, header_element, header_elements,
+  section_msgtext, section_part, opt_sec_number,
+  sequence_set, sequence_range, status_list;
+
+non terminal string  
+  quoted, literal, string, astringstring, tag, number, sequence_number;
+
+/*----------------------------------------------------------------*/ 
+
+start with command;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+command ::=
+	TAG:t {: ParseInt.command.Tag=t; :}
+	command_detail
+	CRLF
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+command_detail ::=
+	command_any
+	|
+	command_auth
+	|
+	command_nonauth
+	|
+	command_select
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+//command-any     = "CAPABILITY" / "LOGOUT" / "NOOP" / x-command
+//                    ; Valid in all states
+command_any ::=
+	CAPABILITY:n {: ParseInt.command.Command_name=n.ToUpper(); :}
+	|
+	LOGOUT:n {: ParseInt.command.Command_name=n.ToUpper(); :} 
+	|
+	NOOP:n {: ParseInt.command.Command_name=n.ToUpper(); :}
+	|
+	X_COMMAND:n {: ParseInt.command.Command_name=n.ToUpper(); :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+//command-auth    = append / create / delete / examine / list / lsub /
+//                  rename / select / status / subscribe / unsubscribe
+//                    ; Valid only in Authenticated or Selected state
+
+command_auth ::= 
+	APPEND:n 
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_append
+	|
+	CREATE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_create
+	|
+	DELETE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_delete
+	|
+	EXAMINE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_examine
+	|
+	LIST:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_list
+	|
+	LSUB:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_lsub
+	|
+	RENAME:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_rename
+	|
+	SELECT:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_select
+	|
+	STATUS:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_status
+	|
+	SUBSCRIBE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_subscribe
+	|
+	UNSUBSCRIBE:n 
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateAuthenticated () && !ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonauthenticated state";
+	:}
+	cmd_unsubscribe
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+//command_nonauth = login / authenticate / "STARTTLS"
+command_nonauth ::= 
+	LOGIN:n {: ParseInt.command.Command_name=n.ToUpper(); :}
+	cmd_login
+	|
+	AUTHENTICATE
+	|
+	STARTTLS
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+//command-select  = "CHECK" / "CLOSE" / "EXPUNGE" / copy / fetch / store /
+//                  uid / search
+//                    ; Valid only when in Selected state
+command_select ::= 
+	CHECK:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	|
+	CLOSE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	|
+	EXPUNGE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	|
+	COPY:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_copy
+	|
+	FETCH:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_fetch
+	|
+	SEARCH:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_search
+	|
+	STORE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_store
+	|
+	UID {: ParseInt.command.UIDCommand=true; :}
+	COPY:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_copy
+	|
+	UID {: ParseInt.command.UIDCommand=true; :}
+	FETCH:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_fetch
+	|
+	UID {: ParseInt.command.UIDCommand=true; :}
+	SEARCH:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_search
+	|
+	UID {: ParseInt.command.UIDCommand=true; :}
+	STORE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_store
+	;
+
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_append ::=
+	mailbox1
+	SP
+	opt_flag_list
+	opt_date_time
+	literal:l
+	{: ParseInt.command.Append_literal=l; :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_copy ::=
+    sequence_set
+    SP
+	mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_create ::=
+	mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_delete ::=
+	mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_examine ::=
+	mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_fetch ::=
+    sequence_set
+    SP
+	FETCH_ARG_PRIM:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.Fetch_att1=arg; 
+	:}
+	|
+    sequence_set
+	SP
+	fetch_att
+	|
+    sequence_set
+    SP
+	LPARENT
+	fetch_att_list
+	RPARENT
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_list ::=
+	mailbox1
+	SP
+	list_mailbox
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_login ::=
+	astringstring:uid
+	{:
+		ParseInt.command.Userid=uid; 
+	:}
+	SP
+	astringstring:pw
+	{:
+		ParseInt.command.Password=pw; 
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_lsub ::=
+	mailbox1
+	SP
+	list_mailbox
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_search ::=
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_rename ::=
+    mailbox1
+    SP
+	mailbox2
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_select ::=
+	mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_status ::=
+	mailbox1
+	SP
+	LPARENT
+	status_list
+	RPARENT
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_store ::=
+	sequence_set
+	SP
+	FLAG_KEY:k
+	SP
+	flag_list
+		{: ParseInt.command.Flag_key=k; System.Console.WriteLine("flag_key: "+k); :}
+	|
+	sequence_set
+	SP
+	FLAG_KEY:k
+	SP
+	flag_list_elements
+		{: ParseInt.command.Flag_key=k; System.Console.WriteLine("flag_key: "+k); :}
+	|
+	sequence_set
+	SP
+	FLAG_SIGN:s
+	FLAG_KEY:k
+	SP
+	flag_list
+		{: ParseInt.command.Flag_sign=s; System.Console.WriteLine("flag_sign: "+s); 
+		   ParseInt.command.Flag_key=k; System.Console.WriteLine("flag_key: "+k); :}
+	|
+	sequence_set
+	SP
+	FLAG_SIGN:s
+	FLAG_KEY:k
+	SP
+	flag_list_elements
+		{: ParseInt.command.Flag_sign=s; System.Console.WriteLine("flag_sign: "+s); 
+		   ParseInt.command.Flag_key=k; System.Console.WriteLine("flag_key: "+k); :}
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_subscribe ::=
+    mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_unsubscribe ::=
+    mailbox1
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+
+fetch_att ::=
+	FETCH_ATT:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.NewFetch_item();
+		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
+	:}
+	|
+	FETCH_ATT_BODY:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.NewFetch_item();
+		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
+	:}
+	|
+	FETCH_ATT_BODY:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.NewFetch_item();
+		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
+	:}
+	LBRACK
+	fetch_att_section
+	RBRACK
+	opt_sec_number
+	|
+	FETCH_ATT_BODY_PEEK:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.NewFetch_item();
+		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
+	:}
+	|
+	FETCH_ATT_BODY_PEEK:arg
+	{:
+		System.Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		ParseInt.command.NewFetch_item();
+		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
+	:}
+	LBRACK
+	fetch_att_section
+	RBRACK
+	opt_sec_number
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+fetch_att_list ::=
+	fetch_att_list
+    SP
+	fetch_att
+	|
+	fetch_att
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+fetch_att_section ::=
+    section_msgtext
+	|
+	section_part
+	|
+	section_part
+	DOT
+	SECTION_TEXT_MIME
+	|
+	section_part
+	DOT
+	section_msgtext
+	|
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+section_msgtext ::=
+	FETCH_MSG_TEXT_SINGLE:arg
+	{:
+		System.Console.WriteLine("fetch-msg-text: "+arg);
+		ParseInt.command.Current_fetch_item.Section_text=arg;
+	:}
+	|
+	FETCH_MSG_TEXT_HEADERLIST_KEY:arg
+	{:
+		System.Console.WriteLine("fetch-msg-text: "+arg);
+		ParseInt.command.Current_fetch_item.Section_text=arg;
+	:}
+	SP
+	LPARENT
+	header_elements
+	RPARENT
+	;
+	
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+header_elements ::=
+	header_elements
+	SP
+	header_element
+	|
+	header_element
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+header_element ::=
+	astringstring:arg
+	{:
+		System.Console.WriteLine("header-list-element: "+arg);
+		ParseInt.command.Current_fetch_item.AddHeader(arg);
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+section_part ::=
+	section_part
+	DOT
+	NZ_NUMBER:arg
+	{: 
+		System.Console.WriteLine("section-part-element: "+arg); 
+		ParseInt.command.Current_fetch_item.AddSection_part(arg);
+	:}
+	|
+	NZ_NUMBER:arg
+	{: 
+		System.Console.WriteLine("section-part-element: "+arg); 
+		ParseInt.command.Current_fetch_item.AddSection_part(arg);
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+opt_sec_number ::=
+	|
+	LESSTHAN
+	number:argl
+	DOT
+	NZ_NUMBER:argr
+	GREATERTHAN
+	{: 
+		System.Console.WriteLine("section-number-left: "+argl);
+		ParseInt.command.Current_fetch_item.Section_number1 = argl;
+		System.Console.WriteLine("section-number-right: "+argr); 
+		ParseInt.command.Current_fetch_item.Section_number2 = argr;
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+string ::= 
+	quoted:q
+	{: RESULT = q; :}
+	|
+	literal:l
+	{: RESULT = l; :}
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+quoted ::= 
+	QUOTED:q
+	{:
+	  RESULT = q.Substring(1,q.Length-2);
+	:}
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+literal ::= 
+	LITERAL:l
+	{:
+	      int count = System.Convert.ToInt32(l.Substring(1,l.Length-2));
+	      System.Console.WriteLine("before literal reading, count: " + count);
+		  string ll = ParseInt.ReadLiteral(count);
+	      System.Console.WriteLine("after literal reading: \"" + ll + "\"");
+		  RESULT = ll;
+	:}
+	CRLF
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+astringstring ::=
+	ATOM:a
+	{: RESULT = a; :}
+	|
+	ASTRING:a1
+	{: RESULT = a1; :}
+	|
+	string:s
+	{: RESULT = s; :}
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+opt_flag_list ::=
+	|
+	flag_list
+	SP
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+flag_list ::=
+	LPARENT
+	RPARENT
+	|
+	LPARENT
+	flag_list_elements
+	RPARENT
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+flag_list_elements ::=
+	flag_list_elements 
+	SP
+	flag_list_element
+	| 
+	flag_list_element
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+flag_list_element ::=
+	ATOM:a
+	{: ParseInt.command.AddFlag(a); System.Console.WriteLine("Flag: "+a); :}
+	|
+	BACKSLASH
+	ATOM:a
+	{: ParseInt.command.AddFlag("\\"+a); System.Console.WriteLine("Flag: \\"+a); :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+opt_date_time ::=
+	|
+	date_time:dt
+	SP
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+date_time ::=
+	DATE_TIME:dt
+	{: 
+	  System.Console.WriteLine("Datetimestring:" + dt);
+	  /*ParseInt.command.DateTimex=DateTime.Parse(dt);*/
+	  /*TBD*/
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+mailbox1 ::=
+	astringstring:m
+	{: ParseInt.command.Mailbox1=m;  :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+mailbox2 ::=
+	astringstring:m
+	{: ParseInt.command.Mailbox2=m; :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+list_mailbox ::=
+	astringstring:m
+	{: ParseInt.command.List_mailbox=m; :}
+	|
+	LIST_MAILBOX:m
+	{: ParseInt.command.List_mailbox=m; :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+number ::=
+	NZ_NUMBER:n
+	{: RESULT=n; :}
+	|
+	NUMBER:m
+	{: RESULT=m; :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+sequence_set ::=
+	sequence_set
+	COMMA
+	sequence_range
+	|
+	sequence_range
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+sequence_range ::=
+	sequence_number:l
+	COLON
+	sequence_number:r
+	{: ParseInt.command.AddSequenceRange(l,r); System.Console.WriteLine("sequence_range: "+l+":"+r); :}
+	|
+	sequence_number:n
+	{: ParseInt.command.AddSequenceNumber(n); System.Console.WriteLine("sequence_number: "+n); :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+sequence_number ::=
+	STAR:s 
+	{: RESULT="*"; :}
+	|
+	number:n
+	{: RESULT=n; :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+status_list ::=
+	status_list
+	SP
+	STATUS_ATT: s
+	{: ParseInt.command.AddStatus(s); System.Console.WriteLine("status_att "+s); :}
+	|
+	STATUS_ATT:s
+	{: ParseInt.command.AddStatus(s); System.Console.WriteLine("status_att "+s); :}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+
+/*----------------------------------------------------------------*/ 
+
+
+
+
+
+
+
+
+

@@ -227,7 +227,8 @@ namespace NMapi.Format.Mime
 		public String GetHeader (String name, String delimiter)
 		{
 			IEnumerable<Object> myHeaders = from h in headers
-											where h.Name.ToLower () == name.ToLower ()
+											where h.Name.ToLower () == name.ToLower () &&
+													h.Value != null && h.Value.Trim () != string.Empty
 											select (Object)h.Value;
 			return Field.AppendItemsFormat (myHeaders, delimiter, name.Length);
 		}

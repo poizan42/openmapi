@@ -40,7 +40,7 @@ namespace NMapi.Format.Mime
 	public class MimeMultipart : IEnumerable
 	{
 
-		MimeMessage parent;
+		MimePart parent;
 		List<MimeBodyPart> parts = new List<MimeBodyPart> ();
 		
 		String preamble = "";
@@ -48,28 +48,28 @@ namespace NMapi.Format.Mime
 		/// <summary>
 		/// Constructs a MimeMultipart object and its bodyparts from the given DataSource.
 		/// </summary>
-		public MimeMultipart (MimeMessage mm)
+		public MimeMultipart (MimePart mp)
 		{
-			Stream inS = mm.ContentStream;
-			Connect(mm);
+			Stream inS = mp.ContentStream;
+			Connect(mp);
 			
 			try {
 				Parse (inS);
 			} catch (MessagingException) { }
 		}
 		
-		public void Connect(MimeMessage mm)
+		public void Connect(MimePart mp)
 		{
 			if (parent == null)
 			{
-				parent = mm;
-				mm.Content = this;
+				parent = mp;
+				mp.Content = this;
 
 				try {
-					if (mm.Boundary == null)
-						mm.Boundary = "";     // implicitly set Boundary to newly generated value
+					if (mp.Boundary == null)
+						mp.Boundary = "";     // implicitly set Boundary to newly generated value
 				} catch (Exception) {
-					mm.Boundary = ""; // implicitly set Boundary to newly generated value
+					mp.Boundary = ""; // implicitly set Boundary to newly generated value
 				}
 			}
 		}
@@ -77,9 +77,9 @@ namespace NMapi.Format.Mime
 		public void Disconnect()
 		{
 			if (parent != null) {
-				MimeMessage mm = parent;
+				MimePart mp = parent;
 				parent = null;
-				mm.Content = null;
+				mp.Content = null;
 			}
 		}
 		

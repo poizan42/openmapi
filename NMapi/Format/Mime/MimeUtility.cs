@@ -570,5 +570,82 @@ namespace NMapi.Format.Mime
 
 
 
+		private static Dictionary<string, string> extToMime = new Dictionary<string, string>()
+        {
+
+			// text
+			{"txt", "text/plain"},
+			{"htm", "text/html"},
+			{"html", "text/html"},
+
+			
+			// image
+			{"gif", "image/gif"}, 
+			{"jpg", "image/jpeg"},
+			{"jpeg", "image/jpeg"},
+			{"png", "image/png"},
+			{"bmp", "image/x-ms-bmp"},
+			{"tif", "image/tiff"},
+			{"tiff", "image/tiff"},
+			{"xbm", "image/xbm"},
+			
+			
+			// audio
+			
+			{"ua", "audio/basic"},
+			{"wav", "audio/x-wav"},
+			{"mid", "audio/x-midi"},
+				
+				
+			// video
+			{"avi", "video/x-msvideo"},
+			{"mpg", "video/mpeg"},
+			{"mpe", "video/mpeg"},
+			{"mpeg", "video/mpeg"},
+			{"qt", "video/quicktime"},
+			{"mov", "video/quicktime"},
+			
+			
+			// application
+			{"bin", "application/octet-stream"},
+			{"exe", "application/octet-stream"},
+			{"ai", "application/postscript"},
+			{"eps", "application/postscript"},
+			{"ps", "application/postscript"},
+			{"pdf", "application/pdf"},
+			{"rtf", "application/rtf"},
+			{"zip", "application/zip"},
+			{"edi", "application/edifact"},
+			{"doc", "application/msword"},
+			{"dot", "application/msword"},
+			{"mdb", "application/x-msaccess"},
+			{"pot", "application/vnd.ms-powerpoint"},
+			{"ppt", "application/vnd.ms-powerpoint"},
+			{"pps", "application/vnd.ms-powerpoint"},
+			{"mpp", "application/vnd.ms-project"},
+			{"xla", "application/vnd.ms-excel"},
+			{"xls", "application/vnd.ms-excel"},
+			{"xlt", "application/vnd.ms-excel"},
+			{"xlw", "application/vnd.ms-excel"}
+		};
+
+		public static string ExtToMime (string extension) {
+			try {
+				return extToMime[extension];
+			} catch (Exception e) {
+				return "application/octet-stream";
+			}
+		}
+
+		public static string MimeToExt (string extension) {
+			try {
+				foreach (KeyValuePair<string,string> x in extToMime)
+					if (x.Value == extension.ToLower ()) return x.Key;
+			} catch (Exception e) {	}
+			return "";
+		}
+		
+
+
 	}
 }

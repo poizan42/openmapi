@@ -189,7 +189,7 @@ namespace NMapi.Format.Mime
 			//String s = session.getProperty("mail.mime.address.strict");
 			//boolean strict = (s == null) || Boolean.valueOf(s).booleanValue();
 			//return (value != null) ? InternetAddress.parseHeader(value, strict) : null;
-			return (value != null) ? InternetAddress.Parse (value) : null;
+			return (value != null) ? InternetAddress.Parse (value) : new InternetAddress[0];
 		}
 
 		// convenience method
@@ -212,67 +212,5 @@ namespace NMapi.Format.Mime
 				AddHeader (name, a.Address);
 		}
 
-		/// <summary>
-		/// get or set the boundary value of the Content-Type Mime header
-		/// !!! Set will not use the input value but generate one !!!
-		/// </summary>
-		public String Boundary {
-			get {
-				InternetHeader h = GetInternetHeader (MimePart.CONTENT_TYPE_NAME, "");
-				String b = h.GetParam ("boundary");
-				if (b == null)
-					throw new MessagingException ("Missing boundary parameter");
-				return b;
-			}
-			set {
-				InternetHeader h = GetInternetHeader (MimePart.CONTENT_TYPE_NAME, "");
-				h.SetParam ("boundary", MimeUtility.GetUniqueBoundaryValue ());
-				headers.SetHeader (h.Name, h.Value);
-			}
-		}
-
-		/// <summary>
-		/// Return the content as a Java object.
-		/// </summary>
-		/// <returns></returns>
-		public override Object Content {
-			get {
-				Object o = base.Content;
-				if (o != null)
-					return o;
-				
-				String ct = ContentType;
-				if (ct.StartsWith ("multipart/") && content != null) {
-					contentObject = new MimeMultipart ((MimeMessage)this);
-					content = null;
-					return contentObject;
-				}
-				return null;
-			}
-			set {
-				String ct = ContentType;
-				if (value != null && ct != null && ct.StartsWith ("multipart/")) {
-					if (value.GetType () == typeof (MimeMultipart)) {
-						contentObject = value;
-						content = null;
-						contentString = null;
-						return;
-					}
-				}
-				base.Content = value;
-			}
-		}
-
-		public override void WriteTo (Stream os)
-		{
-			String ct = ContentType;
-			if (ct != null && ct.StartsWith ("multipart")) {
-				headers.WriteTo (os);
-
-				((MimeMultipart)Content).WriteTo (os);
-			} else
-				base.WriteTo (os);
-
-		}
 	}
 }
