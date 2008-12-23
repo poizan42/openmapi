@@ -77,7 +77,7 @@ namespace NMapi.Gateways.IMAP
 				Thread t = new Thread (connectionDelegate);
 				t.Start ();
 				
-				sendText ("* OK\r\n");
+				sendText ("* OK IMAP4rev1 Server\r\n");
 			}			
 			//c.Close ();
 			// Listener beenden

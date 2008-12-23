@@ -62,7 +62,8 @@ namespace NMapi.Gateways.IMAP {
 			if (folder != null) {
 				folder = folder.TrimStart('/');
 				foreach (Pair p in mappings) {
-					if (folder.StartsWith ((String) p.Second))
+					if (folder == ((String) p.Second) ||
+					    folder == ((String) p.Second) + "/")
 						return true;
 				}
 				return false;

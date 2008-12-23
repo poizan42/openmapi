@@ -100,11 +100,12 @@ namespace NMapi.Gateways.IMAP {
 
 		private void TableModifiedHandler (object sender, TableEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			Trace.WriteLine ("An Event has arrived: " + ea.EventType + ":" + ea.Notification.TableEvent);
 			Trace.WriteLine (ea.Notification.TableEvent.GetTypeCode ());
 			
 			switch (ea.Notification.TableEvent) {
 			case TableNotificationType.Changed:
+			case TableNotificationType.RowModified:
 				TableChanged (ea.Notification);
 				break;
 			case TableNotificationType.Error:

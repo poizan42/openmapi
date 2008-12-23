@@ -168,29 +168,35 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 					fetchItems.AddResponseItem ("INTERNALDATE");
 							// TODO:   real format is different from  format in Date Header!!!
 					//fetchItems.AddResponseItem (MapiReturnPropFileTime(rowProperties, Property.CreationTime));
-					fetchItems.AddResponseItem ("Wed, 12 Nov 2008 15:07:15 +0100");
+					fetchItems.AddResponseItem ("17-Jul-1996 02:44:25 -0700");
 				}
 				if (cfi.Fetch_att_key == "BODYSTRUCTURE") {
 				}
 				if ("BODY.PEEK BODY FULL".Contains(cfi.Fetch_att_key)) {
 					StringBuilder bodyPeekResult = new StringBuilder ();
-					ResponseItemList bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
+					ResponseItemList bodyItems = null;
+					if (cfi.Fetch_att_key == "BODY.PEEK")
+						bodyItems= new ResponseItemList().SetSigns ("BODY[", "]");
+					else
+						bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
 					MimeMessage mm = null;
 					HeaderGenerator headerGenerator = null;
 					// preparation for HEADER/TEXT/MIME
-					if (cfi.Section_text == null || "HEADER,TEXT,MIME".Contains (cfi.Section_text)) {
+					if (cfi.Section_text == null || "HEADER TEXT MIME".Contains (cfi.Section_text.ToUpper ())) {
 						props.Prop = 0x3FDE0003; //    #define PR_INTERNET_CPID 
 						Encoding encoding = (props.Exists && props.Long != "")?Encoding.GetEncoding(Convert.ToInt32 (props.Long)) : Encoding.UTF8;
+
+						// set headers
+						headerGenerator = new HeaderGenerator (props, state, this);
+						headerGenerator.DoAll ();
+						// set content headers
+						InternetHeader ih = new InternetHeader(MimePart.CONTENT_TYPE_NAME, "text/plain");
+						ih.SetParam ("charset", encoding.WebName);
+						headerGenerator.InternetHeaders.SetHeader (ih);
+						headerGenerator.InternetHeaders.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, "quoted-printable");
+
 						props.Prop = Property.Body;
 						if (props.Exists) {
-							// set headers
-							headerGenerator = new HeaderGenerator (props, state, this);
-							headerGenerator.DoAll ();
-							// set content headers
-							InternetHeader ih = new InternetHeader(MimePart.CONTENT_TYPE_NAME, "text/plain");
-							ih.SetParam ("charset", encoding.WebName);
-							headerGenerator.InternetHeaders.SetHeader (ih);
-							headerGenerator.InternetHeaders.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, "quoted-printable");
 							// fill message
 							if (cfi.Section_text == null || cfi.Section_text == "TEXT") {
 								Trace.WriteLine ("memory test1");
@@ -207,7 +213,8 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 						}
 					}
 					if (cfi.Section_text == "HEADER") {
-						if (headerGenerator.InternetHeaders != null) {
+						if (headerGenerator != null && headerGenerator.InternetHeaders != null) {
+							bodyItems.AddResponseItem ("HEADER");
 							MemoryStream headers_ms = new MemoryStream ();
 							headerGenerator.InternetHeaders.WriteTo (headers_ms);
 							bodyPeekResult.Append (Encoding.ASCII.GetString (headers_ms.ToArray ()));
@@ -334,31 +341,43 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 		public ResponseItemList Flags (PropertyHelper propertyHelper)
 		{
 			ResponseItemList ril = new ResponseItemList ();
-
+			ulong flags = 0;
+			ulong status = 0;
+			
 			propertyHelper.Prop = Property.MessageFlags;
 			if (propertyHelper.Exists) {
-				long flags = propertyHelper.LongNum;
-				if ((flags & 0x00000001) != 0)   //#define MSGFLAG_READ       0x00000001
-					ril.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom);
-				if ((flags & 0x00000008) != 0) //MESSAGE_FLAG_UNSENT
-					ril.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom);
+				flags = (ulong) propertyHelper.LongNum;
 			}
 
 
 			// !!!!!!!!!! use getMessageStatus for msgstatus. Reading the Flag as a property doesn't seem to return anything but 0
 			propertyHelper.Prop = Property.MsgStatus;
 			if (propertyHelper.Exists) {
-				long status = propertyHelper.LongNum;
-				if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
-					ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
-				if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
-					ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
-				if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
-					ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
+				status = (ulong) propertyHelper.LongNum;
 			}
+							
+			return Flags (flags, status);
+		}
+
+		public static ResponseItemList Flags (ulong flags, ulong status)
+		{
+			ResponseItemList ril = new ResponseItemList ();
+
+			if ((flags & 0x00000001) != 0)   //#define MSGFLAG_READ       0x00000001
+				ril.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom);
+			if ((flags & 0x00000008) != 0) //MESSAGE_FLAG_UNSENT
+				ril.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom);
+
+			if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
+				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
+			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
+				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
+			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
+				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
 							
 			return ril;
 		}
+		
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, SequenceNumberListItem snli, InternetHeaders ih) 
 		{
 			// transfer headers into MimeMessage
@@ -495,7 +514,7 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 				}
 				if (cfi.Fetch_att_key == "BODY.PEEK") {
-					if (cfi.Section_text == null || "HEADER,TEXT,MIME".Contains (cfi.Section_text)) {
+					if (cfi.Section_text == null || "HEADER TEXT MIME".Contains (cfi.Section_text)) {
 						propList.AddRange (propsAllHeaders);
 					}
 					if (cfi.Section_text == null) {

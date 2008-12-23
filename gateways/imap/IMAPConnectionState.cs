@@ -206,22 +206,22 @@ namespace NMapi.Gateways.IMAP {
 			List<Response> l = new List<Response> ();
 			
 			lock (expungeRequests) {
+/*					
 				foreach (SequenceNumberListItem snli in expungeRequests) {
 					// instead of doing anything provoke a handling of existsRequests
 					AddExistsRequest (new SequenceNumberListItem ());
 					break;
-/*					
-					long sqn = (long) serverConnection.SequenceNumberList.IndexOfSNLI(snli);
+					ulong sqn = (long) serverConnection.SequenceNumberList.IndexOfSNLI(snli);
 					if (sqn > 0) {
 						r = new Response (ResponseState.NONE, "EXPUNGE");
 						r.Val = new ResponseItemText (sqn.ToString ());
 						l.Add (r);
 						serverConnection.SequenceNumberList.Remove (snli);
 					}
-*/				}
-			
+				}
+*/			
 				expungeRequests = new SequenceNumberList ();
-
+				
 				// we keep the lock on the expungeRequests while processing the existsRequests
 				lock (existsRequests) {
 					if (existsRequests.Count != 0) {
@@ -229,21 +229,32 @@ namespace NMapi.Gateways.IMAP {
 						// save old SequenceNumberList
 						SequenceNumberList snlOld = serverConnection.SequenceNumberList;
 
+notificationHandler.Dispose();
+						
 						// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
 						// build sequence number list
 						serverConnection.BuildSequenceNumberList ();
 
+						// save size of old list;
+						int snlOldLength = snlOld.Count;
+
 						// fix UIDS in Messagesif missing or broken
+						Trace.WriteLine ("fixUIDs");
 						int recent = serverConnection.FixUIDsInSequenceNumberList ();
 	
 						// restore Notificationsubscription as currentFolderTable has changed
+						Trace.WriteLine ("new NotificationHandler");
 						new NotificationHandler (this);
 
+						// do Expunge handling
 						// as we only get a TableChanged-Notification if more than one Item is being deleted
 						// we need to do this:
 						// identify deleted items and create ExpungeResponses
+						Trace.WriteLine ("do Expunge handling");
+						SequenceNumberListItem snliNew = null;
 						foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
-							if (serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID) == null) {
+							snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+							if (snliNew == null) {
 								long sqn = snlOld.IndexOfSNLI (snliOld);
 								if (sqn > 0) {
 									r = new Response (ResponseState.NONE, "EXPUNGE");
@@ -252,13 +263,38 @@ namespace NMapi.Gateways.IMAP {
 									snlOld.Remove (snliOld); // remove item, that expunge sequence ids stay consistent
 								}
 							}
+							
+						}
+						
+						// do Flag changes
+						Trace.WriteLine ("do Flag changes");
+						foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
+							snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+							if (snliNew != null) {
+								Trace.WriteLine ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
+								Trace.WriteLine ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
+								if (snliNew.MessageFlags != snliOld.MessageFlags ||
+									snliNew.MsgStatus != snliOld.MsgStatus) {
+									r = new Response (ResponseState.NONE, "FETCH");
+									r.Val = new ResponseItemText (serverConnection.SequenceNumberList.IndexOfSNLI (snliNew).ToString ());
+									r.AddResponseItem (new ResponseItemList ()
+									    .AddResponseItem ("UID")
+									    .AddResponseItem (snliNew.UID.ToString ())
+										.AddResponseItem ("FLAGS")
+										.AddResponseItem (CmdFetch.Flags (snliNew.MessageFlags, snliNew.MsgStatus)));
+									l.Add (r);
+								}
+							}
+							
 						}
 
-						// EXISTS Responses
-						r = new Response (ResponseState.NONE, "EXISTS");
-						r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());
-						l.Add (r);
-	
+						if (snlOldLength < serverConnection.SequenceNumberList.Count) {
+							// EXISTS Responses
+							r = new Response (ResponseState.NONE, "EXISTS");
+							r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());
+							l.Add (r);
+						}
+						
 						existsRequests = new SequenceNumberList ();
 					}				
 				}

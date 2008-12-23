@@ -76,6 +76,8 @@ namespace NMapi.Gateways.IMAP {
 					// special handling read-Flag
 					if ((flags & 0x00000001 /*MSGFLAG_READ*/) == 0)
 						msg.SetReadFlag (NMAPI.CLEAR_READ_FLAG);
+					else
+						msg.SetReadFlag (0);
 					// rest of flags in regular Propertyhandling
 					SPropValue flagsProp = new SPropValue (Property.MessageFlags);
 					flagsProp.Value.l = (int) flags;

@@ -1,4 +1,15 @@
-2008-12-09  Andreas Huegel <andreas.huegel@topalis.com>
+2008-12-23  Andreas Huegel <andreas.huegel@topalis.com>
+
+	IMAP Gateway, Outlook enabled
+
+	* gateways/imap/Main.cs
+	* gateways/imap/NotificationHandler.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* gateways/imap/commands/CmdStore.cs
+	* gateways/imap/FolderMappingAgent.cs
+	* gateways/imap/IMAPConnectionState.cs
+
+2008-12-22  Andreas Huegel <andreas.huegel@topalis.com>
 	
 	IMAP Gateway, first checkin
 
