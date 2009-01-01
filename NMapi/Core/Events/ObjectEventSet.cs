@@ -1,9 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - ObjectEventSet.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -26,7 +26,7 @@ namespace NMapi.Events {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -479,45 +479,45 @@ namespace NMapi.Events {
 					switch (noti.EventType) {
 						case NotificationEventType.CriticalError:
 							eventSet.OnCriticalError (
-								new ErrorEventArgs (noti.Info.Err));
+								new ErrorEventArgs ((ErrorNotification) noti));
 						break;
 						case NotificationEventType.NewMail:
 							eventSet.OnNewMail (
-								new NewMailEventArgs (noti.Info.NewMail));
+								new NewMailEventArgs ((NewMailNotification) noti));
 						break;
 						case NotificationEventType.ObjectCreated:
 							eventSet.OnObjectCreated (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.ObjectCreated));
 						break;
 						case NotificationEventType.ObjectDeleted:
 							eventSet.OnObjectDeleted (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.ObjectDeleted));
 						break;
 						case NotificationEventType.ObjectModified:
 							eventSet.OnObjectModified (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.ObjectModified));
 						break;
 						case NotificationEventType.ObjectMoved:
 							eventSet.OnObjectMoved (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.ObjectMoved));
 						break;
 						case NotificationEventType.ObjectCopied:
 							eventSet.OnObjectCopied (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.ObjectCopied));
 						break;
 						case NotificationEventType.SearchComplete:
 							eventSet.OnSearchComplete (
-								new ObjectEventArgs (noti.Info.Obj,
+								new ObjectEventArgs ((ObjectNotification) noti,
 								NotificationEventType.SearchComplete));
 						break;
 						case NotificationEventType.TableModified:
 							eventSet.OnTableModified (
-								new TableEventArgs (noti.Info.Tab));
+								new TableEventArgs ((TableNotification) noti));
 						break;
 //						case NotificationEventType.StatusObjectModified:
 //							eventSet.OnStatusObjectModified (
@@ -529,7 +529,7 @@ namespace NMapi.Events {
 //						break;
 						case NotificationEventType.Extended:
 							eventSet.OnExtended (
-								new ExtendedEventArgs (noti.Info.Ext));
+								new ExtendedEventArgs ((ExtendedNotification) noti));
 						break;
 					}
 				}

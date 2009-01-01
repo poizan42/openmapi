@@ -40,6 +40,7 @@ namespace NMapi {
 			get { return uri.AbsolutePath; }
 		}
 
+
 		/// <summary>
 		///   Gets the absolute Mapi URL.
 		/// </summary>
@@ -55,7 +56,8 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  Host in a format that may be used with DNS resolution.
+		///  Gets an unescaped host name that is safe to use 
+		///  for DNS resolution.
 		/// </summary>
 
 		public string DnsSafeHost {
@@ -63,70 +65,73 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  
+		///  Gets the escaped MapiUrl fragment.
 		/// </summary>
 		public string Fragment {
 			get { return uri.Fragment; }
 		}
 
 		/// <summary>
-		///  The host.
+		///  The host component.
 		/// </summary>
 		public string Host {
 			get { return uri.Host; }
 		}
 
 		/// <summary>
-		///  The type of the host name.
+		///  Gets the type of the host name specified in the URI.
 		/// </summary>
 		public UriHostNameType HostNameType {
 			get { return uri.HostNameType; }
 		}
 
 		/// <summary>
-		///  True if uri is an absolute path.
+		///  Gets whether the Uri instance is absolute.s
 		/// </summary>
 		public bool IsAbsoluteUri {
 			get { return uri.IsAbsoluteUri; }
 		}
 
 		/// <summary>
-		///  True if port is 9000.
+		///  Gets whether the port value of the URI is the default 
+		///  for this scheme.
 		/// </summary>
 		public bool IsDefaultPort {
-			get { return (Port == 9000); }
+			get { return uri.IsDefaultPort; }
 		}
 
 		/// <summary>
-		///  True if the host part of the url is local.
+		///  Gets whether the specified Uri references the local host.
 		/// </summary>
 		public bool IsLoopback {
 			get { return uri.IsLoopback; }
 		}
 
 		/// <summary>
-		///  The original string that was used to create the MapiUrl.
+		///  Gets the original URI string that was passed to the 
+		///  Uri constructor.
 		/// </summary>
 		public string OriginalString {
 			get { return uri.OriginalString; }
 		}
 
 		/// <summary>
-		///  Returns a string in the form of "AbsolutePath?QueryString".
+		///  Gets the AbsolutePath and Query properties separated by a 
+		///  question mark (?).
 		/// </summary>
 		public string PathAndQuery {
 			get { return uri.PathAndQuery; }
 		}
 
 		/// <summary>
-		///  The port.
+		///  Gets the port number of this URI.
 		/// </summary>
 		public int Port {
 			get { return uri.Port; }
 		}
 
 		/// <summary>
-		///  The QueryString-Part.
+		///  Gets any query information included in the specified URI. 
 		/// </summary>
 		public string Query {
 			get { return uri.Query; }
@@ -140,21 +145,24 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  an array of string representing the segments of the url.
+		///  Gets an array containing the path segments that 
+		//   make up the specified URI.
 		/// </summary>
 		public string[] Segments {
 			get { return uri.Segments; }
 		}
 
 		/// <summary>
-		///  True, if the url was escaped (at the time of creation).
+		///  Indicates that the URI string was completely escaped 
+		///  before the Uri instance was created.
 		/// </summary>
 		public bool UserEscaped {
 			get { return uri.UserEscaped; }
 		}
 
 		/// <summary>
-		///  Returns the part of the url associated with the user.
+		///  Gets the user name, password, or other user-specific 
+		///  information associated with the specified URI.
 		/// </summary>
 		public string UserInfo {
 			get { return uri.UserInfo; }
@@ -184,6 +192,8 @@ namespace NMapi {
 			return url;
 		}
 
+		// TODO
+		// Compare Compares the specified parts of two URIs using the specified comparison rules.
 
 		public override bool Equals (object o)
 		{
@@ -199,14 +209,12 @@ namespace NMapi {
 			return uri.GetHashCode ();
 		}
 
-		// Fixme - add:
-		//   Compare
-		//   GetComponents
-		//   GetLeftPart
+	// TODO!
+//		GetComponents	Gets the specified components of the current instance using the specified escaping for special characters.
+//		GetLeftPart	Gets the specified portion of a Uri instance.
 
 		/// <summary>
-		///  True, if the current MapiUrl is the base of the one 
-		///  passed in the parameter.
+		///  Determines whether the current Uri instance is a base of the specified Uri instance.
 		/// </summary>
 		public bool IsBaseOf (MapiUrl url)
 		{
@@ -214,13 +222,14 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  
+		///  Determines the difference between two MapiUrl instances.
 		/// </summary>			
 		public MapiUrl MakeRelativeUrl (MapiUrl url)
 		{
 			Uri relUri = uri.MakeRelativeUri (url.uri);
 			return new MapiUrl (relUri);
 		}
+
 
 		public override string ToString	()
 		{

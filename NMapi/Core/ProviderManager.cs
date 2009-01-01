@@ -120,6 +120,3 @@ namespace NMapi {
 	}
 
 }
-
-
-

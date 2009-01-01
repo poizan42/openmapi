@@ -40,7 +40,7 @@ namespace NMapi.Meta {
 			if (obj != null) {
 				var tags = new SPropTagArray (Property.Subject);
 				SPropValue[] values = prop.GetProps (tags, 0); // read-only
-				string subject = values [0].Value.Unicode; // TODO: check length!
+				string subject = ((UnicodeProperty) values [0]).Value; // TODO: check length!
 				return "IPM.Task: (Subject: '" + subject + "')";
 			}
 			return null;
@@ -59,7 +59,7 @@ namespace NMapi.Meta {
 				return MatchLevel.NoMatch;
 
 			if (someProps.ContainsKey (Property.MessageClass) && 
-				someProps [Property.MessageClass].Value.Unicode == "IPM.Task")
+				((UnicodeProperty) someProps [Property.MessageClass]).Value == "IPM.Task")
 					return MatchLevel.Match;
 
 			return MatchLevel.NoMatch;

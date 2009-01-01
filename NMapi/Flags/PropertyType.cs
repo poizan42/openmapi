@@ -24,7 +24,6 @@
 
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;

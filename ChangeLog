@@ -1,5 +1,181 @@
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
+	* NMapi/Core/Admin
+	* NMapi/Core/Admin/AdminGroup.cs:
+	* NMapi/Core/Admin/AdminUser.cs:
+	* NMapi/Core/Admin/IMapiAdmin.cs:
+	* NMapi/Core/Admin/AdminOps.cs: new non-standard interface for administration;
+									this is used by the proxy GUI.
+
+	* Core/Events/GetEventResult.cs: removed
+	* NMapi/Core/Events/IAdvisor.cs:
+	* NMapi/Core/Events/IEventSubscription.cs:
+	* NMapi/Core/Events/IMapiAdviseSink.cs:
+	* NMapi/Core/Events/ObjectEventSet.cs:
+	* NMapi/Core/Events/ObjectEventProxy.cs: copyright & update
+	
+	* NMapi/Core/IBase.cs: removed Dispatch member
+	* NMapi/Core/IAttach.cs:
+	* NMapi/Core/IMapiFactory.cs:
+	* NMapi/Core/IMapiOverIndigo.cs: copright & minor changes
+
+	* NMapi/Core/IMapiSession.cs: add summaries
+	* NMapi/Core/IStream.cs: update
+	* NMapi/Core/IPropertyStore.cs: update
+	* NMapi/Core/MapiException.cs: make exceptions serializable
+	* NMapi/Core/MapiIndigoFault.cs: update
+	* NMapi/Core/MapiModableCallAttribute.cs: make member readonly
+
+	* NMapi/Core/MapiUrl.cs: comments
+
+	* NMapi/Core/Properties/IMapiProp.cs: remove helpers
+	* NMapi/Core/Properties/IMapiProp.cs: remove helpers
+
+	* NMapi/Core/Properties/Special/IMapiContainer.cs:
+
+	* NMapi/Core/Properties/Special/IMapiFolder.cs: update
+	* NMapi/Core/Properties/Special/IMessage.cs: update
+	* NMapi/Core/Properties/Special/IMsgStore.cs: update; remove inherited interface members
+	* NMapi/Core/Properties/Special/MessageCopyHelper.cs: update
+
+	* Core/ProviderManager.cs: remove whitespace ;-)
+	* Core/RemoteCall.cs: add OpenSession call; remove "Hr"-Helper-Calls
+	* Core/Table/IMapiTable.cs: remove advise method
+	* Core/Table/IMapiTableReader.cs: copyright
+
+	* DirectoryModel: NEW.
+	* DirectoryModel/PathHelper.cs: moved from the mapishell.
+
+	* NMapi/Data/OneOff.cs: merged changes from jumapi	
+	* NMapi/Data/Address.cs: new, weird txc thing.
+
+	* NMapi/Data/xslt:
+	* NMapi/Data/xslt/cs:
+	* NMapi/Data/xslt/cs/xdr_calls.xsl:
+	* NMapi/Data/xslt/cs/xdr_data.xsl:
+	* NMapi/Data/xslt/cs/xdrgen.xsl:
+	* NMapi/Data/xslt/common.xsl: new XSLT-based C# generator
+
+	* NMapi/Data/Properties/SPropTagArray.cs: minor changes
+	* NMapi/Data/Properties/SPropProblemArray.cs: minor changes
+
+	* NMapi/Data/Table/SRestriction.cs:
+	* NMapi/Data/Properties/SPropValue.cs:
+	* NMapi/Data/Properties/MapiNamedId.cs:
+	* NMapi/Data/Events/Notification.cs: now used as a base class
+
+	* NMapi/Data/LPStr.cs: use windows-1252 encoding
+	* NMapi/Data/Defs.xml: NEW. xml definitions of the data structures
+
+	* NMapi/Data/AdrList.partial.cs: moved from AdrList.cs
+	* NMapi/Data/NMapiGuid.partial.cs: moved from NMapiGuid.cs
+	* NMapi/Data/EntryList.partial.cs: moved from EntryList.cs
+	* NMapi/Data/FileTime.partial.cs: moved from FileTime.cs
+
+
+	* NMapi/Data/Table/LPSSortOrderSet.cs: add trace calls
+	* NMapi/Data/Table/SRow.cs: trace calls, minor changes
+	* NMapi/Data/Table/LPSRowSet.cs: trace calls
+	* NMapi/Data/Properties/LPSPropProblemArray.cs: minor changes
+	* NMapi/Data/Properties/LPSPropTagArray.cs: add trace calls
+	* NMapi/Data/RowEntry.cs: add trace calls
+	* NMapi/Data/LPMapiErrorA.cs: add trace calls
+	* NMapi/Data/SBinary.cs: add trace calls
+	* NMapi/Data/LPMapiErrorW.cs: add trace calls
+	* NMapi/Data/LPWStr.cs: trace calls
+
+	* NMapi/Data/MapiError.cs: namespace
+
+	* NMapi/Data/LongLong.cs:
+	* NMapi/Data/Table/SAndRestriction.cs:
+	* NMapi/Data/Table/SCommentRestriction.cs:
+	* NMapi/Data/Table/SComparePropsRestriction.cs:
+	* NMapi/Data/Table/SContentRestriction.cs:
+	* NMapi/Data/Table/SSizeRestriction.cs:
+	* NMapi/Data/Table/LPSRestriction.cs:
+	* NMapi/Data/Table/SOrRestriction.cs:
+	* NMapi/Data/Table/URestriction.cs:
+	* NMapi/Data/Table/SPropertyRestriction.cs:
+	* NMapi/Data/Table/SSubRestriction.cs:
+	* NMapi/Data/Table/SBitMaskRestriction.cs:
+	* NMapi/Data/Table/SExistRestriction.cs:
+	* NMapi/Data/Table/SNotRestriction.cs:
+	* NMapi/Data/AdrEntry.cs:
+	* NMapi/Data/Properties/LPSPropValue.cs:
+	* NMapi/Data/Properties/LPMapiNameId.cs:
+	* NMapi/Data/Properties/UPropValue.cs:
+	* NMapi/Data/Properties/UKind.cs:
+	* NMapi/Data/LPEntryList.cs:
+	* NMapi/Data/AdrList.cs:
+	* NMapi/Data/LargeInteger.cs:
+	* NMapi/Data/NMapiGuid.cs:
+	* NMapi/Data/LPAdrEntry.cs:
+	* NMapi/Data/LPGuid.cs:
+	* NMapi/Data/LPRowEntry.cs:
+	* NMapi/Data/MapiDataStructur.cs:
+	* NMapi/Data/EntryList.cs:
+	* NMapi/Data/FileTime.cs:
+	* NMapi/Data/LPAdrList.cs:
+	* NMapi/Data/Events/UNotification.cs:
+	* NMapi/Data/Events/ObjectNotification.cs:
+	* NMapi/Data/Events/TableNotification.cs:
+	* NMapi/Data/Events/ErrorNotification.cs:
+	* NMapi/Data/Events/StatusObjectNotification.cs:
+	* NMapi/Data/Events/LPNotification.cs:
+	* NMapi/Data/Events/NewMailNotification.cs:
+	* NMapi/Data/Events/ExtendedNotification.cs: remove
+
+	* NMapi/Flags/Guids.cs:
+	* NMapi/Flags/RelOp.cs:
+	* NMapi/Flags/Ab.cs:
+	* NMapi/Flags/PropertyTypeHelper.cs:
+	* NMapi/Flags/PropertyType.cs:
+	* NMapi/Flags/MnId.cs:
+	* NMapi/Flags/Store.cs:
+	* NMapi/Flags/TableNotificationType.cs:
+	* NMapi/Flags/Importance.cs:
+	* NMapi/Flags/Mdb.cs:
+	* NMapi/Flags/NMAPI.cs:
+	* NMapi/Flags/Attach.cs:
+	* NMapi/Flags/Bookmark.cs:
+	* NMapi/Flags/DisplayType.cs:
+	* NMapi/Flags/ValidFolderMask.csv
+	* NMapi/Flags/FldStatus.cs:
+	* NMapi/Flags/Prio.cs:
+	* NMapi/Flags/Folder.cs:
+	* NMapi/Flags/LogOff.cs:
+	* NMapi/Flags/TblStat.cs:
+	* NMapi/Flags/FuzzyLevel.cs:
+	* NMapi/Flags/MsgFlag.cs:
+	* NMapi/Flags/Mapi.cs:
+	* NMapi/Flags/NotificationEventType.cs:
+	* NMapi/Flags/Sensivity.cs:
+	* NMapi/Flags/TableSort.cs:
+	* NMapi/Flags/ModRecip.cs:
+	* NMapi/Flags/Security.cs:
+	* NMapi/Flags/RestrictionType.cs: minor changes
+	
+	* NMapi/Flags/Error.cs: new errors: UMapiDIRTY, UMapiOLE_ATTACH, UMapiREF_ATTACH
+	* NMapi/Flags/Property.cs: mark some properties as obsolete;
+	* NMapi/Flags/Outlook.cs: some new Dispid* properties.
+
+	* NMapi/Flags/OpenMapi.cs: NEW. OpenMapi-specific constants.
+	* NMapi/Linq/ExtensionMethods.cs: only import ns once
+
+	* NMapi/Linq/Interpreter.cs: update (TODO)
+	* NMapi/Linq/MapiEntityBase.cs: update
+	* NMapi/Linq/QueryState.cs: update
+	* NMapi/Linq/TableQuerier.cs: update (TODO)
+
+	* NMapi/Meta/Handler/MsgTaskMeta.cs: update
+	* NMapi/Meta/Handler/PropMeta.cs: update, remove 2nd return statement
+	* NMapi/Meta/MetaManager.cs: add comments
+
+	* NMapi/Utility/PathHelper.cs: remove.
+	
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
 	* Delete the old generator.
 
 2009-01-01  Johannes Roith <johannes@jroith.de>

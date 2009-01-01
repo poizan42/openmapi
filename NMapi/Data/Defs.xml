@@ -1,0 +1,712 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - Defs.xml
+//
+// Copyright 2008 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//	
+//-->
+
+<definitions>
+	<namespace name="NMapi.Interop">
+		<class id="LPSRestriction">
+			<declare type="SRestriction" privName="_value" constrarg="true">Value</declare>
+			<encode>
+				<boolGate type="SRestriction">_value</boolGate>
+			</encode>
+			<decode>
+				<boolGate static="true" type="SRestriction">_value</boolGate>
+			</decode>
+		</class>
+
+		<class id="LPAdrEntry">
+			<declare type="AdrEntry" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="AdrEntry">Value</boolGate>
+			</both>
+		</class>
+
+		<class id="LPAdrList">
+			<declare type="AdrList" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="AdrList">Value</boolGate>
+			</both>
+		</class>
+
+		<class id="LPEntryList">
+			<declare type="EntryList" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="EntryList">Value</boolGate>
+			</both>
+		</class>
+
+		<class id="LPGuid">
+			<declare type="NMapiGuid" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="NMapiGuid">Value</boolGate>
+			</both>
+		</class>
+
+		<class id="LPRowEntry">
+			<declare type="RowEntry" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="RowEntry">Value</boolGate>
+			</both>
+		</class>
+		
+		<class id="LPMapiNameId">
+			<declare type="MapiNameId" constrarg="true">Value</declare>
+			<both>
+				<boolGate static="true" type="MapiNameId">Value</boolGate>
+			</both>
+		</class>
+		
+		<class id="LPSPropValue">
+			<declare type="SPropValue" constrarg="true">Value</declare>
+			<both>
+				<boolGate static="true" type="SPropValue">Value</boolGate>
+			</both>
+		</class>
+		
+		<class id="LPNotification">
+			<declare type="Notification" constrarg="true">Value</declare>
+			<both>
+				<boolGate static="true" type="Notification">Value</boolGate>
+			</both>
+		</class>
+	</namespace>
+	
+	<namespace name="NMapi">
+		<class id="AdrEntry">
+			<declare type="int">Reserved1</declare>
+			<declare type="SPropValue" isArray="true" constrarg="true">PropVals</declare>
+			<encode>
+				<countedSizeArray type="SPropValue">PropVals</countedSizeArray>
+			</encode>
+			<decode>
+				<countedSizeArray static="true" type="SPropValue">PropVals</countedSizeArray>
+			</decode>
+		</class>
+
+		<class id="AdrList">
+			<declare type="AdrEntry" isArray="true" privName="aEntries" constrarg="true">AEntries</declare>
+			<both>
+				<countedSizeArray type="AdrEntry">aEntries</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="EntryList">
+			<declare type="SBinary" isArray="true" constrarg="true">Bin</declare>
+			<both>
+				<countedSizeArray type="SBinary" constrarg="true">Bin</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="FileTime">
+			<declare type="int" privName="dwHighDateTime">HighDateTime</declare>
+			<declare type="int" privName="dwLowDateTime">LowDateTime</declare>
+			<both>
+				<int>dwHighDateTime</int>
+				<int>dwLowDateTime</int>
+			</both>
+		</class>
+
+		<class id="LargeInteger">
+			<declare type="long" constrarg="true">QuadPart</declare>
+			<both>
+				<wrapped in="LongLong">QuadPart</wrapped><!-- TODO //-->
+			</both>
+		</class>
+
+		<class id="NMapiGuid">
+			<declare type="int">Data1</declare>
+			<declare type="short">Data2</declare>
+			<declare type="short">Data3</declare>
+			<declare type="byte" isArray="true">Data4</declare>
+			<both>
+				<int>Data1</int>
+				<short>Data2</short>
+				<short>Data3</short>
+				<opaque length="8">Data4</opaque>
+			</both>
+		</class>
+	
+		<class id="LongLong">
+			<declare type="long" privName="value" constrarg="true">Value</declare>
+			<both>
+				<long>value</long>
+			</both>
+		</class>	
+	</namespace>
+
+
+	<namespace name="NMapi.Table">
+
+		<class id="SAndRestriction" inherits="SRestriction">
+			<declare type="SRestriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.And</int> <!-- SPECIAL //-->
+				<countedSizeArray type="SRestriction">lpRes</countedSizeArray>
+			</encode>
+			<decode>
+				<countedSizeArray static="true" type="SRestriction">lpRes</countedSizeArray>
+			</decode>
+		</class>
+
+		<class id="SBitMaskRestriction" inherits="SRestriction">
+			<declare type="int" privName="relBMR">RelBMR</declare>
+			<declare type="int" privName="ulPropTag" constrarg="true">PropTag</declare>
+			<declare type="int" privName="ulMask" constrarg="true">Mask</declare>
+			<encode>
+				<int cast="true">RestrictionType.Bitmask</int> <!-- SPECIAL //-->
+				<int>relBMR</int>
+				<int>ulPropTag</int>
+				<int>ulMask</int>
+			</encode>
+			<decode>
+				<int>relBMR</int>
+				<int>ulPropTag</int>
+				<int>ulMask</int>
+			</decode>
+		</class>
+
+		<class id="SCommentRestriction" inherits="SRestriction">
+			<declare type="SPropValue" isArray="true" privName="lpProp">Prop</declare>
+			<declare type="SRestriction" privName="lpRes">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.Comment</int> <!-- SPECIAL //-->
+				<countedSizeArray type="SPropValue">lpProp</countedSizeArray>
+				<boolGate type="SRestriction">lpRes</boolGate>
+			</encode>
+			<decode>
+				<countedSizeArray static="true" type="SPropValue">lpProp</countedSizeArray>
+				<boolGate static="true" type="SRestriction">lpRes</boolGate>
+			</decode>
+		</class>
+
+		<class id="SComparePropsRestriction" inherits="SRestriction">
+			<declare type="RelOp" privName="relop">RelOp</declare>
+			<declare type="int" privName="ulPropTag1">PropTag1</declare>
+			<declare type="int" privName="ulPropTag2">PropTag2</declare>
+			<encode>
+				<int cast="true">RestrictionType.CompareProps</int> <!-- SPECIAL //-->
+				<int cast="true">relop</int>
+				<int>ulPropTag1</int>
+				<int>ulPropTag2</int>
+			</encode>
+			<decode>
+				<int castTo="RelOp">relop</int>
+				<int>ulPropTag1</int>
+				<int>ulPropTag2</int>
+			</decode>
+		</class>
+	
+		<class id="SContentRestriction" inherits="SRestriction">
+			<declare type="FuzzyLevel" privName="ulFuzzyLevel">FuzzyLevel</declare>
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="SPropValue" privName="lpProp">Prop</declare>
+			<encode>
+				<int cast="true">RestrictionType.Content</int> <!-- SPECIAL //-->
+				<int cast="true">ulFuzzyLevel</int>
+				<int>ulPropTag</int>
+				<wrapped in="LPSPropValue">lpProp</wrapped>
+			</encode>
+			<decode>
+				<int castTo="FuzzyLevel">ulFuzzyLevel</int>
+				<int>ulPropTag</int>
+				<wrapped in="LPSPropValue">lpProp</wrapped>
+			</decode>
+		</class>
+
+		<class id="SExistRestriction" inherits="SRestriction">
+			<declare type="int" privName="ulReserved1">Reserved1</declare>
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="int" privName="ulReserved2">Reserved2</declare>
+			<encode>
+				<int cast="true">RestrictionType.Exist</int>
+				<int>ulReserved1</int>
+				<int>ulPropTag</int>
+				<int>ulReserved2</int>
+			</encode>
+			<decode>
+				<int>ulReserved1</int>
+				<int>ulPropTag</int>
+				<int>ulReserved2</int>
+				<!-- fix //-->
+				<code>
+				<![CDATA[
+					ulReserved1 = 0;
+					ulReserved2 = 0;
+				]]>
+				</code>
+			</decode>
+		</class>
+
+		<class id="SNotRestriction" inherits="SRestriction">
+			<declare type="int" privName="ulReserved">Reserved</declare>
+			<declare type="SRestriction" privName="lpRes" constrarg="true">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.Not</int> <!-- SPECIAL //-->
+				<int>ulReserved</int>
+				<boolGate type="SRestriction">lpRes</boolGate>
+			</encode>
+			<decode>
+				<int>ulReserved</int>
+				<boolGate static="true" type="SRestriction">lpRes</boolGate>
+				<code><![CDATA[
+				ulReserved = 0;
+				]]> <!-- fix ... TODO! //-->
+				</code>
+			</decode>
+		</class>
+
+		<class id="SOrRestriction" inherits="SRestriction">
+			<declare type="SRestriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.Or</int> <!-- SPECIAL //-->
+				<countedSizeArray type="SRestriction">lpRes</countedSizeArray>			
+			</encode>
+			<decode>
+				<code>
+				<![CDATA[
+					int length = xdr.XdrDecodeInt ();
+					lpRes = new SRestriction [length];
+					for (int i = 0; i < length; i++)
+						lpRes [i] = SRestriction.Decode (xdr);
+				]]>
+				</code>
+			</decode>
+		</class>
+
+		<class id="SPropertyRestriction" inherits="SRestriction">
+			<declare type="RelOp" privName="relOp">RelOp</declare>
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="SPropValue" privName="lpProp">Prop</declare>
+			<encode>
+				<int cast="true">RestrictionType.Property</int> <!-- SPECIAL //-->
+				<int cast="true">relOp</int><!-- CAST! //-->
+				<int>ulPropTag</int>
+				<wrapped in="LPSPropValue">lpProp</wrapped>
+			</encode>
+			<decode>
+				<int castTo="RelOp">relOp</int><!-- CAST! //-->
+				<int>ulPropTag</int>
+				<wrapped in="LPSPropValue">lpProp</wrapped>
+			</decode>
+		</class>
+
+		<class id="SSizeRestriction" inherits="SRestriction">
+			<declare type="int" privName="relop">RelOp</declare>
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="int" privName="cb">Cb</declare>
+			<encode>
+				<int cast="true">RestrictionType.Size</int> <!-- SPECIAL //-->
+				<int>relop</int>
+				<int>ulPropTag</int>
+				<int>cb</int>
+			</encode>
+			<decode>
+				<int>relop</int>
+				<int>ulPropTag</int>
+				<int>cb</int>
+			</decode>
+		</class>
+
+		<class id="SSubRestriction" inherits="SRestriction">
+			<declare type="int" privName="ulSubObject">SubObject</declare>
+			<declare type="SRestriction" privName="lpRes">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.SubRestriction</int> <!-- SPECIAL //-->
+				<int>ulSubObject</int>
+				<boolGate type="SRestriction">lpRes</boolGate>
+			</encode>
+			<decode>
+				<int>ulSubObject</int>
+				<boolGate static="true" type="SRestriction">lpRes</boolGate>
+			</decode>
+		</class>
+	
+		<class id="SPropProblem">
+			<declare type="int" privName="ulIndex">Index</declare>
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="int" privName="scode">SCode</declare>
+			<both>
+				<int>ulIndex</int>
+				<int>ulPropTag</int>
+				<int>scode</int>
+			</both>
+		</class>
+
+		<class id="SSortOrder">
+			<declare type="int" privName="ulPropTag">PropTag</declare>
+			<declare type="TableSort" privName="ulOrder">Order</declare>
+			<both>
+				<int>ulPropTag</int>
+				<int cast="true" castTo="TableSort">ulOrder</int>
+			</both>
+		</class>
+		
+	</namespace>
+
+	<namespace name="NMapi.Properties">
+
+		<class id="ShortProperty" inherits="SPropValue">
+			<declare type="short" privName="i" constrarg="true">Value</declare>
+			<both>
+				<short>i</short>
+			</both>
+		</class>
+
+		<class id="IntProperty" inherits="SPropValue">
+			<declare type="int" privName="l" constrarg="true">Value</declare>
+			<both>
+				<int>l</int>
+			</both>
+		</class>
+
+		<class id="FloatProperty" inherits="SPropValue">
+			<declare type="float" privName="flt" constrarg="true">Value</declare>
+			<both>
+				<float>flt</float>
+			</both>
+		</class>
+
+		<class id="DoubleProperty" inherits="SPropValue">
+			<declare type="double" privName="dbl" constrarg="true">Value</declare>
+			<both>
+				<double>dbl</double>
+			</both>
+		</class>
+	
+		<class id="CurrencyProperty" inherits="SPropValue">
+			<declare type="long" privName="cur" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LongLong">cur</wrapped>
+			</both>
+		</class>
+	
+		<class id="AppTimeProperty" inherits="SPropValue">
+			<declare type="double" privName="at" constrarg="true">Value</declare>
+			<both>
+				<double>at</double>
+			</both>
+		</class>
+	
+		<class id="ErrorProperty" inherits="SPropValue">
+			<declare type="int" privName="err" constrarg="true">Value</declare>
+			<both>
+				<int>err</int>
+			</both>
+		</class>
+
+		<class id="BooleanProperty" inherits="SPropValue">
+			<declare type="short" privName="b" constrarg="true">Value</declare>
+			<both>
+				<short>b</short>
+			</both>
+		</class>
+
+		<class id="ObjectProperty" inherits="SPropValue">
+			<declare type="int" privName="x" constrarg="true">Value</declare>
+			<both>
+				<int>x</int>
+			</both>
+		</class>
+
+		<class id="LongProperty" inherits="SPropValue">
+			<declare type="long" privName="li" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LongLong">li</wrapped>
+			</both>
+		</class>
+
+		<class id="String8Property" inherits="SPropValue">
+			<declare type="string" privName="lpszA" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LPStr">lpszA</wrapped>
+			</both>
+		</class>
+
+		<class id="UnicodeProperty" inherits="SPropValue">
+			<declare type="string" privName="lpszW" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LPWStr">lpszW</wrapped>
+			</both>
+		</class>
+	
+		<class id="FileTimeProperty" inherits="SPropValue">
+			<declare type="FileTime" privName="ft" constrarg="true">Value</declare>
+			<both>
+				<complex type="FileTime">ft</complex>
+			</both>
+		</class>
+
+		<class id="GuidProperty" inherits="SPropValue">
+			<declare type="NMapiGuid" privName="lpguid" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LPGuid">lpguid</wrapped>
+			</both>
+		</class>
+	
+		<class id="BinaryProperty" inherits="SPropValue">
+			<declare type="SBinary" privName="bin" constrarg="true">Value</declare>
+			<both>
+				<complex type="SBinary">bin</complex>
+			</both>
+		</class>
+
+		<class id="ShortArrayProperty" inherits="SPropValue">
+			<declare type="short" isArray="true" privName="MVi" constrarg="true">Value</declare>
+			<both>
+				<shortVector>MVi</shortVector>
+			</both>
+		</class>
+
+		<class id="IntArrayProperty" inherits="SPropValue">
+			<declare type="int" isArray="true" privName="MVl" constrarg="true">Value</declare>
+			<both>
+				<intVector>MVl</intVector>
+			</both>
+		</class>
+
+		<class id="FloatArrayProperty" inherits="SPropValue">
+			<declare type="float" isArray="true" privName="MVflt" constrarg="true">Value</declare>
+			<both>
+				<floatVector>MVflt</floatVector>
+			</both>
+		</class>
+
+		<class id="DoubleArrayProperty" inherits="SPropValue">
+			<declare type="double" isArray="true" privName="MVdbl" constrarg="true">Value</declare>
+			<both>
+				<doubleVector>MVdbl</doubleVector>
+			</both>
+		</class>
+
+		<class id="CurrencyArrayProperty" inherits="SPropValue">
+			<declare type="long" isArray="true" privName="MVcur" constrarg="true">Value</declare>
+			<both>
+				<wrappedCountedSizeArray type="long" in="LongLong">MVcur</wrappedCountedSizeArray>
+			</both>
+		</class>
+
+		<class id="AppTimeArrayProperty" inherits="SPropValue">
+			<declare type="double" isArray="true" privName="MVat" constrarg="true">Value</declare>
+			<both>
+				<doubleVector>MVat</doubleVector>
+			</both>
+		</class>
+
+		<class id="FileTimeArrayProperty" inherits="SPropValue">
+			<declare type="FileTime" isArray="true" privName="MVft" constrarg="true">Value</declare>
+			<both>
+				<countedSizeArray type="FileTime">MVft</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="BinaryArrayProperty" inherits="SPropValue">
+			<declare type="SBinary" isArray="true" privName="MVbin" constrarg="true">Value</declare>
+			<both>
+				<countedSizeArray type="SBinary">MVbin</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="String8ArrayProperty" inherits="SPropValue">
+			<declare type="string" isArray="true" privName="MVsza" constrarg="true">Value</declare>
+			<both>
+				<wrappedCountedSizeArray type="string" in="LPStr">MVsza</wrappedCountedSizeArray>
+			</both>
+		</class>
+	
+		<class id="UnicodeArrayProperty" inherits="SPropValue">
+			<declare type="string" isArray="true" privName="MVszW" constrarg="true">Value</declare>
+			<both>
+				<wrappedCountedSizeArray type="string" in="LPWStr">MVszW</wrappedCountedSizeArray>
+			</both>
+		</class>
+
+		<class id="GuidArrayProperty" inherits="SPropValue">
+			<declare type="NMapiGuid" isArray="true" privName="MVguid" constrarg="true">Value</declare>
+			<both>
+				<countedSizeArray type="NMapiGuid">MVguid</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="LongArrayProperty" inherits="SPropValue">
+			<declare type="long" isArray="true" privName="MVli" constrarg="true">Value</declare>
+			<both>
+				<wrappedCountedSizeArray type="long" in="LongLong">MVli</wrappedCountedSizeArray>
+			</both>
+		</class>
+	
+		<class id="XProperty" inherits="SPropValue">
+			<declare type="int" privName="x" constrarg="true">Value</declare>
+			<both>
+				<int>x</int>
+			</both>
+		</class>
+
+		<!--
+	
+	
+			TODO: Error ....
+	
+	
+		//-->
+		
+		<class id="NumericMapiNameId" inherits="MapiNameId">
+			<declare type="int" privName="lID" constrarg="true">ID</declare>
+			<both>
+				<int>lID</int>
+			</both>
+		</class>
+		
+		<class id="StringMapiNameId" inherits="MapiNameId">
+			<declare type="string" privName="lpwstrName" constrarg="true">StrName</declare>
+			<both>
+				<wrapped in="LPWStr">lpwstrName</wrapped>
+			</both>
+		</class>
+	</namespace>
+	
+	
+	<namespace name="NMapi.Events">
+			
+		<class id="ErrorNotification" inherits="Notification">
+			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
+			<declare type="int" privName="scode">SCode</declare>
+			<declare type="int" privName="ulFlags">Flags</declare>
+			<declare type="MapiError" privName="lpMAPIError">MAPIError</declare>
+			<encode>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<int>scode</int>
+				<int>ulFlags</int>
+				<code>
+					<![CDATA[
+					if ((ulFlags & 0x80000000) != 0)
+						new LPMapiErrorW (lpMAPIError).XdrEncode(xdr);
+					else
+						new LPMapiErrorA (lpMAPIError).XdrEncode(xdr);
+					]]>
+				</code>
+			</encode>
+			<decode>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<int>scode</int>
+				<int>ulFlags</int>
+				<code>
+					<![CDATA[
+					if ((ulFlags & 0x80000000) != 0)
+						lpMAPIError = new LPMapiErrorW (xdr).Value;
+					else
+						lpMAPIError = new LPMapiErrorA (xdr).Value;
+						]]>
+				</code>
+			</decode>
+		</class>
+		
+		<class id="ExtendedNotification" inherits="Notification">
+			<declare type="int" privName="ulEvent">Event</declare>
+			<declare type="byte" isArray="true" privName="pbEventParameters">EventParameters</declare>
+			<both>
+				<int>ulEvent</int>
+				<dynamicOpaque>pbEventParameters</dynamicOpaque>
+			</both>
+		</class>
+
+		<class id="NewMailNotification" inherits="Notification">
+			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
+			<declare type="byte" isArray="true" privName="lpParentID">ParentID</declare>
+			<declare type="int" privName="ulFlags">Flags</declare>
+			<declare type="string" privName="lpszMessageClass">MessageClass</declare>
+			<declare type="int" privName="ulMessageFlags">MessageFlags</declare>
+			<encode>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<dynamicOpaque>lpParentID</dynamicOpaque>
+				<int>ulFlags</int>
+				<code>
+					<![CDATA[
+					if ((ulFlags & 0x80000000) != 0)
+						new LPWStr (lpszMessageClass).XdrEncode (xdr);
+					else
+						new LPStr (lpszMessageClass).XdrEncode (xdr);
+					]]>
+				</code>
+				<int>ulMessageFlags</int>
+			</encode>
+			<decode>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<dynamicOpaque>lpParentID</dynamicOpaque>
+				<int>ulFlags</int>
+				<code>
+					<![CDATA[
+					if ((ulFlags & 0x80000000) != 0)
+						lpszMessageClass = new LPWStr (xdr).value;
+					else
+						lpszMessageClass = new LPStr (xdr).value;
+					]]>
+				</code>
+				<int>ulMessageFlags</int>
+			</decode>
+		</class>
+		
+		<class id="ObjectNotification" inherits="Notification">
+			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
+			<declare type="int" privName="ulObjType">ObjType</declare>
+			<declare type="byte" isArray="true" privName="lpParentID">ParentID</declare>
+			<declare type="byte" isArray="true" privName="lpOldID">OldID</declare>
+			<declare type="byte" isArray="true" privName="lpOldParentID">OldParentID</declare>
+			<declare type="SPropTagArray" privName="lpPropTagArray">PropTagArray</declare>
+			<both>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<int>ulObjType</int>
+				<dynamicOpaque>lpParentID</dynamicOpaque>
+				<dynamicOpaque>lpOldID</dynamicOpaque>
+				<dynamicOpaque>lpOldParentID</dynamicOpaque>
+				<wrapped in="LPSPropTagArray">lpPropTagArray</wrapped>
+			</both>
+		</class>
+
+		<class id="StatusObjectNotification" inherits="Notification">
+			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
+			<declare type="SPropValue" isArray="true" privName="lpPropVals">PropVals</declare>
+			<both>
+				<dynamicOpaque>lpEntryID</dynamicOpaque>
+				<countedSizeArray static="true" type="SPropValue">lpPropVals</countedSizeArray>
+			</both>
+		</class>
+		
+		<class id="TableNotification" inherits="Notification">
+			<declare type="TableNotificationType" privName="ulTableEvent">TableEvent</declare>
+			<declare type="int" privName="hResult">HResult</declare>
+			<declare type="SPropValue" privName="propIndex">PropIndex</declare>
+			<declare type="SPropValue" privName="propPrior">PropPrior</declare>
+			<declare type="SRow" privName="row">Row</declare>
+			<both>
+				<int cast="true" castTo="TableNotificationType">ulTableEvent</int>
+				<int>hResult</int>
+				<complex static="true" type="SPropValue">propIndex</complex>
+				<complex static="true" type="SPropValue">propPrior</complex>
+				<complex type="SRow">row</complex>
+			</both>
+		</class>
+		
+	</namespace>
+</definitions>

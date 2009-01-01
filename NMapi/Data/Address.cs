@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - LPRowEntry.cs
+// openmapi.org - NMapi C# Mapi API - SBinary.cs
 //
 // Copyright 2008 VipCom AG
 //
@@ -23,9 +23,12 @@
 //
 
 using System;
+using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -33,52 +36,20 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi.Interop {
+namespace NMapi {
 
 	/// <summary>
-	///  For internal use only.
+	///  
 	/// </summary>
-	public sealed class LPRowEntry : XdrAble
+	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
+	public sealed class Address
 	{
-		public RowEntry value;
-
-		/// <summary>
-		///
-		/// </summary>
-		public LPRowEntry ()
-		{
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public LPRowEntry (RowEntry value)
-		{
-			this.value = value;
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public LPRowEntry (XdrDecodingStream xdr)
-		{
-			XdrDecode (xdr);
-		}
-
-		[Obsolete]
-		public void XdrEncode (XdrEncodingStream xdr)
-		{
-			if (value != null) {
-				xdr.XdrEncodeBoolean (true);
-				value.XdrEncode (xdr);
-			} else
-				xdr.XdrEncodeBoolean (false);
-		}
-
-		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr)
-		{
-			value = xdr.XdrDecodeBoolean() ? new RowEntry (xdr) : null;
-		}
+		public byte [] EID { get; set; }
+		public string  DisplayName { get; set; }
+		public string  InternalAddress { get; set; }
+		public string  AddrType { get; set; }
+		public string  SmtpAddress { get; set; }
+		public byte [] SearchKey { get; set; }
 	}
+	
 }

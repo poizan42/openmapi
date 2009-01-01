@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;
@@ -46,6 +45,7 @@ namespace NMapi.Flags {
 
 		IgnoreCase     = 0x00010000,
 		IgnoreNonSpace = 0x00020000, // ignore non-spacing characters!
-		Loose          = 0x00040000  // ignore case + nonspacing, etc.
+		Loose          = 0x00040000  // ignore case + nonspacing, etc.
+
 	}
 }

@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;
@@ -75,7 +74,10 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int ExpiryTime                               =  ((int) PropertyType.SysTime) | (0x0015 << 16);
 		[MapiPropDef] public const int ImplicitConversionProhibited             =  ((int) PropertyType.Boolean) | (0x0016 << 16);
 		[MapiPropDef] public const int Importance                               =  ((int) PropertyType.Long)    | (0x0017 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int IpmId                                    =  ((int) PropertyType.Binary)  | ( 0x0018 << 16);
+
 		[MapiPropDef] public const int LatestDeliveryTime                       =  ((int) PropertyType.SysTime) | (0x0019 << 16);
 		[MapiPropDef] public const int MessageClass                             =  ((int) PropertyType.TString) | (0x001A << 16);
 		[MapiPropDef] public const int MessageClassW                            =  ((int) PropertyType.Unicode) | (0x001A << 16);
@@ -90,7 +92,9 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int OriginatorDeliveryReportRequested        =  ((int) PropertyType.Boolean) | (0x0023 << 16);
 		[MapiPropDef] public const int OriginatorReturnAddress                  =  ((int) PropertyType.Binary)  | ( 0x0024 << 16);
 		
+		[Obsolete]
 		[MapiPropDef] public const int ParentKey                                =  ((int) PropertyType.Binary)  | ( 0x0025 << 16);
+
 		[MapiPropDef] public const int Priority                                 =  ((int) PropertyType.Long)    | (0x0026 << 16);
 
 		[MapiPropDef] public const int OriginCheck                              =  ((int) PropertyType.Binary)  | ( 0x0027 << 16);
@@ -144,7 +148,10 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int OriginalSubject                          =  ((int) PropertyType.TString) | (0x0049 << 16);
 		[MapiPropDef] public const int OriginalSubjectW                         =  ((int) PropertyType.Unicode) | (0x0049 << 16);
 		[MapiPropDef] public const int OriginalSubjectA                         =  ((int) PropertyType.String8) | (0x0049 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int DiscVal                                  =  ((int) PropertyType.Boolean) | (0x004A << 16);
+
 		[MapiPropDef] public const int OrigMessageClass                         =  ((int) PropertyType.TString) | (0x004B << 16);
 		[MapiPropDef] public const int OrigMessageClassW                        =  ((int) PropertyType.Unicode) | (0x004B << 16);
 		[MapiPropDef] public const int OrigMessageClassA                        =  ((int) PropertyType.String8) | (0x004B << 16);
@@ -333,7 +340,9 @@ namespace NMapi.Flags {
 		//  Message non-transmittable
 		//
 
-		[MapiPropDef] public const int CurrentVersion                           =  ((int) PropertyType.I8)      | (  0x0E00 << 16);
+		[Obsolete]
+		[MapiPropDef] public const int CurrentVersion                           =  ((int) PropertyType.I8)      | (0x0E00 << 16);
+
 		[MapiPropDef] public const int DeleteAfterSubmit                        =  ((int) PropertyType.Boolean) | (0x0E01 << 16);
 		[MapiPropDef] public const int DisplayBcc                               =  ((int) PropertyType.TString) | (0x0E02 << 16);
 		[MapiPropDef] public const int DisplayBccW                              =  ((int) PropertyType.Unicode) | (0x0E02 << 16);
@@ -350,24 +359,32 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int MessageDeliveryTime                      =  ((int) PropertyType.SysTime) | (0x0E06 << 16);
 		[MapiPropDef] public const int MessageFlags                             =  ((int) PropertyType.Long)    | (0x0E07 << 16);
 		[MapiPropDef] public const int MessageSize                              =  ((int) PropertyType.Long)    | (0x0E08 << 16);
-		[MapiPropDef] public const int ParentEntryId                            =  ((int) PropertyType.Binary)  | ( 0x0E09 << 16);
-		[MapiPropDef] public const int SentMailEntryId                          =  ((int) PropertyType.Binary)  | ( 0x0E0A << 16);
+		[MapiPropDef] public const int ParentEntryId                            =  ((int) PropertyType.Binary)  | (0x0E09 << 16);
+		[MapiPropDef] public const int SentMailEntryId                          =  ((int) PropertyType.Binary)  | (0x0E0A << 16);
 		[MapiPropDef] public const int Correlate                                =  ((int) PropertyType.Boolean) | (0x0E0C << 16);
-		[MapiPropDef] public const int CorrelateMtsId                           =  ((int) PropertyType.Binary)  | ( 0x0E0D << 16);
+		[MapiPropDef] public const int CorrelateMtsId                           =  ((int) PropertyType.Binary)  | (0x0E0D << 16);
 		[MapiPropDef] public const int DiscreteValues                           =  ((int) PropertyType.Boolean) | (0x0E0E << 16);
 		[MapiPropDef] public const int Responsibility                           =  ((int) PropertyType.Boolean) | (0x0E0F << 16);
 		[MapiPropDef] public const int SpoolerStatus                            =  ((int) PropertyType.Long)    | (0x0E10 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int TransportStatus                          =  ((int) PropertyType.Long)    | (0x0E11 << 16);
-		[MapiPropDef] public const int MessageRecipients                        =  ((int) PropertyType.Object)  | ( 0x0E12 << 16);
-		[MapiPropDef] public const int MessageAttachments                       =  ((int) PropertyType.Object)  | ( 0x0E13 << 16);
+
+		[MapiPropDef] public const int MessageRecipients                        =  ((int) PropertyType.Object)  | (0x0E12 << 16);
+		[MapiPropDef] public const int MessageAttachments                       =  ((int) PropertyType.Object)  | (0x0E13 << 16);
 		[MapiPropDef] public const int SubmitFlags                              =  ((int) PropertyType.Long)    | (0x0E14 << 16);
 		[MapiPropDef] public const int RecipientStatus                          =  ((int) PropertyType.Long)    | (0x0E15 << 16);
 		[MapiPropDef] public const int TransportKey                             =  ((int) PropertyType.Long)    | (0x0E16 << 16);
 		[MapiPropDef] public const int MsgStatus                                =  ((int) PropertyType.Long)    | (0x0E17 << 16);
 		[MapiPropDef] public const int MessageDownloadTime                      =  ((int) PropertyType.Long)    | (0x0E18 << 16);
-		[MapiPropDef] public const int CreationVersion                          =  ((int) PropertyType.I8)      | (  0x0E19 << 16);
-		[MapiPropDef] public const int ModifyVersion                            =  ((int) PropertyType.I8)      | (  0x0E1A << 16);
-		[MapiPropDef] public const int Hasattach                                =  ((int) PropertyType.Boolean) | (0x0E1B << 16);
+
+		[Obsolete]
+		[MapiPropDef] public const int CreationVersion                          =  ((int) PropertyType.I8)      | (0x0E19 << 16);
+
+		[Obsolete]
+		[MapiPropDef] public const int ModifyVersion                            =  ((int) PropertyType.I8)      | (0x0E1A << 16);
+
+		[MapiPropDef] public const int HasAttach                                =  ((int) PropertyType.Boolean) | (0x0E1B << 16);
 		[MapiPropDef] public const int BodyCrc                                  =  ((int) PropertyType.Long)    | (0x0E1C << 16);
 		[MapiPropDef] public const int NormalizedSubject                        =  ((int) PropertyType.TString) | (0x0E1D << 16);
 		[MapiPropDef] public const int NormalizedSubjectW                       =  ((int) PropertyType.Unicode) | (0x0E1D << 16);
@@ -377,8 +394,8 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int AttachNum                                =  ((int) PropertyType.Long)    | (0x0E21 << 16);
 		[MapiPropDef] public const int Preprocess                               =  ((int) PropertyType.Boolean) | (0x0E22 << 16);
 
-		[MapiPropDef] public const int OriginatingMtaCertificate                =  ((int) PropertyType.Binary)  | ( 0x0E25 << 16);
-		[MapiPropDef] public const int ProofOfSubmission                        =  ((int) PropertyType.Binary)  | ( 0x0E26 << 16);
+		[MapiPropDef] public const int OriginatingMtaCertificate                =  ((int) PropertyType.Binary)  | (0x0E25 << 16);
+		[MapiPropDef] public const int ProofOfSubmission                        =  ((int) PropertyType.Binary)  | (0x0E26 << 16);
 
 		[MapiPropDef] public const int EntryId                                  =  ((int) PropertyType.Binary) |  (0x0FFF << 16);
 		[MapiPropDef] public const int ObjectType                               =  ((int) PropertyType.Long)    | (0x0FFE << 16);
@@ -453,10 +470,18 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int StoreSupportMask                         =  ((int) PropertyType.Long)    | (0x340D << 16);
 		[MapiPropDef] public const int StoreState                               =  ((int) PropertyType.Long)    | (0x340E << 16);
 
+		[Obsolete]
 		[MapiPropDef] public const int IpmSubtreeSearchKey                      =  ((int) PropertyType.Binary)  | (0x3410 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int IpmOutboxSearchKey                       =  ((int) PropertyType.Binary)  | (0x3411 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int IpmWastebasketSearchKey                  =  ((int) PropertyType.Binary)  | (0x3412 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int IpmSentmailSearchKey                     =  ((int) PropertyType.Binary)  | (0x3413 << 16);
+
 		[MapiPropDef] public const int MdbProvider                              =  ((int) PropertyType.Binary)  | (0x3414 << 16);
 		[MapiPropDef] public const int ReceiveFolderSettings                    =  ((int) PropertyType.Object)  | (0x3415 << 16);
 
@@ -487,7 +512,10 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int Anr                                      =  ((int) PropertyType.TString) | (0x360C << 16);
 		[MapiPropDef] public const int AnrW                                     =  ((int) PropertyType.Unicode) | (0x360C << 16);
 		[MapiPropDef] public const int AnrA                                     =  ((int) PropertyType.String8) | (0x360C << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int ContentsSortOrder                        =  ((int) PropertyType.MvLong)  | (0x360D << 16);
+
 		[MapiPropDef] public const int ContainerHierarchy                       =  ((int) PropertyType.Object)  | (0x360E << 16);
 		[MapiPropDef] public const int ContainerContents                        =  ((int) PropertyType.Object)  | (0x360F << 16);
 		[MapiPropDef] public const int FolderAssociatedContents                 =  ((int) PropertyType.Object)  | (0x3610 << 16);
@@ -496,7 +524,10 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int ContainerClass                           =  ((int) PropertyType.TString) | (0x3613 << 16);
 		[MapiPropDef] public const int ContainerClassW                          =  ((int) PropertyType.Unicode) | (0x3613 << 16);
 		[MapiPropDef] public const int ContainerClassA                          =  ((int) PropertyType.String8) | (0x3613 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int ContainerModifyVersion                   =  ((int) PropertyType.I8)      | (0x3614 << 16);
+
 		[MapiPropDef] public const int AbProviderId                             =  ((int) PropertyType.Binary)  | (0x3615 << 16);
 		[MapiPropDef] public const int DefaultWiewEntryId                       =  ((int) PropertyType.Binary)  | (0x3616 << 16);
 		[MapiPropDef] public const int AssocContentCount                        =  ((int) PropertyType.Long)    | (0x3617 << 16);
@@ -505,7 +536,9 @@ namespace NMapi.Flags {
 		//  Attachment
 		//
 
+		[Obsolete]
 		[MapiPropDef] public const int AttachmentX400Parameters                 = ((int) PropertyType.Binary)   | (0x3700 << 16);
+
 		[MapiPropDef] public const int AttachDataObj                            =  ((int) PropertyType.Object)  | (0x3701 << 16);
 		[MapiPropDef] public const int AttachDataBin                            =  ((int) PropertyType.Binary)  | (0x3701 << 16);
 		[MapiPropDef] public const int AttachEncoding                           =  ((int) PropertyType.Binary)  | (0x3702 << 16);
@@ -542,6 +575,8 @@ namespace NMapi.Flags {
 
 		[MapiPropDef] public const int DisplayType                              =  ((int) PropertyType.Long)    | (0x3900 << 16);
 		[MapiPropDef] public const int TemplateId                               =  ((int) PropertyType.Binary)  | (0x3902 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int PrimaryCapability                        =  ((int) PropertyType.Binary)  | (0x3904 << 16);
 
 
@@ -866,7 +901,9 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int AbDefaultDir                             =  ((int) PropertyType.Binary)  | (0x3D06 << 16);
 		[MapiPropDef] public const int AbDefaultPab                             =  ((int) PropertyType.Binary)  | (0x3D07 << 16);
 
+		[Obsolete]
 		[MapiPropDef] public const int FilteringHooks                           =  ((int) PropertyType.Binary)  | (0x3D08 << 16);
+
 		[MapiPropDef] public const int ServiceName                              =  ((int) PropertyType.TString) | (0x3D09 << 16);
 		[MapiPropDef] public const int ServiceNameW                             =  ((int) PropertyType.Unicode) | (0x3D09 << 16);
 		[MapiPropDef] public const int ServiceNameA                             =  ((int) PropertyType.String8) | (0x3D09 << 16);
@@ -907,8 +944,13 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int StatusString                             =  ((int) PropertyType.TString) | (0x3E08 << 16);
 		[MapiPropDef] public const int StatusStringW                            =  ((int) PropertyType.Unicode) | (0x3E08 << 16);
 		[MapiPropDef] public const int StatusStringA                            =  ((int) PropertyType.String8) | (0x3E08 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int X400DeferredDeliveryCancel               = ((int) PropertyType.Boolean)  | (0x3E09 << 16);
+
+		[Obsolete]
 		[MapiPropDef] public const int HeaderFolderEntryId                      =  ((int) PropertyType.Binary)  | (0x3E0A << 16);
+
 		[MapiPropDef] public const int RemoteProgress                           =  ((int) PropertyType.Long)    | (0x3E0B << 16);
 		[MapiPropDef] public const int RemoteProgressText                       =  ((int) PropertyType.TString) | (0x3E0C << 16);
 		[MapiPropDef] public const int RemoteProgressTextW                      =  ((int) PropertyType.Unicode) | (0x3E0C << 16);

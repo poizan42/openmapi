@@ -26,19 +26,29 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace NMapi.Utility {
+namespace NMapi.DirectoryModel {
 
+	/// <summary>
+	///   
+	/// </summary>
 	public static class PathHelper
 	{
+		
+		/// <summary>
+		///   
+		/// </summary>
 		public const char PathSeparator = '/';
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string ResolveAbsolutePath (string path)
 		{
 			if (path == null || path.Length == 0)
-				throw new Exception ("Path must not be empty!");
+				throw new ArgumentException ("Path must not be empty!");
 
 			if (path [0] != '/')
-				throw new Exception ("Path must start with '/'!");
+				throw new ArgumentException ("Path must start with '/'!");
 
 			List<string> list = new List<string> ();
 			string[] parts = path.Split (PathSeparator);
@@ -60,6 +70,9 @@ namespace NMapi.Utility {
 			return Array2Path (list.ToArray ());
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string Combine (string path, string path2)
 		{
 			if (path == null || path == String.Empty)
@@ -69,6 +82,9 @@ namespace NMapi.Utility {
 			return ResolveAbsolutePath (path + PathSeparator + path2);
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string[] Path2Array (string path)
 		{
 			List<string> list = new List<string> ();
@@ -79,6 +95,9 @@ namespace NMapi.Utility {
 			return list.ToArray ();
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string Array2Path (string[] array)
 		{
 			if (array.Length == 0)
@@ -91,6 +110,9 @@ namespace NMapi.Utility {
 			return builder.ToString ();
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string GetParent (string path)
 		{
 			string[] parts = PathHelper.Path2Array (path);
@@ -108,6 +130,9 @@ namespace NMapi.Utility {
 			return builder.ToString ();
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
 		public static string GetLast (string path)
 		{
 			string[] parts = Path2Array (path);

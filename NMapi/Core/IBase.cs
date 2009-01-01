@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - IBase.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -33,7 +32,9 @@ namespace NMapi {
 	/// </summary>
 	public interface IBase : IDisposable
 	{
-		void Dispose ();
+		/// <summary>
+		///  
+		/// </summary>
 		void Close ();
 	}
 

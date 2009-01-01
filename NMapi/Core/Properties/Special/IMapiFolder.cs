@@ -27,7 +27,7 @@ namespace NMapi.Properties.Special {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 
 	using NMapi.Interop;
 	using NMapi.Flags;

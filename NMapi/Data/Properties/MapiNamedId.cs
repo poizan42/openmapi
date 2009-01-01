@@ -26,7 +26,8 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;
@@ -45,13 +46,10 @@ namespace NMapi.Properties {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class MapiNameId : XdrAble
+	public abstract class MapiNameId : IXdrEncodeable
 	{
 		private NMapiGuid lpguid;
-		private MnId _ulKind;
-		private UKind _kind; // This collides with the C#-ification rules....
-	
-		#region C#-ifycation
+		private MnId ulKind;
 
 		[DataMember (Name="Guid")]
 		public NMapiGuid  Guid {
@@ -65,35 +63,19 @@ namespace NMapi.Properties {
 		/// </summary>
 		[DataMember (Name="UlKind")]
 		public MnId  UlKind {
-			get { return _ulKind; }
-			set { _ulKind = value; }
+			get { return ulKind; }
+			set { ulKind = value; }
 		}
 		
-		/// <summary>
-		///  The usual naming conventions can't be used here!
-		///  UKind is the same as "Kind" in jumapi.
-		/// </summary>
-		[DataMember (Name="UKind")]
-		public UKind  UKind {
-			get { return _kind; }
-			set { _kind = value; }
-		}
-		
-		
-		#endregion C#-ifycation
+/*
 
-
-		public MapiNameId () 
-		{
-			_kind = new UKind ();
-		}
-	
 		/// <summary>
 		///   Allocates a MapiNameId array. All MapiNameId 
 		///   elements are initialized.
 		/// </summary>
 		/// <param name="count">The size of the array</param>
-		/// <returns>MapiNameId</returns>
+		/// <returns>MapiNameId</returns>
+
 		public static MapiNameId [] HrAllocMapiNameIdArray (int count)
 		{
 			MapiNameId [] ret = new MapiNameId [count];
@@ -102,35 +84,47 @@ namespace NMapi.Properties {
 			return ret;
 		}
 
-		[Obsolete]
-		public MapiNameId (XdrDecodingStream xdr)
+*/
+
+		public MapiNameId ()
 		{
-			XdrDecode(xdr);
 		}
 
 		[Obsolete]
-		public void XdrEncode(XdrEncodingStream xdr)
+		public MapiNameId (XdrDecodingStream xdr)
 		{
-			new LPGuid (lpguid).XdrEncode(xdr);
-			xdr.XdrEncodeInt ( (int) _ulKind);
-			if (_ulKind == MnId.Id)
-				xdr.XdrEncodeInt (_kind.ID);
-			else
-				new LPWStr (_kind.StrName).XdrEncode(xdr);
+			XdrDecode (xdr);
 		}
-	
+
 		[Obsolete]
-		public void XdrDecode(XdrDecodingStream xdr)
+		public static MapiNameId Decode (XdrDecodingStream xdr)
 		{
-			_kind = new UKind ();
-			lpguid = new LPGuid (xdr).value;
-			_ulKind = (MnId) xdr.XdrDecodeInt ();
-			if (_ulKind == MnId.Id)
-				_kind.ID = xdr.XdrDecodeInt ();
-			else
-				_kind.StrName = new LPWStr (xdr).value;
+			Trace.WriteLine ("XdrDecode called: MapiNameId");
+			
+			NMapiGuid guid = new LPGuid (xdr).Value;
+			MnId ulKind = (MnId) xdr.XdrDecodeInt ();
+			MapiNameId result = null;
+			switch (ulKind) {
+				case MnId.String: result = new StringMapiNameId (xdr); break;
+				case MnId.Id: result = new NumericMapiNameId (xdr); break;
+			}
+			result.Guid = guid;
+			result.UlKind = ulKind;
+			return result;			
 		}
-	
+		
+		[Obsolete]
+		public virtual void XdrEncode (XdrEncodingStream xdr)
+		{
+			Trace.WriteLine ("XdrEncode called: MapiNameId");
+			// must be called by derived classes!
+			new LPGuid (lpguid).XdrEncode (xdr);
+			xdr.XdrEncodeInt ((int) ulKind);
+		}
+		
+		[Obsolete] public virtual void XdrDecode (XdrDecodingStream xdr)
+		{
+		}
 	}
 
 }

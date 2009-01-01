@@ -26,7 +26,7 @@ namespace NMapi.Properties {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -48,7 +48,7 @@ namespace NMapi.Properties {
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		MapiError GetLastError (int hresult, int flags);
-
+	
 		/// <summary>
 		///  Saves all changes.
 		/// </summary>
@@ -135,65 +135,6 @@ namespace NMapi.Properties {
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		SPropTagArray GetIDsFromNames (MapiNameId [] propNames, int flags);
-
-		/// <summary>
-		///   A helper to get one property.
-		/// </summary>
-		/// <param name="tag">The property to get.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		SPropValue HrGetOneProp (int tag);
-
-		/// <summary>
-		///  Same as <see cref="M:IMapiProp.HrGetOneProp()">HrGetOneProp</see>, 
-		///  but returns null in the case of not found.
-		/// </summary>
-		/// <param name="tag">The property to get.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		SPropValue HrGetOnePropNull (int tag);
-
-		/// <summary>
-		///  A helper to set one property. 
-		/// </summary>
-		/// <param name="prop">The property to set.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		void HrSetOneProp (SPropValue prop);
-
-		/// <summary>
-		///  A helper to delete one property. 
-		/// </summary>
-		/// <param name="propTag">The property to delete.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		void HrDeleteOneProp (int propTag);
-	
-		/// <summary>
-		///  A helper to get one named property. If you have more than one named
-		///  property please use <see cref="M:IMapi'Prop.GetIDsFromNames()">GetIDsFromNames</see>.
-		///  Strings are returned as unicode.
-		/// </summary>
-		/// <param name="mnid">The MapiNameId structure describing the property.</param>
-		/// <returns>The property value.</returns>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		SPropValue HrGetNamedProp (MapiNameId mnid);
-
-		/// <summary>
-		///  A helper to get one named property. If you have more than one named 
-		///  property please use <see cref="M:IMapi'Prop.GetIDsFromNames()">GetIDsFromNames</see>.
-		///  Strings are returned as unicode.
-		/// </summary>
-		/// <param name="guid">The namespace/guid</param>
-		/// <param name="name">The name</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		SPropValue HrGetNamedProp (NMapiGuid guid, string name);
-
-		/// <summary>
-		///  A helper to get one named property. If you have more than one named 
-		///  property please use <see cref="M:IMapi'Prop.GetIDsFromNames()">GetIDsFromNames</see>.
-		///  Strings are returned as unicode.
-		/// </summary>
-		/// <param name="guid">The namespace/guid</param>
-		/// <param name="id">The identifier</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		SPropValue HrGetNamedProp (NMapiGuid guid, int id);
 
 	}
 }

@@ -125,10 +125,8 @@ namespace NMapi.Linq {
 			switch (unaryExpr.NodeType) {
 				case ExpressionType.Not:
 					if (qstate.CurrentCommand == CommandType.Where) {
-						currentRestriction.Rt = RestrictionType.Not;
-						currentRestriction.Res.ResNot = new SNotRestriction ();
-						currentRestriction.Res.ResNot.Res = new SRestriction ();
-						currentRestriction = currentRestriction.Res.ResNot.Res;
+						currentRestriction = new SNotRestriction ();
+						currentRestriction = ((SNotRestriction) currentRestriction).Res;
 						currentRestrictionUsed = true;
 						this.Visit (unaryExpr.Operand);
 					}
@@ -155,7 +153,6 @@ namespace NMapi.Linq {
 					RemoveQuotes (methodCallExpr.Arguments[1]);
 
 			qstate.CurrentCommand = CommandType.Where;
-			currentRestriction = new SRestriction ();
 			currentRestrictionUsed = false;
 			this.Visit (lambda.Body);
 
@@ -385,13 +382,11 @@ namespace NMapi.Linq {
 				throw new NotSupportedException ("Argument must " + 
 					"be constant and not null!");
 
-			SContentRestriction contentRestriction = new SContentRestriction ();
-			contentRestriction.FuzzyLevel = FuzzyLevel.Substring;
-			contentRestriction.PropTag = (int) prop.Type;
-			contentRestriction.Prop = MakeSPropValue (prop.Type, matchStrExpr.Value);
-
-			currentRestriction.Rt = RestrictionType.Content;
-			currentRestriction.Res.ResContent = contentRestriction;
+			currentRestriction = new SContentRestriction ();
+			((SContentRestriction) currentRestriction).FuzzyLevel = FuzzyLevel.Substring;
+			((SContentRestriction) currentRestriction).PropTag = (int) prop.Type;
+			((SContentRestriction) currentRestriction).Prop = MakeSPropValue (prop.Type, matchStrExpr.Value);
+			
 			currentRestrictionUsed = true;
 
 			return methodCallExpr;
@@ -466,9 +461,7 @@ namespace NMapi.Linq {
 			if (left is PropertyExpression && right is PropertyExpression) {
 				var prop1 = GetMapiPropertyAttribute (((PropertyExpression) left).Name);
 				var prop2 = GetMapiPropertyAttribute (((PropertyExpression) right).Name);
-				currentRestriction.Rt = RestrictionType.CompareProps;
-				currentRestriction.Res.ResCompareProps = 
-					BuildComparePropsRestriction (prop1, relOp, prop2);
+				currentRestriction = BuildComparePropsRestriction (prop1, relOp, prop2);
 				currentRestrictionUsed = true;
 			} else {
 				PropertyExpression propExpr = left as PropertyExpression;
@@ -482,9 +475,7 @@ namespace NMapi.Linq {
 						"One parameter must be a Property!");
 				MapiPropertyAttribute prop = GetMapiPropertyAttribute (propExpr.Name);
 
-				currentRestriction.Rt = RestrictionType.Property;
-				currentRestriction.Res.ResProperty = 
-					BuildPropertyRestriction (prop, relOp, constExpr.Value);
+				currentRestriction = BuildPropertyRestriction (prop, relOp, constExpr.Value);
 				currentRestrictionUsed = true;
 			}
 
@@ -526,31 +517,21 @@ namespace NMapi.Linq {
 
 		private SPropValue MakeSPropValue (PropertyType propertyType, object value)
 		{
-			SPropValue spropVal = new SPropValue ();
-			spropVal.Value = new UPropValue ();
-			spropVal.PropTag = (int) propertyType;
-			spropVal.Value.SetByType (propertyType, value);
-			return spropVal;
+			return SPropValue.Make (propertyType, value);
 		}
 
 
 		private void ConstructAndRestriction (BinaryExpression binaryExpr)
 		{
-			currentRestriction.Rt = RestrictionType.And;
 			SRestriction[] children = new SRestriction [2];
-			children [0] = new SRestriction ();
-			children [1] = new SRestriction ();
-			SAndRestriction and = new SAndRestriction (children);
-			currentRestriction.Res.ResAnd = and;
-			SRestriction backup = currentRestriction;
-			currentRestriction = new SRestriction ();
 
 			this.Visit (binaryExpr.Left);
 			children [0] = currentRestriction;
-			currentRestriction = new SRestriction ();
+
 			this.Visit (binaryExpr.Right);
 			children [1] = currentRestriction;
-			currentRestriction = backup;
+			
+			currentRestriction = new SAndRestriction (children);
 			currentRestrictionUsed = true;
 		}
 
@@ -561,21 +542,15 @@ namespace NMapi.Linq {
 
 		private void ConstructOrRestriction (BinaryExpression binaryExpr)
 		{
-			currentRestriction.Rt = RestrictionType.Or;
 			SRestriction[] children = new SRestriction [2];
-			children [0] = new SRestriction ();
-			children [1] = new SRestriction ();
-			SOrRestriction or = new SOrRestriction (children);
-			currentRestriction.Res.ResOr = or;
-			SRestriction backup = currentRestriction;
-			currentRestriction = new SRestriction ();
 
 			this.Visit (binaryExpr.Left);
 			children [0] = currentRestriction;
-			currentRestriction = new SRestriction ();
+			
 			this.Visit (binaryExpr.Right);
 			children [1] = currentRestriction;
-			currentRestriction = backup;
+			
+			currentRestriction = new SOrRestriction (children);
 			currentRestrictionUsed = true;
 		}
 

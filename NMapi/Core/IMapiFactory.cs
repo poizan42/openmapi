@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - IMapiFactory.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -30,6 +29,9 @@ using NMapi.Properties.Special;
 
 namespace NMapi {
 
+	/// <summary>
+	///
+	/// </summary>
 	public interface IMapiFactory
 	{
 		// experimental

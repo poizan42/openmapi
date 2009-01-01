@@ -1,10 +1,9 @@
 //
-// openmapi.org - NMapi C# Mapi API - LPGuid.cs
+// openmapi.org - NMapi C# Mapi API - AdrList.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -23,9 +22,11 @@
 //
 
 using System;
+using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;
@@ -33,51 +34,30 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi.Interop {
+namespace NMapi {
 
-	/// <summary>
-	///  For internal use only.
-	/// </summary>
-	public sealed class LPGuid : XdrAble
+	public partial class AdrList
 	{
-
-		public NMapiGuid value;
-
-		/// <summary>
-		///
-		/// </summary>
-		public LPGuid ()
+		public AdrList (SRowSet rows)
 		{
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public LPGuid (NMapiGuid value)
-		{
-			this.value = value;
-		}
-
-		public LPGuid (XdrDecodingStream xdr)
-		{
-			XdrDecode (xdr);
-		}
-
-
-		[Obsolete]
-		public void XdrEncode (XdrEncodingStream xdr)
-		{
-			if ( value != null ) {
-				xdr.XdrEncodeBoolean (true);
-				value.XdrEncode (xdr);
+			aEntries = new AdrEntry [rows.ARow.Length];
+			for (int i = 0; i < rows.ARow.Length; i++) {
+				aEntries [i] = new AdrEntry ();
+				aEntries [i].PropVals = rows.ARow [i].Props;
+				aEntries [i].Reserved1 = 0;
 			}
-			else
-				xdr.XdrEncodeBoolean (false);
 		}
 
-		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr) {
-			value = xdr.XdrDecodeBoolean() ? new NMapiGuid (xdr) : null;
+		/// <summary>
+		///  Allocates a AdrList for <param name="count">count</param> 
+		///  entries. The AEntries array also gets allocated, you only 
+		///  have to provide the properties. 
+		/// </summary>
+		internal AdrList (int count)
+		{
+			aEntries = new AdrEntry [count];
+			for (int i = 0; i < count; i++)
+				aEntries [i] = new AdrEntry ();
 		}
 	}
 

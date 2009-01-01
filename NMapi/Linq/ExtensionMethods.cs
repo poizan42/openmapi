@@ -23,12 +23,10 @@
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Collections.Generic;
 
 using NMapi.Table;
-
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace NMapi.Linq {
 

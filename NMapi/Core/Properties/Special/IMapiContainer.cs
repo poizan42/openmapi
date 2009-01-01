@@ -26,7 +26,7 @@ namespace NMapi.Properties.Special {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Flags;
 	using NMapi.Interop;
 	using NMapi.Table;
@@ -102,6 +102,12 @@ namespace NMapi.Properties.Special {
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		GetSearchCriteriaResult GetSearchCriteria (int flags);
+		
+		
+		
+		
+		
+		
 	}
 }
 

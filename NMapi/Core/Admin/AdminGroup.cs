@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - MapiDataStructure.cs
+// openmapi.org - NMapi C# Mapi API - AdminGroup.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -22,27 +22,17 @@
 //
 
 using System;
-using System.Runtime.Serialization;
-using System.IO;
 
-using RemoteTea.OncRpc;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
-
-namespace NMapi {
+namespace NMapi.Admin {
 
 	/// <summary>
 	///  
 	/// </summary>
-
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class MapiDataStructure
+	public sealed class AdminGroup : MarshalByRefObject
 	{
-
+		public string Id { get; set; }
+		public string Comment { get; set; }
 	}
 
 }
+

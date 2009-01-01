@@ -37,8 +37,8 @@ namespace NMapi.Meta {
 			Dictionary<int, SPropValue> someProps)
 		{
 			if (obj != null) {
-				var spropVal = someProps [Property.EntryId];
-				var eid = spropVal.Value.Binary.ToHexString ();
+				var spropVal = (BinaryProperty) someProps [Property.EntryId];
+				var eid = spropVal.Value.ToHexString ();
 				return "ENTRY_ID: " + eid;
 			}
 			return null;
@@ -58,10 +58,7 @@ namespace NMapi.Meta {
 
 			// TODO:
 			// Only if best interface is IMapiProp => return match!
-
 			return MatchLevel.Match;
-
-			return MatchLevel.CanHandleLevel1;
 		}
 
 	}

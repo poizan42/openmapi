@@ -155,10 +155,7 @@ namespace NMapi.Linq {
 				return andList [0];
 			SAndRestriction joined = new SAndRestriction ();
 			joined.Res = andList.ToArray ();
-			SRestriction rest = new SRestriction ();
-			rest.Rt = RestrictionType.And;
-			rest.Res.ResAnd = joined;
-			return rest;
+			return joined;
 		}
 
 /*
@@ -270,8 +267,7 @@ namespace NMapi.Linq {
 				case RelOp.Re: opName = "REGEX"; break;
 			}
 			Console.Write (" " + opName + " ");
-			Console.Write ("\"" + propRes.Prop.Value.GetByType (
-				PropertyTypeHelper.PROP_TYPE (propRes.Prop.PropTag)) + "\")");
+			Console.Write ("\"" + propRes.Prop.GetValueObj () + "\")");
 		}
 
 		private void PrintPropProp (SComparePropsRestriction propRes)
@@ -285,25 +281,13 @@ namespace NMapi.Linq {
 				Console.Write ("NULL");
 				return;
 			}
-			switch (res.Rt) {
-				case RestrictionType.And:
-					PrintAnd (res.Res.ResAnd);
-				break;
-				case RestrictionType.Not:
-					PrintNot (res.Res.ResNot);
-				break;
-				case RestrictionType.Or:
-					PrintOr (res.Res.ResOr);
-				break;
-				case RestrictionType.Property:
-					PrintPropConst (res.Res.ResProperty);
-				break;
-				case RestrictionType.CompareProps:
-					PrintPropProp (res.Res.ResCompareProps);
-				break;
-				default:
-					throw new NotSupportedException ("unknown operator:" + res.Rt);
-			}
+			if (res is SAndRestriction) PrintAnd ((SAndRestriction) res);
+			else if (res is SNotRestriction) PrintNot ((SNotRestriction) res);
+			else if (res is SOrRestriction) PrintOr ((SOrRestriction) res);
+			else if (res is SPropertyRestriction) PrintPropConst ((SPropertyRestriction) res);
+			else if (res is SComparePropsRestriction) PrintPropProp ((SComparePropsRestriction) res);
+			else
+				throw new NotSupportedException ("unknown SRestriction!");
 		}
 
 		private void PrintOrderBy ()

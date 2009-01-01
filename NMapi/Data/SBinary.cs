@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - SBinary.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 VipCom AG, Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -26,7 +26,9 @@ using System;
 using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -42,9 +44,9 @@ namespace NMapi {
 	/// <remarks>
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms528837.aspx
 	/// </remarks>
-
+	
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class SBinary : XdrAble
+	public sealed class SBinary : IXdrAble
 	{
 		private string hexString = null;
 		private byte[] _lpb; // Do NOT access directly!
@@ -108,7 +110,7 @@ namespace NMapi {
 				return hexString;
 			string ret = "";
 			for (int i = 0; i < lpb.Length; i++) {
-				int    c = ((int)lpb[i]) & 0xff;
+				int    c = ((int) lpb[i]) & 0xff;
 				string num = c.ToString ("x");;
 				if (num.Length < 2)
 					num = "0" + num;
@@ -136,15 +138,17 @@ namespace NMapi {
 		[Obsolete]
 		public void XdrEncode(XdrEncodingStream xdr)
 		{
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (lpb == null)
-				xdr.XdrEncodeDynamicOpaque(new byte[0]);
+				xdr.XdrEncodeDynamicOpaque (new byte[0]);
 			else
-				xdr.XdrEncodeDynamicOpaque(lpb);
+				xdr.XdrEncodeDynamicOpaque (lpb);
 		}
 
 		[Obsolete]
-		public void XdrDecode(XdrDecodingStream xdr)
+		public void XdrDecode (XdrDecodingStream xdr)
 		{
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			lpb = xdr.XdrDecodeDynamicOpaque ();
 			if (lpb.Length == 0)
 				lpb = null;

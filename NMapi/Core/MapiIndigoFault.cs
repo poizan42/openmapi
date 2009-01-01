@@ -26,7 +26,7 @@ namespace NMapi {
 	using System;
 	using System.IO;
 	using System.Net.Sockets;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Flags;
 
 	using System.ServiceModel;

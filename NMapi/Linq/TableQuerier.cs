@@ -105,7 +105,7 @@ namespace NMapi.Linq {
 
 			object result;
 			for (int i = 0; i < tags.Count; i++) {
-				result = row.Props [i].Value.GetByType (types [i]);
+				result = row.Props [i].GetValueObj ();
 				propList [i].SetValue (entity, result, null);
 			}
 			((IMapiEntity) entity).MarkAsUnchanged ();
@@ -263,7 +263,7 @@ namespace NMapi.Linq {
 					if (rows.Count == 0)
 						throw new MapiException ("No match!", Error.NotFound);
 					PropertyType propType = PropertyTypeHelper.PROP_TYPE (state.ScalarQueriedProperty);
-					result = rows [0].Props [0].Value.GetByType (propType);
+					result = rows [0].Props [0].GetValueObj ();
 
 				} finally {
 					SetSelectedColumns (); // reset
@@ -274,14 +274,14 @@ namespace NMapi.Linq {
 		}
 
 		// Reverse doesn't matter
-		private UPropValue SumCount (out int columnCount)
+		private object SumCount (out int columnCount)
 		{
 			if (state.ScalarQueriedProperty == -1)
 				throw new Exception ("No operand (property) " 
 					+ "set for scalar operation!");
 			columnCount = 0;
 
-			UPropValue result = new UPropValue (0);
+			object result = null;
 			try {
 				table.SetColumns (new SPropTagArray (state.ScalarQueriedProperty), 0);
 				// Ensure correct start.
@@ -292,7 +292,30 @@ namespace NMapi.Linq {
 						break;
 					foreach (SRow row in rows) {
 						columnCount++;
-						result += row.Props [0].Value;
+						
+						SPropValue prop = row.Props [0];
+						
+						if (result == null) {
+							if (prop is IntProperty)
+								result = new Int32 ();
+							else if (prop is FloatProperty)
+								result = new FloatProperty ();
+							else if (prop is DoubleProperty)
+								result = new DoubleProperty ();
+							else if (prop is ShortProperty)
+								result = new ShortProperty ();
+						}
+						
+						if (prop is IntProperty)
+							result = ((int) result) + ((IntProperty) row.Props [0]).Value;
+						else if (prop is IntProperty)
+							result = ((float) result) + ((FloatProperty) row.Props [0]).Value;
+						else if (prop is IntProperty)
+							result = ((double) result) + ((DoubleProperty) row.Props [0]).Value;
+						else if (prop is IntProperty)
+							result = ((short) result) + ((ShortProperty) row.Props [0]).Value;
+						else
+							throw new ArgumentException ("only numerical types can be aggregated.");
 					}
 				}
 			} finally {
@@ -308,9 +331,7 @@ namespace NMapi.Linq {
 		internal object Sum {
 			get {
 				int ignore;
-				UPropValue value = SumCount (out ignore);
-				PropertyType propType = PropertyTypeHelper.PROP_TYPE (state.ScalarQueriedProperty);
-				return value.GetByType (propType);
+				return SumCount (out ignore);
 			}
 		}
 		
@@ -320,9 +341,10 @@ namespace NMapi.Linq {
 		internal object Average {
 			get {
 				int total;
-				UPropValue value = SumCount (out total) / (new UPropValue (total));
-				PropertyType propType = PropertyTypeHelper.PROP_TYPE (state.ScalarQueriedProperty);
-				return value.GetByType (propType);
+
+				//return SumCount (out total) / total;
+				throw new Exception ("UNCOMMENT LINE ABOVE AND FIX!"); // TODO
+				
 			}
 		}
 
@@ -451,15 +473,15 @@ namespace NMapi.Linq {
 			if (reverseIndexCache.ContainsKey (entity))
 				return reverseIndexCache [entity];
 
-			var restriction = new SRestriction ();
-			restriction.Rt = RestrictionType.Property;
-			restriction.Res = new URestriction ();
-			restriction.Res.ResProperty = new SPropertyRestriction ();
-			restriction.Res.ResProperty.Prop = new SPropValue ();
-			restriction.Res.ResProperty.Prop.PropTag = Property.EntryId;
-			restriction.Res.ResProperty.Prop.Value.Binary = ((IMapiEntity) entity).EntryId;
-			restriction.Res.ResProperty.PropTag = Property.EntryId;
-			restriction.Res.ResProperty.RelOp = RelOp.Eq;
+			var restriction = new SPropertyRestriction ();
+			
+			var bprop = new BinaryProperty ();
+			bprop.PropTag = Property.EntryId;
+			bprop.Value = ((IMapiEntity) entity).EntryId;
+			restriction.Prop = bprop;
+			
+			restriction.PropTag = Property.EntryId;
+			restriction.RelOp = RelOp.Eq;
 
 			table.FindRow (restriction, Bookmark.Beginning, 0);
 			int index = ReverseIndexIfRequired (table.QueryPosition ().Row); // TODO: Only TXC, probably ...

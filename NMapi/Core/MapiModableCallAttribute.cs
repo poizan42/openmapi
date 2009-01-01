@@ -27,7 +27,7 @@ namespace NMapi {
 
 	public sealed class MapiModableCallAttribute : Attribute
 	{
-		private RemoteCall call;
+		private readonly RemoteCall call;
 
 		public RemoteCall RemoteCall {
 			get { return call; }

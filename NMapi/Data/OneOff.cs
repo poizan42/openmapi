@@ -39,17 +39,29 @@ namespace NMapi {
 	/// </summary> 
 	public sealed class OneOff
 	{
-		readonly byte[] ONE_OFF_UID = {0x81, 0x2b, 0x1f, 0xa4, 0xbe, 0xa3, 0x10, 0x19, 
-						0x9d, 0x6e, 0x00, 0xdd, 0x01, 0x0f, 0x54, 0x02};
+		static readonly byte[] ONE_OFF_UID = { 0x81, 0x2b, 0x1f, 0xa4, 0xbe, 
+			0xa3, 0x10, 0x19, 0x9d, 0x6e, 0x00, 0xdd, 0x01, 0x0f, 0x54, 0x02 };
 
-		const int    ONE_OFF_UNICODE      = 0x8000;
-		const int    ONE_OFF_NO_RICH_INFO = 0x0001;
-		const int    OFFSET_NAME = 24;
+		const int ONE_OFF_UNICODE = 0x8000;
+		const int ONE_OFF_NO_RICH_INFO = 0x0001;
+		const int OFFSET_NAME = 24;
 		const string wc16charset = "UnicodeLittleUnmarked";
 
 		private byte [] bytes;
-		private String  charset;
-		private int     charsize;
+		private string charset;
+		private int charsize;
+
+		public static bool IsOneOffEntryID (byte [] bytes)
+		{
+			if (bytes.Length < ONE_OFF_UID.Length + 4)
+				return false;
+			for (int i = 0; i < ONE_OFF_UID.Length; i++) {
+				if (bytes [i+4] != ONE_OFF_UID [i])
+					return false;
+			}
+			return true;
+		}
+
 
 		/// <summary>
 		///  Create a OneOff from entryid. Assumes charset utf-8 if OneOff is not unicode.
@@ -65,26 +77,21 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="bytes">The entryid</param>
 		/// <param name="charset">The charset to use for conversion</param>
-		///
 
-		public OneOff (byte [] bytes, String charset)
+		public OneOff (byte [] bytes, string charset)
 		{
-			this.bytes   = bytes;
-			this.charset = charset;
-	
-			if (bytes.Length < ONE_OFF_UID.Length + 4)
-				throw new MapiException("invalid oneoff uid");
-			for (int i = 0; i < ONE_OFF_UID.Length; i++) {
-				if (bytes[i+4] != ONE_OFF_UID[i])
-					throw new MapiException("invalid oneoff uid");
-			}
+			if (!IsOneOffEntryID (bytes))
+				throw new MapiException ("invalid oneoff uid");
+
+			this.bytes = bytes;
+			this.charset = charset;		
 
 			if (IsUnicode) {
 				this.charsize = 2;
 				this.charset  = wc16charset;
-			} else {
+			} else
 				this.charsize = 1;
-			}
+
 			// check the data.
 			object tmp = DisplayName;
 			tmp = AddressType;
@@ -100,10 +107,8 @@ namespace NMapi {
 		/// <param name="emailAddress">The amail address (PR_EMAIL_ADDRESS)</param>
 		/// <param name="ulFlags">(MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
 
-		public OneOff (string displayName,
-			      string addressType,
-			      string emailAddress,
-			      int    ulFlags) : 
+		public OneOff (string displayName, string addressType, 
+			string emailAddress, int ulFlags) : 
 			this (displayName, addressType, emailAddress, ulFlags, "utf-8")
 		{
 		}
@@ -112,29 +117,23 @@ namespace NMapi {
 		/// <summary>
 		///  Create a OneOff from address information. Uses charset if MAPI_UNICODE is not specified.
 		/// </summary>
-		/// <param name="displayName The display name (PR_DISPLAY_NAME)</param>
-		/// <param name="addressType The address type (PR_ADDRESS_TYPE)</param>
-		/// <param name="emailAddress The amail address (PR_EMAIL_ADDRESS)</param>
-		/// <param name="ulFlags (MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
+		/// <param name="displayName"> The display name (PR_DISPLAY_NAME)</param>
+		/// <param name="addressType"> The address type (PR_ADDRESS_TYPE)</param>
+		/// <param name="emailAddress"> The amail address (PR_EMAIL_ADDRESS)</param>
+		/// <param name="ulFlags"> (MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
 
-		public OneOff(string displayName, 
-			      string addressType, 
-			      string emailAddress,
-			      int    ulFlags,
-			      string chrset)
+		public OneOff (string displayName, string addressType, 
+			string emailAddress, int ulFlags, string chrset)
 		{
-			int     len = OFFSET_NAME;
-			int     i;
-			int     pos = 0;
+			int len = OFFSET_NAME;
+			int i;
+			int pos = 0;
 			byte [] bytesName, bytesType, bytesMail;
 		
-			if ((ulFlags & Mapi.Unicode) != 0)
-			{
+			if ((ulFlags & Mapi.Unicode) != 0) {
 				charset  = wc16charset;
 				charsize = 2;
-			}
-			else
-			{
+			} else {
 				charset  = chrset;
 				charsize = 1;
 			}
@@ -152,31 +151,29 @@ namespace NMapi {
 		
 			len += bytesName.Length + bytesType.Length + bytesMail.Length;
 				
-			bytes = new byte[len];
-			//ab
+			bytes = new byte [len];
+			// ab
 			pos += 4;
-			//uid
-			for (i = 0; i < ONE_OFF_UID.Length; i++)
-			{
-				bytes[pos++] = ONE_OFF_UID[i];
-			}
-			//wVersion
+			// uid
+			foreach (var item in ONE_OFF_UID)
+				bytes [pos++] = item;
+			// wVersion
 			pos += 2;
-			//wFlags
+			// wFlags
 			pos += 2;
 			if ((ulFlags & NMAPI.MAPI_SEND_NO_RICH_INFO) != 0)
-				bytes[22] = (byte)0x01;
+				bytes[22] = (byte) 0x01;
 			if ((ulFlags & Mapi.Unicode) != 0)
-				bytes[23] = (byte)0x80;
-			//name
+				bytes[23] = (byte) 0x80;
+			// name
 			len = bytesName.Length;
 			Array.Copy (bytesName, 0, bytes, pos, len);
 			pos += len + charsize;
-			//type
+			// type
 			len = bytesType.Length;
 			Array.Copy (bytesType, 0, bytes, pos, len);
 			pos += len + charsize;
-			//mail
+			// mail
 			len = bytesMail.Length;
 			Array.Copy (bytesMail, 0, bytes, pos, len);
 		}
@@ -259,7 +256,7 @@ namespace NMapi {
 			try {
 				return Encoding.GetEncoding (charset).GetString (strbytes);
 			} catch (Exception) {
-				throw new MapiException("charset is: " + charset, 
+				throw new MapiException ("charset is: " + charset, 
 					Error.InvalidParameter);
 			}
 		}

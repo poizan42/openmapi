@@ -1,10 +1,9 @@
 //
-// openmapi.org - NMapi C# Mapi API - UKind.cs
+// openmapi.org - NMapi C# Mapi API - AdminUser.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -22,34 +21,24 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
-using System.Runtime.Serialization;
+using System;
 
-namespace NMapi.Properties {
+namespace NMapi.Admin {
 
 	/// <summary>
-	///  A helper for the MAPINAMEID structure.
+	///  
 	/// </summary>
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class UKind
+	public sealed class AdminUser : MarshalByRefObject
 	{
-		private int lID;
-		private string lpwstrName;
-	
-		[DataMember (Name="ID")]
-		public int ID {
-			get { return lID; }
-			set { lID = value; }
-		}
+		public int Ec { get; set; } // TODO ?
 
-		[DataMember (Name="StrName")]
-		public string StrName {
-			get { return lpwstrName; }
-			set { lpwstrName = value; }
-		}
+		public string Id { get; set; }
+		public string FirstName { get; set; }
+		public string LastName { get; set; }
+		public string Comment { get; set; }
 
-		internal UKind()
-		{
-		}
-	
+		public string[] Groups { get; set; }
 	}
+
 }
+

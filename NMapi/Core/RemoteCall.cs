@@ -54,13 +54,6 @@ namespace NMapi {
 		IMapiProp_DeleteProps,
 		IMapiProp_GetNamesFromIDs,
 		IMapiProp_GetIDsFromNames,
-		IMapiProp_HrGetOneProp,
-		IMapiProp_HrGetOnePropNull,
-		IMapiProp_HrSetOneProp,
-		IMapiProp_HrDeleteOneProp,
-		IMapiProp_HrGetNamedProp,
-		IMapiProp_HrGetNamedProp_2_str,
-		IMapiProp_HrGetNamedProp_2_int,
 		IMapiContainer_GetContentsTable,
 		IMapiContainer_GetHierarchyTable,
 		IMapiContainer_OpenEntry,
@@ -98,6 +91,7 @@ namespace NMapi {
 		IMsgStore_StoreLogoff,
 		IMsgStore_AbortSubmit,
 		IMsgStore_HrOpenIPMFolder,
+		IMapiSession_OpenStore,
 		IMapiSession_GetPrivateStore,
 		IMapiSession_GetPublicStore,
 		IMapiSession_Logon,
@@ -129,7 +123,9 @@ namespace NMapi {
 		IMapiTable_CollapseRow,
 		IMapiTable_WaitForCompletion,
 		IMapiTable_GetCollapseState,
-		IMapiTable_SetCollapseState
+		IMapiTable_SetCollapseState,
+		IStream_GetData,
+		IStream_PutData
 	}
 
 }

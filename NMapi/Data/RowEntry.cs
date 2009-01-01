@@ -26,7 +26,8 @@ using System;
 using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;
@@ -37,7 +38,7 @@ using NMapi.Table;
 namespace NMapi {
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class RowEntry : XdrAble
+	public sealed class RowEntry : IXdrAble
 	{
 		[DataMember (Name="RowFlags")]
 		public int ulRowFlags;
@@ -59,7 +60,8 @@ namespace NMapi {
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
-			xdr.XdrEncodeInt(ulRowFlags);
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			xdr.XdrEncodeInt (ulRowFlags);
 			if (ulRowFlags != EMPTY) {
 				int i, len = rgPropVals.Length;
 				xdr.XdrEncodeInt(len);
@@ -69,19 +71,20 @@ namespace NMapi {
 		}
 
 		[Obsolete]
-		public void XdrDecode(XdrDecodingStream xdr)
+		public void XdrDecode (XdrDecodingStream xdr)
 		{
-			ulRowFlags = xdr.XdrDecodeInt();
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+			ulRowFlags = xdr.XdrDecodeInt ();
 			if (ulRowFlags == EMPTY) 
 				rgPropVals = null;
 			else {
-				int i, len = xdr.XdrDecodeInt();
+				int i, len = xdr.XdrDecodeInt ();
 				if (len == ~0)
 					rgPropVals = null;
 				else {
-					rgPropVals = new SPropValue[len];
+					rgPropVals = new SPropValue [len];
 					for (i = 0; i < len; i++)
-						rgPropVals[i] = new SPropValue (xdr);
+						rgPropVals[i] = SPropValue.Decode (xdr);
 				}
 			}
 		}

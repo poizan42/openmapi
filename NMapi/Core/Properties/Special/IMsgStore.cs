@@ -27,7 +27,7 @@ namespace NMapi.Properties.Special {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -46,37 +46,15 @@ namespace NMapi.Properties.Special {
 			get;
 		}
 
-
 		/// <summary>
 		///  Dispose is disabled for Message-Stores.
 		/// </summary>
-		void Dispose ();
+//		void Dispose ();
 
 		/// <summary>
 		///  Close is disabled for Message-Stores.
 		/// </summary>
-		void Close ();
-
-		/// <summary>
-		///  Registers a new AdviseSink. The AdviseSink will be notified 
-		///  if any changes (filtered by eventMask) occur on the object 
-		///  with the passed entryID. If entryID is null, the entire 
-		///  message store will be watched.
-		/// </summary>
-		/// <remarks>
-		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms528949.aspx
-		/// </remarks>
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		int Advise (byte [] entryID, 
-			NotificationEventType eventMask, IMapiAdviseSink adviseSink);
-
-		/// <summary>
-		///  Unregisters a new AdviseSink.
-		/// </summary>
-		/// <remarks>
-		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms530941.aspx
-		/// </remarks>
-		void Unadvise (int connection);
+//		void Close ();
 
 		/// <summary>
 		///  Returns true if the two Entry-IDs refer to the same object.

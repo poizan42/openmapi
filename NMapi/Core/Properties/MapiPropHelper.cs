@@ -25,7 +25,7 @@ namespace NMapi.Properties {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -52,9 +52,11 @@ namespace NMapi.Properties {
 			tags.PropTagArray = new int [1];
 			tags.PropTagArray [0] = tag;
 			props = imapiProp.GetProps (tags, 0);
-			if (PropertyTypeHelper.PROP_TYPE (props[0].PropTag) == PropertyType.Error)
-				throw new MapiException (props[0].Value.err);
-			return props[0];
+			
+			ErrorProperty errProp = props [0] as ErrorProperty;
+			if (errProp != null)
+				throw new MapiException (errProp.Value);
+			return errProp;
 		}
 
 		/// <summary>
@@ -112,10 +114,12 @@ namespace NMapi.Properties {
 		public SPropValue HrGetNamedProp (MapiNameId mnid)
 		{
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
-			SPropValue []  props = imapiProp.GetProps (imapiProp.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
-				         Mapi.Unicode);
-			if (PropertyTypeHelper.PROP_TYPE (props[0].PropTag) == PropertyType.Error)
-				throw new MapiException (props[0].Value.err);
+			SPropValue []  props = imapiProp.GetProps (
+					imapiProp.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
+					Mapi.Unicode);			
+			ErrorProperty errProp = props [0] as ErrorProperty;
+			if (errProp != null)
+				throw new MapiException (errProp.Value);
 			return props[0];
 		}
 
@@ -129,10 +133,8 @@ namespace NMapi.Properties {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public SPropValue HrGetNamedProp (NMapiGuid guid, string name)
 		{
-			MapiNameId nmid = new MapiNameId ();
-			nmid.UlKind = MnId.String;
+			StringMapiNameId nmid = new StringMapiNameId (name);
 			nmid.Guid = guid;
-			nmid.UKind.StrName = name;
 			return HrGetNamedProp (nmid);
 		}
 
@@ -146,10 +148,8 @@ namespace NMapi.Properties {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public SPropValue HrGetNamedProp (NMapiGuid guid, int id)
 		{
-			MapiNameId nmid = new MapiNameId ();
-			nmid.UlKind = MnId.Id;
+			NumericMapiNameId nmid = new NumericMapiNameId (id);
 			nmid.Guid = guid;
-			nmid.UKind.ID = id;
 			return HrGetNamedProp (nmid);
 		}
 

@@ -213,7 +213,7 @@ namespace NMapi.Linq {
 				using (IMapiProp mapiObj = GetAssociatedIMapiProp (0)) { // 0 = read-only
 					SPropValue spv = null;
 					try {
-						spv = mapiObj.HrGetOneProp (prop.PropertyOrKind);
+						spv = new MapiPropHelper (mapiObj).HrGetOneProp (prop.PropertyOrKind);
 					} catch (MapiException e) {
 						if (e.HResult == Error.NotFound) {
 							// Do nothing
@@ -223,7 +223,7 @@ namespace NMapi.Linq {
 					if (spv == null) { // item doesn't exist!
 						value = null;
 					} else 
-						value = spv.Value.GetByType (prop.Type);
+						value = spv.GetValueObj ();
 				}
 				lazyLoaded.Add (propName);
 				return value;
@@ -282,8 +282,7 @@ namespace NMapi.Linq {
 								// from the server, resulting in a big mess.)
 								continue;
 							}
-							object remote = newVal.Value.GetByType (
-									PropertyTypeHelper.PROP_TYPE (newVal.PropTag));
+							object remote = newVal.GetValueObj ();
 							object local = pInfo.GetValue (this, null);
 							bool areEqual = false;
 							if (local != null)
@@ -370,9 +369,8 @@ namespace NMapi.Linq {
 						typeof (MapiPropertyAttribute), true);
 					if (attribs.Length > 0) {
 						MapiPropertyAttribute prop = attribs [0] as MapiPropertyAttribute;
-						props [i] = new SPropValue (prop.PropertyOrKind);
 						object value = pinfo.GetValue (this, null);
-						props [i].Value.SetByType (prop.Type, value);
+						props [i] = SPropValue.Make ((PropertyType) prop.PropertyOrKind, value);
 						// Console.WriteLine ("Saved " + propName + "!");
 					}
 				}

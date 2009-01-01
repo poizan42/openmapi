@@ -26,7 +26,9 @@ using System;
 using System.Text;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -39,18 +41,22 @@ namespace NMapi.Interop {
 	/// <summary>
 	///  For internal use only.
 	/// </summary>
-	public sealed class LPStr : XdrAble
+	public sealed class LPStr : IXdrAble
 	{
 		public string value;
+		
+		public string Value {
+			get { return value; }
+			set { this.value = value; }
+		}
 		
 		/// <summary>
 		///
 		/// </summary>
 		public LPStr ()
 		{
-			value = null;
 		}
-
+		
 		/// <summary>
 		///
 		/// </summary>
@@ -58,7 +64,7 @@ namespace NMapi.Interop {
 		{
 			this.value = value;
 		}
-
+		
 		public LPStr (XdrDecodingStream xdr)
 		{
 			XdrDecode (xdr);
@@ -67,25 +73,38 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (value == null)
 				xdr.XdrEncodeInt (~0);
 			else {
-				byte[] bytes = Encoding.Default.GetBytes (value +  '\0');
+				
+//				Encoding encoding = (characterEncoding != null) ? 
+//					Encoding.GetEncoding (characterEncoding) : Encoding.GetEncoding (0);
+				Encoding encoding = Encoding.GetEncoding ("windows-1252");
+					
+				byte[] bytes = encoding.GetBytes (value + '\0');
 				int len = bytes.Length;
 
-				xdr.XdrEncodeInt (len - 1);
+				xdr.XdrEncodeInt (len-1);
 				xdr.XdrEncodeOpaque (bytes, len);
+
 			}
 		}
 
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int len = xdr.XdrDecodeInt ();
 			if (len == ~0)
 				value = null;
-			else 
-				value = Encoding.Default.GetString (xdr.XdrDecodeOpaque(len));
+			else {
+				
+//				Encoding encoding = (characterEncoding != null) ? 
+//					Encoding.GetEncoding (characterEncoding) : Encoding.GetEncoding (0);
+				Encoding encoding = Encoding.GetEncoding ("windows-1252");
+				value = encoding.GetString (xdr.XdrDecodeOpaque(len+1)); // TODO: Potiential BUG: Null terminated strings!
+			}
 		}
 	}
 }

@@ -25,13 +25,15 @@
 namespace NMapi {
 
 	using System;
+
 	using System.IO;
 	using System.Net.Sockets;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Flags;
 
 	using System.ServiceModel;
 	using System.Runtime.Serialization;
+	using System.Security.Permissions;
 
 	/// <summary>
 	///  Signals a MAPI error condition. This is equal to a 
@@ -39,12 +41,12 @@ namespace NMapi {
 	/// </summary>
 	/// <remarks>
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms526450.aspx
-
 	/// </remarks>
+	[Serializable]
 	public class MapiException : Exception
 	{
 		private int hresult;
-		private Exception exception         = null;
+		private Exception exception             = null;
 		private IOException ioException         = null;
 		private SocketException socketException = null;
 		private OncRpcException rpcException    = null;
@@ -95,6 +97,38 @@ namespace NMapi {
 		public OncRpcException RpcException {
 			get { return rpcException; }
 		}
+
+		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+		protected MapiException (SerializationInfo info, 
+			StreamingContext context) : base(info, context)
+		{
+			this.hresult = info.GetInt32 ("hresult");
+
+			this.exception = (Exception) info.GetValue ("exception", typeof (Exception));			// TODO!
+			this.ioException = (IOException) info.GetValue ("ioException", typeof (IOException));			// TODO!
+			this.socketException = (SocketException) info.GetValue ("socketException", typeof (SocketException));			// TODO!
+			this.rpcException = (OncRpcException) info.GetValue ("rpcException", typeof (OncRpcException));			// TODO!
+		}
+
+		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
+		public override void GetObjectData (SerializationInfo info, StreamingContext context)
+		{
+			if (info == null)
+				throw new ArgumentNullException ("info");
+
+			info.AddValue ("hresult", this.hresult);
+
+			info.AddValue ("exception", this.exception);			// TODO!
+			info.AddValue ("ioException", this.ioException);			// TODO!
+			info.AddValue ("socketException", this.socketException);			// TODO!
+			info.AddValue ("rpcException", this.rpcException);			// TODO!
+
+			base.GetObjectData (info, context);
+		}
+
+
+
+
 
 		/// <summary>
 		///  Builds a MapiException from an HResult code.
@@ -152,7 +186,6 @@ namespace NMapi {
 		///  Builds a MapiException from an Exception.
 		/// </summary>
 		/// <param name="e">The IOException.</param>
-		/// <param name="hresult">The HRESULT code.</param>
 		public MapiException (string msg, Exception e) : 
 			base (GetErr (Error.CallFailed, msg), e)
 		{
@@ -194,7 +227,8 @@ namespace NMapi {
 			this.hresult = Error.NetworkError;
 			this.socketException = e;
 		}
-		/// <summary>
+
+		/// <summary>
 		///  Builds a MapiException from an SocketException.
 		/// </summary>
 		/// <param name="e">The SocketException.</param>

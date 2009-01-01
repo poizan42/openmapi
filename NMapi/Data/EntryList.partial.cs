@@ -1,10 +1,9 @@
 //
-// openmapi.org - NMapi C# Mapi API - GetEventResult.cs
+// openmapi.org - NMapi C# Mapi API - EntryList.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -22,41 +21,32 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
+using System;
 using System.Runtime.Serialization;
+using System.IO;
 
-namespace NMapi.Events {
+using System.Diagnostics;
+using CompactTeaSharp;
 
-	/// <summary>
-	///
-	/// </summary>
+using NMapi;
+using NMapi.Flags;
+using NMapi.Events;
+using NMapi.Properties;
+using NMapi.Table;
 
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class GetEventResult
-	{	
-		private Notification _lpNotification;
-		private int          _ulConnection;
-	
+namespace NMapi {
+
+	public partial class EntryList
+	{
 		/// <summary>
-		///
+		///  Allocates an ENTRYLIST for <param name="count">count</param> 
+		///  entries. The lbin array also gets allocated, you only have 
+		///  to provide the lpb of <see cref="SBinary">SBinary</see>
 		/// </summary>
-		[DataMember (Name="Notification")]
-		public Notification Notification {
-			get { return _lpNotification; }
-			set { _lpNotification = value; }
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		[DataMember (Name="Connection")]
-		public int Connection {
-			get { return _ulConnection; }
-			set { _ulConnection = value; }
-		}
-
-		internal GetEventResult()
+		public EntryList (int count)
 		{
-		}
-	
+			Bin = new SBinary [count];
+		}	
 	}
+
 }

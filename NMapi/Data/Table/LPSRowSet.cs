@@ -25,7 +25,9 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -38,7 +40,7 @@ namespace NMapi.Interop {
 	/// <summary>
 	///  For internal use only.
 	/// </summary>
-	public sealed class LPSRowSet : XdrAble
+	public sealed class LPSRowSet : IXdrAble
 	{
 		private SRowSet _value;
 
@@ -74,6 +76,7 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (_value == null)
 				xdr.XdrEncodeInt (~0);
 			else {
@@ -86,6 +89,7 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int len = xdr.XdrDecodeInt();
 			if (len == ~0)
 				_value = null;

@@ -26,7 +26,7 @@ namespace NMapi.Properties.Special {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -79,7 +79,8 @@ namespace NMapi.Properties.Special {
 		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms530409.aspx
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		void DeleteAttach (int attachmentNum, IMapiProgress progress, int flags);
+		void DeleteAttach (int attachmentNum, IMapiProgress progress, int flags);
+
 		/// <summary>
 		///  Returns the recipient table.
 		/// </summary>	
@@ -87,7 +88,8 @@ namespace NMapi.Properties.Special {
 		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms531239.aspx
 		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		IMapiTableReader GetRecipientTable (int flags);	
+		IMapiTableReader GetRecipientTable (int flags);
+	
 		/// <summary>
 		///  Changes (or adds and removes, depending on the flags)
 		///  recipients of the current message.

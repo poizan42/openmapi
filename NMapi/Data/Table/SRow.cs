@@ -26,7 +26,9 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -45,7 +47,7 @@ namespace NMapi.Table {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class SRow : XdrAble
+	public class SRow : IXdrAble
 	{	
 		public SPropValue[] lpProps;
 
@@ -88,7 +90,7 @@ namespace NMapi.Table {
 		/// <remarks>
 		///  This method is unique to NMapi.
 		/// </remarks>
-    		public int FindPropertyIndex (int propertyName)
+    	public int FindPropertyIndex (int propertyName)
 		{
 			if (lpProps == null)
 				return -1;
@@ -103,12 +105,13 @@ namespace NMapi.Table {
 
 		internal SRow (XdrDecodingStream xdr)
 		{
-			XdrDecode(xdr);
+			XdrDecode (xdr);
 		}
 
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			int _size = lpProps.Length;
 			xdr.XdrEncodeInt(_size);
 			for (int _idx = 0; _idx < _size; ++_idx)
@@ -118,10 +121,11 @@ namespace NMapi.Table {
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int _size = xdr.XdrDecodeInt();
 			lpProps = new SPropValue[_size];
 			for (int _idx = 0; _idx < _size; ++_idx)
-				lpProps[_idx] = new SPropValue(xdr);
+				lpProps[_idx] = SPropValue.Decode (xdr);
 		}
 	
 	}

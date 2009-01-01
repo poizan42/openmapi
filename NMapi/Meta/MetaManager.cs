@@ -53,6 +53,9 @@ namespace NMapi.Meta {
 			RegisterMeta (new PropMeta ());
 		}
 
+		/// <summary>
+		/// 	
+		/// </summary>
 		public string GetSummary (IBase obj)
 		{
 			var someProps = new Dictionary<int, SPropValue> ();
@@ -80,6 +83,9 @@ namespace NMapi.Meta {
 			return bestHandler.GetSummary (obj, someProps);
 		}
 
+		/// <summary>
+		/// 	
+		/// </summary>
 		public void RegisterMeta (IMetaHandler handler)
 		{
 			if (!handlers.Contains (handler))

@@ -1,10 +1,9 @@
 //
-// openmapi.org - NMapi C# Mapi API - Guid.cs
+// openmapi.org - NMapi C# Mapi API - NMapiGuid.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -26,7 +25,8 @@ using System;
 using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;
@@ -35,32 +35,9 @@ using NMapi.Properties;
 using NMapi.Table;
 
 namespace NMapi {
-
-	/// <summary>
-	///  The GUID structure.
-	/// </summary>
-	/// <remarks>
-	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms526752.aspx
-	/// </remarks>
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class NMapiGuid : XdrAble
+		
+	public partial class NMapiGuid 
 	{
-		[DataMember (Name="Data1")]
-		public int     Data1 { get; set; }
-
-		[DataMember (Name="Data2")]
-		public short   Data2 { get; set; }
-
-		[DataMember (Name="Data3")]
-		public short   Data3 { get; set; }
-
-		[DataMember (Name="Data4")]
-		public byte [] Data4 { get; set; }
-
-		public NMapiGuid () 
-		{
-		}
-
 		public byte[] ToByteArray ()
 		{
 			byte[] result = new byte [16];
@@ -81,30 +58,6 @@ namespace NMapi {
 			Data2 = BitConverter.ToInt16 (bytes, 6);
 			Array.Copy (bytes, 8, Data4, 0, 8);
 		}
-
-		internal NMapiGuid (XdrDecodingStream xdr)
-		{
-			XdrDecode (xdr);
-		}
-
-		[Obsolete]
-		public void XdrEncode (XdrEncodingStream xdr)
-		{
-			xdr.XdrEncodeInt (Data1);
-			xdr.XdrEncodeShort (Data2);
-			xdr.XdrEncodeShort (Data3);
-			xdr.XdrEncodeOpaque (Data4, 8);
-		}
-
-		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr)
-		{
-			Data1 = xdr.XdrDecodeInt ();
-			Data2 = xdr.XdrDecodeShort ();
-			Data3 = xdr.XdrDecodeShort ();
-			Data4 = xdr.XdrDecodeOpaque (8);
-		}
-
 	}
 
 }

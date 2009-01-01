@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;
@@ -41,6 +40,7 @@ namespace NMapi.Flags {
 	{
 		Highlighted = 1,
 		Tagged      = 2,
-		Hidden      = 4,		DelMarked   = 8
+		Hidden      = 4,
+		DelMarked   = 8
 	}
 }

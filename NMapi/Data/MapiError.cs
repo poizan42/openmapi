@@ -26,7 +26,8 @@ using System;
 using System.Runtime.Serialization;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;

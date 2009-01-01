@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - SRestriction.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -26,7 +25,9 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -45,121 +46,29 @@ namespace NMapi.Table {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class SRestriction : XdrAble
-	{	
-		private RestrictionType rt;
-		private URestriction res;
-
-		/// <summary>
-		///   
-		/// </summary>
-		[DataMember (Name="Rt")]
-		public RestrictionType Rt {
-			get { return rt; }
-			set { rt = value; }
-		}
-
-		/// <summary>
-		///   
-		/// </summary>
-		[DataMember (Name="Res")]
-		public URestriction Res {
-			get { return res; }
-			set { res = value; }
-		}
-
-		public SRestriction() 
+	public abstract class SRestriction : IXdrAble
+	{
+		public static SRestriction Decode (XdrDecodingStream xdr)
 		{
-			res = new URestriction ();
-		}
-
-		internal SRestriction(XdrDecodingStream xdr)
-		{
-			XdrDecode(xdr);
-		}
-
-		[Obsolete]
-		public void XdrEncode(XdrEncodingStream xdr)
-		{
-			xdr.XdrEncodeInt ((int)rt);
+			RestrictionType rt = (RestrictionType) xdr.XdrDecodeInt ();
 			switch (rt) {
-			case RestrictionType.CompareProps:
-				res.ResCompareProps.XdrEncode(xdr);
-				break;
-			case RestrictionType.And:
-				res.ResAnd.XdrEncode(xdr);
-				break;
-			case RestrictionType.Or:
-				res.ResOr.XdrEncode(xdr);
-				break;
-			case RestrictionType.Not:
-				res.ResNot.XdrEncode(xdr);
-				break;
-			case RestrictionType.Content:
-				res.ResContent.XdrEncode(xdr);
-				break;
-			case RestrictionType.Property:
-				res.ResProperty.XdrEncode(xdr);
-				break;
-			case RestrictionType.Bitmask:
-				res.ResBitMask.XdrEncode(xdr);
-				break;
-			case RestrictionType.Size:
-				res.ResSize.XdrEncode(xdr);
-				break;
-			case RestrictionType.Exist:
-				res.ResExist.XdrEncode(xdr);
-				break;
-			case RestrictionType.SubRestriction:
-				res.ResSub.XdrEncode(xdr);
-				break;
-			case RestrictionType.Comment:
-				res.ResComment.XdrEncode(xdr);
-				break;
+				case RestrictionType.CompareProps: return new SComparePropsRestriction (xdr);
+				case RestrictionType.And: return new SAndRestriction (xdr);
+				case RestrictionType.Or: return new SOrRestriction (xdr);
+				case RestrictionType.Not: return new SNotRestriction (xdr);
+				case RestrictionType.Content: return new SContentRestriction (xdr);
+				case RestrictionType.Property: return new SPropertyRestriction (xdr);
+				case RestrictionType.Bitmask: return new SBitMaskRestriction (xdr);
+				case RestrictionType.Size: return new SSizeRestriction (xdr);
+				case RestrictionType.Exist: return new SExistRestriction (xdr);
+				case RestrictionType.SubRestriction: return new SSubRestriction (xdr);
+				case RestrictionType.Comment: return new SCommentRestriction (xdr);
 			}
+			throw new Exception ("Shouldn't get here°!");
 		}
 
-		[Obsolete]
-		public void XdrDecode(XdrDecodingStream xdr)
-		{
-			rt = (RestrictionType) xdr.XdrDecodeInt ();
-			res = new URestriction ();
-			switch (rt) {
-			case RestrictionType.CompareProps:
-				res.ResCompareProps = new SComparePropsRestriction(xdr);
-				break;
-			case RestrictionType.And:
-				res.ResAnd = new SAndRestriction(xdr);
-				break;
-			case RestrictionType.Or:
-				res.ResOr = new SOrRestriction(xdr);
-				break;
-			case RestrictionType.Not:
-				res.ResNot = new SNotRestriction(xdr);
-				break;
-			case RestrictionType.Content:
-				res.ResContent = new SContentRestriction(xdr);
-				break;
-			case RestrictionType.Property:
-				res.ResProperty = new SPropertyRestriction(xdr);
-				break;
-			case RestrictionType.Bitmask:
-				res.ResBitMask = new SBitMaskRestriction(xdr);
-				break;
-			case RestrictionType.Size:
-				res.ResSize = new SSizeRestriction(xdr);
-				break;
-			case RestrictionType.Exist:
-				res.ResExist = new SExistRestriction(xdr);
-				break;
-			case RestrictionType.SubRestriction:
-				res.ResSub = new SSubRestriction(xdr);
-				break;
-			case RestrictionType.Comment:
-				res.ResComment = new SCommentRestriction (xdr);
-				break;
-			}
-		}
+		[Obsolete] public virtual void XdrEncode (XdrEncodingStream xdr) { }
+		[Obsolete] public virtual void XdrDecode (XdrDecodingStream xdr) { }
 	
 	}
 

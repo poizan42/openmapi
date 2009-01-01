@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - SPropValue.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -26,7 +25,9 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -45,10 +46,9 @@ namespace NMapi.Properties {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class SPropValue : XdrAble
-	{	
-		private int ulPropTag;
-		private UPropValue value;
+	public abstract class SPropValue : IXdrEncodeable
+	{
+		protected int ulPropTag;
 	
 		/// <summary>
 		///  The property tag.
@@ -61,27 +61,21 @@ namespace NMapi.Properties {
 			get { return ulPropTag; }
 			set { ulPropTag = value; }
 		}
+		
+		public abstract object GetValueObj ();
 
-		/// <summary>
-		///  The Value union.
-		/// </summary>
-		[DataMember (Name="Value")]
-		public UPropValue Value {
-			get { return value; }
-			set { this.value = value; }
-		}
-
-		public SPropValue() 
+		protected SPropValue ()
 		{
 			ulPropTag = Property.Null;
-			value = new UPropValue();
 		}
 
-		public SPropValue (int ulPropTag) 
+		protected SPropValue (int ulPropTag) 
 		{
 			this.ulPropTag = ulPropTag;
-			value = new UPropValue ();
 		}
+
+
+/*
 
 		/// <summary>
 		///  Allocates a SPropValue array. All SPropValue elements are initialized
@@ -92,13 +86,14 @@ namespace NMapi.Properties {
 		public static SPropValue [] HrAllocPropArray (int count)
 		{
 			SPropValue [] ret = new SPropValue[count];
-			for (int i = 0; i < count; i++)
-			{
-				ret[i] = new SPropValue();
+			for (int i = 0; i < count; i++) {
+				ret[i] = new SPropValue ();
 				ret[i].ulPropTag = Property.Null;
 			}
 			return ret;
 		}
+
+*/
 	
 		/// <summary>
 		///   Get the index of a property tag in a property array, or -1 if not found
@@ -119,7 +114,7 @@ namespace NMapi.Properties {
 		///  Returns the property from an array
 		/// </summary>
 		/// <param name="proparray">The array.</param>
-		/// <param name="idx">The index</param>
+		/// <param name="index">The index</param>
 		/// <returns>The property or null if the property
 		///   was marked as not found or the index is -1</returns>
 		// throws MapiException
@@ -129,9 +124,10 @@ namespace NMapi.Properties {
 				return null;
 
 			SPropValue ret  = proparray [index];
-			if (PropertyTypeHelper.PROP_TYPE (ret.ulPropTag) == PropertyType.Error) {
-				if (ret.value.err != Error.NotFound)
-					throw new MapiException (ret.value.err);
+			ErrorProperty errProp = ret as ErrorProperty;
+			if (errProp != null) {
+				if (errProp.Value != Error.NotFound)
+					throw new MapiException (errProp.Value);
 				ret = null;
 			}
 			return ret;
@@ -145,230 +141,135 @@ namespace NMapi.Properties {
 
 		[Obsolete]
 		// throws OncRpcException, IOException 
-		public void XdrEncode(XdrEncodingStream xdr)
+		public virtual void XdrEncode (XdrEncodingStream xdr)
 		{
-			int idx;
-
+			// This must be called by derived classes overriding 
+			//  this method with base.XdrEncode (xdr) ...
 			xdr.XdrEncodeInt (ulPropTag);
-			switch (PropertyTypeHelper.PROP_TYPE (ulPropTag)) {
-				case PropertyType.I2:
-					xdr.XdrEncodeShort(Value.i);
-					break;
-				case PropertyType.I4:
-					xdr.XdrEncodeInt(Value.l);
-					break;
-				case PropertyType.R4:
-					xdr.XdrEncodeFloat(Value.flt);
-					break;
-				case PropertyType.R8:
-					xdr.XdrEncodeDouble(Value.dbl);
-					break;
-				case PropertyType.Currency:
-					new LongLong (Value.cur).XdrEncode(xdr);
-					break;
-				case PropertyType.AppTime:
-					xdr.XdrEncodeDouble(Value.at);
-					break;
-				case PropertyType.Error:
-					xdr.XdrEncodeInt(Value.err);
-					break;
-				case PropertyType.Boolean:
-					xdr.XdrEncodeShort(Value.b);
-					break;
-				case PropertyType.Object:
-					xdr.XdrEncodeInt(Value.x);
-					break;
-				case PropertyType.I8:
-					new LongLong (Value.li).XdrEncode(xdr);
-					break;
-				case PropertyType.String8:
-					new LPStr (Value.lpszA).XdrEncode(xdr);
-					break;
-				case PropertyType.Unicode:
-					new LPWStr (Value.lpszW).XdrEncode(xdr);
-					break;
-				case PropertyType.SysTime:
-					Value.ft.XdrEncode(xdr);
-					break;
-				case PropertyType.ClsId:
-					new LPGuid (Value.lpguid).XdrEncode(xdr);
-					break;
-				case PropertyType.Binary:
-					Value.bin.XdrEncode(xdr);
-					break;
-				case PropertyType.MvI2:
-					xdr.XdrEncodeShortVector(Value.MVi);
-					break;
-				case PropertyType.MvI4:
-					xdr.XdrEncodeIntVector(Value.MVl);
-					break;
-				case PropertyType.MvR4:
-					xdr.XdrEncodeFloatVector(Value.MVflt);
-					break;
-				case PropertyType.MvR8:
-					xdr.XdrEncodeDoubleVector(Value.MVdbl);
-					break;
-				case PropertyType.MvCurrency:
-					xdr.XdrEncodeInt(Value.MVcur.Length);
-					for (idx = 0; idx < Value.MVcur.Length; idx++)
-						new LongLong (Value.MVcur[idx]).XdrEncode(xdr);
-					break;
-				case PropertyType.MvAppTime:
-					xdr.XdrEncodeDoubleVector(Value.MVat);
-					break;
-				case PropertyType.MvSysTime:
-					xdr.XdrEncodeInt(Value.MVft.Length);
-					for (idx = 0; idx < Value.MVft.Length; idx++)
-						Value.MVft[idx].XdrEncode(xdr);
-					break;
-				case PropertyType.MvBinary:
-					xdr.XdrEncodeInt(Value.MVbin.Length);
-					for (idx = 0; idx < Value.MVbin.Length; idx++)
-						Value.MVbin[idx].XdrEncode(xdr);
-					break;
-				case PropertyType.MvString8:
-					xdr.XdrEncodeInt(Value.MVszA.Length);
-					for (idx = 0; idx < Value.MVszA.Length; idx++)
-						new LPStr(Value.MVszA[idx]).XdrEncode(xdr);
-					break;
-				case PropertyType.MvUnicode:
-					xdr.XdrEncodeInt(Value.MVszW.Length);
-					for (idx = 0; idx < Value.MVszW.Length; idx++)
-						new LPWStr (Value.MVszW[idx]).XdrEncode(xdr);
-					break;
-				case PropertyType.MvClsId:
-					xdr.XdrEncodeInt(Value.MVguid.Length);
-					for (idx = 0; idx < Value.MVguid.Length; idx++)
-						Value.MVguid[idx].XdrEncode(xdr);
-					break;
-				case PropertyType.MvI8:
-					xdr.XdrEncodeInt(Value.MVli.Length);
-					for (idx = 0; idx < Value.MVli.Length; idx++)
-						new LongLong (Value.MVli[idx]).XdrEncode(xdr);
-					break;
-				default:
-					xdr.XdrEncodeInt(Value.x);;
-					break;
-			}
 		}
-
+		
 		[Obsolete]
 		// throws OncRpcException, IOException 
-		public void XdrDecode(XdrDecodingStream xdr) 
+		public virtual void XdrDecode (XdrDecodingStream xdr) {}
+		
+		[Obsolete]
+		// throws OncRpcException, IOException 
+		public static SPropValue Decode (XdrDecodingStream xdr) 
 		{
-			int idx, len;
+			Trace.WriteLine ("XdrDecode called: SPropValue");
 
-			Value = new UPropValue ();
-			ulPropTag = xdr.XdrDecodeInt();
-			switch (PropertyTypeHelper.PROP_TYPE (ulPropTag)) {
-				case PropertyType.I2:
-					Value.i = xdr.XdrDecodeShort();
-					break;
-				case PropertyType.I4:
-					Value.l = xdr.XdrDecodeInt();
-					break;
-				case PropertyType.R4:
-					Value.flt = xdr.XdrDecodeFloat();
-					break;
-				case PropertyType.R8:
-					Value.dbl = xdr.XdrDecodeDouble();
-					break;
-				case PropertyType.Currency:
-					Value.cur = new LongLong (xdr).Value;
-					break;
-				case PropertyType.AppTime:
-					Value.at = xdr.XdrDecodeDouble();
-					break;
-				case PropertyType.Error:
-					Value.err = xdr.XdrDecodeInt();
-					break;
-				case PropertyType.Boolean:
-					Value.b = xdr.XdrDecodeShort();
-					break;
-				case PropertyType.Object:
-					Value.x = xdr.XdrDecodeInt();
-					break;
-				case PropertyType.I8:
-					Value.li = new LongLong (xdr).Value;
-					break;
-				case PropertyType.String8:
-					Value.lpszA = new LPStr (xdr).value;
-					break;
-				case PropertyType.Unicode:
-					Value.lpszW = new LPWStr (xdr).value;
-					break;
-				case PropertyType.SysTime:
-					Value.ft = new FileTime (xdr);
-					break;
-				case PropertyType.ClsId:
-					Value.lpguid = new LPGuid(xdr).value;
-					break;
-				case PropertyType.Binary:
-					Value.bin = new SBinary(xdr);
-					break;
-				case PropertyType.MvI2:
-					Value.MVi = xdr.XdrDecodeShortVector();
-					break;
-				case PropertyType.MvI4:
-					Value.MVl = xdr.XdrDecodeIntVector();
-					break;
-				case PropertyType.MvR4:
-					Value.MVflt = xdr.XdrDecodeFloatVector();
-					break;
-				case PropertyType.MvR8:
-					Value.MVdbl = xdr.XdrDecodeDoubleVector();
-					break;
-				case PropertyType.MvCurrency:
-					len = xdr.XdrDecodeInt();
-					Value.MVcur = new long[len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVcur[idx] = new LongLong (xdr).Value;
-					break;
-				case PropertyType.MvAppTime:
-					Value.MVat = xdr.XdrDecodeDoubleVector();
-					break;
-				case PropertyType.MvSysTime:
-					len = xdr.XdrDecodeInt();
-					Value.MVft = new FileTime [len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVft[idx] = new FileTime (xdr);
-					break;
-				case PropertyType.MvString8:
-					len = xdr.XdrDecodeInt();
-					Value.MVszA = new String[len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVszA[idx] = new LPStr (xdr).value;
-					break;
-				case PropertyType.MvBinary:
-					len = xdr.XdrDecodeInt();
-					Value.MVbin = new SBinary[len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVbin[idx] = new SBinary(xdr);
-					break;
-				case PropertyType.MvUnicode:
-					len = xdr.XdrDecodeInt();
-					Value.MVszW = new String[len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVszW[idx] = new LPWStr (xdr).value;
-					break;
-				case PropertyType.MvClsId:
-					len = xdr.XdrDecodeInt();
-					Value.MVguid = new NMapiGuid [len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVguid[idx] = new NMapiGuid (xdr);
-					break;
-				case PropertyType.MvI8:
-					len = xdr.XdrDecodeInt();
-					Value.MVli = new long[len];
-					for (idx = 0; idx < len; idx++)
-						Value.MVli[idx] = new LongLong (xdr).Value;
-					break;
-				default:
-					Value.x = xdr.XdrDecodeInt();
-					break;
+			int ptag = xdr.XdrDecodeInt ();
+			SPropValue prop = DecodeRest (ptag, xdr);
+			prop.PropTag = ptag; // assigned afterwards ....
+			return prop;
+		}
+		
+		private static SPropValue DecodeRest (int ptag, XdrDecodingStream xdr)
+		{
+			switch (PropertyTypeHelper.PROP_TYPE (ptag)) {
+				case PropertyType.I2: return new ShortProperty (xdr);
+				case PropertyType.I4: return new IntProperty (xdr);
+				case PropertyType.R4: return new FloatProperty (xdr);
+				case PropertyType.R8: return new DoubleProperty (xdr);
+				case PropertyType.Currency: return new CurrencyProperty (xdr);
+				case PropertyType.AppTime: return new AppTimeProperty (xdr);
+				case PropertyType.Error: return new ErrorProperty (xdr);
+				case PropertyType.Boolean: return new BooleanProperty (xdr);
+				case PropertyType.Object: return new ObjectProperty (xdr);
+				case PropertyType.I8: return new LongProperty (xdr);
+				case PropertyType.String8: return new String8Property (xdr);
+				case PropertyType.Unicode: return new UnicodeProperty (xdr);
+				case PropertyType.SysTime: return new FileTimeProperty (xdr);				
+				case PropertyType.ClsId: return new GuidProperty (xdr);
+				case PropertyType.Binary: return new BinaryProperty (xdr);
+				case PropertyType.MvI2: return new ShortArrayProperty (xdr);
+				case PropertyType.MvI4: return new IntArrayProperty (xdr);
+				case PropertyType.MvR4: return new FloatArrayProperty (xdr);
+				case PropertyType.MvR8: return new DoubleArrayProperty (xdr);
+				case PropertyType.MvCurrency: return new CurrencyArrayProperty (xdr);
+				case PropertyType.MvAppTime: return new AppTimeArrayProperty (xdr);
+				case PropertyType.MvSysTime: return new FileTimeArrayProperty (xdr);
+				case PropertyType.MvString8: return new String8ArrayProperty (xdr);
+				case PropertyType.MvBinary: return new BinaryArrayProperty (xdr);
+				case PropertyType.MvUnicode: return new UnicodeArrayProperty (xdr);
+				case PropertyType.MvClsId: return new GuidArrayProperty (xdr);
+				case PropertyType.MvI8: return new LongArrayProperty (xdr);
+				default: return new XProperty (xdr);
 			}
 		}
-	
+		
+		public static SPropValue Make (PropertyType ptype, object data)
+		{
+			SPropValue val = null;
+			
+			switch (ptype) {
+				case PropertyType.I2: val = new ShortProperty ((short) data); break;
+				case PropertyType.I4: val = new IntProperty ((int) data); break;
+				case PropertyType.R4: val = new FloatProperty ((float) data); break;
+				case PropertyType.R8: val = new DoubleProperty ((double) data); break;
+				case PropertyType.Currency: val = new CurrencyProperty ((long) data); break;
+				case PropertyType.AppTime: val = new AppTimeProperty ((double) data); break;
+				case PropertyType.Error: val = new ErrorProperty ((int) data); break;
+				case PropertyType.Boolean: val = new BooleanProperty ((short) data); break;
+				case PropertyType.Object: val = new ObjectProperty ((int) data); break;
+				case PropertyType.I8: val = new LongProperty ((long) data); break;
+				case PropertyType.String8: val = new String8Property ((string) data); break;
+				case PropertyType.Unicode: val = new UnicodeProperty ((string) data); break;
+				case PropertyType.SysTime: val = new FileTimeProperty ((FileTime) data); break;			
+				case PropertyType.ClsId: val = new GuidProperty ((NMapiGuid) data); break;
+				case PropertyType.Binary: val = new BinaryProperty ((SBinary) data); break;
+				case PropertyType.MvI2: val = new ShortArrayProperty ((short[]) data); break;
+				case PropertyType.MvI4: val = new IntArrayProperty ((int[]) data); break;
+				case PropertyType.MvR4: val = new FloatArrayProperty ((float[]) data); break;
+				case PropertyType.MvR8: val = new DoubleArrayProperty ((double[]) data); break;
+				case PropertyType.MvCurrency: val = new CurrencyArrayProperty ((long[]) data); break;
+				case PropertyType.MvAppTime: val = new AppTimeArrayProperty ((double[]) data); break;
+				case PropertyType.MvSysTime: val = new FileTimeArrayProperty ((FileTime[]) data); break;
+				case PropertyType.MvString8: val = new String8ArrayProperty ((string[]) data); break;
+				case PropertyType.MvBinary: val = new BinaryArrayProperty ((SBinary[]) data); break;
+				case PropertyType.MvUnicode: val = new UnicodeArrayProperty ((string[]) data); break;
+				case PropertyType.MvClsId: val = new GuidArrayProperty ((NMapiGuid[]) data); break;
+				case PropertyType.MvI8: val = new LongArrayProperty ((long[]) data); break;
+				default: val = new XProperty ((int) data); break;
+			}
+			
+			val.ulPropTag = (int) ptype;
+			return val;
+		}
+
 	}
+
+	// crap ...
+
+	public partial class ShortProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class IntProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class FloatProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class DoubleProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class CurrencyProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class AppTimeProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class ErrorProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class BooleanProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class ObjectProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class LongProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class String8Property : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class UnicodeProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class FileTimeProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class GuidProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class BinaryProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class ShortArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class IntArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class FloatArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class DoubleArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class CurrencyArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class AppTimeArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class FileTimeArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class String8ArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class BinaryArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class UnicodeArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class GuidArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+	public partial class LongArrayProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+
+	public partial class XProperty : SPropValue, IXdrAble { public override object GetValueObj () { return Value; } }
+
 
 }

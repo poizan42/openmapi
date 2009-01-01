@@ -25,7 +25,9 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using System.Diagnostics;
+using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -38,7 +40,7 @@ namespace NMapi.Interop {
 	/// <summary>
 	///  For internal use only.
 	/// </summary>
-	public sealed class LPSPropTagArray : XdrAble
+	public sealed class LPSPropTagArray : IXdrAble
 	{
 
 		private SPropTagArray value;
@@ -76,12 +78,13 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
+			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);			
 			if (value == null)
 				xdr.XdrEncodeInt (~0);
 			else {
-				int i, len = value.PropTagArray.Length;
+				int len = value.PropTagArray.Length;
 				xdr.XdrEncodeInt (len);
-				for (i = 0; i < len; i++)
+				for (int i = 0; i < len; i++)
 					xdr.XdrEncodeInt (value.PropTagArray [i]);
 			}
 		}
@@ -89,6 +92,7 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
+			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);			
 			int i, len = xdr.XdrDecodeInt();
 			if (len == ~0)
 				value = null;

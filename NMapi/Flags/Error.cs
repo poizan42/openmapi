@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;
@@ -183,6 +182,11 @@ namespace NMapi.Flags {
 		public const int UMapiSIZE_LIMIT      = UMapiError | 0x000a;
 		public const int UMapiLDAPCFG         = UMapiError | 0x000b;
 		public const int UMapiLDAPERR         = UMapiError | 0x000c;
+		public const int UMapiDIRTY           = UMapiError | 0x000d;
+		public const int UMapiOLE_ATTACH      = UMapiError | 0x000e;
+		public const int UMapiREF_ATTACH      = UMapiError | 0x000f;
+
+
 
 		public static string GetErrorName (int hresult)
 		{
@@ -269,6 +273,9 @@ namespace NMapi.Flags {
 				case UMapiSIZE_LIMIT: return "UMAPI_E_SIZE_LIMIT: Size limit exceeded (body too large?)";
 				case UMapiLDAPCFG: return "UMAPI_E_LDAPCFG: LDAP configuration error";
 				case UMapiSQLERR: return "UMAPI_E_SQLERR: SQL Error. Check umapi-server.log.";
+				case UMapiDIRTY: return "UMAPI_E_DIRTY";
+				case UMapiOLE_ATTACH: return "UMAPI_E_OLE_ATTACH";
+				case UMapiREF_ATTACH: return "UMAPI_E_REF_ATTACH";
 
 				default: return "(no error description)";
 			}

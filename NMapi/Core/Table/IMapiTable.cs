@@ -26,7 +26,7 @@ namespace NMapi.Table {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -43,11 +43,6 @@ namespace NMapi.Table {
 	/// </remarks>
 	public interface IMapiTable : IBase, IAdvisor
 	{
-		/// <summary>
-		///  Implementation of IAdvisor. The first Parameter is IGNORED.
-		/// </summary>
-		int Advise (byte[] ignored, NotificationEventType eventMask, IMapiAdviseSink adviseSink);
-
 		/// <summary>
 		///  TODO
 		/// </summary>

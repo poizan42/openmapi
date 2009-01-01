@@ -26,7 +26,7 @@ namespace NMapi.Properties.Special {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 
 	using NMapi.Flags;
@@ -39,9 +39,9 @@ namespace NMapi.Properties.Special {
 	{
 		private static int[] ResizeArray (int [] oa, int ns) 
 		{
-			int    os = oa.Length;
-			int [] na = new int[ns];
-			int    pr = Math.Min (os, ns);
+			int os = oa.Length;
+			int [] na = new int [ns];
+			int pr = Math.Min (os, ns);
 
 			if (pr > 0)
 				Array.Copy (oa, 0, na, 0, pr);
@@ -57,13 +57,9 @@ namespace NMapi.Properties.Special {
 			try { 
 				fileName = Path.GetTempFileName ();
 				streamsrc = (IStream) source.OpenProperty (propTag,
-					                              Guids.IID_IStream,
-					                              0,
-					                              0);
-				streamdst = (IStream) dest.OpenProperty(propTag,
-					                              Guids.IID_IStream,
-					                              0,
-					                              NMAPI.MAPI_CREATE|Mapi.Modify);
+						Guids.IID_IStream, 0, 0);
+				streamdst = (IStream) dest.OpenProperty (propTag,
+						Guids.IID_IStream, 0, NMAPI.MAPI_CREATE|Mapi.Modify);
 				Stream fs = File.OpenWrite (fileName);
 				streamsrc.GetData (fs);
 				fs.Close ();
@@ -72,7 +68,7 @@ namespace NMapi.Properties.Special {
 				fs.Close ();
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw new MapiException (e);
 			}
 			finally {
 				if (fileName != null)
@@ -102,16 +98,15 @@ namespace NMapi.Properties.Special {
 			srcprops = source.GetProps (new SPropTagArray (srctags), 0);
 			count = 0;
 			for (i = 0; i < srcprops.Length; i++) {
-				if (PropertyTypeHelper.PROP_TYPE(srcprops[i].PropTag) == PropertyType.Error) {
-					int err = srcprops[i].Value.err;
-					if (err == Error.NotEnoughMemory)
-						MyMsgCopyStream(source, dest, srctags[i]); //the streams.
-					else if (err == Error.NotFound) {} // may happen.
-					else {
-						//this is an error.
-						throw new MapiException(srcprops[i].Value.err);
+				
+				ErrorProperty errProp = srcprops [i] as ErrorProperty;
+				if (errProp != null) {
+					switch (errProp.Value) {
+						case Error.NotEnoughMemory: MyMsgCopyStream (source, dest, srctags[i]); break; // the streams.
+						case Error.NotFound: break; // may happen.
+						default: throw new MapiException (errProp.Value); // this is an error.
 					}
-					srcprops[i].PropTag = (int) PropertyType.Null;
+					srcprops [i].PropTag = (int) PropertyType.Null;
 				}
 			}
 			problems = dest.SetProps (srcprops);
@@ -128,9 +123,8 @@ namespace NMapi.Properties.Special {
 		
 			try {
 				MyMsgCopyProps (attachSource, attachDest);
-				if (attachSource.HrGetOneProp (Property.AttachMethod).Value.l == 
-					((int) Attach.EmbeddedMsg))
-				{
+				IntProperty propVal = new MapiPropHelper (attachSource).HrGetOneProp (Property.AttachMethod) as IntProperty;
+				if (propVal.Value == ((int) Attach.EmbeddedMsg)) {
 					msgsrc = (IMessage) attachSource.OpenProperty (Property.AttachDataObj, 
 						Guids.IID_IMessage, 0, 0);
 					msgdst = (IMessage) attachDest.OpenProperty (Property.AttachDataObj,
@@ -186,7 +180,7 @@ namespace NMapi.Properties.Special {
 							idx_num = SPropValue.GetArrayIndex (props, Property.AttachNum);
 						}
 						propnum = SPropValue.GetArrayProp (props, idx_num);
-						MyMsgCopyAttach (messageSource, messageDest, propnum.Value.l);
+						MyMsgCopyAttach (messageSource, messageDest, ((IntProperty) propnum).Value);
 					}
 				}
 			}

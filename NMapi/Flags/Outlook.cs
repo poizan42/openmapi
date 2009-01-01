@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
 
 using NMapi;
 using NMapi.Flags;
@@ -164,6 +163,20 @@ namespace NMapi.Flags {
 		public const int DispidEmail3Address            = 0x80a3;
 		public const int DispidEmail3AddressType        = 0x80a2;
 
+		// F.Roks
+		public const int DispidFileAs                    = 0x8005;
+		public const int DispidSelectedMailingAddress    = 0x8022;
+		public const int DispidHomeAddress               = 0x801a;
+		public const int DispidBusinessAddress           = 0x801b;
+		public const int DispidBusinessAddressStreet     = 0x8045;
+		public const int DispidBusinessAddressCity       = 0x8046;
+		public const int DispidBusinessAddressState      = 0x8047;
+		public const int DispidBusinessAddressPostalCode = 0x8048;
+		public const int DispidBusinessAddressCountry    = 0x8049;
+		public const int DispidOtherAddress              = 0x801c;
+		public const int DispidWebPage                   = 0x802b;
+		public const int DispidIMAddress                 = 0x8062;
+
 
 		public static readonly NMapiGuid PSETID_Common = Guids.DefineOleGuid (
 			0x00062008, (short)0x0000, (short)0x0000);
@@ -234,5 +247,6 @@ namespace NMapi.Flags {
 		public const int DispidInstanceId     = 0x23;
 		public const int DispidAppointment    = 0x24;
 
+		public const int DispidUnknownTime1   = 0x1a; // for blackberry, Exchange does use Property.ClientSubmitTime
 	}
 }

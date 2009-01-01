@@ -36,15 +36,57 @@ namespace NMapi {
 	/// </summary>
 	public interface IMapiSession : IDisposable
 	{
-		void Dispose ();
+		/// <summary>
+		///  
+		/// </summary>
 		void Close () ;
+
+		/// <summary>
+		///  
+		/// </summary>
+		void Logon (string host, int sessionFlags, string user, string password, int codePage);
+
+		/// <summary>
+		///  
+		/// </summary>
 		void Logon (string host, string user, string password);
+		
+		IMsgStore OpenStore (Mdb flags, string user, bool isPublic);
+
+		/// <summary>
+		///  
+		/// </summary>
 		IMsgStore PrivateStore { get; }
+
+		/// <summary>
+		///  
+		/// </summary>
 		IMsgStore PublicStore { get; }
+
+		/// <summary>
+		///  
+		/// </summary>
 		byte [] Identity { get; }
+
+		/// <summary>
+		///  
+		/// </summary>
 		string GetConfig (string category, string id, int flags);
+
+		/// <summary>
+		///  
+		/// </summary>
 		string GetConfigNull (string category, string id, int flags);
-	
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Address ResolveEntryID (byte [] eid);
+
+		/// <summary>
+		///  
+		/// </summary>
+		Address ResolveSmtpAddress (string smtpaddress, string displayname);
 	}
 
 }
