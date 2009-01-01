@@ -62,7 +62,7 @@ namespace NMapi.Tools.Shell {
 
 		public override void Run (CommandContext context)
 		{
-			Console.WriteLine ("set!");
+			driver.WriteLine ("set!");
 
 			string[] prms = ShellUtil.SplitParams (context.Param);
 			if (prms.Length < 2) {

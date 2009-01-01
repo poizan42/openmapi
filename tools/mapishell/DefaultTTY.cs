@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - AbstractBaseCommand.cs
+// openmapi.org - NMapi C# Mapi API - DefaultTTY.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -22,44 +22,31 @@
 //
 
 using System;
+using System.Threading;
+
+using Mono.Terminal;
 
 namespace NMapi.Tools.Shell {
 
-	public abstract class AbstractBaseCommand
+	public sealed class DefaultTTY
 	{
-		protected ShellState state;
-		protected Driver driver;
-
-		public abstract string Name { get; }
-		public abstract string[] Aliases { get; }
-		public abstract string Description { get; }
-		public abstract string Manual { get; }
-		public abstract void Run (CommandContext context);
-
-		public AbstractBaseCommand (Driver driver, ShellState state)
+		public static void Main (string[] args)
 		{
-			this.state = state;
-			this.driver = driver;
-		}
+			LineEditor editor = new LineEditor ("MapiShell");
 
-		internal void RequireMsg (params string[] parameters)
-		{
-			RequireMsg (driver, parameters);
-		}
+			Driver driver = new Driver (args);
+			Thread driverThread = new Thread (new ThreadStart (driver.Start));
+			driverThread.Start ();
 
-		internal static void RequireMsg (Driver driver, params string[] parameters)
-		{
-			driver.Write ("Required parameters: ");
-			int i = 0;
-			foreach (string param in parameters) {
-				driver.Write ("[" + param + "]");
-				if (i < parameters.Length-1)
-					driver.Write (", ");
-				i++;
+			driver.WaitUntilInput ();
+
+			string input = String.Empty;
+			while (true) {
+				input = editor.Edit (driver.CurrentPrefix, String.Empty);
+				driver.PutInputAndWait (input);
 			}
-			driver.WriteLine ();
+
 		}
-		
 	}
 
 }

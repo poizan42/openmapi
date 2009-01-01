@@ -62,7 +62,7 @@ namespace NMapi.Tools.Shell {
 
 		public override void Run (CommandContext context)
 		{
-			Console.WriteLine ("grep!");
+			driver.WriteLine ("grep!");
 
 			if (context.Param == String.Empty) {
 				RequireMsg ("key", "property");

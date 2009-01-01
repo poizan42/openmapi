@@ -58,7 +58,7 @@ namespace NMapi.Tools.Shell {
 
 		public override void Run (CommandContext context)
 		{
-			Console.WriteLine ("expr!"); // TODO
+			driver.WriteLine ("expr!"); // TODO
 		}
 
 	}

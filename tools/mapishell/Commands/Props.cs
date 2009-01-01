@@ -71,7 +71,7 @@ namespace NMapi.Tools.Shell {
 
 			using (IMapiProp obj = state.OpenPropObj (keyName)) {
 				if (obj == null) {
-					Console.WriteLine ("Unknown Key ID!");
+					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
 				var tags = obj.GetPropList (0).PropTagArray;
@@ -80,16 +80,16 @@ namespace NMapi.Tools.Shell {
 					string name = state.PropTag2Name (propTag);
 
 					if (name.Length <= 39) {
-						Console.Write (String.Format ("{0,-40}", name));
+						driver.Write (String.Format ("{0,-40}", name));
 						if ((i % 2) == 0)
-							Console.WriteLine ();
+							driver.WriteLine ();
 					}
 					else
-						Console.WriteLine (name);
+						driver.WriteLine (name);
 
 					i++;
 				}
-				Console.WriteLine ();
+				driver.WriteLine ();
 			}
 		}
 

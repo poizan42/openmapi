@@ -91,16 +91,16 @@ namespace NMapi.Tools.Shell {
 			if (entryIds.Length == 1)
 				return entryIds [0];
 
-			Console.Write ("The key is not unique. Please select correct entry:");
+			state.Driver.WriteLine ("The key is not unique. Please select correct entry:");
 			int i = 0;
 			foreach (SBinary entryId in entryIds) {
-				string displayEntry = entryId.ToString ();
-				Console.WriteLine (i + "  " + displayEntry);
+				string displayEntry = entryId.ToHexString ();
+				state.Driver.WriteLine (i + "  " + displayEntry);
 				i++;
 			}
 			while (true) {
-				Console.Write ("Select: ");
-				string input = Console.ReadLine ();
+				state.Driver.Write ("Select: ");
+				string input = state.Driver.ReadLine ();
 				int index = -1;
 				bool worked = Int32.TryParse (input, out index);
 				if (worked && index >= 0 && index < entryIds.Length)

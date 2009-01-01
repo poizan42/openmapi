@@ -67,7 +67,7 @@ namespace NMapi.Tools.Shell {
 				return;
 			}
 			state.Logging = (context.Param.ToLower () == "on");
-			Console.WriteLine ("Logging is " + ((state.Logging) ? "on" : "off") + ".");
+			driver.WriteLine ("Logging is " + ((state.Logging) ? "on" : "off") + ".");
 		}
 
 	}

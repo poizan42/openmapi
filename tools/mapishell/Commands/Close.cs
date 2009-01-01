@@ -63,13 +63,13 @@ namespace NMapi.Tools.Shell {
 		public override void Run (CommandContext context)
 		{
 			if (state.Session == null) {
-				Console.WriteLine ("ERROR: Session is not open.");
+				driver.WriteLine ("ERROR: Session is not open.");
 				return;
 			}
 			state.CloseSession ();
 			state.Factory = null;
 			if (state.Logging)
-				Console.WriteLine ("Session closed.");
+				driver.WriteLine ("Session closed.");
 		}
 
 	}

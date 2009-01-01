@@ -71,14 +71,14 @@ namespace NMapi.Tools.Shell {
 
 			string providerId = context.Param;
 			if (!state.Providers.ContainsKey (providerId)) {
-				Console.WriteLine ("unknown provider ID.");
+				driver.WriteLine ("unknown provider ID.");
 				return;
 			}
 
 			if (state.Factory != null) {
 				state.CloseSession ();
 				if (state.Logging)
-					Console.WriteLine ("Closed existing session.");
+					driver.WriteLine ("Closed existing session.");
 			}
 
 			state.Factory = ProviderManager.GetFactory (state.Providers [providerId]);
@@ -86,11 +86,11 @@ namespace NMapi.Tools.Shell {
 				state.Session = state.Factory.CreateMapiSession ();
 				state.MapiContext = new MapiContext (state.Session);
 			} catch (MapiException e) {
-				Console.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" + e.Message);
+				driver.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" + e.Message);
 				return;
 			}
 			if (state.Logging)
-				Console.WriteLine ("Session opened for '" + 
+				driver.WriteLine ("Session opened for '" + 
 					ProviderManager.GetName (state.Factory) + "'.");
 		}
 

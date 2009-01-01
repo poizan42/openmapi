@@ -63,7 +63,7 @@ namespace NMapi.Tools.Shell {
 		public override void Run (CommandContext context)
 		{
 			if (state.PathStack.Count == 0) {
-				Console.WriteLine ("ERROR: Directory stack is empty.");
+				driver.WriteLine ("ERROR: Directory stack is empty.");
 				return;
 			}
 			string path = state.PathStack.Pop ();

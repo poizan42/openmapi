@@ -1,5 +1,21 @@
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
+	* tools/mapishell/CommandContext.cs: renamed
+	* tools/mapishell/KeyList.cs: update
+	* tools/mapishell/DefaultTTY.cs: NEW. thread-based driver.
+	* tools/mapishell/CommandArgs.cs: renamed
+	* tools/mapishell/Driver.cs: new input model (thread synchronized)
+	* tools/mapishell/PathHelper.cs: removed
+	* tools/mapishell/AbstractBaseCommand.cs: update
+
+	* tools/mapishell/KeyID.cs
+	* tools/mapishell/ShellState.cs
+
+	* tools/mapishell/Commands/*.cs: update (driver.WriteLine, etc.)
+
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
 	* providers/NMapi.Provider.TeamXChange/AssemblyInfo.cs: update
 	
 	* providers/NMapi.Provider.TeamXChange/AddressBook:

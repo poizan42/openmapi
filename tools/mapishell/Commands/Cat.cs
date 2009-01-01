@@ -72,7 +72,7 @@ namespace NMapi.Tools.Shell {
 			string propName = prms [1];
 			using (IMapiProp obj = state.OpenPropObj (keyName)) {
 				if (obj == null) {
-					Console.WriteLine ("Unknown Key ID!");
+					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
 				int propTag = -1;
@@ -82,14 +82,14 @@ namespace NMapi.Tools.Shell {
 					string fieldName = tmp [1];
 					propTag = state.PropertyLookup.GetValue (typeName, fieldName);
 				} catch (Exception e) {
-					Console.WriteLine ("Invalid/unregistered Property!");
+					driver.WriteLine ("Invalid/unregistered Property!");
 					return;
 				}
 				SPropValue val = null;
 				try {
 					// TODO: Depends on type!
 
-					val = obj.HrGetOneProp (propTag);
+					val = new MapiPropHelper (obj).HrGetOneProp (propTag);
 /*
 
 					IStream streamsrc = null, streamdst = null;
@@ -118,14 +118,14 @@ namespace NMapi.Tools.Shell {
 
 				} catch (MapiException e) {
 					if (e.HResult == Error.NotFound) {
-						Console.WriteLine ("Property does not exist on this object!");
+						driver.WriteLine ("Property does not exist on this object!");
 						return;
 					}
 					throw;
 				}
 				PropertyType type = PropertyTypeHelper.PROP_TYPE (val.PropTag);
-				object data = val.Value.GetByType (type);
-				Console.WriteLine (data);
+				object data = val.GetValueObj ();
+				driver.WriteLine (data);
 			}
 		}
 

@@ -69,7 +69,7 @@ namespace NMapi.Tools.Shell {
 			}
 			string batchFile = ShellUtil.SplitParams (context.Param) [0].Trim ();
 			if (!File.Exists (batchFile)) {
-				Console.WriteLine ("Error: File '" + batchFile + "' not found!");
+				driver.WriteLine ("Error: File '" + batchFile + "' not found!");
 				return;
 			}
 			driver.ExecFile (batchFile);

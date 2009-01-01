@@ -72,12 +72,12 @@ namespace NMapi.Tools.Shell {
 			// null = called at start.
 			if (context != null) {
 				foreach (var pair in state.Providers) {
-					Console.WriteLine ("Found provider: " + 
+					driver.WriteLine ("Found provider: " + 
 						pair.Key + " => " + 
 						pair.Value [1] + 
 						" (Assembly: " + pair.Value [0] + ")\n");
 				}
-				Console.WriteLine ();
+				driver.WriteLine ();
 			}
 		}
 

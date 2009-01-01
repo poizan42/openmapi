@@ -32,6 +32,8 @@ using NMapi.Linq;
 using NMapi.Properties;
 using NMapi.Properties.Special;
 
+using NMapi.DirectoryModel;
+
 namespace NMapi.Tools.Shell {
 
 	public sealed class ShellState
@@ -79,6 +81,10 @@ namespace NMapi.Tools.Shell {
 			variables.DropCurrentScope ();
 
 			currentScope--;
+		}
+
+		internal Driver Driver {
+			get { return driver; }
 		}
 
 
@@ -238,7 +244,7 @@ namespace NMapi.Tools.Shell {
 		internal bool CheckSessionMsg ()
 		{
 			if (session == null) {
-				Console.WriteLine ("Session must be open!");
+				driver.WriteLine ("Session must be open!");
 				return false;
 			}
 			return true;
@@ -247,7 +253,7 @@ namespace NMapi.Tools.Shell {
 		internal bool CheckLoggedOnMsg ()
 		{
 			if (!loggedOn) {
-				Console.WriteLine ("ERROR: Not logged on!");
+				driver.WriteLine ("ERROR: Not logged on!");
 				return false;
 			}
 			return true;
@@ -256,7 +262,7 @@ namespace NMapi.Tools.Shell {
 		internal bool CheckStore ()
 		{
 			if (store == null) {
-				Console.WriteLine ("ERROR: Message-Store not open!");
+				driver.WriteLine ("ERROR: Message-Store not open!");
 				return false;
 			}
 			return true;
@@ -350,8 +356,8 @@ namespace NMapi.Tools.Shell {
 					SPropValue name = SPropValue.GetArrayProp (row.Props, nameIndex);
 					SPropValue eid  = SPropValue.GetArrayProp (row.Props, entryIdIndex);
 
-					if (name != null && name.Value.Unicode == match)
-						return action (parent, eid.Value.Binary);
+					if (name != null && ((UnicodeProperty) name).Value == match)
+						return action (parent, ((BinaryProperty) eid).Value);
 				}
 			}
 			return null;
@@ -415,7 +421,7 @@ namespace NMapi.Tools.Shell {
 			IMapiFolder newFolder = null;
 			newFolder = OpenFolder (path);
 			if (newFolder == null) {
-				Console.WriteLine ("cd: " + path + ": No such folder.");
+				driver.WriteLine ("cd: " + path + ": No such folder.");
 				return false;
 			}
 			currentFolder = newFolder;
@@ -448,7 +454,7 @@ namespace NMapi.Tools.Shell {
 					if (nameIndex == -1)
 						nameIndex = SPropValue.GetArrayIndex (row.Props, Property.DisplayNameW);
 					SPropValue name = SPropValue.GetArrayProp (row.Props, nameIndex);
-					names.Add (name.Value.Unicode);
+					names.Add (((UnicodeProperty) name).Value);
 				}
 			}
 			return names.ToArray ();
@@ -470,7 +476,7 @@ namespace NMapi.Tools.Shell {
 		internal void PerformOperationOnFolder (CommandContext context, Action<IMapiFolder, string> operation)
 		{
 			if (context.Param == String.Empty) {
-				AbstractBaseCommand.RequireMsg ("path");
+				AbstractBaseCommand.RequireMsg (driver, "path");
 				return;
 			}
 
@@ -488,10 +494,10 @@ namespace NMapi.Tools.Shell {
 				operation (parent, folderName);
 			} catch (MapiException e) {
 				if (e.HResult == Error.NotFound) {
-					Console.WriteLine ("Parent not found!");
+					driver.WriteLine ("Parent not found!");
 					return;
 				} else if (e.HResult == Error.NoAccess) {
-					Console.WriteLine ("No permission to create folder!");
+					driver.WriteLine ("No permission to create folder!");
 					return;
 				} else
 					throw;
@@ -520,7 +526,8 @@ namespace NMapi.Tools.Shell {
 					SBinary entryId = null;
 					if (parent != null) {
 						// Source is a folder!
-						entryId = parent.HrGetOneProp (Property.EntryId).Value.Binary;
+						var prop = new MapiPropHelper (parent).HrGetOneProp (Property.EntryId);
+						entryId = ((BinaryProperty) prop).Value;
 						parent.Close ();
 						parent = OpenFolder (srcParentPath);
 
@@ -534,7 +541,7 @@ namespace NMapi.Tools.Shell {
 						parent = OpenFolder (srcParentPath);
 						entryId = keyList.InteractiveResolveEntryID (parent, srcFolderOrFileName);
 						if (entryId == null) {
-							Console.WriteLine ("ERROR: Source file not found!");
+							driver.WriteLine ("ERROR: Source file not found!");
 							return;
 						}
 						EntryList list = new EntryList (new SBinary [] { entryId });
@@ -546,10 +553,10 @@ namespace NMapi.Tools.Shell {
 				
 				} catch (MapiException e) {
 					if (e.HResult == Error.NotFound) {
-						Console.WriteLine ("Parent not found!");
+						driver.WriteLine ("Parent not found!");
 						return;
 					} else if (e.HResult == Error.NoAccess) {
-						Console.WriteLine ("No permission to create folder!");
+						driver.WriteLine ("No permission to create folder!");
 						return;
 					} else
 						throw;
@@ -560,10 +567,10 @@ namespace NMapi.Tools.Shell {
 
 			} catch (MapiException e) {
 				if (e.HResult == Error.NotFound) {
-					Console.WriteLine ("Parent not found!");
+					driver.WriteLine ("Parent not found!");
 					return;
 				} else if (e.HResult == Error.NoAccess) {
-					Console.WriteLine ("No permission to read target folder!");
+					driver.WriteLine ("No permission to read target folder!");
 					return;
 				} else
 					throw;

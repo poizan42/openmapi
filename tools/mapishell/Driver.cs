@@ -24,28 +24,24 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Collections.Generic;
 using System.Reflection;
 
 using NDesk.Options;
-using Mono.Terminal;
 
 using NMapi;
 using NMapi.Meta;
 
 namespace NMapi.Tools.Shell {
 
-	public sealed class Driver
+	public sealed class Driver : MarshalByRefObject, IMapiShell
 	{
 		private const string RC_FILE = ".mashrc";
 
 		private ShellState state;
 		private MetaManager metaMan;
-
-		public static void Main (string [] args)
-		{
-			new Driver (args);
-		}
+		private bool isClosed;
 
 		private Version Version {
 			get {
@@ -83,15 +79,132 @@ namespace NMapi.Tools.Shell {
 				ExecFile (absPath);
 		}
 
-		public Driver (string[] args)
+		public string PromptText {
+			get {
+				return "XXX"; // TODO
+			}
+		}
+
+		public bool IsClosed {
+			get {
+				return isClosed;
+			}
+		}
+
+
+		#region THREAD_SYNC
+
+
+		public void Write (string str)
+		{
+			outputWriter.Write (str);
+		}
+
+		public void WriteLine ()
+		{
+			outputWriter.WriteLine ();
+		}
+
+		public void WriteLine (string str)
+		{
+			outputWriter.WriteLine (str);
+		}
+
+		public void WriteLine (object o)
+		{
+			outputWriter.WriteLine (o);
+		}
+
+		public string ReadLine (string prefix)
+		{
+			currentPrefix = prefix;
+			RequireInput ();
+			WaitUntilInputArrived ();
+			return lastInput;
+		}
+
+		public string ReadLine ()
+		{
+			return ReadLine (String.Empty);
+		}
+
+
+		// TODO
+		private string currentPrefix = String.Empty;
+		private string lastInput = String.Empty;
+
+		private object requireInputMonitor = new Object ();
+		private object inputArrivedMonitor = new Object ();
+
+		private volatile bool waitingForInput;
+
+		public string CurrentPrefix {
+			get { return currentPrefix; }
+		}
+
+		public void WaitUntilInput ()
+		{
+			lock (requireInputMonitor) {
+				waitingForInput = true;
+				Monitor.Wait (requireInputMonitor);
+			}
+
+		}
+
+		private void RequireInput ()
+		{
+			lock (requireInputMonitor) {
+				Monitor.PulseAll (requireInputMonitor);
+			}
+		}
+
+		public void PutInputAndWait (string input)
+		{
+			lock (inputArrivedMonitor) {
+				this.lastInput = input;
+				Monitor.PulseAll (inputArrivedMonitor);
+			}
+			WaitUntilInput ();
+		}
+
+		private void WaitUntilInputArrived ()
+		{
+			lock (inputArrivedMonitor) {
+				Monitor.Wait (inputArrivedMonitor);
+			}
+
+			while (!waitingForInput) {
+				Thread.Sleep (10);
+			}
+		}
+
+		#endregion
+
+		// TODO
+		private TextWriter outputWriter;
+		private string[] args;
+
+		public Driver (string[] args) : this (args, null)
+		{
+		}
+
+		public Driver (string[] args, TextWriter output)
+		{
+			if (output == null)
+				output = Console.Out;
+			this.outputWriter = output;
+			this.args = args;
+		}
+
+		public void Start ()
 		{
 			state = new ShellState (this);
 			metaMan = new MetaManager ();
 
-			Console.WriteLine ("\nOpenMapi.org - MapiShell " +  
+			WriteLine ("\nOpenMapi.org - MapiShell " +  
 						Version.Major + "."  + Version.Minor);
-			Console.WriteLine ("(C) 2008 by Topalis AG, http://www.openmapi.org/\n\n");
-			Console.WriteLine ("For more information, type 'help'.\n");
+			WriteLine ("(C) 2008 by Topalis AG, http://www.openmapi.org/\n\n");
+			WriteLine ("For more information, type 'help'.\n");
 
 			state.Resolver.AddAssembly ("mscorlib", new Version (2, 0));
 			state.Resolver.AddAssembly ("System", new Version (2, 0));
@@ -99,10 +212,10 @@ namespace NMapi.Tools.Shell {
 
 			// Register properties
 
-			Console.Write ("Loading Property names ... ");
+			Write ("Loading Property names ... ");
 			state.PropertyLookup.RegisterClass (typeof (NMapi.Flags.Property).FullName);
 			state.PropertyLookup.RegisterClass (typeof (NMapi.Flags.Outlook).FullName);
-			Console.Write (" OK\n\n");
+			Write (" OK\n\n");
 
 			Assembly asm = Assembly.GetExecutingAssembly ();
 
@@ -132,18 +245,16 @@ namespace NMapi.Tools.Shell {
 			try {
 				rest = p.Parse (args);
 			} catch (OptionException e) {
-				Console.WriteLine ("ERROR: " + e.Message);
+				WriteLine ("ERROR: " + e.Message);
 				return;
 			}
 
 			state.Commands ["providers"].Run (null);
 
-			LineEditor editor = new LineEditor ("MapiShell");
-
 			Func<string, string> getNext = (prefix) => { 
 				if (prefix == null)
 					prefix = "mapi" + StatusString;
-				return editor.Edit (prefix + "> ", "");
+				return ReadLine (prefix + "> ");
 			};
 
 			ExecResource ("default.mss");
@@ -155,7 +266,8 @@ namespace NMapi.Tools.Shell {
 
 			string line;
 			while ((line = getNext (null)) != null)
-				Exec (line, false, getNext);
+				Exec (line, false, getNext); // GETTING next ... TODO!
+
 		}
 
 		internal void Exec (string line, bool echo, 
@@ -170,7 +282,7 @@ namespace NMapi.Tools.Shell {
 				return;
 
 			if (echo && line [0] != '@')
-				Console.WriteLine (line);
+				WriteLine (line);
 			if (line [0] == '@')
 				line = line.Substring (1).TrimStart ();
 
@@ -180,8 +292,8 @@ namespace NMapi.Tools.Shell {
 				if (pos != -1) {
 					string name = line.Substring (1, pos-1).Trim ();
 					string val = line.Substring (pos+1).Trim ();
-					Console.WriteLine (name);
-					Console.WriteLine (val);
+					WriteLine (name);
+					WriteLine (val);
 					// TODO: Support variables in right block!
 					state.Variables.AssignVariable (name, val);
 					return;
@@ -216,7 +328,7 @@ namespace NMapi.Tools.Shell {
 			}
 
 			if (unknown)
-				Console.WriteLine ("Unknown command or function.");				
+				WriteLine ("Unknown command or function.");				
 		}
 
 		private string ResolveVariables (string prms)
@@ -296,16 +408,16 @@ namespace NMapi.Tools.Shell {
 		internal void PrintHelp ()
 		{
 			Version version = Assembly.GetExecutingAssembly().GetName().Version;
-			Console.WriteLine ("For more information see: http://www.openmapi.org\n");
-			Console.WriteLine ("Usage: mapishell [OPTION] ...  [FILE]\n");
-			Console.WriteLine ("-s, -script            execute batch script");
-			Console.WriteLine ("-h, -help              Show this help\n\n");
+			WriteLine ("For more information see: http://www.openmapi.org\n");
+			WriteLine ("Usage: mapishell [OPTION] ...  [FILE]\n");
+			WriteLine ("-s, -script            execute batch script");
+			WriteLine ("-h, -help              Show this help\n\n");
 
-			Console.WriteLine ("Commands:\n");
+			WriteLine ("Commands:\n");
 
 			foreach (var pair in state.Commands) {
-				Console.Write (String.Format ("{0,-15}", pair.Key));
-				Console.WriteLine (pair.Value.Description);
+				Write (String.Format ("{0,-15}", pair.Key));
+				WriteLine (pair.Value.Description);
 			}
 
 		}

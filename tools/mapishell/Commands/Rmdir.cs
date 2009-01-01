@@ -68,7 +68,7 @@ namespace NMapi.Tools.Shell {
 				if (entryId != null)
 					parent.DeleteFolder (entryId.ByteArray, null, 0);
 				else
-					Console.WriteLine ("File not found.");
+					driver.WriteLine ("File not found.");
 			};
 	
 			state.PerformOperationOnFolder (context, op);

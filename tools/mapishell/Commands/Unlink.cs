@@ -65,7 +65,7 @@ namespace NMapi.Tools.Shell {
 			Action<IMapiFolder, string> op = (parent, fileHashName) => {
 				SBinary entryId = state.KeyList.InteractiveResolveEntryID (parent, fileHashName);
 				if (entryId == null) {
-					Console.WriteLine ("Unknown Key ID!");
+					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
 

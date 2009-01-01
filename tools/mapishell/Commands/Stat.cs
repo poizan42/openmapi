@@ -87,18 +87,18 @@ namespace NMapi.Tools.Shell {
 
 
 
-			Console.WriteLine ("  File: \"" + fname + "\"");
-			Console.Write (String.Format("  Size: {0,-11} Object Type: ", size));
-			Console.WriteLine (objType);
+			driver.WriteLine ("  File: \"" + fname + "\"");
+			driver.Write (String.Format("  Size: {0,-11} Object Type: ", size));
+			driver.WriteLine (objType);
 
 			string entryIdStr = "NULL";
 			if (entryId != null)
 				entryIdStr = entryId.ToHexString ();
-			Console.WriteLine ("Entry Id: " + entryIdStr);
+			driver.WriteLine ("Entry Id: " + entryIdStr);
 
-//			Console.WriteLine ("Access: " + modified.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
-			Console.WriteLine ("Created: " + created.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
-			Console.WriteLine ("Modified: " + modified.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
+//			driver.WriteLine ("Access: " + modified.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
+			driver.WriteLine ("Created: " + created.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
+			driver.WriteLine ("Modified: " + modified.ToString ("yyyy-MM-dd HH:mm:ss.000000000 zzzz"));
 
 
 

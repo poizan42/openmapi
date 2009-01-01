@@ -70,7 +70,7 @@ namespace NMapi.Tools.Shell {
 
 			string[] dirNames = state.GetSubDirNames (state.CurrentFolder);
 			foreach (string name in dirNames)
-				Console.WriteLine ("D  " + name);
+				driver.WriteLine ("D  " + name);
 
 			bool asL, asA = false;
 			string msgClass = null;
@@ -80,17 +80,17 @@ namespace NMapi.Tools.Shell {
 				.Add ("a", a => asA = true)
 				.Add ("class", cls => msgClass = cls)
 				.Add ("help|?", h => {
-					Console.WriteLine ("Options: ");
-					Console.WriteLine ("-l      TODO");
-					Console.WriteLine ("-a      TODO");
-					Console.WriteLine ("-class  TODO");
+					driver.WriteLine ("Options: ");
+					driver.WriteLine ("-l      TODO");
+					driver.WriteLine ("-a      TODO");
+					driver.WriteLine ("-class  TODO");
 					return; // TODO: break!
 				});
 			List<string> rest;
 			try {
 				rest = p.Parse (ShellUtil.SplitParams (context.Param));
 			} catch (OptionException e) {
-				Console.WriteLine ("ERROR: " + e.Message);
+				driver.WriteLine ("ERROR: " + e.Message);
 				return;
 			}
 
@@ -106,7 +106,7 @@ namespace NMapi.Tools.Shell {
 				var key = new KeyID (obj.EntryId);
 
 				using (IMapiProp prop = obj.GetAssociatedIMapiProp (0)) { // read-only
-					Console.WriteLine ("F  " + key + "  " + driver.MetaManager.GetSummary (prop));
+					driver.WriteLine ("F  " + key + "  " + driver.MetaManager.GetSummary (prop));
 				}
 					state.KeyList.AddKey (key); // Make the key known!
 			}

@@ -73,7 +73,7 @@ namespace NMapi.Tools.Shell {
 			if (worked && microSeconds >= 0)
 				Thread.Sleep (microSeconds);
 			else
-				Console.WriteLine ("ERROR: 'ms' needs to be a positive number.");
+				driver.WriteLine ("ERROR: 'ms' needs to be a positive number.");
 		}
 
 	}

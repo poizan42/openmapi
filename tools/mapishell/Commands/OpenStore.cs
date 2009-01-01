@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Tools.Shell {
 
@@ -70,7 +71,7 @@ namespace NMapi.Tools.Shell {
 				state.ChangeDir (String.Empty + PathHelper.PathSeparator); // Change to root dir
 			}
 			else
-				Console.WriteLine ("ERROR: Value must be 'pub' or 'priv'.");
+				driver.WriteLine ("ERROR: Value must be 'pub' or 'priv'.");
 		}
 
 	}

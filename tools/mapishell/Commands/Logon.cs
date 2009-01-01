@@ -79,11 +79,11 @@ namespace NMapi.Tools.Shell {
 				state.LoggedOn = true;
 			} catch (MapiException e) {
 				if (e.HResult == Error.NetworkError) {
-					Console.WriteLine ("Couldn't connect to host!");
+					driver.WriteLine ("Couldn't connect to host!");
 					return;
 				}
 				else if (e.HResult == Error.NoAccess) {
-					Console.WriteLine ("No permission!");
+					driver.WriteLine ("No permission!");
 					return;
 				}
 				throw;
@@ -95,9 +95,9 @@ namespace NMapi.Tools.Shell {
 
 			if (state.Logging) {
 				if (state.LoggedOn)
-					Console.WriteLine ("Logged on.");
+					driver.WriteLine ("Logged on.");
 				else
-					Console.WriteLine ("ERROR: Couldn't log in.");
+					driver.WriteLine ("ERROR: Couldn't log in.");
 			}
 		}
 

@@ -29,7 +29,7 @@ namespace NMapi.Tools.Shell {
 	/// <summary>
 	///  Generates a 6-character key from an EntryID.
 	///  The key is probably not unique, but it should make it possible to 
-	///  identify objects in a store. There are are 2 147 483 647 possible 
+	///  identify objects in a store. There are 2 147 483 647 possible 
 	///  keys. A key should always be only valid in the context of a 
 	///  container to reduce collisions.
 	/// </summary>

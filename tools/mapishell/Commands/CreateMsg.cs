@@ -64,7 +64,7 @@ namespace NMapi.Tools.Shell {
 		public override void Run (CommandContext context)
 		{
 			if (context.Param == String.Empty) {
-				AbstractBaseCommand.RequireMsg ("parent dir");
+				RequireMsg ("parent dir");
 				return;
 			}
 
@@ -79,15 +79,15 @@ namespace NMapi.Tools.Shell {
 				parent = state.OpenFolder (path);
 				IMessage msg = parent.CreateMessage (null, 0);
 				msg.SaveChanges (0);
-				SPropValue val = msg.HrGetOneProp (Property.EntryId);
-				string hash = new KeyID (val.Value.Binary).Hash;
-				Console.WriteLine ("Created '" + hash + "'.");
+				SPropValue val = new MapiPropHelper (msg).HrGetOneProp (Property.EntryId);
+				string hash = new KeyID (((BinaryProperty) val).Value).Hash;
+				driver.WriteLine ("Created '" + hash + "'.");
 			} catch (MapiException e) {
 				if (e.HResult == Error.NotFound) {
-					Console.WriteLine ("Folder not found!");
+					driver.WriteLine ("Folder not found!");
 					return;
 				} else if (e.HResult == Error.NoAccess) {
-					Console.WriteLine ("No permission to create message!");
+					driver.WriteLine ("No permission to create message!");
 					return;
 				} else
 					throw;
