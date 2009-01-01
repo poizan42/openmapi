@@ -1,0 +1,333 @@
+//
+// openmapi.org - CompactTeaSharp - MLog - DataXmlVisitor.cs
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+
+using System;
+using System.Reflection;
+using System.IO;
+using System.Text;
+using System.Runtime.Serialization;
+using System.Collections.Generic;
+
+using NDesk.Options;
+
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+
+namespace CompactTeaSharp.Mlog
+{
+
+	/// <summary>
+	///   A generator that converts the .x to the "data" xml format.
+	/// </summary>
+	public sealed class DataXmlVisitor : AbstractVisitor
+	{
+		private string constName;
+		private string clientName;
+		private string serverName;
+		private string namespaceName;
+		
+		private XElement root;
+
+		public override string[] Targets {
+			get {
+				return new string [] {"dataxml"};
+			}
+		}
+		
+		public override string Name {
+			get {
+				return "'Data' XML Generator";
+			}
+		}
+
+		public override string Description {
+			get {
+				return "Creates the 'Data' xml format from a .x file.";
+			}
+		}		
+		
+		public DataXmlVisitor (string[] args)
+		{
+			namespaceName = "DefaultNamespace";
+			constName = "MyRPC";
+
+			OptionSet p = new OptionSet ()
+				.Add ("ns=|namespace=", ns => { namespaceName = ns; })
+				.Add ("constName=", cs => { constName = cs; });
+				
+			List<string> rest = p.Parse (args);
+
+			this.clientName = constName + "Client";
+			this.serverName = constName + "ServerStub";
+		}
+	
+		private string GetMappedIdentifier (IdentifierNode node)
+		{
+			return driver.TypeMap.Map (node.NameStr);
+		}
+		
+		private string GetUnMappedIdentifier (IdentifierNode node)
+		{
+			return node.NameStr;
+		}
+		
+		private string GetTypeName (AbstractTypeNode node)
+		{
+			if (node is SimpleTypeNode) {
+				SimpleType type = ((SimpleTypeNode) node).Type;
+				switch (type) {
+					case SimpleType.String: return "string";
+					case SimpleType.Float: return "float";
+					case SimpleType.Int: return "int";				// TODO: correct?
+					case SimpleType.UnsignedInt: return "int";		// TODO: correct?
+					case SimpleType.Double: return "double";
+					case SimpleType.Bool: return "bool";
+					case SimpleType.Long: return "int";
+					case SimpleType.Char: return "char";
+					case SimpleType.Short: return "short";
+					case SimpleType.Void: return "void";
+					case SimpleType.Hyper: return "long";
+					case SimpleType.Opaque: return "byte[]"; // bad
+					case SimpleType.Quadruple:
+					case SimpleType.BoolT:
+					case SimpleType.UnsignedHyper:
+					default:
+						throw new Exception ("Type '" + type + 
+							"' not supported by code generator.");
+				}
+			} else if (node is IdentifierTypeNode)
+				return driver.TypeMap.Map (((IdentifierTypeNode) node).Name);
+
+			return null;
+		}
+		private string GetXmlTypeName (AbstractTypeNode node)
+		{
+			if (node is SimpleTypeNode) {
+				SimpleType type = ((SimpleTypeNode) node).Type;
+				switch (type) {
+					case SimpleType.Float: return "float";
+					case SimpleType.Int: return "int";				// TODO: correct?
+					case SimpleType.UnsignedInt: return "int";		// TODO: correct?
+					case SimpleType.Double: return "double";
+					case SimpleType.Bool: return "bool";
+					case SimpleType.Long: return "int";
+					case SimpleType.Short: return "short";
+					case SimpleType.Hyper: return "long";
+					case SimpleType.Opaque: return "opaque";
+					case SimpleType.String:
+					case SimpleType.Char:
+					case SimpleType.Void:
+					case SimpleType.Quadruple:
+					case SimpleType.BoolT:
+					case SimpleType.UnsignedHyper:
+					default:
+						throw new Exception ("Type '" + type + 
+							"' not supported by code generator.");
+				}
+			} else if (node is IdentifierTypeNode)
+				return "complex";
+			return null;
+		}
+
+		private XElement MakeAndAddElement (object pObj, string name, 
+			params XAttribute[] attribs)
+		{
+			var parent = pObj as XElement;
+			var element = new XElement (name);
+			element.ReplaceAttributes (attribs);
+			parent.Add (element);
+			return element;
+		}
+		
+		public override void Dump ()
+		{
+			if (String.IsNullOrEmpty (driver.OutFile))
+				throw new Exception ("Output file must be specified!");
+			using (TextWriter writer = new StreamWriter (driver.OutFile))
+			{
+				writer.WriteLine (root.ToString ());
+			}
+		}
+
+		public override void VisitDotXNode (DotXNode node, object arg)
+		{
+			root = new XElement ("definitions");
+			root.Add (new XComment (
+				" This file was autogenerated by MLog from a .x file.\n" + 
+				"      DO NOT EDIT! Instead edit the .x file and rerun the generator. "));
+			base.VisitDotXNode (node, root);
+		}
+
+		public override void VisitDefinitionNodeList (DefinitionNodeList list, object arg)
+		{
+			var definitionsElement = MakeAndAddElement (arg, "namespace",
+				new XAttribute ("name", namespaceName));
+			base.VisitDefinitionNodeList (list, definitionsElement);
+		}
+
+		public override void VisitDefConstNode (DefConstNode node, object arg)
+		{
+			var constElement = MakeAndAddElement (arg, "const",
+				new XAttribute ("id", node.Identifier),
+				new XAttribute ("value", node.Constant));
+			base.VisitDefConstNode (node, constElement);
+		}
+
+		public override void VisitDefEnumNode (DefEnumNode node, object arg)
+		{
+			string typeName = GetMappedIdentifier (node.Identifier);
+			var enumElement = MakeAndAddElement (arg, "enum",
+				new XAttribute ("id", typeName));
+			base.VisitDefEnumNode (node, enumElement);
+		}
+
+		public override void VisitAssignmentNode (AssignmentNode node, object arg)
+		{
+			var assignmentElement = MakeAndAddElement (arg, "const", 
+				new XAttribute ("value", node.RValue.Resolve ()));
+			assignmentElement.Value = GetUnMappedIdentifier (node.Identifier);
+			base.VisitAssignmentNode (node, assignmentElement);
+		}
+
+		public override void VisitIdentifierNode (IdentifierNode node, object arg)
+		{
+			// TODO: probably should be pulled in parent-node ...
+			if (arg is XElement && ((XElement) arg).Name == "enum") {
+				var identifierElement = MakeAndAddElement (arg, "const");
+				identifierElement.Value = GetUnMappedIdentifier (node);
+				base.VisitIdentifierNode (node, identifierElement);
+			} else
+				base.VisitIdentifierNode (node, arg);
+		}
+
+		public override void VisitDefStructNode (DefStructNode node, object arg)
+		{
+			string typeName = GetMappedIdentifier (node.Identifier);
+			var structElement = MakeAndAddElement (arg, "class", 
+				new XAttribute ("id", typeName));
+			structElement.Add (new XElement ("both"));
+			base.VisitDefStructNode (node, structElement);
+		}
+
+		public override void VisitDefTypeDefNode (DefTypeDefNode node, object arg)
+		{
+			string typeName = GetMappedIdentifier (node.Identifier);
+			var typeDefElement = MakeAndAddElement (arg, "class",
+				new XAttribute ("id", typeName));
+			typeDefElement.Add (new XElement ("both"));
+			base.VisitDefTypeDefNode (node, typeDefElement);
+		}
+
+		public override void VisitDefUnionNode (DefUnionNode node, object arg)
+		{
+			// unsupported
+			var unionElement = MakeAndAddElement (arg, "union");
+			base.VisitDefUnionNode (node, unionElement);
+		}
+
+		public override void VisitConstantNode (ConstantNode node, object arg)
+		{
+			var unionElement = MakeAndAddElement (arg, "constant");
+			base.VisitConstantNode (node, unionElement);
+		}
+
+		public override void VisitDeclarationNode (DeclarationNode node, object arg)
+		{
+			string varName = GetUnMappedIdentifier (node.Identifier);
+			string typeName = GetTypeName (node.Type);
+			string xmlTypeName = GetXmlTypeName (node.Type);
+			
+			var declElement = MakeAndAddElement (arg, "declare", 
+				new XAttribute ("constrarg", "true"),
+				new XAttribute ("type", typeName));
+			declElement.Value = varName;
+			
+			XElement encodeElement = null;
+			
+			encodeElement = new XElement (xmlTypeName, varName);
+			if (xmlTypeName == "complex") {
+				if (driver.SymbolTable.IsEnum (typeName)) {
+					encodeElement = new XElement ("int", 
+						new XAttribute ("cast", "true"), 
+						new XAttribute ("castTo", typeName), varName);
+				}
+				else {
+					encodeElement.Add (new XAttribute ("type", typeName));
+					if (driver.TypeMap.IsStatic (typeName))
+						encodeElement.Add (new XAttribute ("static", "true"));
+				}
+			}			
+			if (node.IsOpaqueCounted)
+				encodeElement = new XElement ("dynamicOpaque", varName);
+			else if (node.IsOpaqueFixed) {
+				encodeElement = new XElement ("opaque", varName);
+				encodeElement.Add (new XAttribute ("length", node.SizeOrMax.Resolve ()));
+			} else if (node.IsFixedByteArray)
+					throw new NotSupportedException ("Fixed-Size byte arrays are not supported!");
+			else if (node.IsCountedByteArray) {
+				encodeElement = new XElement ("countedSizeArray", varName);
+				if (driver.TypeMap.IsStatic (typeName))
+					encodeElement.Add (new XAttribute ("static", "true"));
+				encodeElement.Add (new XAttribute ("type", typeName));				
+				// modify declaration
+				declElement.Add (new XAttribute ("isArray", "true"));
+			} else if (node.IsArray)
+				throw new NotSupportedException ("Other types of arrays are not supported!");
+			else if (node.IsPointer) {
+				encodeElement = new XElement ("boolGate", varName);
+				encodeElement.Add (new XAttribute ("type", typeName));
+				if (driver.TypeMap.IsStatic (typeName))
+					encodeElement.Add (new XAttribute ("static", "true"));
+			}
+			
+			declElement.Parent.Element ("both").Add (encodeElement);
+			base.VisitDeclarationNode (node, declElement);
+		}
+
+		public override void VisitProgramNode (ProgramNode node, object arg)
+		{
+			var programElement = MakeAndAddElement (arg, "program", 
+				new XAttribute ("id", node.Identifier.NameStr),
+				new XAttribute ("num", node.ProgramNumber),
+				new XAttribute ("constName", constName),
+				new XAttribute ("clientName", clientName),
+				new XAttribute ("serverName", serverName));
+			base.VisitProgramNode (node, programElement);
+		}
+
+		public override void VisitVersionNode (VersionNode node, object arg)
+		{
+			var versionElement = MakeAndAddElement (arg, "version",
+				new XAttribute ("id", node.Identifier.NameStr),
+				new XAttribute ("num", node.VersionNumber));
+			base.VisitVersionNode (node, versionElement);
+		}
+
+		public override void VisitCallNode (CallNode node, object arg)
+		{
+			var callElement = MakeAndAddElement (arg, "call", 
+				new XAttribute ("return", GetMappedIdentifier (node.Ret)),
+				new XAttribute ("arg", GetMappedIdentifier (node.Arg)),
+				new XAttribute ("name", GetMappedIdentifier (node.CallName)));
+			callElement.Add (new XAttribute ("id", node.Id));
+			base.VisitCallNode (node, callElement);
+		}
+
+	}
+}

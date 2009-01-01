@@ -1,0 +1,153 @@
+!!
+!! openmapi.org - CompactTeaSharp - MLog - xdr.grm
+!!
+!! Copyright 2009 Topalis AG
+!!
+!! Author: Johannes Roith <johannes@jroith.de>
+!!
+!! This is free software; you can redistribute it and/or modify it
+!! under the terms of the GNU Lesser General Public License as
+!! published by the Free Software Foundation; either version 2.1 of
+!! the License, or (at your option) any later version.
+!!
+!! This software is distributed in the hope that it will be useful,
+!! but WITHOUT ANY WARRANTY; without even the implied warranty of
+!! MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+!! Lesser General Public License for more details.
+!!
+!! You should have received a copy of the GNU Lesser General Public
+!! License along with this software; if not, write to the Free
+!! Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+!! 02110-1301 USA, or see the FSF site: http:!!www.fsf.org.
+!!
+!!
+
+"Name"    = "XDR Language"
+"Version" = "1"
+"Author"  = "Johannes Roith"
+"About"   = "XDR .x file parser"
+
+"Case Sensitive" = True
+"Start Symbol"   = <specification>
+
+
+! ===================================================================
+! Comments
+! ===================================================================
+
+Comment Start = '/*'
+Comment End   = '*/'
+
+!=======================================================
+
+identifier = {Letter}({AlphaNumeric}|'_')*
+constant = '-'?[123456789]{digit}*
+
+!=======================================================
+
+
+<specification> ::= <definitions> <program>
+
+!!
+!! XDR grammar
+!!
+
+<definitions> ::= <definition> <definitions>
+                | <definition>
+
+<definition> ::= <type def>
+               | <constant def>
+
+<type def> ::= 'typedef' <declaration> ';'
+             | 'enum' identifier <enum body> ';'
+             | 'struct' identifier <struct body> ';'
+             | 'union' identifier <union body> ';'
+
+<constant def> ::= 'const' identifier '=' constant ';'
+
+<case> ::= 'case' <value> ':' <declaration> ';'
+
+<cases> ::= <case> <cases>
+         | <case>
+
+<case default> ::= 'default' ':' <declaration> ';'
+                 | 
+
+<union body> ::= 'switch' '(' <declaration> ')' '{' <cases> <case default> '}'
+
+<union type spec> ::= 'union' union body
+
+<struct body> ::= '{' <declarations> '}'
+
+<struct type spec> ::= 'struct' <struct body>
+
+<assignment> ::= identifier '=' <value>
+
+<assignments> ::= <assignment> ',' <assignments>
+                | <assignment>
+
+<identifiers> ::= identifier ',' <identifiers>
+                | identifier
+
+<enum body> ::= '{' <assignments> '}' 
+              | '{' <identifiers> '}' 
+
+<enum type spec> ::= 'enum' <enum body>
+
+<optional unsigned> ::= 'unsigned'
+             | 
+
+<type specifier> ::= <optional unsigned> 'int'
+                   | <optional unsigned> 'u_int'
+                   | <optional unsigned> 'hyper'
+                   | 'long'			!! NOT STANDARD!
+                   | 'u_long'		!! NOT STANDARD!
+                   | 'char'			!! NOT STANDARD!
+                   | 'short'		!! NOT STANDARD!
+                   | 'u_short'		!! NOT STANDARD!
+                   | 'float'
+                   | 'double'
+                   | 'quadruple'
+                   | 'bool'
+                   | 'bool_t'		!! NOT STANDARD!
+                   | <enum type spec>
+                   | <struct type spec>
+                   | 'struct' identifier
+                   | <union type spec>
+                   | identifier
+
+
+<value> ::= constant
+          | identifier
+
+<optional value> ::= <value>
+                   | 
+
+<declaration> ::= <type specifier> identifier
+                | <type specifier> identifier '[' <value> ']'
+                | <type specifier> identifier '<' <optional value> '>'
+                | 'opaque' identifier '[' <value> ']'
+                | 'opaque' identifier '<' <optional value> '>'
+                | 'string' identifier '<' <optional value> '>'
+                | <type specifier> '*' identifier
+                | 'void'
+
+<declarations> ::= <declaration> ';' <declarations>
+                |  <declaration> ';'
+
+
+!!
+!! ONC RPC extensions
+!!
+
+<program> ::= 'program' identifier '{' <versions> '}' '=' constant ';'
+
+<call> ::= identifier identifier '(' identifier ')' '=' constant ';'
+
+<calls> ::= <call> <calls>
+          | <call>
+
+<version> ::= 'version' identifier  '{' <calls> '}' '=' constant ';'
+
+<versions> ::= <version> <versions>
+            | <version>

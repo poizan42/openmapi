@@ -1,5 +1,48 @@
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
+	* RemoteTea-Sharp/mlog/AssemblyInfo.cs:
+	* RemoteTea-Sharp/mlog/Driver.cs:
+	* RemoteTea-Sharp/mlog/Exceptions.cs:
+	* RemoteTea-Sharp/mlog/ParserFactory.cs:
+	* RemoteTea-Sharp/mlog/Rules.cs:
+	* RemoteTea-Sharp/mlog/SymbolTable.cs:
+	* RemoteTea-Sharp/mlog/Symbols.cs:
+	* RemoteTea-Sharp/mlog/XdrParserContext.cs:
+	* RemoteTea-Sharp/mlog/XmlTypeMap.cs:
+	* RemoteTea-Sharp/mlog/ast:
+	* RemoteTea-Sharp/mlog/ast/AbstractDefNode.cs:
+	* RemoteTea-Sharp/mlog/ast/AbstractNodeList.cs:
+	* RemoteTea-Sharp/mlog/ast/AbstractValueNode.cs:
+	* RemoteTea-Sharp/mlog/ast/AssignmentNode.cs:
+	* RemoteTea-Sharp/mlog/ast/ASTNode.cs:
+	* RemoteTea-Sharp/mlog/ast/CallNode.cs:
+	* RemoteTea-Sharp/mlog/ast/ConstantNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DeclarationNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DefConstNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DefEnumNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DefStructNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DefTypeDefNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DefUnionNode.cs:
+	* RemoteTea-Sharp/mlog/ast/DotXNode.cs:
+	* RemoteTea-Sharp/mlog/ast/IdentifierNode.cs:
+	* RemoteTea-Sharp/mlog/ast/Lists.cs:
+	* RemoteTea-Sharp/mlog/ast/NonTerminalNode.cs:
+	* RemoteTea-Sharp/mlog/ast/ProgramNode.cs:
+	* RemoteTea-Sharp/mlog/ast/TerminalNode.cs:
+	* RemoteTea-Sharp/mlog/ast/Types.cs:
+	* RemoteTea-Sharp/mlog/ast/VersionNode.cs:
+	* RemoteTea-Sharp/mlog/generators:
+	* RemoteTea-Sharp/mlog/generators/AbstractVisitor.cs:
+	* RemoteTea-Sharp/mlog/generators/AstXmlVisitor.cs:
+	* RemoteTea-Sharp/mlog/generators/DataXmlVisitor.cs:
+	* RemoteTea-Sharp/mlog/generators/SymbolTableVisitor.cs:
+	* RemoteTea-Sharp/mlog/xdr.cgt:
+	* RemoteTea-Sharp/mlog/xdr.grm: Import "mlog", the new ONC generator.
+
+
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
 	* lib/GoldParser/AssemblyInfo.cs
 	* lib/GoldParser/DfaState.cs
 	* lib/GoldParser/GoldParser.resources
