@@ -1,3 +1,23 @@
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
+	* lib/GoldParser/AssemblyInfo.cs
+	* lib/GoldParser/DfaState.cs
+	* lib/GoldParser/GoldParser.resources
+	* lib/GoldParser/GoldParser.txt
+	* lib/GoldParser/Grammar.cs
+	* lib/GoldParser/LRAction.cs
+	* lib/GoldParser/LRState.cs
+	* lib/GoldParser/LRStateAction.cs
+	* lib/GoldParser/ObjectMap.cs
+	* lib/GoldParser/ParseMessage.cs
+	* lib/GoldParser/Parser.cs
+	* lib/GoldParser/Rule.cs
+	* lib/GoldParser/SR.cs
+	* lib/GoldParser/SourceLineReadCallback.cs
+	* lib/GoldParser/Symbol.cs
+	* lib/GoldParser/SymbolType.cs: Import GoldParser engine
+
+
 2008-12-23  Andreas Huegel <andreas.huegel@topalis.com>
 
 	IMAP Gateway, Outlook enabled
