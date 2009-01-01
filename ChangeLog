@@ -1,3 +1,14 @@
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
+	* NMapi/Configuration: NEW directory.
+	* NMapi/Core/AddressBook:
+	* NMapi/Core/AddressBook/IABContainer.cs:
+	* NMapi/Core/AddressBook/IAddrBook.cs:
+	* NMapi/Core/AddressBook/IABSession.cs:
+	* NMapi/Core/AddressBook/IDistList.cs:
+	* NMapi/Core/AddressBook/IMailUser.cs: add new AB interfaces.
+
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
 	* NMapi/Core/Admin
@@ -7,7 +18,7 @@
 	* NMapi/Core/Admin/AdminOps.cs: new non-standard interface for administration;
 									this is used by the proxy GUI.
 
-	* Core/Events/GetEventResult.cs: removed
+	* NMapi/Core/Events/GetEventResult.cs: removed
 	* NMapi/Core/Events/IAdvisor.cs:
 	* NMapi/Core/Events/IEventSubscription.cs:
 	* NMapi/Core/Events/IMapiAdviseSink.cs:
@@ -43,8 +54,8 @@
 	* Core/Table/IMapiTable.cs: remove advise method
 	* Core/Table/IMapiTableReader.cs: copyright
 
-	* DirectoryModel: NEW.
-	* DirectoryModel/PathHelper.cs: moved from the mapishell.
+	* NMapi/DirectoryModel: NEW.
+	* NMapi/DirectoryModel/PathHelper.cs: moved from the mapishell.
 
 	* NMapi/Data/OneOff.cs: merged changes from jumapi	
 	* NMapi/Data/Address.cs: new, weird txc thing.
@@ -71,7 +82,6 @@
 	* NMapi/Data/NMapiGuid.partial.cs: moved from NMapiGuid.cs
 	* NMapi/Data/EntryList.partial.cs: moved from EntryList.cs
 	* NMapi/Data/FileTime.partial.cs: moved from FileTime.cs
-
 
 	* NMapi/Data/Table/LPSSortOrderSet.cs: add trace calls
 	* NMapi/Data/Table/SRow.cs: trace calls, minor changes
