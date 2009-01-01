@@ -1,16 +1,17 @@
 //
-// RemoteTea - OnRpcClient.cs
+// openmapi.org - CompactTeaSharp - XdrVoid.cs
 //
 // C# port Copyright 2008 by Topalis AG
 //
-// Author: mazurin
+// Author: Johannes Roith
 //
-// This library is based on the remotetea java library: 
+// This library is based on the RemoteTea java library:
 //
-// Copyright (c) 1999, 2000
-// Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
-// D-52064 Aachen, Germany.
-// All rights reserved.
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
 //
 // This library is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Library General Public License as
@@ -28,55 +29,33 @@
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-
 using System;
 
-namespace RemoteTea.OncRpc
+namespace CompactTeaSharp
 {
-	/**
-	 * Instances of the class <code>XdrVoid</code> represent (de-)serializeable
-	 * voids, which are especially useful in cases where no result is expected
-	 * from a remote function call or no parameters are supplied.
-	 *
-	 * <p>Please note that this class is somewhat modelled after Java's primitive
-	 * data type wrappers. As for these classes, the XDR data type wrapper classes
-	 * follow the concept of values with no identity, so you are not allowed to
-	 * change the value after you've created a value object.
-	 *
-	 * @version $Revision: 1.1.1.1 $ $Date: 2003/08/13 12:03:41 $ $State: Exp $ $Locker:  $
-	 * @author Harald Albrecht
-	 */
-	public class XdrVoid: XdrAble
+	/// <summary>
+	///  Instances of the class XdrVoid represent (de-)serializeable
+	///  voids, which are especially useful in cases where no result is expected
+	///  from a remote function call or no parameters are supplied.
+	/// </summary>
+	public class XdrVoid: IXdrAble
 	{
 
-	    /**
-	     * Encodes -- that is: serializes -- a void into a XDR stream in
-	     * compliance to RFC 1832.
-	     *
-	     * @throws OncRpcException if an ONC/RPC error occurs.
-	     * @throws IOException if an I/O error occurs.
-	     */
-	    public void XdrEncode(XdrEncodingStream xdr)
-	    {
-	    }
-	
-	    /**
-	     * Decodes -- that is: deserializes -- a void from a XDR stream in
-	     * compliance to RFC 1832.
-	     *
-	     * @throws OncRpcException if an ONC/RPC error occurs.
-	     * @throws IOException if an I/O error occurs.
-	     */
-	    public void XdrDecode(XdrDecodingStream xdr)
-	    {
-	    }
-	
-	    /**
-	     * Static <code>XdrVoid</code> instance, which can be used in cases
-	     * where no data is to be serialized or deserialized but some ONC/RPC
-	     * function expects a reference to a XDR-able object. 
-	     */
-	    public static XdrVoid XDR_VOID = new XdrVoid();
-	
+		public void XdrEncode (XdrEncodingStream xdr)
+		{
+			// do nothing
+		}
+
+		public void XdrDecode (XdrDecodingStream xdr)
+		{
+			// do nothing
+		}
+
+		// Static instance, which can be used in cases where no data is to be 
+		// serialized or deserialized but some ONC/RPC
+		// function expects a reference to a XDR-able object.
+		public static XdrVoid XDR_VOID = new XdrVoid ();
+
 	}
+	
 }

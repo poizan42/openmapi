@@ -1,138 +1,172 @@
-/*
- * $Header: /cvsroot/remotetea/remotetea/src/org/acplt/oncrpc/server/OncRpcTcpServerTransport.java,v 1.3 2008/01/02 15:13:35 haraldalbrecht Exp $
- *
- * Copyright (c) 1999, 2000
- * Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
- * D-52064 Aachen, Germany.
- * All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Library General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this program (see the file COPYING.LIB for more
- * details); if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
+//
+// openmapi.org - CompactTeaSharp - OncRpcTcpServerTransport.cs
+//
+// C# port Copyright 2008 by Topalis AG
+//
+// Author (C# port): Johannes Roith
+//
+// This library is based on the RemoteTea java library:
+//
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
+//
+// This library is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Library General Public License as
+// published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Library General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program (see the file COPYING.LIB for more
+// details); if not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+//
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
-using RemoteTea.OncRpc;
+using CompactTeaSharp;
 
-namespace RemoteTea.OncRpc.Server
+namespace CompactTeaSharp.Server
 {
-
-	/**
-	 * Instances of class <code>OncRpcTcpServerTransport</code> encapsulate
-	 * TCP/IP-based XDR streams of ONC/RPC servers. This server transport class
-	 * is responsible for accepting new ONC/RPC connections over TCP/IP.
-	 *
-	 * @see OncRpcServerTransport
-	 * @see OncRpcTcpConnectionServerTransport
-	 * @see OncRpcUdpServerTransport
-	 *
-	 * @version $Revision: 1.3 $ $Date: 2008/01/02 15:13:35 $ $State: Exp $ $Locker:  $
-	 * @author Harald Albrecht
-	 */
-	public class OncRpcTcpServerTransport : OncRpcServerTransport
+	
+	/// <summary>
+	///  
+	/// <summary>
+	public class ConnectionClosedEventArgs : EventArgs
 	{
+		public IPAddress IPAddress { get; set; }
+		public int Port { get; set; }
 
-		//
-		// Create a new instance of a <code>OncRpcTcpServerTransport</code> which
-		// encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
-		// particular server transport only waits for incoming connection requests
-		// and then creates {@link OncRpcTcpConnectionServerTransport} server transports
-		// to handle individual connections.
-		// This constructor is a convenience constructor for those transports
-		// handling only a single ONC/RPC program and version number.
-		//
-		// @param dispatcher Reference to interface of an object capable of
-		//   dispatching (handling) ONC/RPC calls.
-		// @param port Number of port where the server will wait for incoming
-		//   calls.
-		// @param program Number of ONC/RPC program handled by this server
-		//   transport.
-		// @param version Version number of ONC/RPC program handled.
-		// @param bufferSize Size of buffer used when receiving and sending
+		public ConnectionClosedEventArgs (IPAddress ip, int port)
+		{
+			this.IPAddress = ip;
+			this.Port = port;
+		}
+
+	}
+	
+	/// <summary>
+	///  Instances of class <code>OncRpcTcpServerTransport</code> encapsulate
+	///  TCP/IP-based XDR streams of ONC/RPC servers. This server transport class
+	///  is responsible for accepting new ONC/RPC connections over TCP/IP.
+	/// </summary>
+	/// see OncRpcServerTransport
+	/// see OncRpcTcpConnectionServerTransport
+	public sealed class OncRpcTcpServerTransport : OncRpcServerTransport
+	{
+		private TcpListener socket; // TCP socket used for stream-based communication with ONC/RPC clients.
+		private int bufferSize;  // Size of send/receive buffers to use when encoding/decoding XDR data.
+		private LinkedList<OncRpcTcpConnectionServerTransport> openTransports;
+		private int transmissionTimeout = 30000;
+		private string characterEncoding = null;
+		
+		/// <summary>
+		///  The current timeout used during transmission phases (call and 
+		///  reply phases) in milliseconds.
+		/// </summary>
+		public int TransmissionTimeout {
+			get { return transmissionTimeout; }
+			set {
+				if (value <= 0)
+					throw new ArgumentException ("transmission timeout must be > 0");
+				transmissionTimeout = value;
+			}
+		}
+
+		/// <summary>
+		///  The character encoding currently used for (de-)serializing strings.
+		///  If <code>null</code>, then the system's default encoding is used.
+		/// </summary>
+		public override string CharacterEncoding {
+			get { return characterEncoding; }
+			set { this.characterEncoding = value; }
+		}
+
+		/// <summary>
+		///  Called when the tcp connection is closed.
+		/// </summary>
+		public event EventHandler<ConnectionClosedEventArgs> ConnectionClosed;
+		
+		/// <summary>
+		//   Create a new instance of a <code>OncRpcTcpServerTransport</code> which
+		//   encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
+		//   particular server transport only waits for incoming connection requests
+		//   and then creates {@link OncRpcTcpConnectionServerTransport} server transports
+		//   to handle individual connections.
+		//   This constructor is a convenience constructor for those transports
+		//   handling only a single ONC/RPC program and version number.
+		/// </summary>
+		// <param name="dispatcher">Reference to interface of an object capable of
+		//   dispatching (handling) ONC/RPC calls.</param>
+		// <param name="port">Number of port where the server will wait for incoming
+		//   calls.</param>
+		// <param name="program">Number of ONC/RPC program handled by this server
+		//   transport.</param>
+		// <param name="version">Version number of ONC/RPC program handled.</param>
+		// <param name="bufferSize">Size of buffer used when receiving and sending
 		//   chunks of XDR fragments over TCP/IP. The fragments built up to
-		//   form ONC/RPC call and reply messages.
-		//
-
+		//   form ONC/RPC call and reply messages.</param>
 		// throws OncRpcException, IOException 
-		public OncRpcTcpServerTransport(OncRpcDispatchable dispatcher,
-			int port,
-			int program, int version,
-			int bufferSize) : this (dispatcher, port,
-				new OncRpcServerTransportRegistrationInfo[] {
-					new OncRpcServerTransportRegistrationInfo (program, version)
-				},
-				bufferSize)
+		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher, int port, 
+			int program, int version, int bufferSize) : this (dispatcher, port, bufferSize)
 		{
 		}
 
-		/**
-		* Create a new instance of a <code>OncRpcTcpServerTransport</code> which
-		* encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
-		* particular server transport only waits for incoming connection requests
-		* and then creates {@link OncRpcTcpConnectionServerTransport} server transports
-		* to handle individual connections.
-		*
-		* @param dispatcher Reference to interface of an object capable of
-		*   dispatching (handling) ONC/RPC calls.
-		* @param port Number of port where the server will wait for incoming
-		*   calls.
-		* @param info Array of program and version number tuples of the ONC/RPC
-		*   programs and versions handled by this transport.
-		* @param bufferSize Size of buffer used when receiving and sending
-		*   chunks of XDR fragments over TCP/IP. The fragments built up to
-		*   form ONC/RPC call and reply messages.
-		*/
-
+		/// <summary>
+		///  Create a new instance of a <code>OncRpcTcpServerTransport</code> which
+		///  encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
+		///  particular server transport only waits for incoming connection requests
+		///  and then creates {@link OncRpcTcpConnectionServerTransport} server transports
+		///  to handle individual connections.
+		/// </summary>
+		///  <param name="dispatcher">Reference to interface of an object capable of
+		///    dispatching (handling) ONC/RPC calls.</param>
+		///  <param name="port">Port where the server will wait for incoming calls.</param>
+		///  <param name="info">Array of program and version number tuples of the ONC/RPC
+		///    programs and versions handled by this transport.</param>
+		///  <param name="bufferSize">Size of buffer used when receiving and sending
+		///    chunks of XDR fragments over TCP/IP. The fragments built up to
+		///    form ONC/RPC call and reply messages.</param>
 		// throws OncRpcException, IOException 
-		public OncRpcTcpServerTransport (OncRpcDispatchable dispatcher,
-			int port,
-			OncRpcServerTransportRegistrationInfo [] info,
-			int bufferSize) : this (dispatcher, null, port, info, bufferSize)
+		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
+			int port, int bufferSize) : this (dispatcher, null, port, bufferSize)
 		{
 		}
 
-		/**
-		* Create a new instance of a <code>OncRpcTcpServerTransport</code> which
-		* encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
-		* particular server transport only waits for incoming connection requests
-		* and then creates {@link OncRpcTcpConnectionServerTransport} server transports
-		* to handle individual connections.
-		*
-		* @param dispatcher Reference to interface of an object capable of
-		*   dispatching (handling) ONC/RPC calls.
-		* @param bindAddr The local Internet Address the server will bind to.
-		* @param port Number of port where the server will wait for incoming
-		*   calls.
-		* @param info Array of program and version number tuples of the ONC/RPC
-		*   programs and versions handled by this transport.
-		* @param bufferSize Size of buffer used when receiving and sending
-		*   chunks of XDR fragments over TCP/IP. The fragments built up to
-		*   form ONC/RPC call and reply messages.
-		*/
-
+		/// <summary>
+		///  Create a new instance of a <code>OncRpcTcpServerTransport</code> which
+		///  encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
+		///  particular server transport only waits for incoming connection requests
+		///  and then creates {@link OncRpcTcpConnectionServerTransport} server transports
+		///  to handle individual connections.
+		/// </summary>
+		/// <param dispatcher Reference to interface of an object capable of
+		///     dispatching (handling) ONC/RPC calls.</param>
+		/// <param bindAddr The local Internet Address the server will bind to.
+		/// <param port Number of port where the server will wait for incoming
+		///     calls.</param>
+		/// <param info Array of program and version number tuples of the ONC/RPC
+		///     programs and versions handled by this transport.</param>
+		/// <param bufferSize Size of buffer used when receiving and sending
+		///     chunks of XDR fragments over TCP/IP. The fragments built up to
+		///     form ONC/RPC call and reply messages.</param>
 		// throws OncRpcException, IOException		
-		public OncRpcTcpServerTransport(OncRpcDispatchable dispatcher,
-			IPAddress bindAddr,
-			int port,
-			OncRpcServerTransportRegistrationInfo [] info,
-			int bufferSize) : base (dispatcher, port, info)
+		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
+			IPAddress bindAddr, int port, int bufferSize) : base (dispatcher, port)
 		{
+			 openTransports = new LinkedList<OncRpcTcpConnectionServerTransport> ();
+				
 			//
 			// Make sure the buffer is large enough and resize system buffers
 			// accordingly, if possible.
@@ -148,24 +182,24 @@ namespace RemoteTea.OncRpc.Server
 				this.port = ((IPEndPoint) socket.LocalEndpoint).Port;
 		}
 
-		/**
-		* Close the server transport and free any resources associated with it.
-		*
-		* <p>Note that the server transport is <b>not deregistered</b>. You'll
-		* have to do it manually if you need to do so. The reason for this
-		* behaviour is, that the portmapper removes all entries regardless of
-		* the protocol (TCP/IP or UDP/IP) for a given ONC/RPC program number
-		* and version.
-		*
-		* <p>Calling this method on a <code>OncRpcTcpServerTransport</code>
-		* results in the listening TCP network socket immediately being closed.
-		* In addition, all server transports handling the individual TCP/IP
-		* connections will also be closed. The handler threads will therefore
-		* either terminate directly or when they try to sent back replies.
-		*/
+		/// <summary>
+		///  Close the server transport and free any resources associated with it.
+		///  
+		///  Note that the server transport is <b>not deregistered</b>. You'll
+		///  have to do it manually if you need to do so. The reason for this
+		///  behaviour is, that the portmapper removes all entries regardless of
+		///  the protocol (TCP/IP or UDP/IP) for a given ONC/RPC program number
+		///  and version.
+		///  
+		///  Calling this method on a <code>OncRpcTcpServerTransport</code>
+		///  results in the listening TCP network socket immediately being closed.
+		///  In addition, all server transports handling the individual TCP/IP
+		///  connections will also be closed. The handler threads will therefore
+		///  either terminate directly or when they try to sent back replies.
+		/// </summary>
 		public override void Close ()
 		{
-			if ( socket != null ) {
+			if (socket != null) {
 				//
 				// Since there is a non-zero chance of getting race conditions,
 				// we now first set the socket instance member to null, before
@@ -187,442 +221,134 @@ namespace RemoteTea.OncRpc.Server
 			// Now close all per-connection transports currently open...
 			//
 			lock (openTransports) {
-				while (openTransports.Size > 0) {
-					OncRpcTcpConnectionServerTransport transport =
-						(OncRpcTcpConnectionServerTransport) openTransports.RemoveFirst ();
+				while (openTransports.Count > 0) {
+					OncRpcTcpConnectionServerTransport transport = openTransports.First.Value;
 					transport.Close ();
+					openTransports.RemoveFirst ();
 				}
 			}
 		}
 
-		/**
-		* Removes a TCP/IP server transport from the list of currently open
-		* transports.
-		*
-		* @param transport Server transport to remove from the list of currently
-		*   open transports for this listening transport.
-		*/
+		/// <summary>
+		///  Removes a TCP/IP server transport from the list of currently open
+		///  transports.
+		/// </summary>
+		/// <param name="transport">Server transport to remove from the list of currently
+		///   open transports for this listening transport.</param>
 		public void RemoveTransport (OncRpcTcpConnectionServerTransport transport)
 		{
 			lock (openTransports) {
-				openTransports.Remove ((object)transport);
+				openTransports.Remove (transport);
 			}
 		}
 
-		/**
-		* Register the TCP/IP port where this server transport waits for incoming
-		* requests with the ONC/RPC portmapper.
-		*
-		* @throws OncRpcException if the portmapper could not be contacted
-		*   successfully of if the portmapper rejected port registration(s).
-		*/
-
-		// throws OncRpcException 
-		public override void Register ()
+		private NotSupportedException GetException ()
 		{
-			try {
-				OncRpcPortmapClient portmapper =
-					new OncRpcPortmapClient(IPAddress.Parse ("127.0.0.1"));
-				int size = info.Length;
-				for (int idx = 0; idx < size; ++idx) {
-					//
-					// Try to register the port for our transport with the local ONC/RPC
-					// portmapper. If this fails, bail out with an exception.
-					//
-					if (!portmapper.SetPort (info[idx].program, info[idx].version,
-						OncRpcProtocols.ONCRPC_TCP, port) ) {
-						throw (new OncRpcException(OncRpcException.RPC_CANNOTREGISTER));
-					}
-				}
-			} catch (IOException) {
-				throw new OncRpcException(OncRpcException.RPC_FAILED);
-			}
+			throw new NotSupportedException ("Not supported by TCP Transport");
 		}
 
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-
-		// throws OncRpcException, IOException 
-		public override void RetrieveCall (XdrAble call)
+		public override void RetrieveCall (IXdrAble call)
 		{
-			throw new Exception ("OncRpcTcpServerTransport.retrieveCall() is abstract "
-				+"and can not be called.");
+			throw GetException ();
 		}
-
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
+		
 		public override XdrDecodingStream GetXdrDecodingStream ()
 		{
-			throw new Exception ("OncRpcTcpServerTransport.getXdrDecodingStream() is abstract "
-				+"and can not be called.");
+			throw GetException ();
 		}
-
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-		// throws OncRpcException, IOException 
-		public override void EndDecoding ()
+		
+		public override XdrEncodingStream GetXdrEncodingStream ()
 		{
-			throw new Exception ("OncRpcTcpServerTransport.endDecoding() is abstract "
-				+"and can not be called.");
+			throw GetException ();
 		}
 
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-		public override XdrEncodingStream GetXdrEncodingStream () {
-			throw new Exception ("OncRpcTcpServerTransport.getXdrEncodingStream() is abstract "
-				+"and can not be called.");
+		public override void Reply (OncRpcCallInformation callInfo,
+			  OncRpcServerReplyMessage state, IXdrAble reply)
+		{
+			throw GetException ();
 		}
-
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-
-		// throws OncRpcException, IOException 
+		
 		public override void BeginEncoding (OncRpcCallInformation callInfo,
 			OncRpcServerReplyMessage state)
 		{
-			throw new Exception ("OncRpcTcpServerTransport.beginEncoding() is abstract "
-				+"and can not be called.");
+			throw GetException ();
 		}
-
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-		// throws OncRpcException, IOException 
+		
 		public override void EndEncoding ()
 		{
-			throw new Exception ("OncRpcTcpServerTransport.endEncoding() is abstract "
-				+"and can not be called.");
+			throw GetException ();
+		}
+		
+		public override void EndDecoding () {
+			throw GetException ();
 		}
 
-		/**
-		* Do not call.
-		*
-		* @throws Error because this method must not be called for a listening
-		* server transport.
-		*/
-		// throws OncRpcException, IOException 
-		public override void Reply (OncRpcCallInformation callInfo,
-			OncRpcServerReplyMessage state, XdrAble reply)
+		private void OnClosed (ConnectionClosedEventArgs e)
 		{
-			throw new Exception  ("OncRpcTcpServerTransport.reply() is abstract "
-				+"and can not be called.");
+			if (ConnectionClosed != null)
+				ConnectionClosed (this, e);
+		}
+		
+		public void SendClosed (IPAddress ip, int port)
+		{
+			OnClosed (new ConnectionClosedEventArgs (ip, port));
 		}
 
-		/**
-		* Creates a new thread and uses this thread to listen to incoming
-		* ONC/RPC requests, then dispatches them and finally sends back the
-		* appropriate reply messages. Control in the calling thread immediately
-		* returns after the handler thread has been created.
-		*
-		* <p>For every incomming TCP/IP connection a handler thread is created
-		* to handle ONC/RPC calls on this particular connection.
-		*/
+		/// <summary>
+		///  Creates a new thread and uses this thread to listen to incoming
+		///  ONC/RPC requests, dispatches them and sends back the appropriate 
+		///  reply messages. For every incomming TCP/IP connection a handler 
+		///  thread is created to handle RPC calls on this particular connection.
+		/// </summary>
 		public override void Listen ()
 		{
-			//
-			// Create a new (daemon) thread which will handle incoming connection
-			// requests.
-			//
-			Thread listenThread = new Thread (new ThreadStart (delegate() {
-					while (true) {
-						try {
-							//
-							// Now wait for (new) connection requests to come in.
-							//
-							TcpListener myServerSocket = socket;
-							if ( myServerSocket == null ) {
-								break;
-							}
-
-							TcpClient newSocket = myServerSocket.AcceptTcpClient ();
-							OncRpcTcpConnectionServerTransport transport =
-							new OncRpcTcpConnectionServerTransport (
-								dispatcher,
-								newSocket,
-								info,
-								bufferSize,
-								this,
-								transmissionTimeout);
-							lock (openTransports) {
-								openTransports.Add ((Object)transport);
-							}
-							//
-							// Let the newly created transport object handle this
-							// connection. Note that it will create its own
-							// thread for handling.
-							//
-							transport.Listen ();
-						} catch ( OncRpcException) {
-							// Do nothing
-						} catch ( IOException) {
-							//
-							// We are just ignoring most of the IOExceptions as
-							// they might be thrown, for instance, if a client
-							// attempts a connection and resets it before it is
-							// pulled off by accept(). If the socket has been
-							// gone away after an IOException this means that the
-							// transport has been closed, so we end this thread
-							// gracefully.
-							//
-							if (socket == null)
-								break;
-						}
-					}
-				}
-			));
+			Thread listenThread = new Thread (ListenerThread);
 			listenThread.Name = "TCP server transport listener thread";
-			//
-			// Now make the new handling thread a deamon and start it, so it
-			// sits there waiting for incoming TCP/IP connection requests.
-			//
 			listenThread.IsBackground = true;
 			listenThread.Start ();
 		}
-
-
-		/**
-		* Retrieve the current timeout used during transmission phases (call and
-		* reply phases).
-		*
-		* @return Current transmission timeout. (milliseconds)
-		*/
-		public int TransmissionTimeout
+		
+		private void ListenerThread ()
 		{
-			get {
-				return transmissionTimeout;
-			}
-			set {
-				if (value <= 0) {
-					throw new ArgumentException ("transmission timeout must be > 0");
-				}
-				transmissionTimeout = value;
-			}
-		}
+			while (true) {
+				try {
+					//
+					// Now wait for (new) connection requests to come in.
+					//
+					TcpListener myServerSocket = socket;
+					if (myServerSocket == null)
+						return;
 
-
-		/**
-		* Get the character encoding for (de-)serializing strings.
-		*
-		* @return the encoding currently used for (de-)serializing strings.
-		*   If <code>null</code>, then the system's default encoding is used.
-		*/
-		public override string CharacterEncoding {
-			get {
-				return characterEncoding;
-			}
-			set {
-				this.characterEncoding = value;
-			}
-		}
-
-		/**
-		* TCP socket used for stream-based communication with ONC/RPC
-		* clients.
-		*/
-		private TcpListener socket;
-
-		/**
-		* Size of send/receive buffers to use when encoding/decoding XDR data.
-		*/
-		private int bufferSize;
-
-		/**
-		* Collection containing currently open transports.
-		*/
-		private TransportList openTransports = new TransportList();
-
-		/**
-		* Timeout during the phase where data is received within calls, or data is
-		* sent within replies.
-		*/
-		protected int transmissionTimeout = 30000;
-
-		/**
-		 * Encoding to use when deserializing strings or <code>null</code> if
-		 * the system's default encoding should be used.
-		 */
-		private String characterEncoding = null;
-
-
-		/**
-		* Minumum implementation of a double linked list which notices which
-		* transports are currently open and have to be shut down when this
-		* listening transport is shut down. The only reason why we have this
-		* code here instead of using java.util.LinkedList is due to JDK&nbsp;1.1
-		* compatibility.
-		*
-		* <p>Note that the methods are not synchronized as we leave this up
-		* to the caller, who can thus optimize access during critical sections.
-		*/
-		private class TransportList
-		{
-
-			/**
-			* Create a new instance of a list of open transports.
-			*/
-			public TransportList () {
-				//
-				// Link header node with itself, so it is its own successor
-				// and predecessor. Using a header node excuses us from checking
-				// for the special cases of first and last node (or both at
-				// the same time).
-				//
-				head.Next = head;
-				head.Prev = head;
-			}
-
-			/**
-			* Add new transport to list of open transports. The new transport
-			* is always added immediately after the head of the linked list.
-			*/
-			public void Add (object o)
-			{
-				Node node = new Node (o);
-				node.Next = head.Next;
-				head.Next = node;
-				node.Prev = head;
-				node.Next.Prev = node;
-				++size;
-			}
-
-			/**
-			* Remove given transport from list of open transports.
-			*/
-			public bool Remove (Object o)
-			{
-				Node node = head.Next;
-				while ( node != head ) {
-					if ( node.Item == o ) {
-						node.Prev.Next = node.Next;
-						node.Next.Prev = node.Prev;
-						--size;
-						return true;
+					TcpClient newSocket = myServerSocket.AcceptTcpClient ();
+					var transport = new OncRpcTcpConnectionServerTransport (
+						dispatcher, newSocket, bufferSize, this, transmissionTimeout);
+					lock (openTransports) {
+						openTransports.AddFirst (transport);
 					}
-					node = node.Next;
-				}
-				return false;
-			}
+					//
+					// Let the newly created transport object handle this
+					// connection. Note that it will create its own
+					// thread for handling.
+					//
+					transport.Listen ();
+					
+				} catch (OncRpcException) {
+					// Do nothing
+				} catch (IOException) {
+					//
+					// We ignore most of the IOExceptions as that might be thrown, 
+					// for instance, if a client attempts a connection and resets 
+					// it before it is pulled off by accept ().
 
-			/**
-			* Removes and returns the first open transport from list.
-			*/
-			public object RemoveFirst ()
-			{
-				//
-				// Do not remove the header node.
-				//
-				if ( size == 0 ) {
-					throw new IndexOutOfRangeException ();
-				}
-				Node node = head.Next;
-				head.Next = node.Next;
-				node.Next.Prev = head;
-				--size;
-				return node.Item;
-			}
-
-			/**
-			* Returns the number of (open) transports in this list.
-			*
-			* @return the number of (open) transports.
-			*/
-			public int Size {
-				get {
-					return size;
+					// If the socket has been gone away after an IOException 
+					// this means that the transport has been closed, so we end this thread
+					// gracefully.
+					if (socket == null)
+						return;
 				}
 			}
-
-			/**
-			* Head node for list of open transports which does not represent
-			* an open transport but instead excuses us of dealing with all
-			* the special cases of real nodes at the begin or end of the list.
-			*/
-			private Node head = new Node (null);
-
-			/**
-			* Number of (real) open transports currently registered in this
-			* list.
-			*/
-			private int size = 0;
-
-
-			/**
-			 * Node class referencing an individual open transport and holding
-			 * references to the previous and next open transports.
-			 */
-			private class Node
-			{
-				Node next;
-				Node prev;
-				Object item;
-
-				/**
-				* Create a new instance of a node object and let it reference
-			 	* an open transport. The creator of this object is then
-			 	* responsible for adding this node to the circular list itself.
-			 	*/
-				public Node (Object item) {
-					this.item = item;
-				}
-
-				/**
-				* Next item node (in other words: next open transport)
-				* in the list. This will never be <code>null</code> for the
-				* first item, but instead reference the last item. Thus, the
-				* list is circular.
-				*/
-				public Node Next {
-					get { return next; }
-					set { next = value; }
-				}
-
-				/**
-				* Previous item node (in other words: previous open transport)
-				* in the list. This will never be <code>null</code> for the
-				* last item, but instead reference the first item. Thus, the
-				* list is circular.
-				*/
-				public Node Prev {
-					get { return prev; }
-					set { prev = value; }
-				}
-
-				/**
-				* The item/object placed at this position in the list. This
-				* currently always references an open transport.
-				*/
-				public Object Item {
-					get { return item; }
-					set { item = value; }
-				}
-
-			}
-
 		}
-
+		
 	}
 
 }

@@ -1,103 +1,96 @@
-/*
- * $Header: /cvsroot/remotetea/remotetea/src/org/acplt/oncrpc/server/OncRpcServerCallMessage.java,v 1.1.1.1 2003/08/13 12:03:51 haraldalbrecht Exp $
- *
- * Copyright (c) 1999, 2000
- * Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
- * D-52064 Aachen, Germany.
- * All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Library General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this program (see the file COPYING.LIB for more
- * details); if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
+//
+// openmapi.org - CompactTeaSharp - OncRpcServerCallMessage.cs
+//
+// C# port Copyright 2008 by Topalis AG
+//
+// Author (C# port): Johannes Roith
+//
+// This library is based on the RemoteTea java library:
+//
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
+//
+// This library is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Library General Public License as
+// published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Library General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program (see the file COPYING.LIB for more
+// details); if not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+//
 
 using System;
 using System.Net;
 using System.IO;
-using RemoteTea.OncRpc;
+using CompactTeaSharp;
 
-namespace RemoteTea.OncRpc.Server
+namespace CompactTeaSharp.Server
 {
 
-	/**
-	* The <code>OncRpcServerCallMessage</code> class represents an ONC/RPC
-	* call message on the server side. For this reasons it just handles
-	* decoding of call messages but can not do any encoding. This class is
-	* also responsible for pulling off authentication information from the
-	* wire and converting it into appropriate authentication protocol handling
-	* objects. As with all good management, this class therefor delegates this
-	* somehow unpleasant work to the server-side authentication protocol handling
-	* classes.
-	*
-	* @see OncRpcServerAuth
-	*
-	* @version $Revision: 1.1.1.1 $ $Date: 2003/08/13 12:03:51 $ $State: Exp $ $Locker:  $
-	* @author Harald Albrecht
-	*/
+	/// <summary>
+	///  Represents an ONC/RPC call message on the server side. For this reasons 
+	///  it just handles decoding of call messages but can not do any encoding. 
+	///  This class is also responsible for pulling off authentication information 
+	///  from the wire and converting it into appropriate authentication protocol 
+	///  handling objects. As with all good management, this class therefor delegates 
+	///  this to the server-side authentication protocol handling classes.
+	/// </summary>
 	public class OncRpcServerCallMessage : OncRpcCallMessage
 	{
+		private OncRpcServerAuth auth;
+	
+		/// <summary>
+		///  Contains the authentication protocol handling object retrieved together
+		///  with the call message itself.
+		/// </summary>
+		public OncRpcServerAuth Auth {
+			get { return auth; }
+			set { auth = value; }
+		}
 
-		/**
-		* Decodes -- that is: deserializes -- a ONC/RPC message header object
-		* from a XDR stream according to RFC 1831.
-		*
-		* @param xdr A decoding XDR stream from which to receive all the mess.
-		*
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
+		/// <summary>
+		///  Decodes a ONC/RPC message header object from a XDR stream according to RFC 1831.
+		/// </summary>
+		///  <param name="xdr">A decoding XDR stream from which to receive all the mess.</param>
+		// throws OncRpcException, IOException
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
-			messageId = xdr.XdrDecodeInt ();
-			//
-			// Make sure that we are really decoding an ONC/RPC message call
-			// header. Otherwise, throw the appropriate OncRpcException exception.
-			//
-			messageType = xdr.XdrDecodeInt ();
-			if (messageType != OncRpcMessageType.ONCRPC_CALL) {
-				throw new OncRpcException (OncRpcException.RPC_WRONGMESSAGE);
-			}
-			//
-			// Make sure that the other side is talking the right slang --
-			// we will only understand version 2 slang of ONC/RPC.
-			//
-			oncRpcVersion = xdr.XdrDecodeInt ();
-			if ( oncRpcVersion != ONCRPC_VERSION ) {
-				throw new OncRpcException(OncRpcException.RPC_VERSMISMATCH);
-			}
-			//
-			// Now decode the remaining fields of the call header.
-			//
-			program = xdr.XdrDecodeInt ();
-			version = xdr.XdrDecodeInt ();
-			procedure = xdr.XdrDecodeInt ();
+			MessageId = xdr.XdrDecodeInt ();
+
+			// Ensure that we are really decoding an ONC/RPC message call header.
+			MessageType = (OncRpcMessageType) xdr.XdrDecodeInt ();
+			if (MessageType != OncRpcMessageType.Call)
+				throw new OncRpcException (OncRpcException.WRONG_MESSAGE);
+
+			// Make sure that the other side is talking version 2 of ONC/RPC.
+			OncRpcVersion = xdr.XdrDecodeInt ();
+			if (OncRpcVersion != ONCRPC_VERSION)
+				throw new OncRpcException (OncRpcException.VERS_MISMATCH);
+
+			// Decode the remaining fields of the call header.
+			Program = xdr.XdrDecodeInt ();
+			Version = xdr.XdrDecodeInt ();
+			Procedure = xdr.XdrDecodeInt ();
+
 			//
 			// Last comes the authentication data. Note that the "factory" hidden
-			// within xdrNew() will graciously recycle any old authentication
+			// within XdrNew () will graciously recycle any old authentication
 			// protocol handling object if it is of the same authentication type
 			// as the new one just coming in from the XDR wire.
 			//
 			auth = OncRpcServerAuth.XdrNew (xdr, auth);
 		}
-
-		/**
-		* Contains the authentication protocol handling object retrieved together
-		* with the call message itself.
-		*/
-		public OncRpcServerAuth auth;
-
+		
 	}
 
 }

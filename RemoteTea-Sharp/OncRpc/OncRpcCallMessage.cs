@@ -30,87 +30,65 @@
 
 using System;
 
-namespace RemoteTea.OncRpc
+namespace CompactTeaSharp
 {
-	/**
-	 * The <code>OncRpcCallMessage</code> class represents a remote procedure call
-	 * message as defined by ONC/RPC in RFC 1831. Such messages are sent by ONC/RPC
-	 * clients to servers in order to request a remote procedure call.
-	 *
-	 * <p>Note that this is an abstract class. Because call message objects also
-	 * need to deal with authentication protocol issues, they need help of so-called
-	 * authentication protocol handling objects. These objects are of different
-	 * classes, depending on where they are used (either within the server or
-	 * the client).
-	 *
-	 * <p>Please also note that this class implements no encoding or decoding
-	 * functionality: it doesn't need them. Only derived classes will be able
-	 * to be encoded on the side of the client and decoded at the end of the
-	 * server.
-	 *
-	 * @version $Revision: 1.2 $ $Date: 2003/08/14 07:55:07 $ $State: Exp $ $Locker:  $
-	 * @author Harald Albrecht
-	 */
-	public abstract class OncRpcCallMessage: OncRpcMessage
+	/// <summary>
+	///  The OncRpcCallMessage class represents an rpc message as defined by 
+	///  ONC/RPC in RFC 1831. Such messages are sent by ONC/RPC clients to 
+	///  servers in order to request a remote procedure call.
+	///
+	///  Note that this is an abstract class. Because call message objects also
+	///  need to deal with authentication protocol issues, they need help of so-called
+	///  authentication protocol handling objects. These objects are of different
+	///  classes, depending on where they are used (either within the server or
+	///  the client).
+	/// </summary>
+	public abstract class OncRpcCallMessage : OncRpcMessage
 	{
-	    /**
-	     * Protocol version used by this ONC/RPC Java implementation. The protocol
-	     * version 2 is defined in RFC 1831.
-	     */
-	    public const int ONCRPC_VERSION = 2;
-	
-	    /**
-	     * Protocol version used by this ONC/RPC call message.
-	     */
-	    public int oncRpcVersion;
-	
-	    /**
-	     * Program number of this particular remote procedure call message.
-	     */
-	    public int program;
-	
-	    /**
-	     * Program version number of this particular remote procedure call message.
-	     */
-	    public int version;
-	
-	    /**
-	     * Number (identifier) of remote procedure to call.
-	     */
-	    public int procedure;
-	
-	    /**
-	     * Constructs and initialises a new ONC/RPC call message header.
-	     *
-	     * @param messageId An identifier choosen by an ONC/RPC client to uniquely
-	     *   identify matching call and reply messages.
-	     * @param program Program number of the remote procedure to call.
-	     * @param version Program version number of the remote procedure to call.
-	     * @param procedure Procedure number (identifier) of the procedure to call.
-	     */
-	    public OncRpcCallMessage(int messageId, int program,
-	                             int version, int procedure): base(messageId)
-	    {
-	        
-	        messageType    = OncRpcMessageType.ONCRPC_CALL;
-	        oncRpcVersion  = ONCRPC_VERSION;
-	        this.program   = program;
-	        this.version   = version;
-	        this.procedure = procedure;
-	    }
-	
-	    /**
-	     * Constructs a new (incompletely initialized) ONC/RPC call message header.
-	     * The <code>messageType</code> is set to
-	     * {@link OncRpcMessageType#ONCRPC_CALL} and the <code>oncRpcVersion</code>
-	     * is set to {@link #ONCRPC_VERSION}.
-	     */
-	    public OncRpcCallMessage(): base(0) {
-	        messageType    = OncRpcMessageType.ONCRPC_CALL;
-	        oncRpcVersion  = ONCRPC_VERSION;
-	        this.program   = 0;
-	        this.version   = 0;
-	        this.procedure = 0;
-	    }
+		/// <summary>
+		///  Protocol version used by this ONC/RPC implementation. 
+		///  The protocol version 2 is defined in RFC 1831.
+		/// </summary>
+		public const int ONCRPC_VERSION = 2;
+
+		/// <summary>
+		///  Protocol version used by this ONC/RPC call message.
+		/// </summary>
+		public int OncRpcVersion { get; set; }
+
+		/// <summary>
+		///  Program number of this particular rpc message.
+		/// </summary>
+		public int Program { get; set; }
+
+		/// <summary>
+		///  Program version number of this particular rpc essage.
+		/// </summary>
+		public int Version { get; set; }
+
+		/// <summary>
+		///  Number (identifier) of remote procedure to call.
+		/// </summary>
+		public int Procedure { get; set; }
+
+		/// <summary>
+		///  Constructs and initialises a new ONC/RPC call message header.
+		/// </summary>
+		protected OncRpcCallMessage (int messageId, int program, 
+			int version, int procedure): base (messageId)
+		{
+			this.MessageType = OncRpcMessageType.Call;
+			this.OncRpcVersion = ONCRPC_VERSION;
+			this.Program = program;
+			this.Version = version;
+			this.Procedure = procedure;
+		}
+
+		/// <summary>
+		/// Constructs a new (incompletely initialized) ONC/RPC call message header.
+		/// </summary>
+		protected OncRpcCallMessage () : this (0, 0, 0, 0)
+		{
+		}
 	}
 }

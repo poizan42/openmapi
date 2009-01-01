@@ -1,14 +1,17 @@
 //
-// RemoteTea - OnRpcBroadcastEvent.cs
+// openmapi.org - CompactTeaSharp - OnRpcClientAuthNone.cs
 //
 // C# port Copyright 2008 by Topalis AG
 //
-// This library is based on the remotetea java library: 
+// Author (C# port): mazurin, Johannes Roith
 //
-// Copyright (c) 1999, 2000
-// Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
-// D-52064 Aachen, Germany.
-// All rights reserved.
+// This library is based on the RemoteTea java library:
+//
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
 //
 // This library is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Library General Public License as
@@ -25,68 +28,45 @@
 // details); if not, write to the Free Software Foundation, Inc.,
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 //
-// Java source:
-// $Header: /cvsroot/remotetea/remotetea/src/org/acplt/oncrpc/OncRpcClientAuthNone.java,v 1.1.1.1 2003/08/13 12:03:40 haraldalbrecht Exp $
-// 
-
 
 using System;
 using System.IO;
 using System.Net;
 
-namespace RemoteTea.OncRpc
+namespace CompactTeaSharp
 {
-
-	/**
-	 * The <code>OncRpcClientAuthNone</code> class handles protocol issues of
-	 * ONC/RPC <code>AUTH_NONE</code> authentication.
-	 *
-	 * @version $Revision: 1.1.1.1 $ $Date: 2003/08/13 12:03:40 $ $State: Exp $ $Locker:  $
-	 * @author Harald Albrecht
-	 */
+	/// <summary>
+	///  The OncRpcClientAuthNone class handles protocol issues 
+	///  of ONC/RPC AUTH_NONE authentication.
+	/// </summary>
 	public class OncRpcClientAuthNone : OncRpcClientAuth
 	{
+		/// <summary>
+		///  Contains a singleton which comes in handy if you just need an
+		///  AUTH_NONE authentification for an ONC/RPC client.
+		/// </summary>
+		public static readonly OncRpcClientAuthNone AUTH_NONE = new OncRpcClientAuthNone ();
 
-		/**
-		* Encodes ONC/RPC authentication information in form of a credential
-		* and a verifier when sending an ONC/RPC call message.
-		*
-		* @param xdr XDR stream where to encode the credential and the verifier
-		*   to.
-		*
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
+		internal override bool CanRefreshCred {
+			get { return false; }
+		}
+		
 		internal override void XdrEncodeCredVerf (XdrEncodingStream xdr)
 		{
 			//
 			// The credential only consists of the indication of AUTH_NONE with
 			// no opaque authentication data following.
 			//
-			xdr.XdrEncodeInt (OncRpcAuthType.ONCRPC_AUTH_NONE);
+			xdr.XdrEncodeInt ((int) OncRpcAuthType.None);
 			xdr.XdrEncodeInt (0);
 			//
-			// But we also need to encode the verifier. This is always of type
-			// AUTH_NONE too. For some obscure historical reasons, we have to
-			// deal with credentials and verifiers, although they belong together,
-			// according to Sun's specification.
+			// But we also need to encode the verifier. 
+			// This is always of type AUTH_NONE too.
 			//
-			xdr.XdrEncodeInt (OncRpcAuthType.ONCRPC_AUTH_NONE);
+			xdr.XdrEncodeInt ((int) OncRpcAuthType.None);
 			xdr.XdrEncodeInt (0);
 		}
 
-		/**
-		* Decodes ONC/RPC authentication information in form of a verifier
-		* when receiving an ONC/RPC reply message. 
-		*
-		* @param xdr XDR stream from which to receive the verifier sent together
-		*   with an ONC/RPC reply message.
-		*
-		* @throws OncRpcAuthenticationException if the received verifier is
-		*   not kosher.
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
 		internal override void XdrDecodeVerf (XdrDecodingStream xdr)
 		{
 			//
@@ -94,32 +74,11 @@ namespace RemoteTea.OncRpc
 			// does not contain any opaque data. Anything different from this
 			// is not kosher and an authentication exception will be thrown.
 			//
-			if ( (xdr.XdrDecodeInt () != OncRpcAuthType.ONCRPC_AUTH_NONE) ||
+			if ( (xdr.XdrDecodeInt () != (int) OncRpcAuthType.None) ||
 				(xdr.XdrDecodeInt () != 0) ) {
-					throw new OncRpcAuthenticationException(
-						OncRpcAuthStatus.ONCRPC_AUTH_FAILED);
+					throw new OncRpcAuthenticationException (OncRpcAuthStatus.Failed);
 			}
 		}
-
-		/**
-		* Indicates whether the ONC/RPC authentication credential can be
-		* refreshed.
-		*
-		* @return true, if the credential can be refreshed
-		*/
-		internal override bool CanRefreshCred {
-			//
-			// Nothing to do here, as AUTH_NONE doesn't know anything of
-			// credential refreshing. How refreshing...
-			//
-			get { return false; }
-		}
-
-		/**
-		* Contains a singleton which comes in handy if you just need an
-		* AUTH_NONE authentification for an ONC/RPC client.
-		*/
-		public static readonly OncRpcClientAuthNone AUTH_NONE = new OncRpcClientAuthNone ();
 
 	}
 

@@ -1,5 +1,56 @@
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
+	* RemoteTea-Sharp/OncRpc/XdrTcpDecodingStream.cs:
+	* RemoteTea-Sharp/OncRpc/XdrVoid.cs:
+	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcClient.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcCallMessage.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcClientAuthNone.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcExceptions.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcTcpClient.cs:
+	* RemoteTea-Sharp/OncRpc/XdrDecodingStream.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcConsts.cs:
+	* RemoteTea-Sharp/OncRpc/XdrAble.cs: renamed to IXdrAble.
+	* RemoteTea-Sharp/OncRpc/OncRpcClientStub.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcClientCallMessage.cs:
+	* RemoteTea-Sharp/OncRpc/XdrTcpEncodingStream.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcMessage.cs:
+	* RemoteTea-Sharp/OncRpc/IXdrAble.cs: renamed
+	* RemoteTea-Sharp/OncRpc/AssemblyInfo.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerCallMessage.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerAuthNone.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerAuthShort.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcTcpConnectionServerTransport.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcCallInformation.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcDispatchable.cs: renamed to IOncRpcDispatchable.
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerTransport.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerReplyMessage.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerAuth.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcTcpServerTransport.cs:
+	* RemoteTea-Sharp/OncRpc/Server/IOncRpcDispatchable.cs: renamed
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerAuthUnix.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerAcceptedCallMessage.cs:
+	* RemoteTea-Sharp/OncRpc/Server/OncRpcServerStub.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcClientReplyMessage.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcReplyMessage.cs:
+	* RemoteTea-Sharp/OncRpc/OncRpcClientAuth.cs: 
+
+	- The other files in RemoteTea-Sharp/OncRpc/ have been deleted.
+
+	Changes (what I can remember):
+
+	- Renamed to CompactTeaSharp
+	- Removed UDP support
+	- Removed portmapper support
+	- Removed unnecessary helper classes
+	- Some new encoding/decoding methods
+	- New connection closed event
+	- Reduced code duplication
+	- Improved code quality, etc.
+
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
 	* RemoteTea-Sharp/mlog/AssemblyInfo.cs:
 	* RemoteTea-Sharp/mlog/Driver.cs:
 	* RemoteTea-Sharp/mlog/Exceptions.cs:

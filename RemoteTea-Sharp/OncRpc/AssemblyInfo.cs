@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - AssemblyInfo.cs
+// openmapi.org - CompactTeaSharp - AssemblyInfo.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -30,11 +30,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RemoteTea Sharp")]
+[assembly: AssemblyTitle("CompactTeaSharp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RemoteTea Sharp")]
+[assembly: AssemblyProduct("CompactTeaSharp")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

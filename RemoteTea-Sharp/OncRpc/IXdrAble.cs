@@ -1,9 +1,9 @@
 //
-// RemoteTea - OnRpcMessage.cs
+// RemoteTea - IXdrAble.cs
 //
-// C# port Copyright 2008 by Topalis AG
+// Copyright 2008 by Topalis AG
 //
-// Author: mazurin
+// Author: Johannes Roith
 //
 // This library is based on the remotetea java library: 
 //
@@ -33,27 +33,35 @@ using System;
 namespace CompactTeaSharp
 {
 	/// <summary>
-	///  An abstract base class for the message types ONC/RPC defines.
+	///  Defines the interface for all classes that should be able to be
+	///  serialized into and constructed from XDR streams.
 	/// </summary>
-	public abstract class OncRpcMessage
+	public interface IXdrAble : IXdrDecodeable, IXdrEncodeable
+	{
+	}
+	
+	/// <summary>
+	///  Encoding subset of IXdrAble
+	/// </summary>
+	public interface IXdrEncodeable
 	{
 		/// <summary>
-		///  The message id is used to identify matching ONC/RPC calls and
-		///  replies. This is typically choosen by the communication partner
-		///  sending a request. The matching reply must have the same identifier.
+	 	///  Encodes an object into a XDR stream in compliance to RFC 1832.
 		/// </summary>
-		public int MessageId { get; set; }
-
-		/// <summary>
-		///  The kind of ONC/RPC message, which can be either a call or a reply.
-		/// </summary>
-		public OncRpcMessageType MessageType { get; set; }
-
-		protected OncRpcMessage (int messageId)
-		{
-			this.MessageId = messageId;
-			this.MessageType = OncRpcMessageType.NoValue;
-		}
-
+		/// <param name="xdr">XDR stream to which information is sent for encoding.</param>
+		void XdrEncode (XdrEncodingStream xdr);
 	}
+	
+	/// <summary>
+	///  Decoding subset of IXdrAble
+	/// </summary>
+	public interface IXdrDecodeable
+	{
+		/// <summary>
+	 	///  Decodes an object into a XDR stream in compliance to RFC 1832.
+		/// </summary>
+		/// <param name="xdr">XDR stream from which decoded information is retrieved.</param>
+		void XdrDecode (XdrDecodingStream xdr);
+	}
+	
 }

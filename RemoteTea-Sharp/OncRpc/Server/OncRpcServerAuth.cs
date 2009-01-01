@@ -1,70 +1,63 @@
-/*
- * $Header: /cvsroot/remotetea/remotetea/src/org/acplt/oncrpc/server/OncRpcServerAuth.java,v 1.1.1.1 2003/08/13 12:03:51 haraldalbrecht Exp $
- *
- * Copyright (c) 1999, 2000
- * Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
- * D-52064 Aachen, Germany.
- * All rights reserved.
- *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Library General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this program (see the file COPYING.LIB for more
- * details); if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
+//
+// openmapi.org - CompactTeaSharp - OncRpcServerAuth.cs
+//
+// C# port Copyright 2008 by Topalis AG
+//
+// Author (C# port): Johannes Roith
+//
+// This library is based on the RemoteTea java library:
+//
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
+//
+// This library is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Library General Public License as
+// published by the Free Software Foundation; either version 2 of the
+// License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Library General Public License for more details.
+//
+// You should have received a copy of the GNU Library General Public
+// License along with this program (see the file COPYING.LIB for more
+// details); if not, write to the Free Software Foundation, Inc.,
+// 675 Mass Ave, Cambridge, MA 02139, USA.
+//
 
 using System;
 using System.Net;
 using System.IO;
-using RemoteTea.OncRpc;
+using CompactTeaSharp;
 
-namespace RemoteTea.OncRpc.Server
-{
-
-	/**
-	 * The <code>OncRpcServerAuth</code> class is the base class and factory
-	 * for handling all protocol issues of ONC/RPC authentication on the server
-	 * side.
-	 *
-	 * @version $Revision: 1.1.1.1 $ $Date: 2003/08/13 12:03:51 $ $State: Exp $ $Locker:  $
-	 * @author Harald Albrecht
-	 */
+namespace CompactTeaSharp.Server
+{	
+	/// <summary>
+	///  Base class and factory for handling all protocol issues of ONC/RPC 
+	///  authentication on the server side.
+	/// </summary>
 	public abstract class OncRpcServerAuth
 	{
+		/// <summary>
+		///  Returns the type (flavor) of {@link OncRpcAuthType authentication}
+		///  used by this authentication object.
+		/// </summary>
+		public abstract OncRpcAuthType GetAuthenticationType ();
 
-		/**
-		* Returns the type (flavor) of {@link OncRpcAuthType authentication}
-		* used.
-		*
-		* @return Authentication type used by this authentication object.
-		*/
-		public abstract int GetAuthenticationType();
-
-		/**
-		* Restores (deserializes) an authentication object from an XDR stream.
-		*
-		* @param xdr XDR stream from which the authentication object is
-		*   restored.
-		* @param recycle old authtentication object which is intended to be
-		*   reused in case it is of the same authentication type as the new
-		*   one just arriving from the XDR stream.
-		*
-		* @return Authentication information encapsulated in an object, whose class
-		*   is derived from <code>OncRpcServerAuth</code>.
-		*
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
+		/// <summary>
+		///   Restores (deserializes) an authentication object from an XDR stream.
+		/// </summary>
+		/// <param name="xdr">XDR stream from which the authentication object is restored.</param>
+		/// <param name="recycle">Old authtentication object which is intended to be
+		///     reused in case it is of the same authentication type as the new
+		///     one just arriving from the XDR stream.</param>
+		/// <return>Authentication information encapsulated in an object, whose class
+		///   is derived from OncRpcServerAuth</return>
+		// throws OncRpcException, IOException
 		public static OncRpcServerAuth XdrNew (XdrDecodingStream xdr,
 			OncRpcServerAuth recycle)
 		{
@@ -75,9 +68,9 @@ namespace RemoteTea.OncRpc.Server
 			// to receive an authentication with the same type, we reuse the old
 			// object.
 			//
-			int authType = xdr.XdrDecodeInt ();
+			OncRpcAuthType authType = (OncRpcAuthType) xdr.XdrDecodeInt ();
 			if ( (recycle != null)
-				&& (recycle.GetAuthenticationType() == authType) )
+				&& (recycle.GetAuthenticationType () == authType) )
 			{
 				//
 				// Simply recycle authentication object and pull its new state
@@ -90,47 +83,40 @@ namespace RemoteTea.OncRpc.Server
 				// Create a new authentication object and pull its state off
 				// the XDR stream.
 				//
-				switch ( authType ) {
-					case OncRpcAuthType.ONCRPC_AUTH_NONE:
-						auth = OncRpcServerAuthNone.AUTH_NONE;
+				switch (authType) {
+					case OncRpcAuthType.None:
+						auth = new OncRpcServerAuthNone ();
 						auth.XdrDecodeCredVerf (xdr);
 					break;
-					case OncRpcAuthType.ONCRPC_AUTH_SHORT:
-						auth = new OncRpcServerAuthShort(xdr);
+					case OncRpcAuthType.Short:
+						auth = new OncRpcServerAuthShort (xdr);
 					break;
-					case OncRpcAuthType.ONCRPC_AUTH_UNIX:
-						auth = new OncRpcServerAuthUnix(xdr);
+					case OncRpcAuthType.Unix:
+						auth = new OncRpcServerAuthUnix (xdr);
 					break;
 					default:
 						//
 						// In case of an unknown or unsupported type, throw an exception.
 						// Note: using AUTH_REJECTEDCRED is in sync with the way Sun's
-						// ONC/RPC implementation does it. But don't ask me why they do
-						// it this way...!
+						// ONC/RPC implementation does it.
 						//
-						throw new OncRpcAuthenticationException(
-							OncRpcAuthStatus.ONCRPC_AUTH_REJECTEDCRED);
+						throw new OncRpcAuthenticationException (
+							OncRpcAuthStatus.RejectedCred);
 				}
 			}
 			return auth;
 		}
 
-		/**
-		* Decodes -- that is: deserializes -- an ONC/RPC authentication object
-		* (credential & verifier) on the server side.
-		*
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
+		/// <summary>
+		///  Decodes an ONC/RPC authentication object (credential & verifier) on the server side.
+		/// </summary>
+		// throws OncRpcException, IOException
 		public abstract void XdrDecodeCredVerf (XdrDecodingStream xdr);
 
-		/**
-		* Encodes -- that is: serializes -- an ONC/RPC authentication object
-		* (its verifier) on the server side.
-		*
-		* @throws OncRpcException if an ONC/RPC error occurs.
-		* @throws IOException if an I/O error occurs.
-		*/
+		/// <summary>
+		///  Encodes an ONC/RPC authentication object (its verifier) on the server side.
+		/// </summary>
+		// throws OncRpcException, IOException
 		public abstract void XdrEncodeVerf (XdrEncodingStream xdr);
 
 	}

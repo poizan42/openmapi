@@ -1,16 +1,17 @@
 //
-// RemoteTea - OnRpcClient.cs
+// openmapi.org - CompactTeaSharp - OnRpcClientStub.cs
 //
 // C# port Copyright 2008 by Topalis AG
 //
-// Author: Johannes Roith
+// Author (C# port): mazurin, Johannes Roith
 //
-// This library is based on the remotetea java library: 
+// This library is based on the RemoteTea java library:
 //
-// Copyright (c) 1999, 2000
-// Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
-// D-52064 Aachen, Germany.
-// All rights reserved.
+//   Author: Harald Albrecht
+//
+//   Copyright (c) 1999, 2000
+//   Lehrstuhl fuer Prozessleittechnik (PLT), RWTH Aachen
+//   D-52064 Aachen, Germany. All rights reserved.
 //
 // This library is free software; you can redistribute it and/or modify
 // it under the terms of the GNU Library General Public License as
@@ -28,102 +29,79 @@
 // 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-
 using System;
 using System.IO;
 using System.Net;
 
-namespace RemoteTea.OncRpc
+namespace CompactTeaSharp
 {
+	/// <summary>
+	///  The abstract <code>OncRpcClientStub</code> class is the base class to
+	///  build ONC/RPC-program specific clients upon. This class is typically
+	///  only used by jrpcgen generated clients, which provide a particular
+	///  set of remote procedures as defined in a x-file.
+	/// 
+	///  <p>When you do not need the client proxy object any longer, you should
+	///  return the resources it occupies to the system. Use the {@link #close}
+	///  method for this.
+	/// 
+	///  <pre>
+	///  client.Close ();
+	///  client = null; // Hint to the garbage collector
+	/// </pre>
+	/// </summary>
+	// see OncRpcTcpClient
+	public abstract class OncRpcClientStub
+	{
+		protected OncRpcClient client;
+		
+		/// <summary>
+		///  Returns ONC/RPC client proxy object used for communication with a remote ONC/RPC server.
+		/// </summary>
+		public OncRpcClient Client {
+			get { return client; }
+		}
 
-/**
- * The abstract <code>OncRpcClientStub</code> class is the base class to
- * build ONC/RPC-program specific clients upon. This class is typically
- * only used by jrpcgen generated clients, which provide a particular
- * set of remote procedures as defined in a x-file.
- *
- * <p>When you do not need the client proxy object any longer, you should
- * return the resources it occupies to the system. Use the {@link #close}
- * method for this.
- *
- * <pre>
- * client.close();
- * client = null; // Hint to the garbage (wo)man
- * </pre>
- *
- * @see OncRpcTcpClient
- * @see OncRpcUdpClient
- *
- * @version $Revision: 1.1.1.1 $ $Date: 2003/08/13 12:03:44 $ $State: Exp $ $Locker:  $
- * @author Harald Albrecht
- */
-public abstract class OncRpcClientStub {
+		/// <summary>
+		///  Construct a new <code>OncRpcClientStub</code> for communication with
+		///  a remote ONC/RPC server.
+		/// </summary>
+		/// <param name="host">Host address where the desired ONC/RPC server resides.</param>
+		/// <param name="program">Program number of the desired ONC/RPC server.</param>
+		/// <param name="version">Version number of the desired ONC/RPC server.</param>
+		/// <param name="protocol">OncRpcProtocols Protocol to be used for
+		///   ONC/RPC calls. This information is necessary, so port lookups through
+		///   the portmapper can be done.</param>
+		protected OncRpcClientStub (IPAddress host, int program, 
+			int version, int port, OncRpcProtocols protocol)
+		{
+			client = OncRpcClient.NewOncRpcClient (host, program, version, port, protocol);
+		}
 
-    /**
-     * Construct a new <code>OncRpcClientStub</code> for communication with
-     * a remote ONC/RPC server.
-     *
-     * @param host Host address where the desired ONC/RPC server resides.
-     * @param program Program number of the desired ONC/RPC server.
-     * @param version Version number of the desired ONC/RPC server.
-     * @param protocol {@link OncRpcProtocols Protocol} to be used for
-     *   ONC/RPC calls. This information is necessary, so port lookups through
-     *   the portmapper can be done.
-     * @throws OncRpcException if an ONC/RPC error occurs.
-     * @throws IOException if an I/O error occurs.
-     */
-    public OncRpcClientStub(IPAddress host, int program, int version,
-                            int port, int protocol) {
-        client = OncRpcClient.NewOncRpcClient(host,
-                                              program, version, port,
-                                              protocol);
-    }
+		/// <summary>
+		///  Construct a new <code>OncRpcClientStub</code> which uses the given
+		///  client proxy object for communication with a remote ONC/RPC server.
+		/// </summary>
+		/// <param name="client">ONC/RPC client proxy object implementing a particular IP protocol.</param>
+		protected OncRpcClientStub (OncRpcClient client)
+		{
+			this.client = client;
+		}
 
-    /**
-     * Construct a new <code>OncRpcClientStub</code> which uses the given
-     * client proxy object for communication with a remote ONC/RPC server.
-     *
-     * @param client ONC/RPC client proxy object implementing a particular
-     *   IP protocol.
-     */
-    public OncRpcClientStub(OncRpcClient client) {
-        this.client = client;
-    }
-
-    /**
-     * Close the connection to an ONC/RPC server and free all network-related
-     * resources. Well -- at least hope, that the Java VM will sometimes free
-     * some resources. Sigh.
-     *
-     * @throws OncRpcException if an ONC/RPC error occurs.
-     */
-    public void Close() {
-        if ( client != null ) {
-            try {
-                client.Close();
-            } finally {
-                client = null;
-            }
-        }
-    }
-
-    /**
-     * Returns ONC/RPC client proxy object used for communication with a
-     * remote ONC/RPC server.
-     *
-     * @return ONC/RPC client proxy.
-     */
-    public OncRpcClient GetClient() {
-        return client;
-    }
-
-    /**
-     * The real ONC/RPC client which is responsible for handling a particular
-     * IP protocol.
-     */
-    protected OncRpcClient client;
-
-}
+		/// <summary>
+		///  Close the connection the server and free network-related resources. 
+		/// </summary>
+		public void Close ()
+		{
+			if (client == null)
+				return;
+			try {
+				client.Close ();
+			} finally {
+				client = null;
+			}
+		}
+	}
 
 }
 
