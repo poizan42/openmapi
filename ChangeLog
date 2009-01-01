@@ -1,5 +1,9 @@
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
+	* Delete the old generator.
+
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
 	* RemoteTea-Sharp/OncRpc/XdrTcpDecodingStream.cs:
 	* RemoteTea-Sharp/OncRpc/XdrVoid.cs:
 	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs:
