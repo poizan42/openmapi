@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - TeamXChangeMapiFactory.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -25,6 +24,7 @@
 using System;
 
 using NMapi;
+using NMapi.Admin;
 using NMapi.Events;
 using NMapi.Table;
 using NMapi.Properties;
@@ -99,6 +99,13 @@ namespace NMapi.Provider.TeamXChange {
 		{
 			throw new NotImplementedException ("Not yet implemented.");
 		}
+
+		public IMapiAdmin CreateMapiAdmin (string host)
+		{
+			return new TeamXChangeAdmin (host);
+		}
+
+		
 	}
 
 }

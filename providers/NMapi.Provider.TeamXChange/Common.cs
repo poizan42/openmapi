@@ -25,7 +25,7 @@
 using System;
 using System.IO;
 
-using RemoteTea.OncRpc;
+using CompactTeaSharp;
 
 using NMapi;
 using NMapi.Flags;
@@ -64,19 +64,21 @@ namespace NMapi {
 				}
 			}
 		}
+		
+		
 	
-		/***************************
-		 * flags for Session_Logon *
-		 ***************************/
-
+		//
+		// flags for Session_Logon *
+		//
 		// 1 byte use, three bytes flags
-
-		// was: SESSION_ ...
+		
 		public static class SessionFlags {
 			public const int LogonIsMapi      = 0x01000000;
 			public const int LogonIsUMapi     = 0x02000000;
 			public const int LogonIsMTA       = 0x03000000;
 			public const int LogonIsEvolution = 0x04000000;
+			public const int LogonIsBES       = 0x05000000; // Blackberry Enterprise Server
+			
 
 			public const int LogonPublic   = (1<<0);
 			public const int LogonSpooler  = (1<<1);
@@ -125,23 +127,24 @@ namespace NMapi {
 
 		// was: PT_...
 		public static class CommonProperty {
-
-			/**for imap4**/
-			public static readonly int Imap4Uid      = PropertyTypeHelper.PROP_TAG (PropertyType.I8        , UmapiSpecialMin + 0x00);
-			/**for acl**/
-			public static readonly int AclSecToken   = PropertyTypeHelper.PROP_TAG (PropertyType.String8   , UmapiSpecialMin + 0x01);
-			public static readonly int AclUrl        = PropertyTypeHelper.PROP_TAG (PropertyType.String8   , UmapiSpecialMin + 0x02);
-			/**for delegated access**/
-			public static readonly int DelegatedAll  = PropertyTypeHelper.PROP_TAG (PropertyType.MvUnicode, UmapiSpecialMin + 0x03);
-			public static readonly int DelegatedSel  = PropertyTypeHelper.PROP_TAG (PropertyType.MvUnicode, UmapiSpecialMin + 0x04);
-			/**for autoforward**/
-			public static readonly int Munge         = PropertyTypeHelper.PROP_TAG (PropertyType.Boolean   , UmapiSpecialMin + 0x05);
-			public static readonly int MungeTo       = PropertyTypeHelper.PROP_TAG (PropertyType.Unicode   , UmapiSpecialMin + 0x06);
-			public static readonly int MungeCc       = PropertyTypeHelper.PROP_TAG (PropertyType.Unicode   , UmapiSpecialMin + 0x07);
-			public static readonly int MungeSubject  = PropertyTypeHelper.PROP_TAG (PropertyType.Unicode   , UmapiSpecialMin + 0x08);
-			public static readonly int MungeDate     = PropertyTypeHelper.PROP_TAG (PropertyType.SysTime   , UmapiSpecialMin + 0x09);
-			/**store information**/
-			public static readonly int PrivateStore  = PropertyTypeHelper.PROP_TAG(PropertyType.Boolean   , UmapiSpecialMin + 0x0a);
+			
+			// for IMAP4			
+			[MapiPropDef] public const int Imap4Uid =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x00)  << 16);
+			// for ACL
+			[MapiPropDef] public const int AclSecToken =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x01)  << 16);
+			[MapiPropDef] public const int AclUrl =			((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x02)  << 16);
+			// for delegated access
+			[MapiPropDef] public const int DelegatedAll =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x03)  << 16);
+			[MapiPropDef] public const int DelegatedSel =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x04)  << 16);
+			// for autoforward
+			[MapiPropDef] public const int Munge =			((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x05)  << 16);
+			[MapiPropDef] public const int MungeTo =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x06)  << 16);
+			[MapiPropDef] public const int MungeCc =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x07)  << 16);
+			[MapiPropDef] public const int MungeSubject =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x08)  << 16);
+			[MapiPropDef] public const int MungeDate =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x09)  << 16);
+			// store information
+			[MapiPropDef] public const int PrivateStore =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x0a)  << 16);
+			[MapiPropDef] public const int LIC2 =			((int) PropertyType.String8) | ( ( UmapiSpecialMin + 0x0b)  << 16);			
 		}
 
 		/// <summary>
@@ -195,7 +198,8 @@ namespace NMapi {
 				throw new Exception ("no TXCHOST environment!");
 			if (RootPath == null)
 				throw new Exception ("no TXCROOT environment!");
-		}	
+		}
+	
 		/// <summary>Gets or sets the server</summary>
 		/// <returns>The name of the server.</returns>
 		public static string Host {
@@ -253,9 +257,9 @@ namespace NMapi {
 			try {
 				session = new TeamXChangeSession (server);             // TODO: TeamXChange only!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				return session.GetConfig (category, id, flags);
-			}
-			finally {
-				if (session != null) session.Close ();
+			} finally {
+				if (session != null)
+					session.Close ();
 			}
 		}
 	
@@ -302,8 +306,7 @@ namespace NMapi {
 			return GetConfigNull (Common.Host, category, id, flags);
 		}
 	
-		internal static string RootPath
-		{
+		internal static string RootPath {
 			get {
 				lock (rootLock) {
 					return propRoot;
@@ -311,23 +314,19 @@ namespace NMapi {
 			}
 		}
 	
-		internal static string BinPath
-		{
+		internal static string BinPath {
 			get { return RootPath + "/bin"; }
 		}
 	
-		internal static string EtcPath
-		{
+		internal static string EtcPath {
 			get { return RootPath + "/etc"; }
 		}
 	
-		internal static string LibPath
-		{
+		internal static string LibPath {
 			get { return RootPath + "/lib"; }
 		}
 	
-		internal static string LogPath
-		{
+		internal static string LogPath {
 			get { return RootPath + "/log"; }
 		}
 	}

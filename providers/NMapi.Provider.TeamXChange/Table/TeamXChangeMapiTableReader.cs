@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TeamXChangeTableReader.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 VipCom GmbH, Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -26,7 +26,7 @@ namespace NMapi.Table {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop.MapiRPC;
 
 	using NMapi.Flags;
@@ -43,41 +43,21 @@ namespace NMapi.Table {
 
 		public SPropTagArray GetTags ()
 		{
-			TblData_GetTags_arg arg = new TblData_GetTags_arg();
-			TblData_GetTags_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.TblData_GetTags_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new TblData_GetTags_arg ();
+			prms.obj = new HObject (obj);
+			var res = MakeCall<TblData_GetTags_res, 
+				TblData_GetTags_arg> (clnt.TblData_GetTags_1, prms);
 			return res.pTags.Value;
-		}
+		}
+
 		public SRowSet GetRows (int cRows)
 		{
-			TblData_GetRows_arg arg = new TblData_GetRows_arg();
-			TblData_GetRows_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.cRows = cRows;
-			try {
-				res = clnt.TblData_GetRows_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new TblData_GetRows_arg ();
+			prms.obj = new HObject (obj);
+			prms.cRows = cRows;
+
+			var res = MakeCall<TblData_GetRows_res, 
+				TblData_GetRows_arg> (clnt.TblData_GetRows_1, prms);
 			return res.pRows.Value;
 		}
 	

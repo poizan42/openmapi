@@ -1,3 +1,33 @@
+2009-01-01  Johannes Roith <johannes@jroith.de>
+
+	* providers/NMapi.Provider.TeamXChange/AssemblyInfo.cs: update
+	
+	* providers/NMapi.Provider.TeamXChange/AddressBook:
+	* providers/NMapi.Provider.TeamXChange/AddressBook/TxABContainer.cs: 
+	* providers/NMapi.Provider.TeamXChange/AddressBook/TxAddrBook.cs: 
+	* providers/NMapi.Provider.TeamXChange/AddressBook/TxABSession.cs: add AB stubs
+	
+	* providers/NMapi.Provider.TeamXChange/Common.cs: merge jumapi changes
+	* providers/NMapi.Provider.TeamXChange/Events/TeamXChangeEventSubscription.cs: merge jumapi changes
+	* providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/Extensions.cs: update & add temporary hack
+	* providers/NMapi.Provider.TeamXChange/MAPIRPC.x: new .x spec, version 9
+	* providers/NMapi.Provider.TeamXChange/NMapiMap.xml: license + support static decoding
+	
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeEventServer.cs: new. moved some stuff from TeamXChangeSession.cs
+
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeBase.cs: new MakeCall method
+	* providers/NMapi.Provider.TeamXChange/Table/TeamXChangeMapiTable.cs: update
+	* providers/NMapi.Provider.TeamXChange/Table/TeamXChangeMapiTableReader.cs: update
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeMapiFactory.cs: update
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiContainer.cs: update
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiFolder.cs: update
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMsgStore.cs: update
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMessage.cs: update
+	* providers/NMapi.Provider.TeamXChange/Properties/TeamXChangeMapiProp.cs: update
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeSession.cs: merge jumapi, update & adapt for proxy
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeAdmin.cs: update
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeMapiSession.cs: merge jumapi
+	* providers/NMapi.Provider.TeamXChange/TeamXChangeStream.cs: update
 
 2009-01-01  Johannes Roith <johannes@jroith.de>
 

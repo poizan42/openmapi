@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TeamXChangeMapiTable.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 VipCom AG, Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -26,7 +26,7 @@ namespace NMapi.Table {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
 
@@ -46,7 +46,8 @@ namespace NMapi.Table {
 			this.folder = folder;
 		}
 
-		public int Advise (byte[] ignored, NotificationEventType eventMask, IMapiAdviseSink adviseSink)
+		public int Advise (byte[] ignored, NotificationEventType eventMask, 
+			IMapiAdviseSink adviseSink)
 		{
 			return Advise (eventMask, adviseSink);
 		}
@@ -61,49 +62,24 @@ namespace NMapi.Table {
 
 		public int Advise (NotificationEventType eventMask, IMapiAdviseSink adviseSink)
 		{
-			MAPITable_GetEventKey_arg arg = new MAPITable_GetEventKey_arg ();
-			MAPITable_GetEventKey_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.MAPITable_GetEventKey_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
-			return session.Advise (adviseSink, folder.Store.OrigEID, 
-				res.key.lpb, eventMask);
+			return session.EventServer.Advise (this, eventMask, adviseSink);
 		}
 
 		public void Unadvise (int connection)
 		{
-			session.Unadvise (connection);
+			session.EventServer.Unadvise (connection);
 		}
 
 		public MapiError GetLastError (int hresult, int flags)
-		{
-			MAPITable_GetLastError_arg arg = new MAPITable_GetLastError_arg();
-			MAPITable_GetLastError_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.hResult = hresult;
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_GetLastError_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+		{			
+			var prms = new MAPITable_GetLastError_arg ();
+			prms.obj = new HObject (obj);
+			prms.hResult = hresult;
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPITable_GetLastError_res, 
+				MAPITable_GetLastError_arg> (clnt.MAPITable_GetLastError_1, prms);
+
 			if ((flags & Mapi.Unicode) != 0) 
 				return res.lpMapiErrorW.Value;
 			else
@@ -113,22 +89,13 @@ namespace NMapi.Table {
 		public GetStatusResult Status
 		{
 			get {
-				MAPITable_GetStatus_arg arg = new MAPITable_GetStatus_arg();
-				MAPITable_GetStatus_res res;
+				var prms = new MAPITable_GetStatus_arg ();
+				prms.obj = new HObject (obj);
+
+				var res = MakeCall<MAPITable_GetStatus_res, 
+					MAPITable_GetStatus_arg> (clnt.MAPITable_GetStatus_1, prms);
+				
 				GetStatusResult ret = new GetStatusResult();
-			
-				arg.obj = new HObject (new LongLong (obj));
-				try {
-					res = clnt.MAPITable_GetStatus_1(arg);
-				}
-				catch (IOException e) {
-					throw new MapiException(e);
-				}
-				catch (OncRpcException e) {
-					throw new MapiException(e);
-				}
-				if (Error.CallHasFailed (res.hr))
-					throw new MapiException(res.hr);
 				ret.TableStatus = res.ulTableStatus;
 				ret.TableType = res.ulTableType;
 				return ret;
@@ -137,128 +104,69 @@ namespace NMapi.Table {
 
 		public void SetColumns (SPropTagArray propTagArray, int flags)
 		{
-			MAPITable_SetColumns_arg arg = new MAPITable_SetColumns_arg();
-			MAPITable_SetColumns_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.pTags = new LPSPropTagArray (propTagArray);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_SetColumns_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_SetColumns_arg ();
+			prms.obj = new HObject (obj);
+			prms.pTags = new LPSPropTagArray (propTagArray);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPITable_SetColumns_res, 
+				MAPITable_SetColumns_arg> (clnt.MAPITable_SetColumns_1, prms);
 		}
 
 		public SPropTagArray QueryColumns (int flags)
 		{
-			MAPITable_QueryColumns_arg arg = new MAPITable_QueryColumns_arg();
-			MAPITable_QueryColumns_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_QueryColumns_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_QueryColumns_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+
+			var res = MakeCall<MAPITable_QueryColumns_res, 
+				MAPITable_QueryColumns_arg> (clnt.MAPITable_QueryColumns_1, prms);
 			return res.pTags.Value;
 		}
 
 		public int GetRowCount (int flags)
 		{
-			MAPITable_GetRowCount_arg arg = new MAPITable_GetRowCount_arg();
-			MAPITable_GetRowCount_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_GetRowCount_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_GetRowCount_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+
+			var res = MakeCall<MAPITable_GetRowCount_res, 
+				MAPITable_GetRowCount_arg> (clnt.MAPITable_GetRowCount_1, prms);
 			return res.ulCount;
 		}
 
 		public int SeekRow (int bkOrigin, int rowCount)
 		{	
-			MAPITable_SeekRow_arg arg = new MAPITable_SeekRow_arg();
-			MAPITable_SeekRow_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.bkOrigin = bkOrigin;
-			arg.lRowCount = rowCount;
-			try {
-				res = clnt.MAPITable_SeekRow_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_SeekRow_arg ();
+			prms.obj = new HObject (obj);
+			prms.bkOrigin = bkOrigin;
+			prms.lRowCount = rowCount;
+
+			var res = MakeCall<MAPITable_SeekRow_res, 
+				MAPITable_SeekRow_arg> (clnt.MAPITable_SeekRow_1, prms);
 			return res.lRowsSought;
 		}
 
 		public void SeekRowApprox (int numerator, int denominator)
 		{
-			MAPITable_SeekRowApprox_arg arg = new MAPITable_SeekRowApprox_arg();
-			MAPITable_SeekRowApprox_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulNumerator = numerator;
-			arg.ulDenominator = denominator;
-			try {
-				res = clnt.MAPITable_SeekRowApprox_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_SeekRowApprox_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulNumerator = numerator;
+			prms.ulDenominator = denominator;
+			
+			var res = MakeCall<MAPITable_SeekRowApprox_res, 
+				MAPITable_SeekRowApprox_arg> (clnt.MAPITable_SeekRowApprox_1, prms);
 		}
 
 		public QueryPositionResult QueryPosition ()
 		{
-			MAPITable_QueryPosition_arg arg = new MAPITable_QueryPosition_arg();
-			MAPITable_QueryPosition_res res;
-			QueryPositionResult ret = new QueryPositionResult();
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.MAPITable_QueryPosition_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_QueryPosition_arg ();
+			prms.obj = new HObject (obj);
+
+			var res = MakeCall<MAPITable_QueryPosition_res, 
+				MAPITable_QueryPosition_arg> (clnt.MAPITable_QueryPosition_1, prms);
+
+			QueryPositionResult ret = new QueryPositionResult ();
 			ret.Row = res.ulRow;
 			ret.Numerator = res.ulNumerator;
 			ret.Denominator = res.ulDenominator;
@@ -267,190 +175,101 @@ namespace NMapi.Table {
 
 		public void FindRow (SRestriction restriction, int origin, int flags)
 		{
-			MAPITable_FindRow_arg arg = new MAPITable_FindRow_arg();
-			MAPITable_FindRow_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpRestriction = new LPSRestriction (restriction);
-			arg.bkOrigin = origin;
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_FindRow_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_FindRow_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpRestriction = new LPSRestriction (restriction);
+			prms.bkOrigin = origin;
+			prms.ulFlags = flags;
+
+			var res = MakeCall<MAPITable_FindRow_res, 
+				MAPITable_FindRow_arg> (clnt.MAPITable_FindRow_1, prms);
 		}
 
 		public void Restrict (SRestriction restriction, int flags)
 		{
-			MAPITable_Restrict_arg arg = new MAPITable_Restrict_arg();
-			MAPITable_Restrict_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpRestriction = new LPSRestriction (restriction);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_Restrict_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_Restrict_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpRestriction = new LPSRestriction (restriction);
+			prms.ulFlags = flags;
+
+			var res = MakeCall<MAPITable_Restrict_res, 
+				MAPITable_Restrict_arg> (clnt.MAPITable_Restrict_1, prms);
 		}
 
 		public int CreateBookmark ()
 		{
-			MAPITable_CreateBookmark_arg arg = new MAPITable_CreateBookmark_arg();
-			MAPITable_CreateBookmark_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.MAPITable_CreateBookmark_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_CreateBookmark_arg ();
+			prms.obj = new HObject (obj);
+
+			var res = MakeCall<MAPITable_CreateBookmark_res, 
+				MAPITable_CreateBookmark_arg> (clnt.MAPITable_CreateBookmark_1, prms);
 			return res.bkPosition;
 		}
 
 		public void FreeBookmark (int position)
 		{
-			MAPITable_FreeBookmark_arg arg = new MAPITable_FreeBookmark_arg();
-			MAPITable_FreeBookmark_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.bkPosition = position;
-			try {
-				res = clnt.MAPITable_FreeBookmark_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_FreeBookmark_arg ();
+			prms.obj = new HObject (obj);
+			prms.bkPosition = position;
+			
+			var res = MakeCall<MAPITable_FreeBookmark_res, 
+				MAPITable_FreeBookmark_arg> (clnt.MAPITable_FreeBookmark_1, prms);
 		}
 
 		public void SortTable (SSortOrderSet sortCriteria, int flags)
 		{
-			MAPITable_SortTable_arg arg = new MAPITable_SortTable_arg();
-			MAPITable_SortTable_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpSortCriteria = new LPSSortOrderSet (sortCriteria);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_SortTable_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_SortTable_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpSortCriteria = new LPSSortOrderSet (sortCriteria);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPITable_SortTable_res, 
+				MAPITable_SortTable_arg> (clnt.MAPITable_SortTable_1, prms);
 		}
 
 		public SSortOrderSet QuerySortOrder ()
 		{
-			MAPITable_QuerySortOrder_arg arg = new MAPITable_QuerySortOrder_arg();
-			MAPITable_QuerySortOrder_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.MAPITable_QuerySortOrder_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_QuerySortOrder_arg ();
+			prms.obj = new HObject (obj);
+			
+			var res = MakeCall<MAPITable_QuerySortOrder_res, 
+				MAPITable_QuerySortOrder_arg> (clnt.MAPITable_QuerySortOrder_1, prms);
 			return res.lpSortCriteria.Value;
 		}
 
 		public SRowSet QueryRows (int rowCount, int flags)
 		{
-			MAPITable_QueryRows_arg arg = new MAPITable_QueryRows_arg();
-			MAPITable_QueryRows_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lRowCount = rowCount;
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_QueryRows_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_QueryRows_arg ();
+			prms.obj = new HObject (obj);
+			prms.lRowCount = rowCount;
+			prms.ulFlags = flags;
+				
+			var res = MakeCall<MAPITable_QueryRows_res, 
+				MAPITable_QueryRows_arg> (clnt.MAPITable_QueryRows_1, prms);
 			return res.lpRows.Value;
 		}
 
 		public void Abort ()
 		{
-			MAPITable_Abort_arg arg = new MAPITable_Abort_arg();
-			MAPITable_Abort_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.MAPITable_Abort_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_Abort_arg ();
+			prms.obj = new HObject (obj);
+				
+			var res = MakeCall<MAPITable_Abort_res, 
+				MAPITable_Abort_arg> (clnt.MAPITable_Abort_1, prms);
 		}
 
 		public ExpandRowResult ExpandRow (byte [] instanceKey, int rowCount, int flags)
 		{
-			MAPITable_ExpandRow_arg arg = new MAPITable_ExpandRow_arg();
-			MAPITable_ExpandRow_res res;
-			ExpandRowResult ret = new ExpandRowResult();
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.instkey = instanceKey;
-			arg.ulRowCount = rowCount;
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_ExpandRow_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_ExpandRow_arg ();
+			prms.obj = new HObject (obj);
+			prms.instkey = instanceKey;
+			prms.ulRowCount = rowCount;
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPITable_ExpandRow_res, 
+				MAPITable_ExpandRow_arg> (clnt.MAPITable_ExpandRow_1, prms);
+
+			ExpandRowResult ret = new ExpandRowResult ();
 			ret.Rows = res.lpRows.Value;
 			ret.MoreRows = res.ulMoreRows;
 			return ret;
@@ -458,89 +277,49 @@ namespace NMapi.Table {
 
 		public int CollapseRow (byte [] instanceKey, int flags)
 		{
-			MAPITable_CollapseRow_arg arg = new MAPITable_CollapseRow_arg();
-			MAPITable_CollapseRow_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.instkey = instanceKey;
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPITable_CollapseRow_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPITable_CollapseRow_arg ();
+			prms.obj = new HObject (obj);
+			prms.instkey = instanceKey;
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPITable_CollapseRow_res, 
+				MAPITable_CollapseRow_arg> (clnt.MAPITable_CollapseRow_1, prms);
 			return res.ulRowCount;
 		}
 
 		public int WaitForCompletion (int flags, int timeout)
 		{
-			MAPITable_WaitForCompletion_arg arg = new MAPITable_WaitForCompletion_arg();
-			MAPITable_WaitForCompletion_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			arg.ulTimeout = timeout;
-			try {
-				res = clnt.MAPITable_WaitForCompletion_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_WaitForCompletion_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+			prms.ulTimeout = timeout;
+			
+			var res = MakeCall<MAPITable_WaitForCompletion_res, 
+				MAPITable_WaitForCompletion_arg> (clnt.MAPITable_WaitForCompletion_1, prms);
 			return res.ulTableStatus;
 		}
 
 		public byte [] GetCollapseState(int flags, byte [] instanceKey)
 		{
-			MAPITable_GetCollapseState_arg arg = new MAPITable_GetCollapseState_arg();
-			MAPITable_GetCollapseState_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			arg.instkey = instanceKey;
-			try {
-				res = clnt.MAPITable_GetCollapseState_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_GetCollapseState_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+			prms.instkey = instanceKey;
+			
+			var res = MakeCall<MAPITable_GetCollapseState_res, 
+				MAPITable_GetCollapseState_arg> (clnt.MAPITable_GetCollapseState_1, prms);
 			return res.state;
 		}
 
 		public int SetCollapseState (int flags, byte [] collapseState)
 		{
-			MAPITable_SetCollapseState_arg arg = new MAPITable_SetCollapseState_arg();
-			MAPITable_SetCollapseState_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			arg.state = collapseState;
-			try {
-				res = clnt.MAPITable_SetCollapseState_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPITable_SetCollapseState_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+			prms.state = collapseState;
+			
+			var res = MakeCall<MAPITable_SetCollapseState_res, 
+				MAPITable_SetCollapseState_arg> (clnt.MAPITable_SetCollapseState_1, prms);
 			return res.bkLocation;
 		}
 	

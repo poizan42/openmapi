@@ -26,7 +26,7 @@ namespace NMapi {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop.MapiRPC;
 	using NMapi.Flags;
 
@@ -102,7 +102,7 @@ namespace NMapi {
 			}
 			finally {
 				if (bWrite)
-					EndWrite();
+					EndWrite ();
 			}
 		}
 
@@ -179,129 +179,63 @@ namespace NMapi {
 		// throws MapiException, IOException
 		private byte [] Read (int len)
 		{
-			SimpleStream_Read_arg arg = new SimpleStream_Read_arg ();
-			SimpleStream_Read_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.count = len;
-			try {
-				res = clnt.SimpleStream_Read_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var arg = new SimpleStream_Read_arg {
+				obj = new HObject (new LongLong (obj)),
+				count = len
+			};
+			var res = MakeCall<SimpleStream_Read_res, SimpleStream_Read_arg> (
+				clnt.SimpleStream_Read_1, arg);
 			if ((res.hr == 1) || (res.data.Length == 0)) // S_FALSE, EOF
 				return null;
-			else
-				return res.data;
+			return res.data;
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		/// <exception cref="System.IO.IOException">Throws IOException</exception>
 		private void Write (byte [] data)
 		{
-			SimpleStream_Write_arg arg = new SimpleStream_Write_arg ();
-			SimpleStream_Write_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.data = data;
-			try {
-				res = clnt.SimpleStream_Write_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var arg = new SimpleStream_Write_arg {
+				obj = new HObject (obj),
+				data = data
+			};
+			MakeCall<SimpleStream_Write_res, SimpleStream_Write_arg> (
+				clnt.SimpleStream_Write_1, arg);
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		private void BeginRead ()
 		{
-			SimpleStream_BeginRead_arg arg = new SimpleStream_BeginRead_arg();
-			SimpleStream_BeginRead_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.SimpleStream_BeginRead_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+			MakeCall<SimpleStream_BeginRead_res, SimpleStream_BeginRead_arg> (
+				clnt.SimpleStream_BeginRead_1, new SimpleStream_BeginRead_arg {
+					obj = new HObject (obj)
+				});
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		private void EndRead ()
-		{	
-			SimpleStream_EndRead_arg arg = new SimpleStream_EndRead_arg();
-			SimpleStream_EndRead_res res;
-			
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.SimpleStream_EndRead_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+		{
+			MakeCall<SimpleStream_EndRead_res, SimpleStream_EndRead_arg> (
+				clnt.SimpleStream_EndRead_1, new SimpleStream_EndRead_arg {
+					obj = new HObject (obj)
+				});
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		private void BeginWrite ()
 		{
-			SimpleStream_BeginWrite_arg arg = new SimpleStream_BeginWrite_arg();
-			SimpleStream_BeginWrite_res res;
-			
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.SimpleStream_BeginWrite_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+			MakeCall<SimpleStream_BeginWrite_res, SimpleStream_BeginWrite_arg> (
+				clnt.SimpleStream_BeginWrite_1, new SimpleStream_BeginWrite_arg {
+					obj = new HObject (obj)
+				});
 		}
 
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		private void EndWrite ()
 		{
-			SimpleStream_EndWrite_arg arg = new SimpleStream_EndWrite_arg();
-			SimpleStream_EndWrite_res res;
-			
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = clnt.SimpleStream_EndWrite_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+			MakeCall<SimpleStream_EndWrite_res, SimpleStream_EndWrite_arg> (
+				clnt.SimpleStream_EndWrite_1, new SimpleStream_EndWrite_arg {
+					obj = new HObject (obj)
+				});
 		}
-	
 	}
 }

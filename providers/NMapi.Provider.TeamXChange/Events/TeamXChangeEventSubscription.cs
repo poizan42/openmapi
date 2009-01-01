@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TeamXChangeEventSubscription.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 VipCom AG, Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -23,19 +23,55 @@
 //
 
 using NMapi.Interop.MapiRPC;
+using NMapi.Properties.Special;
+using NMapi.Table;
 
 namespace NMapi.Events {
 
-	class TeamXChangeEventSubscription : TeamXChangeBase, IEventSubscription
+	class TeamXChangeEventSubscription : IEventSubscription
 	{
+		private TeamXChangeMsgStore store;
+		private TeamXChangeMapiTable table;
 		private IMapiAdviseSink sink;
+		private HObject obj;
 
-		internal TeamXChangeEventSubscription (long obj, TeamXChangeSession session, IMapiAdviseSink sink) : 
-			base (obj, session)
-		{		
+		internal TeamXChangeEventSubscription (IMapiTable table, 
+			IMapiAdviseSink sink, HObject obj)
+		{
+			this.table = (TeamXChangeMapiTable) table;
 			this.sink = sink;
+			this.obj = obj;
+		}
+		
+		internal TeamXChangeEventSubscription (IMsgStore store, 
+			IMapiAdviseSink sink, HObject obj)
+		{
+			this.store = (TeamXChangeMsgStore) store;
+			this.sink = sink;
+			this.obj = obj;
 		}
 
+		/// <summary>
+		///   
+		/// </summary>
+		internal void Unadvise ()
+		{
+			if (store != null)
+				MakeUnadviseCall (store, store.obj);
+			if (table != null)
+				MakeUnadviseCall (table, table.obj);
+		}
+		
+		private void MakeUnadviseCall (TeamXChangeBase baseObj, 
+			long targetObj)
+		{
+			var arg = new MsgStore_Unadvise_arg ();
+			arg.obj = HObject.FromLong (targetObj);
+			arg.connObj = obj;
+			TeamXChangeBase.MakeCall<MsgStore_Unadvise_res, 
+				MsgStore_Unadvise_arg> (baseObj.clnt.MsgStore_Unadvise_1, arg);
+		}
+		
 		public void OnNotify (Notification [] notifications)
 		{
 			sink.OnNotify (notifications);

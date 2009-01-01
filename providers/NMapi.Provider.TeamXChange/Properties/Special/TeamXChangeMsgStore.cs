@@ -27,7 +27,7 @@ namespace NMapi.Properties.Special {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
 
@@ -81,54 +81,38 @@ namespace NMapi.Properties.Special {
 		public int Advise (byte [] entryID, 
 			NotificationEventType eventMask, IMapiAdviseSink adviseSink)
 		{
-			return session.Advise (adviseSink, OrigEID, entryID, eventMask);
-		}
+			return session.EventServer.Advise (this, entryID, eventMask, adviseSink);
+		}
+
 		public void Unadvise (int connection)
 		{
-			session.Unadvise (connection);
+			session.EventServer.Unadvise (connection);
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		internal byte [] OrigEID
+		public byte [] OrigEID														// HACK: This should be private or internal.
 		{
 			get {
-				var arg = new MsgStore_GetOrigEID_arg ();
-				MsgStore_GetOrigEID_res res;
-		
-				arg.obj = new HObject (new LongLong (obj));
-				try {
-					res = clnt.MsgStore_GetOrigEID_1 (arg);
-				}
-				catch (IOException e) {
-					throw new MapiException (e);
-				}
-				catch (OncRpcException e) {
-					throw new MapiException (e);
-				}
+				var prms = new MsgStore_GetOrigEID_arg ();
+				prms.obj = new HObject (obj);
+
+				var res = MakeCall<MsgStore_GetOrigEID_res, 
+					MsgStore_GetOrigEID_arg> (clnt.MsgStore_GetOrigEID_1, prms);
 				return res.eid.lpb;
 			}
 		}
 
 		public int CompareEntryIDs (byte [] entryID1, byte [] entryID2, int flags)
-		{
-			var arg = new MsgStore_CompareEntryIDs_arg ();
-			MsgStore_CompareEntryIDs_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid1 = new SBinary (entryID1);
-			arg.eid2 = new SBinary (entryID2);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MsgStore_CompareEntryIDs_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+		{		
+			var prms = new MsgStore_CompareEntryIDs_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid1 = new SBinary (entryID1);
+			prms.eid2 = new SBinary (entryID2);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MsgStore_CompareEntryIDs_res, 
+				MsgStore_CompareEntryIDs_arg> (
+					clnt.MsgStore_CompareEntryIDs_1, prms);
 			return res.ulResult;
 		}
 
@@ -144,84 +128,57 @@ namespace NMapi.Properties.Special {
 		public OpenEntryResult OpenEntry (
 			byte [] entryID, NMapiGuid interFace, int flags)
 		{
-			var arg = new MsgStore_OpenEntry_arg();
-			MsgStore_OpenEntry_res res;
+			var prms = new MsgStore_OpenEntry_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary (entryID);
+			prms.lpInterface = new LPGuid (interFace);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MsgStore_OpenEntry_res, 
+				MsgStore_OpenEntry_arg> (
+					clnt.MsgStore_OpenEntry_1, prms);
+			
 			OpenEntryResult ret = new OpenEntryResult();
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary (entryID);
-			arg.lpInterface = new LPGuid (interFace);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MsgStore_OpenEntry_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
-
-			ret.ObjType = session.GetObjType (res.obj.Value.Value);
-			ret.Unk = session.CreateObject (this, res.obj.Value.Value, interFace);
+			ret.ObjType = res.ulObjType;
+			ret.Unk = session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace);
 			return ret;
 		}
 
 		public void SetReceiveFolder (
 			string messageClass, byte [] entryID, int flags)
 		{
-			var arg = new MsgStore_SetReceiveFolder_arg();
-			MsgStore_SetReceiveFolder_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary(entryID);
-			arg.ulFlags = flags;
+			var prms = new MsgStore_SetReceiveFolder_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary(entryID);
+			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0)
-				arg.lpszMessageClassW = new LPWStr (messageClass);
+				prms.lpszMessageClassW = new LPWStr (messageClass);
 			else
-				arg.lpszMessageClassA = new LPStr (messageClass);
-			try {
-				res = clnt.MsgStore_SetReceiveFolder_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+				prms.lpszMessageClassA = new LPStr (messageClass);
+			
+			var res = MakeCall<MsgStore_SetReceiveFolder_res, 
+				MsgStore_SetReceiveFolder_arg> (
+					clnt.MsgStore_SetReceiveFolder_1, prms);
 		}
 
 		public GetReceiveFolderResult GetReceiveFolder (string messageClass, int flags)
 		{
-			var arg = new MsgStore_GetReceiveFolder_arg();
-			MsgStore_GetReceiveFolder_res res;
-			GetReceiveFolderResult ret = new GetReceiveFolderResult();
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
+			var prms = new MsgStore_GetReceiveFolder_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0) {
-				arg.lpszMessageClassW = new LPWStr (messageClass);
-				arg.lpszMessageClassA = new LPStr ();
+				prms.lpszMessageClassW = new LPWStr (messageClass);
+				prms.lpszMessageClassA = new LPStr ();
 			} else {
-				arg.lpszMessageClassA = new LPStr (messageClass);
-				arg.lpszMessageClassW = new LPWStr ();
+				prms.lpszMessageClassA = new LPStr (messageClass);
+				prms.lpszMessageClassW = new LPWStr ();
 			}
-			try {
-				res = clnt.MsgStore_GetReceiveFolder_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+						
+			var res = MakeCall<MsgStore_GetReceiveFolder_res, 
+				MsgStore_GetReceiveFolder_arg> (
+					clnt.MsgStore_GetReceiveFolder_1, prms);
 
+			GetReceiveFolderResult ret = new GetReceiveFolderResult();
 			ret.EntryID = res.eid.lpb;
 			if ((flags & Mapi.Unicode) != 0)
 				ret.ExplicitClass = res.lpszExplicitClassW.value;
@@ -234,44 +191,25 @@ namespace NMapi.Properties.Special {
 
 		public void StoreLogoff (int flags)
 		{
-			var arg = new MsgStore_StoreLogoff_arg ();
-			MsgStore_StoreLogoff_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MsgStore_StoreLogoff_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr)) {
-				throw new MapiException(res.hr);
-			}
+			var prms = new MsgStore_StoreLogoff_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+						
+			var res = MakeCall<MsgStore_StoreLogoff_res, 
+				MsgStore_StoreLogoff_arg> (
+					clnt.MsgStore_StoreLogoff_1, prms);
 		}
 
 		public void AbortSubmit (byte [] entryID, int flags)
 		{
-			var arg = new MsgStore_AbortSubmit_arg ();
-			MsgStore_AbortSubmit_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary (entryID);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MsgStore_AbortSubmit_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MsgStore_AbortSubmit_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary (entryID);
+			prms.ulFlags = flags;
+						
+			var res = MakeCall<MsgStore_AbortSubmit_res, 
+				MsgStore_AbortSubmit_arg> (
+					clnt.MsgStore_AbortSubmit_1, prms);
 		}
 		
 		// NOT IMPLEMENTED: GetOutgoingQueue() 
@@ -285,20 +223,22 @@ namespace NMapi.Properties.Special {
 			string [] paths;
 			IMapiFolder folder = null;
 			bool found = false;
-		
-			eidroot = HrGetOneProp (Property.IpmSubtreeEntryId).Value.bin.lpb;
+
+			var binProp = (BinaryProperty) new MapiPropHelper (this).HrGetOneProp (Property.IpmSubtreeEntryId);
+			eidroot = binProp.Value.lpb;
 			folder  = (IMapiFolder) OpenEntry (eidroot, null, flags).Unk;
 			if (path == "/")
 				return folder;
 		
 			paths = path.Split ('/');		
 			try {
+
 				for (int i = 1; i < paths.Length; i++) {
 					IMapiTableReader tableReader = null;
 					bool first = true;
 					int idx_name = -1, idx_eid = -1;
 					string  match = paths[i];
-				
+								
 					try {
 						found = false;
 						tableReader = folder.GetHierarchyTable (Mapi.Unicode);
@@ -306,7 +246,7 @@ namespace NMapi.Properties.Special {
 							SRowSet rows = tableReader.GetRows(10);
 							if (rows.ARow.Length == 0)
 								break;
-						
+
 							for (int idx = 0; idx < rows.ARow.Length; idx++) {
 								SPropValue [] prps = rows.ARow [idx].lpProps;
 
@@ -320,12 +260,9 @@ namespace NMapi.Properties.Special {
 								}
 							
 								SPropValue name = SPropValue.GetArrayProp (prps, idx_name);
-								SPropValue eid  = SPropValue.GetArrayProp (prps, idx_eid);
-							
-								if (name != null && name.Value.Unicode == match) {
-									folder = (IMapiFolder) OpenEntry (
-											eid.Value.Binary.lpb, 
-											null, flags).Unk;
+								BinaryProperty eid = (BinaryProperty) SPropValue.GetArrayProp (prps, idx_eid);
+								if (name != null && ((UnicodeProperty) name).Value == match) {
+									folder = (IMapiFolder) OpenEntry (eid.Value.lpb, null, flags).Unk;
 									found = true;
 									break;
 								}
@@ -341,8 +278,10 @@ namespace NMapi.Properties.Special {
 				}
 			}
 			finally {
-				if (!found && folder != null)
+				if (!found && folder != null) {
 					folder.Close ();
+					folder = null;
+				}
 			}
 			return folder;
 		}

@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TeamXChangeMapiFolder.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 VipCom AG, Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -27,7 +27,7 @@ namespace NMapi.Properties.Special {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 
 	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
@@ -50,24 +50,15 @@ namespace NMapi.Properties.Special {
 
 		public IMessage CreateMessage (NMapiGuid interFace, int flags)
 		{
-			var arg = new MAPIFolder_CreateMessage_arg();
-			MAPIFolder_CreateMessage_res res;
-
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpInterface = new LPGuid (interFace);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPIFolder_CreateMessage_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
-			return (IMessage) session.CreateObject (this, res.obj.Value.Value, interFace);
+			var prms = new MAPIFolder_CreateMessage_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpInterface = new LPGuid (interFace);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPIFolder_CreateMessage_res, 
+				MAPIFolder_CreateMessage_arg> (clnt.MAPIFolder_CreateMessage_1, prms);
+			return (IMessage) session.CreateObject (this, 
+				res.obj.Value.Value, res.ulObjType, interFace);
 		}
 
 		private SBinary MyCopyMessage (byte [] eid, IMapiFolder destFolder)
@@ -77,7 +68,8 @@ namespace NMapi.Properties.Special {
 				msgSource = (IMessage) OpenEntry (eid, null, 0).Unk;
 				msgDest = destFolder.CreateMessage (null, 0);
 				MessageCopyHelper.MyCopyMessage (msgSource, msgDest);
-				return msgDest.HrGetOneProp (Property.EntryId).Value.bin;
+				var prop = (BinaryProperty) new MapiPropHelper (msgDest).HrGetOneProp (Property.EntryId);
+				return prop.Value;
 			}
 			finally {
 				if (msgSource != null)
@@ -112,14 +104,16 @@ namespace NMapi.Properties.Special {
 			ret.Bin = entryList.ToArray ();
 			return ret;
 		}
-			            		public void CopyMessages (EntryList msgList,
+			            
+		public void CopyMessages (EntryList msgList,
 			NMapiGuid interFace, IMapiFolder destFolder,
 			IMapiProgress progress, int flags)
 		{
 			var arg = new MAPIFolder_CopyMessages_arg ();
 			MAPIFolder_CopyMessages_res res;
-			byte [] entryID = destFolder.HrGetOneProp (
-					Property.EntryId).Value.bin.lpb;
+			var binProp = (BinaryProperty) new MapiPropHelper (destFolder).
+					HrGetOneProp (Property.EntryId);
+			byte [] entryID = binProp.Value.lpb;
 			arg.obj = new HObject (new LongLong (obj));
 			arg.lpMsgList = new LPEntryList (msgList);
 			arg.lpInterface = new LPGuid (interFace);
@@ -155,246 +149,151 @@ namespace NMapi.Properties.Special {
 		public void DeleteMessages (
 			EntryList msgList, IMapiProgress progress, int flags)
 		{
-			var arg = new MAPIFolder_DeleteMessages_arg();
-			MAPIFolder_DeleteMessages_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpMsgList = new LPEntryList (msgList);
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar ();
-			try {
-				res = clnt.MAPIFolder_DeleteMessages_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_DeleteMessages_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpMsgList = new LPEntryList (msgList);
+			prms.ulFlags = flags;
+			prms.pBar = new LPProgressBar ();
+			
+			var res = MakeCall<MAPIFolder_DeleteMessages_res, 
+				MAPIFolder_DeleteMessages_arg> (clnt.MAPIFolder_DeleteMessages_1, prms);
 		}
 
 		public IMapiFolder CreateFolder (Folder folderType, string folderName, 
 			string folderComment, NMapiGuid interFace, int flags)
 		{
-			var arg = new MAPIFolder_CreateFolder_arg();
-			MAPIFolder_CreateFolder_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFolderType = (int) folderType;
-			arg.lpInterface = new LPGuid (interFace);
-			arg.ulFlags = flags;
+			var prms = new MAPIFolder_CreateFolder_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFolderType = (int) folderType;
+			prms.lpInterface = new LPGuid (interFace);
+			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0) {
-				arg.lpwszFolderNameW = new LPWStr (folderName);
-				arg.lpwszFolderCommentW = new LPWStr (folderComment);
-				arg.lpszFolderNameA = new LPStr ();
-				arg.lpszFolderCommentA = new LPStr ();
+				prms.lpwszFolderNameW = new LPWStr (folderName);
+				prms.lpwszFolderCommentW = new LPWStr (folderComment);
+				prms.lpszFolderNameA = new LPStr ();
+				prms.lpszFolderCommentA = new LPStr ();
 			} else {
-				arg.lpszFolderNameA = new LPStr (folderName);
-				arg.lpszFolderCommentA = new LPStr (folderComment);
-				arg.lpwszFolderNameW = new LPWStr ();
-				arg.lpwszFolderCommentW = new LPWStr ();
+				prms.lpszFolderNameA = new LPStr (folderName);
+				prms.lpszFolderCommentA = new LPStr (folderComment);
+				prms.lpwszFolderNameW = new LPWStr ();
+				prms.lpwszFolderCommentW = new LPWStr ();
 			}
-			try {
-				res = clnt.MAPIFolder_CreateFolder_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
-			return (IMapiFolder) session.CreateObject (this, res.obj.Value.Value, interFace);
+			var res = MakeCall<MAPIFolder_CreateFolder_res, 
+				MAPIFolder_CreateFolder_arg> (clnt.MAPIFolder_CreateFolder_1, prms);
+			
+			return (IMapiFolder) session.CreateObject (this, 
+				res.obj.Value.Value, res.ulObjType, interFace);
 		}
 
 		public void CopyFolder (byte [] entryID, NMapiGuid interFace, 
 			IMapiFolder destFolder, string newFolderName,
 			IMapiProgress progress, int flags)
 		{
-			var arg = new MAPIFolder_CopyFolder_arg();
-			MAPIFolder_CopyFolder_res res;
-			byte [] destEntryID = destFolder.HrGetOneProp (
-						Property.EntryId).Value.Binary.lpb;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.srceid = new SBinary (entryID);
-			arg.dsteid = new SBinary (destEntryID);
-			arg.lpInterface = new LPGuid (interFace);
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar();
-			if ((arg.ulFlags & Mapi.Unicode) != 0) {
-				arg.pszNewNameW = new LPWStr (newFolderName);
-				arg.pszNewNameA = new LPStr ();
-			} else {
-				arg.pszNewNameA = new LPStr (newFolderName);
-				arg.pszNewNameW = new LPWStr ();
-			}
-			try {
-				res = clnt.MAPIFolder_CopyFolder_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+				var prms = new MAPIFolder_CopyFolder_arg ();
+				prms.obj = new HObject (obj);
+
+				var binProp = (BinaryProperty) new MapiPropHelper (destFolder).
+						HrGetOneProp (Property.EntryId);
+				byte [] destEntryID = binProp.Value.lpb;
+
+				prms.srceid = new SBinary (entryID);
+				prms.dsteid = new SBinary (destEntryID);
+				prms.lpInterface = new LPGuid (interFace);
+				prms.ulFlags = flags;
+				prms.pBar = new LPProgressBar();
+				if ((prms.ulFlags & Mapi.Unicode) != 0) {
+					prms.pszNewNameW = new LPWStr (newFolderName);
+					prms.pszNewNameA = new LPStr ();
+				} else {
+					prms.pszNewNameA = new LPStr (newFolderName);
+					prms.pszNewNameW = new LPWStr ();
+				}
+
+				var res = MakeCall<MAPIFolder_CopyFolder_res, 
+					MAPIFolder_CopyFolder_arg> (clnt.MAPIFolder_CopyFolder_1, prms);
 		}
 
 		public void DeleteFolder (byte [] entryID, IMapiProgress progress, int flags)
 		{
-			MAPIFolder_DeleteFolder_arg arg = new MAPIFolder_DeleteFolder_arg();
-			MAPIFolder_DeleteFolder_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary (entryID);
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar ();
-			try {
-				res = clnt.MAPIFolder_DeleteFolder_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_DeleteFolder_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary (entryID);
+			prms.ulFlags = flags;
+			prms.pBar = new LPProgressBar ();
+
+			var res = MakeCall<MAPIFolder_DeleteFolder_res, 
+				MAPIFolder_DeleteFolder_arg> (clnt.MAPIFolder_DeleteFolder_1, prms);
 		}
 
 		public void SetReadFlags (EntryList msgList, IMapiProgress progress, int flags)
 		{
-			var arg = new MAPIFolder_SetReadFlags_arg();
-			MAPIFolder_SetReadFlags_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpMsgList = new LPEntryList (msgList);
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar();
-			try {
-				res = clnt.MAPIFolder_SetReadFlags_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_SetReadFlags_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpMsgList = new LPEntryList (msgList);
+			prms.ulFlags = flags;
+			prms.pBar = new LPProgressBar ();
+			
+			var res = MakeCall<MAPIFolder_SetReadFlags_res, 
+				MAPIFolder_SetReadFlags_arg> (clnt.MAPIFolder_SetReadFlags_1, prms);
 		}
 
 		public int GetMessageStatus (byte [] entryID, int flags)
 		{
-			var arg = new MAPIFolder_GetMessageStatus_arg();
-			MAPIFolder_GetMessageStatus_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary (entryID);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPIFolder_GetMessageStatus_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+			var prms = new MAPIFolder_GetMessageStatus_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary (entryID);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPIFolder_GetMessageStatus_res, 
+				MAPIFolder_GetMessageStatus_arg> (clnt.MAPIFolder_GetMessageStatus_1, prms);
 			return res.ulMessageStatus;
 		}
 
 		public int SetMessageStatus (byte [] entryID, int newStatus, int newStatusMask)
 		{
-			var arg = new MAPIFolder_SetMessageStatus_arg();
-			MAPIFolder_SetMessageStatus_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.eid = new SBinary (entryID);
-			arg.ulNewStatus = newStatus;
-			arg.ulNewStatusMask = newStatusMask;
-			try {
-				res = clnt.MAPIFolder_SetMessageStatus_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e); 
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_SetMessageStatus_arg ();
+			prms.obj = new HObject (obj);
+			prms.eid = new SBinary (entryID);
+			prms.ulNewStatus = newStatus;
+			prms.ulNewStatusMask = newStatusMask;
+			
+			var res = MakeCall<MAPIFolder_SetMessageStatus_res, 
+				MAPIFolder_SetMessageStatus_arg> (clnt.MAPIFolder_SetMessageStatus_1, prms);
 			return res.ulOldStatus;
 		}
 
 		public void SaveContentsSort (SSortOrderSet sortOrder, int flags)
 		{
-			var arg = new MAPIFolder_SaveContentsSort_arg();
-			MAPIFolder_SaveContentsSort_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.lpSort = new LPSSortOrderSet (sortOrder);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPIFolder_SaveContentsSort_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_SaveContentsSort_arg ();
+			prms.obj = new HObject (obj);
+			prms.lpSort = new LPSSortOrderSet (sortOrder);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPIFolder_SaveContentsSort_res, 
+				MAPIFolder_SaveContentsSort_arg> (clnt.MAPIFolder_SaveContentsSort_1, prms);
 		}
 
 		public void EmptyFolder (IMapiProgress progress, int flags)
 		{
-			var arg = new MAPIFolder_EmptyFolder_arg();
-			MAPIFolder_EmptyFolder_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar ();
-			try {
-				res = clnt.MAPIFolder_EmptyFolder_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException (e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException (e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_EmptyFolder_arg ();
+			prms.obj = new HObject (obj);
+			prms.ulFlags = flags;
+			prms.pBar = new LPProgressBar ();
+			
+			var res = MakeCall<MAPIFolder_EmptyFolder_res, 
+				MAPIFolder_EmptyFolder_arg> (clnt.MAPIFolder_EmptyFolder_1, prms);
 		}
 
 		public long AssignIMAP4UID (byte [] entryID, int flags)
 		{
-			var arg = new MAPIFolder_AssignIMAP4UID_arg();
-			MAPIFolder_AssignIMAP4UID_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			arg.msgeid = new SBinary (entryID);
-			arg.ulFlags = flags;
-			try {
-				res = clnt.MAPIFolder_AssignIMAP4UID_1 (arg);
-			}
-			catch (IOException e) { 
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			var prms = new MAPIFolder_AssignIMAP4UID_arg ();
+			prms.obj = new HObject (obj);
+			prms.msgeid = new SBinary (entryID);
+			prms.ulFlags = flags;
+			
+			var res = MakeCall<MAPIFolder_AssignIMAP4UID_res, 
+				MAPIFolder_AssignIMAP4UID_arg> (clnt.MAPIFolder_AssignIMAP4UID_1, prms);
+
 			return res.msguid.Value;
 		}
 	

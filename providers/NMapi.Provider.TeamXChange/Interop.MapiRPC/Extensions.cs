@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - Extensions.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2008 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -38,10 +37,10 @@ namespace NMapi.Interop.MapiRPC {
 	using System;
 	using System.IO;
 
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 
 
-	public partial class CategoryLL : XdrAble
+	public partial class CategoryLL : IXdrAble
 	{
 		public LPStr Category {
 			get { return pszCategory ; }
@@ -65,7 +64,7 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class ClEvMapi : XdrAble
+	public partial class ClEvMapi : IXdrAble
 	{
 		public int Conn {
 			get { return ulConn; }
@@ -80,9 +79,9 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class ClEvProgress : XdrAble
+	public partial class ClEvProgress : IXdrAble
 	{
-		public int Type {
+		public ProgressType Type {
 			get { return type; }
 			set { type = value; }
 		}
@@ -109,9 +108,48 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class ClientEvent : XdrAble
+	public partial class ClientEvent : IXdrAble
 	{
-		public int Type {
+		
+		#region HACK
+
+		public ClientEvType type;
+		public ClEvMapi mapi;
+		public ClEvProgress progress;
+
+		public ClientEvent()
+		{
+		}
+		
+		public ClientEvent(XdrDecodingStream xdr)
+		{
+			XdrDecode(xdr);
+		}
+		public void XdrEncode (XdrEncodingStream xdr)
+		{
+			System.Diagnostics.Trace.TraceInformation ("XdrEncode called: ClientEvent");
+			xdr.XdrEncodeInt ((int) type);
+			switch (type) {
+				case ClientEvType.CLEV_MAPI: mapi.XdrEncode (xdr); break;
+				case ClientEvType.CLEV_PROGRESS: progress.XdrEncode(xdr); break;
+			}
+		}
+
+		public void XdrDecode(XdrDecodingStream xdr)
+		{
+			System.Diagnostics.Trace.TraceInformation ("XdrDecode called: ClientEvent");
+			type = (ClientEvType) xdr.XdrDecodeInt ();
+			switch (type) {
+				case ClientEvType.CLEV_MAPI: mapi = new ClEvMapi (xdr); break;
+				case ClientEvType.CLEV_PROGRESS: progress = new ClEvProgress(xdr); break;
+			}
+		}
+
+		#endregion HACK
+
+
+
+		public ClientEvType Type {
 			get { return type; }
 			set { type = value; }
 		}
@@ -127,32 +165,26 @@ namespace NMapi.Interop.MapiRPC {
 		}
 	}
 
-/*
-	public static partial class ClientEvType
-	{
-		public static int ClevMapi {
-			get { return CLEV_MAPI; }
-			set { CLEV_MAPI = value; }
-		}
-
-		public static int ClevProgress {
-			get { return CLEV_PROGRESS; }
-			set { CLEV_PROGRESS = value; }
-		}
-	}
-
-*/
-
-	public partial class HObject : XdrAble
+	public partial class HObject : IXdrAble
 	{
 		public LongLong Value {
 			get { return this.value; }
 			set { this.value = value; }
 		}
+		
+		public HObject (long val)
+		{
+			this.Value = new LongLong (val);
+		}
+		
+		public static HObject FromLong (long value)
+		{
+			return new HObject (new LongLong (value));
+		}
 	}
 
 
-	public partial class LPCategoryLL : XdrAble
+	public partial class LPCategoryLL : IXdrAble
 	{
 		public CategoryLL Value {
 			get { return value; }
@@ -161,7 +193,7 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class LPMyAcl : XdrAble
+	public partial class LPMyAcl : IXdrAble
 	{
 		public MyAcl Value {
 			get { return value; }
@@ -170,7 +202,7 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class LPProgressBar : XdrAble
+	public partial class LPProgressBar : IXdrAble
 	{
 		public ProgressBar Value {
 			get { return value; }
@@ -179,7 +211,7 @@ namespace NMapi.Interop.MapiRPC {
 	}
 
 
-	public partial class MyAcl : XdrAble
+	public partial class MyAcl : IXdrAble
 	{
 		public int Type {
 			get { return type; }
@@ -202,8 +234,7 @@ namespace NMapi.Interop.MapiRPC {
 		}
 	}
 
-
-	public partial class ProgressBar : XdrAble
+	public partial class ProgressBar : IXdrAble
 	{
 		public int ID {
 			get { return ulID; }
@@ -225,23 +256,5 @@ namespace NMapi.Interop.MapiRPC {
 			set { ulFlags = value; }
 		}
 	}
-
-/*
-
-	public static partial class ProgressType
-	{
-		public static int ProgressSetLimits {
-			get { return PROGRESS_SETLIMITS; }
-			set { PROGRESS_SETLIMITS = value; }
-		}
-
-		public static int ProgressSetUpdate {
-			get { return PROGRESS_UPDATE; }
-			set { PROGRESS_UPDATE = value; }
-		}
-	
-	}
-
-*/
 
 }

@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - AssemblyInfo.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //

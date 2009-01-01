@@ -3,7 +3,7 @@
 
 
 
-enum RpcVersionInf { MAPIRPCVERSION = 6 };
+enum RpcVersionInf { MAPIRPCVERSION = 9 };
 
 
 
@@ -55,74 +55,27 @@ case CLEV_PROGRESS:
         CLEVPROGRESS progress;
 };
 
+struct ABUSERDATA
+{
+        LPWSTR pwszId;
+        LPWSTR pwszDisplay;
+        LPWSTR pwszAdrType;
+        LPWSTR pwszSmtpAdr;
+        LPWSTR pwszIntAdr;
+        SBinary eid;
+        SBinary searchKey;
+};
 
+typedef ABUSERDATA *LPABUSERDATA;
 
+struct ABUSERLIST
+{
+        ABUSERDATA *pData;
+        ABUSERLIST *pNext;
+};
 
+typedef ABUSERLIST *LPABUSERLIST;
 
-struct Session_Logon2_arg { LPSTR pszHost; LPWSTR pwszUser; LPWSTR pwszPassword; u_long ulSessionFlags; u_long ulCodePage; u_long ulLocaleID; };
-struct Session_Logon2_res { u_long hr; };
-
-
-
-struct Session_OpenStore_arg { u_long ulFlags; LPWSTR pwszStoreUser; int bIsPublic; };
-
-
-
-
-
-struct Session_GetLoginID_arg { u_long ulFlags; };
-
-
-
-struct Session_GetLoginID_res { u_long hr; LPWSTR pwszLoginID; };
-
-
-
-
-struct Session_OpenStore_res { u_long hr; HOBJECT obj; };
-
-
-
-
-struct Session_GetNativeID_arg { u_long ulFlags; };
-
-
-
-struct Session_GetNativeID_res { u_long hr; SBinary id; };
-
-
-
-
-struct Session_SubscribeEvent_arg { u_long ulConnection; SBinary eidstore; SBinary eidobj; u_long ulMask; };
-
-
-
-
-
-
-struct Session_SubscribeEvent_res { u_long hr; HOBJECT obj; };
-
-
-
-
-struct Session_AdmLogon_arg { LPSTR pszPassword; u_long ulCodePage; u_long ulLocaleID; };
-
-
-
-
-
-struct Session_AdmLogon_res { u_long hr; HOBJECT obj; };
-
-
-
-
-struct Session_GetConfig_arg { LPSTR pszCategory; LPSTR pszID; u_long ulFlags; };
-
-
-
-
-
-struct Session_GetConfig_res { u_long hr; LPSPropValue pValue; };
 
 
 
@@ -136,7 +89,70 @@ struct Session_GetVersion_res { u_long hr; u_long ulVersion; };
 
 
 
-struct Session_SetPassword_arg { LPWSTR pwszPassword; };
+struct Session_InitSession_arg { LPWSTR pwszArgs; };
+
+
+
+struct Session_InitSession_res { u_long hr; HOBJECT obj; };
+
+
+
+
+struct Session_Logon2_arg { HOBJECT obj; LPSTR pszHost; LPWSTR pwszUser; LPWSTR pwszPassword; u_long ulSessionFlags; u_long ulCodePage; u_long ulLocaleID; };
+struct Session_Logon2_res { u_long hr; };
+
+
+
+struct Session_OpenStore_arg { HOBJECT obj; u_long ulFlags; LPWSTR pwszStoreUser; int bIsPublic; };
+
+
+
+
+
+
+struct Session_OpenStore_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct Session_GetLoginName_arg { HOBJECT obj; u_long ulFlags; };
+
+
+
+
+struct Session_GetLoginName_res { u_long hr; LPWSTR pwszLoginName; };
+
+
+
+
+struct Session_AdmLogon_arg { HOBJECT obj; LPSTR pszPassword; u_long ulCodePage; u_long ulLocaleID; };
+
+
+
+
+
+
+struct Session_AdmLogon_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct Session_GetConfig_arg { HOBJECT obj; LPSTR pszCategory; LPSTR pszID; u_long ulFlags; };
+
+
+
+
+
+
+struct Session_GetConfig_res { u_long hr; LPSPropValue pValue; };
+
+
+
+
+struct Session_SetPassword_arg { HOBJECT obj; LPWSTR pwszPassword; };
+
 
 
 
@@ -144,31 +160,57 @@ struct Session_SetPassword_res { u_long hr; };
 
 
 
+struct Session_ABGetUserData_arg { HOBJECT obj; SBinary eid; };
 
 
 
 
-struct Base_RefAdd_arg { HOBJECT obj; };
+struct Session_ABGetUserData_res { u_long hr; struct ABUSERDATA *pData; };
 
 
 
-struct Base_RefAdd_res { u_long refCount; };
+
+struct Session_ABGetUserDataBySmtpAddress_arg { HOBJECT obj; LPWSTR pwszSmtpAddress; };
 
 
 
-struct Base_RefRel_arg { HOBJECT obj; };
+
+struct Session_ABGetUserDataBySmtpAddress_res { u_long hr; struct ABUSERDATA *pData; };
 
 
 
-struct Base_RefRel_res { u_long refCount; };
+
+struct Session_ABGetUserDataByInternalAddress_arg { HOBJECT obj; LPWSTR pwszInternalAddress; };
 
 
 
-struct Base_GetType_arg { HOBJECT obj; };
+
+struct Session_ABGetUserDataByInternalAddress_res { u_long hr; struct ABUSERDATA *pData; };
 
 
 
-struct Base_GetType_res { u_long type; };
+
+struct Session_ABGetChangeTime_arg { HOBJECT obj; u_long ulFlags; };
+
+
+
+
+struct Session_ABGetChangeTime_res { u_long hr; FILETIME ft; };
+
+
+
+
+struct Session_ABGetUserList_arg { HOBJECT obj; u_long ulFlags; };
+
+
+
+
+struct Session_ABGetUserList_res { u_long hr; struct ABUSERLIST *pList; };
+struct Base_Close_arg { HOBJECT obj; };
+
+
+
+struct Base_Close_res { u_long refCount; };
 
 
 
@@ -226,7 +268,8 @@ struct MAPIProp_OpenProperty_arg { HOBJECT obj; u_long ulPropTag; LPGUID lpiid; 
 
 
 
-struct MAPIProp_OpenProperty_res { u_long hr; HOBJECT obj; };
+struct MAPIProp_OpenProperty_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -290,7 +333,8 @@ struct MsgStore_OpenEntry_arg { HOBJECT obj; SBinary eid; LPGUID lpInterface; u_
 
 
 
-struct MsgStore_OpenEntry_res { u_long hr; HOBJECT obj; };
+struct MsgStore_OpenEntry_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -326,7 +370,8 @@ struct MsgStore_GetReceiveFolderTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct MsgStore_GetReceiveFolderTable_res { u_long hr; HOBJECT obj; };
+struct MsgStore_GetReceiveFolderTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -356,7 +401,8 @@ struct MsgStore_GetOutgoingQueue_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct MsgStore_GetOutgoingQueue_res { u_long hr; HOBJECT obj; };
+struct MsgStore_GetOutgoingQueue_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -408,6 +454,27 @@ struct MsgStore_SetWrappedEID_res { u_long hr; };
 
 
 
+struct MsgStore_Advise_arg { HOBJECT obj; SBinary eid; u_long ulEventMask; u_long ulClientID; };
+
+
+
+
+
+
+struct MsgStore_Advise_res { u_long hr; HOBJECT obj; };
+
+
+
+
+struct MsgStore_Unadvise_arg { HOBJECT obj; HOBJECT connObj; };
+
+
+
+
+struct MsgStore_Unadvise_res { u_long hr; };
+
+
+
 
 
 
@@ -417,7 +484,8 @@ struct MAPIContainer_GetContentsTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct MAPIContainer_GetContentsTable_res { u_long hr; HOBJECT obj; };
+struct MAPIContainer_GetContentsTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -427,7 +495,8 @@ struct MAPIContainer_GetHierarchyTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct MAPIContainer_GetHierarchyTable_res { u_long hr; HOBJECT obj; };
+struct MAPIContainer_GetHierarchyTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -439,7 +508,8 @@ struct MAPIContainer_OpenEntry_arg { HOBJECT obj; SBinary eid; LPGUID lpInterfac
 
 
 
-struct MAPIContainer_OpenEntry_res { u_long hr; HOBJECT obj; };
+struct MAPIContainer_OpenEntry_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -467,7 +537,8 @@ struct MAPIFolder_CreateMessage_arg { HOBJECT obj; LPGUID lpInterface; u_long ul
 
 
 
-struct MAPIFolder_CreateMessage_res { u_long hr; HOBJECT obj; };
+struct MAPIFolder_CreateMessage_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -495,7 +566,8 @@ struct MAPIFolder_DeleteMessages_res { u_long hr; };
 
 
 struct MAPIFolder_CreateFolder_arg { HOBJECT obj; u_long ulFolderType; LPSTR lpszFolderNameA; LPWSTR lpwszFolderNameW; LPSTR lpszFolderCommentA; LPWSTR lpwszFolderCommentW; LPGUID lpInterface; u_long ulFlags; };
-struct MAPIFolder_CreateFolder_res { u_long hr; HOBJECT obj; };
+struct MAPIFolder_CreateFolder_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -565,15 +637,6 @@ struct MAPIFolder_EmptyFolder_res { u_long hr; };
 
 
 
-struct MAPIFolder_GetAccessMask_arg { HOBJECT obj; };
-
-
-
-struct MAPIFolder_GetAccessMask_res { u_long hr; u_long ulMask; };
-
-
-
-
 
 
 struct MAPIFolder_AssignIMAP4UID_arg { HOBJECT obj; SBinary msgeid; u_long ulFlags; };
@@ -612,7 +675,8 @@ struct Message_GetAttachmentTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct Message_GetAttachmentTable_res { u_long hr; HOBJECT obj; };
+struct Message_GetAttachmentTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -624,7 +688,8 @@ struct Message_OpenAttach_arg { HOBJECT obj; u_long ulAttachmentNum; LPGUID lpIn
 
 
 
-struct Message_OpenAttach_res { u_long hr; HOBJECT obj; };
+struct Message_OpenAttach_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -635,7 +700,8 @@ struct Message_CreateAttach_arg { HOBJECT obj; LPGUID lpInterface; u_long ulFlag
 
 
 
-struct Message_CreateAttach_res { u_long hr; u_long ulAttachmentNum; HOBJECT obj; };
+struct Message_CreateAttach_res { u_long hr; u_long ulAttachmentNum; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -656,7 +722,8 @@ struct Message_GetRecipientTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct Message_GetRecipientTable_res { u_long hr; HOBJECT obj; };
+struct Message_GetRecipientTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -985,11 +1052,23 @@ struct MAPITable_SetCollapseState_res { u_long hr; u_long bkLocation; };
 
 
 
-struct MAPITable_GetEventKey_arg { HOBJECT obj; };
+struct MAPITable_Advise_arg { HOBJECT obj; u_long ulEventMask; u_long ulClientID; };
 
 
 
-struct MAPITable_GetEventKey_res { u_long hr; SBinary key; };
+
+
+struct MAPITable_Advise_res { u_long hr; HOBJECT obj; };
+
+
+
+
+struct MAPITable_Unadvise_arg { HOBJECT obj; HOBJECT connObj; };
+
+
+
+
+struct MAPITable_Unadvise_res { u_long hr; };
 struct Admin_AdmSetPassword_arg { HOBJECT obj; LPSTR pszPassword; };
 
 
@@ -1394,7 +1473,8 @@ struct ModifyTable_GetTable_arg { HOBJECT obj; u_long ulFlags; };
 
 
 
-struct ModifyTable_GetTable_res { u_long hr; HOBJECT obj; };
+struct ModifyTable_GetTable_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
 
 
 
@@ -1418,21 +1498,29 @@ program ASERV_PROGRAM
 
 
 
-                Session_GetNativeID_res Session_GetNativeID(Session_GetNativeID_arg) = 101;
-                Session_SubscribeEvent_res Session_SubscribeEvent(Session_SubscribeEvent_arg) = 103;
-                Session_AdmLogon_res Session_AdmLogon(Session_AdmLogon_arg) = 104;
-                Session_GetConfig_res Session_GetConfig(Session_GetConfig_arg) = 105;
+
+
+
+
                 Session_GetVersion_res Session_GetVersion(Session_GetVersion_arg) = 106;
+
+
+                Session_InitSession_res Session_InitSession(Session_InitSession_arg) = 107;
+                Session_AdmLogon_res Session_AdmLogon(Session_AdmLogon_arg) = 108;
+                Session_GetConfig_res Session_GetConfig(Session_GetConfig_arg) = 109;
                 Session_Logon2_res Session_Logon2(Session_Logon2_arg) = 110;
-                Session_GetLoginID_res Session_GetLoginID(Session_GetLoginID_arg) = 111;
+                Session_GetLoginName_res Session_GetLoginName(Session_GetLoginName_arg) = 111;
                 Session_OpenStore_res Session_OpenStore(Session_OpenStore_arg) = 112;
                 Session_SetPassword_res Session_SetPassword(Session_SetPassword_arg) = 113;
+                Session_ABGetUserData_res Session_ABGetUserData(Session_ABGetUserData_arg) = 114;
+                Session_ABGetUserDataBySmtpAddress_res Session_ABGetUserDataBySmtpAddress(Session_ABGetUserDataBySmtpAddress_arg) = 115;
+                Session_ABGetUserDataByInternalAddress_res Session_ABGetUserDataByInternalAddress(Session_ABGetUserDataByInternalAddress_arg) = 116;
+                Session_ABGetChangeTime_res Session_ABGetChangeTime(Session_ABGetChangeTime_arg) = 117;
+                Session_ABGetUserList_res Session_ABGetUserList(Session_ABGetUserList_arg) = 118;
 
 
 
-                Base_RefAdd_res Base_RefAdd(Base_RefAdd_arg) = 200;
-                Base_RefRel_res Base_RefRel(Base_RefRel_arg) = 201;
-                Base_GetType_res Base_GetType(Base_GetType_arg) = 202;
+                Base_Close_res Base_Close(Base_Close_arg) = 200;
 
 
 
@@ -1461,6 +1549,8 @@ program ASERV_PROGRAM
                 MsgStore_NotifyNewMail_res MsgStore_NotifyNewMail(MsgStore_NotifyNewMail_arg) = 410;
                 MsgStore_GetOrigEID_res MsgStore_GetOrigEID(MsgStore_GetOrigEID_arg) = 411;
                 MsgStore_SetWrappedEID_res MsgStore_SetWrappedEID(MsgStore_SetWrappedEID_arg) = 412;
+                MsgStore_Advise_res MsgStore_Advise(MsgStore_Advise_arg) = 413;
+                MsgStore_Unadvise_res MsgStore_Unadvise(MsgStore_Unadvise_arg) = 414;
 
 
 
@@ -1483,7 +1573,6 @@ program ASERV_PROGRAM
                 MAPIFolder_SetMessageStatus_res MAPIFolder_SetMessageStatus(MAPIFolder_SetMessageStatus_arg) = 608;
                 MAPIFolder_SaveContentsSort_res MAPIFolder_SaveContentsSort(MAPIFolder_SaveContentsSort_arg) = 609;
                 MAPIFolder_EmptyFolder_res MAPIFolder_EmptyFolder(MAPIFolder_EmptyFolder_arg) = 610;
-                MAPIFolder_GetAccessMask_res MAPIFolder_GetAccessMask(MAPIFolder_GetAccessMask_arg) = 611;
 
                 MAPIFolder_AssignIMAP4UID_res MAPIFolder_AssignIMAP4UID(MAPIFolder_AssignIMAP4UID_arg) = 690;
 
@@ -1538,7 +1627,8 @@ program ASERV_PROGRAM
                 MAPITable_WaitForCompletion_res MAPITable_WaitForCompletion(MAPITable_WaitForCompletion_arg) = 1018;
                 MAPITable_GetCollapseState_res MAPITable_GetCollapseState(MAPITable_GetCollapseState_arg) = 1019;
                 MAPITable_SetCollapseState_res MAPITable_SetCollapseState(MAPITable_SetCollapseState_arg) = 1020;
-                MAPITable_GetEventKey_res MAPITable_GetEventKey(MAPITable_GetEventKey_arg) = 1021;
+                MAPITable_Advise_res MAPITable_Advise(MAPITable_Advise_arg) = 1021;
+                MAPITable_Unadvise_res MAPITable_Unadvise(MAPITable_Unadvise_arg) = 1022;
 
 
 

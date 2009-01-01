@@ -26,7 +26,8 @@ namespace NMapi {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
+	using NMapi.Flags;
 	using NMapi.Interop.MapiRPC;
 
 	/// <summary>
@@ -35,7 +36,7 @@ namespace NMapi {
 	/// </summary>
 	public abstract class TeamXChangeBase : IBase
 	{
-		protected long obj;
+		internal long obj;
 		private bool disposed;
 		internal TeamXChangeSession session;
 	
@@ -70,14 +71,14 @@ namespace NMapi {
 			if (disposed)
 				return;
 			try {
-				Base_RefRel_arg arg = new Base_RefRel_arg();
+				var arg = new Base_Close_arg ();
 				arg.obj = new HObject (new LongLong (obj));
 				if (clnt == null) {
 					string msg = session.GetType().FullName +
 						" object already closed";
 					throw new NullReferenceException (msg);
 				}
-				clnt.Base_RefRel_1 (arg);
+				clnt.Base_Close_1 (arg);
 			}
 			catch (OncRpcException) {} // do nothing
 			catch (IOException) {} // do nothing
@@ -97,25 +98,37 @@ namespace NMapi {
 		internal MAPIRPCClient clnt {
 			get { return session.clnt; }
 		}
-	
-		// RENAMED!
-		/// <exception cref="MapiException">Throws MapiException</exception>
-		public int Do_GetType ()
+
+		internal static T MakeCall<T, T2> (Func<T2, T> rpcCall, T2 arg)
 		{
-			Base_GetType_res res;
+			return MakeCall<T, T2> (rpcCall, arg, true);
+		}
+		
+		internal static T MakeCall<T, T2> (Func<T2, T> rpcCall, T2 arg, bool checkHrField)
+		{
+			T res;
 			try {
-				Base_GetType_arg arg = new Base_GetType_arg();
-				arg.obj = new HObject (new LongLong (obj));
-				res = clnt.Base_GetType_1(arg);
-			}
-			catch (IOException e) {
+				res = rpcCall (arg);
+			} catch (IOException e) {
+				Console.WriteLine (e);
 				throw new MapiException (e);
 			}
 			catch (OncRpcException e) {
+				Console.WriteLine (e);
 				throw new MapiException (e);
 			}
-			return res.type;
+			catch (Exception e) { // DEBUG
+				Console.WriteLine (e);
+				throw;
+			}	
+			if (checkHrField) {
+				int res_hr = (int) typeof (T).GetProperty ("hr").GetValue (res, null); // TODO: evil!
+				if (Error.CallHasFailed  (res_hr))
+					throw new MapiException (res_hr);
+			}
+			return res;
 		}
+		
 	
 	}
 

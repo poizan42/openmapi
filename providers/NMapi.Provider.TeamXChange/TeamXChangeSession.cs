@@ -29,28 +29,49 @@ namespace NMapi {
 	using System.IO;
 	using System.Net;
 	using System.Net.Sockets;
-	using RemoteTea.OncRpc;
-	using RemoteTea.OncRpc.Server;
+	using CompactTeaSharp;
+	using CompactTeaSharp.Server;
 	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
 	using NMapi.Flags;
 	using NMapi.Events;
+	using NMapi.Properties;
 	using NMapi.Properties.Special;
 	using NMapi.Table;
 
 	/// <summary>
 	///  Internal representation of the Session.
 	/// </summary>
-	public class TeamXChangeSession :  OncRpcDispatchable, IDisposable
+	public class TeamXChangeSession :  IDisposable
 	{
 		private string host;
 		private int port;
+		private HObject obj;
 		private MAPIRPCClient client;
-		private int evuid;
-		private TcpClient eventSock;
-		private OncRpcTcpConnectionServerTransport eventServ; 
-		private Dictionary<int, IEventSubscription> eventSubMap;
-	
+		private TeamXChangeEventServer eventServer;
+		
+		/// <summary>
+		///
+		/// </summary>
+		public MAPIRPCClient clnt {
+			get { return client; }
+		}
+		
+		/// <summary>
+		///
+		/// </summary>
+		public TeamXChangeEventServer EventServer {
+			get { return eventServer; }
+		}
+		
+		/// <summary>
+		///   Returns true if the session has not been closed, yet.
+		/// </summary>
+		public bool IsOpen {
+			get { return (client != null); }
+		}
+		
+		
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public TeamXChangeSession () : this (Common.Host)
 		{
@@ -63,41 +84,26 @@ namespace NMapi {
 		}
 
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		private TeamXChangeSession (string host, int port) 
+		public TeamXChangeSession (string host, int port) 
 		{
-			this.host  = host;
+			Console.WriteLine (host);
+			Console.WriteLine (port);
+			
+			this.host = host;
 			this.port = port;
-			try {
-				IPHostEntry hostEntry = Dns.GetHostEntry (host); // TODO: Ensure that call doesn't wait foreever!
-				IPAddress ip = null;
-				if (hostEntry.AddressList.Length > 0)
-					ip = hostEntry.AddressList [0];
-				client = new MAPIRPCClient (ip, this.port, 
-					OncRpcProtocols.ONCRPC_TCP);
-				client.GetClient().SetTimeout (5 * 60 * 1000);
-				int version = GetVersion (0);
-				if (version == 5)
-					version = 6;
-				if (version != RpcVersionInf.MAPIRPCVERSION) {
-					string msg  = "server version " +  version 
-						+ " does not match  client version " 
-						+ RpcVersionInf.MAPIRPCVERSION;
-					throw new MapiException (msg, Error.Version);
-				}
-				evuid = 0;
-				eventSubMap = new Dictionary<int, IEventSubscription> ();
-				eventSock = new TcpClient (host, this.port+1);
-
-				eventServ = new OncRpcTcpConnectionServerTransport(this,
-			                                                eventSock,
-			                                                1,
-									1,
-			                                                8192,
-			                                                null,
-			                                                10);
-				eventServ.Listen ();
-				byte[] data = GetNativeID (0);
-				eventSock.GetStream ().Write (data, 0, data.Length);
+			
+			try {				
+				IPAddress[] ipList = Dns.GetHostAddresses (host); // TODO: Ensure that call doesn't wait forever!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				if (ipList.Length < 1)
+					throw new Exception ("Can't determine ip adress of local host.");
+					
+				client = new MAPIRPCClient (ipList [0], this.port, OncRpcProtocols.Tcp);
+				client.Client.SetTimeout (5 * 60 * 1000);
+				
+				CheckVersion ();
+				obj = MakeInitSessionCall (String.Empty);
+				byte [] objb = DoTheByteShiftingThing (obj.value.Value);
+				this.eventServer = new TeamXChangeEventServer (client, host, port+1, objb);
 			}
 			catch (SocketException e) {
 				throw new MapiException ("unknown host="+host, e);
@@ -110,27 +116,109 @@ namespace NMapi {
 				throw new MapiException ("host="+host, e);
 			}
 		}
+		
+		private HObject MakeInitSessionCall (string initStr)
+		{
+			var res = TeamXChangeBase.MakeCall<Session_InitSession_res, Session_InitSession_arg> (
+				client.Session_InitSession_1, 
+				new Session_InitSession_arg { pwszArgs = new LPWStr (initStr) });
+			return res.obj;		
+		}
+		
+		private void CheckVersion ()
+		{			
+			int version = GetVersion (0);
+			if (version != (int) RpcVersionInf.MAPIRPCVERSION) {
+				string msg  = "server version " +  version 
+					+ " does not match  client version " 
+					+ RpcVersionInf.MAPIRPCVERSION;
+				throw new MapiException (msg, Error.Version);
+			}
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
+		public int GetVersion (int flags)
+		{
+			var arg = new Session_GetVersion_arg ();
+			arg.ulFlags = flags;
+			var res = TeamXChangeBase.MakeCall<Session_GetVersion_res, Session_GetVersion_arg> (
+					client.Session_GetVersion_1, arg);
+			return res.ulVersion;
+		}
+		
+		private byte[] DoTheByteShiftingThing (long objv)
+		{
+			byte [] objb = new byte [8];
+			objb [0] = (byte) ((objv >> 56) & 0xff);
+			objb [1] = (byte) ((objv >> 48) & 0xff);
+			objb [2] = (byte) ((objv >> 40) & 0xff);
+			objb [3] = (byte) ((objv >> 32) & 0xff);
+			objb [4] = (byte) ((objv >> 24) & 0xff);
+			objb [5] = (byte) ((objv >> 16) & 0xff);
+			objb [6] = (byte) ((objv >>  8) & 0xff);
+			objb [7] = (byte) ((objv) & 0xff);
+			return objb;
+		}
+		
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
+		public IBase CreateObject (IBase parent, long obj, int objType, NMapiGuid interFace, int propTag)
+		{
+			switch (objType) {
+				case Mapi.Folder:
+					if (parent is IMsgStore)
+						return new TeamXChangeMapiFolder (obj, (TeamXChangeMsgStore) parent);
+					return new TeamXChangeMapiFolder (obj, ((TeamXChangeMapiFolder) parent).Store);
+				case Mapi.Message:
+					return new TeamXChangeMessage (obj, (TeamXChangeBase) parent);
+				case Mapi.Attach:
+					return new TeamXChangeAttach (obj, (TeamXChangeMessage)parent);
+				case Mapi.SimpleStream:
+					return new TeamXChangeStream (obj, (TeamXChangeBase) parent, propTag);
+				case Mapi.Table:
+					return new TeamXChangeMapiTable (obj, (TeamXChangeMapiFolder) parent);
+				case Mapi.TableReader:
+					return new TeamXChangeMapiTableReader (obj, (TeamXChangeBase) parent);
+				default:
+					Console.Write ("unknown type ");
+					Console.Write (objType);
+					Console.WriteLine ();
+					throw new MapiException (Error.BadValue);
+			}
+		}
+
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
+		public IBase CreateObject (IBase parent, long obj, int objType, NMapiGuid interFace) 
+		{
+			return CreateObject (parent, obj, objType, interFace, Property.Null);
+		}
 
 		/// <summary>
 		///
 		/// </summary>
 		public void Dispose (bool disposing)
 		{
-			if (eventSock != null) {
-				try {
-					eventSock.Close ();
+			try {
+				if (client != null) {
+					try { 
+						client.Close ();
+					}
+					catch (OncRpcException) {} // Do nothing
 				}
-				catch (IOException) {} // Do nothing
+				client = null;
+			} catch (Exception) {
+				// do nothing
 			}
-			if (client != null) {
-				try { 
-					client.Close ();
-				}
-				catch (OncRpcException) {} // Do nothing
-			}
-			eventSubMap  = null;
-			eventSock    = null;
-			client    = null;			
 		}
 	
 		/// <summary>
@@ -154,83 +242,7 @@ namespace NMapi {
 			Dispose (true);
 		}
 
-		/// <summary>
-		///   Returns true if the session has not been closed, yet.
-		/// </summary>
-		public bool IsOpen {
-			get {
-				return (client != null);
-			}
-		}
 
-		/// <exception cref="T:NMapi.MapiException">Throws MapiException</exception>
-		/// <exception cref="T:OncRpcException">Throws OncRpcException</exception>
-		public void DispatchOncRpcCall (OncRpcCallInformation call,
-			int program, int version, int procedure)
-		{
-			switch (procedure) {
-				case 0:
-					XdrVoid v = new XdrVoid();
-					call.RetrieveCall (v);
-					call.Reply (v);
-				break;
-				case 1:
-					ClientEvent e = new ClientEvent ();
-					call.RetrieveCall (e);
-					switch (e.type)
-					{
-						case ClientEvType.CLEV_MAPI:
-							lock (eventSubMap)
-							{
-								if (eventSubMap.ContainsKey (e.mapi.ulConn)) {
-									var sub = eventSubMap [e.mapi.ulConn];
-									if (sub != null)
-										sub.OnNotify (e.mapi.notif);
-								}
-							}
-						break;
-						case ClientEvType.CLEV_PROGRESS:
-							// TODO (This is also marked as "todo" in jumapi.
-						break;
-					}
-				break;
-				default:
-					call.FailProcedureUnavailable ();
-				break;
-			}
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		public MAPIRPCClient clnt {
-			get { return client; }
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public byte [] GetNativeID (int flags)
-		{
-			Session_GetNativeID_arg arg = new Session_GetNativeID_arg ();
-			Session_GetNativeID_res res;
-		
-			try {
-				res = client.Session_GetNativeID_1 (arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}				
-			if (Error.CallHasFailed (res.hr)) {
-				throw new MapiException(res.hr);
-			}
-			return res.id.lpb;
-		}
-	
 		/// <summary>
 		///
 		/// </summary>
@@ -240,10 +252,11 @@ namespace NMapi {
 		{
 			Session_Logon2_arg arg = new Session_Logon2_arg();
 			Session_Logon2_res res;
-		
-			arg.pszHost = new LPStr(host);
-			arg.pwszUser = new LPWStr(user);
-			arg.pwszPassword = new LPWStr(password);
+			
+			arg.obj = obj;
+			arg.pszHost = new LPStr (host);
+			arg.pwszUser = new LPWStr (user);
+			arg.pwszPassword = new LPWStr (password);
 			arg.ulSessionFlags = sessionFlags;
 			arg.ulCodePage = codePage;
 			arg.ulLocaleID = localeID;
@@ -270,6 +283,7 @@ namespace NMapi {
 			Session_OpenStore_arg arg = new Session_OpenStore_arg ();
 			Session_OpenStore_res res;
 
+			arg.obj = obj;
 			arg.pwszStoreUser = new LPWStr (user);
 			arg.ulFlags = (int) flags;
 			arg.bIsPublic = isPublic ? 1 : 0;
@@ -288,63 +302,6 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  Register an AdviseSink for Notifications.
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public int Advise (IMapiAdviseSink sink, 
-			byte [] storeEID, byte [] objEID, NotificationEventType mask)
-		{
-			lock (eventSubMap) {
-				evuid++;
-				long obj = SubscribeEvent (evuid, storeEID, objEID, mask);
-				IEventSubscription sub = new TeamXChangeEventSubscription (obj, this, sink);
-				eventSubMap [evuid] = sub;
-			}
-			return evuid;
-		}
-	
-		/// <summary>
-		///  Unregister from notifications, using the connection id 
-		///  returned by Advise ().
-		/// </summary>
-		public void Unadvise (int connection)
-		{
-			lock (eventSubMap) {
-				if (eventSubMap.ContainsKey (connection)) {
-					IEventSubscription sub = eventSubMap [connection];
-					if (sub != null)
-						sub.Close ();
-				}
-				eventSubMap.Remove (connection);
-			}
-		}
-	
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		private long SubscribeEvent(int connection,
-			byte [] storeEID, byte [] objEID, NotificationEventType mask)
-		{
-			Session_SubscribeEvent_arg arg = new Session_SubscribeEvent_arg();
-			Session_SubscribeEvent_res res;
-
-			arg.ulConnection = connection;
-			arg.eidstore = new SBinary (storeEID);
-			arg.eidobj = new SBinary (objEID);
-			arg.ulMask = (int) mask;
-			try {
-				res = client.Session_SubscribeEvent_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
-			return res.obj.Value.Value;
-		}
-
-		/// <summary>
 		///
 		/// </summary>
 		/// <exception cref="T:NMapi.MapiException">MapiException</exception>	
@@ -352,7 +309,8 @@ namespace NMapi {
 		{
 			Session_GetConfig_arg arg = new Session_GetConfig_arg();
 			Session_GetConfig_res res;
-		
+
+			arg.obj = obj;
 			arg.pszCategory = new LPStr (category);
 			arg.pszID = new LPStr (id);
 			arg.ulFlags = flags;
@@ -368,9 +326,9 @@ namespace NMapi {
 			if (Error.CallHasFailed (res.hr))
 				throw new MapiException(res.hr);
 			if ((flags & Mapi.Unicode) != 0)
-				return res.pValue.value.Value.Unicode;
+				return ((UnicodeProperty) res.pValue.Value).Value;
 			else
-				return res.pValue.value.Value.String;
+				return ((String8Property) res.pValue.Value).Value;
 		}
 	
 		/// <summary>
@@ -388,89 +346,15 @@ namespace NMapi {
 				throw e;
 			}
 		}
-	
-		/// <summary>
-		///
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public int GetVersion (int flags)
-		{
-			Session_GetVersion_arg arg = new Session_GetVersion_arg();
-			Session_GetVersion_res res;
 		
-			arg.ulFlags = flags;
-			try {
-				res = client.Session_GetVersion_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException(res.hr);
-			return res.ulVersion;
-		}
-	
-		/// <summary>
-		///
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public int GetObjType (long obj)
+		public Address ResolveEntryID (byte [] eid)
 		{
-			Base_GetType_arg arg = new Base_GetType_arg ();
-			Base_GetType_res res;
-		
-			arg.obj = new HObject (new LongLong (obj));
-			try {
-				res = client.Base_GetType_1(arg);
-			}
-			catch (IOException e) {
-				throw new MapiException(e);
-			}
-			catch (OncRpcException e) {
-				throw new MapiException(e);
-			}
-			return res.type;
+			throw new NotImplementedException ("Not implemented!");
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public IBase CreateObject (IBase parent, long obj, NMapiGuid iid, int propTag)
+		public Address ResolveSmtpAddress (string smtpaddress, string displayname)
 		{
-			switch (GetObjType (obj)) {
-				case Mapi.Folder:
-					if (((TeamXChangeBase) parent).Do_GetType () == Mapi.Store)
-						return new TeamXChangeMapiFolder (obj, (TeamXChangeMsgStore) parent);
-					return new TeamXChangeMapiFolder (obj, ((TeamXChangeMapiFolder) parent).Store);
-				case Mapi.Message:
-					return new TeamXChangeMessage (obj, (TeamXChangeBase) parent);
-				case Mapi.Attach:
-					return new TeamXChangeAttach (obj, (TeamXChangeMessage)parent);
-				case Mapi.SimpleStream:
-					return new TeamXChangeStream (obj, (TeamXChangeBase) parent, propTag);
-				case Mapi.Table:
-					return new TeamXChangeMapiTable (obj, (TeamXChangeMapiFolder) parent);
-				case Mapi.TableReader:
-					return new TeamXChangeMapiTableReader (obj, (TeamXChangeBase) parent);
-				default:
-					Console.Write ("unknown type ");
-					Console.Write (GetObjType (obj));
-					Console.WriteLine ();
-					throw new MapiException (Error.BadValue);
-			}
-		}
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public IBase CreateObject (IBase parent, long obj, NMapiGuid iid)
-		{
-			return CreateObject (parent, obj, iid, (int) PropertyType.Null);
+			throw new NotImplementedException ("Not implemented!");
 		}
 
 	}

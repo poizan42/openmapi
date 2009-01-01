@@ -25,6 +25,7 @@
 namespace NMapi {
 
 	using System;
+	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
 	using NMapi.Flags;
 	using NMapi.Properties;
@@ -85,7 +86,7 @@ namespace NMapi {
 		{
 			Dispose ();
 		}
-
+		
 		/// <summary>
 		///  Logon to the server.
 		/// </summary>
@@ -95,19 +96,47 @@ namespace NMapi {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public void Logon (string host, string user, string password)
 		{
-			Logon2 (host, user, password, Common.SessionFlags.LogonIsUMapi);
+			Logon2 (host, -1, Common.SessionFlags.LogonIsUMapi, user, password, 65001, 0); // TODO: pass sessionFlags???
+		}
+
+		/// <summary>
+		///  Logon to the server.
+		/// </summary>
+		/// <param name="host">The hostname of the server</param>
+		/// <param name="user">The user name</param>
+		/// <param name="password">The password of the user</param>
+		/// <exception cref="MapiException">Throws MapiException</exception>
+		public void Logon (string host, int sessionFlags, string user, string password, int codePage)
+		{
+			Logon2 (host, -1, Common.SessionFlags.LogonIsUMapi, user, password, codePage, 0); // TODO: pass sessionFlags???
+		}
+
+		/// <summary>
+		///  Logon to the server.
+		/// </summary>
+		/// <param name="host">The hostname of the server</param>
+		/// <param name="user">The user name</param>
+		/// <param name="password">The password of the user</param>
+		/// <exception cref="MapiException">Throws MapiException</exception>
+		public void Logon (string host, int port, string user, string password)
+		{
+			Logon2 (host, port, Common.SessionFlags.LogonIsUMapi, user, password, 65001, 0);
 		}
 	
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		private void Logon2 (string host, string user, string password, int sessionFlags)
+		private void Logon2 (string host, int port, int sessionFlags, string user, string password, int codePage, int localeId)
 		{
 			try {
-				session = new TeamXChangeSession (host);
-				session.Logon2 (user, password, sessionFlags, 65001, 0);
-				privatemdb = session.OpenStore (Mdb.Write, null, false); 
-				publicmdb  = session.OpenStore (Mdb.Write, null, true);
+				if (port != -1)
+					session = new TeamXChangeSession (host, port);
+				else
+					session = new TeamXChangeSession (host);
+				session.Logon2 (user, password, sessionFlags, codePage, localeId);
+//				privatemdb = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, false);
+//				publicmdb  = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, true);
 			} 
-			catch (MapiException) {
+			catch (MapiException e) {
+				Console.WriteLine (e);
 				if (privatemdb != null) {
 					privatemdb.Close2 ();
 					privatemdb = null;
@@ -120,6 +149,12 @@ namespace NMapi {
 			}
 		}
 
+		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
+		public IMsgStore OpenStore (Mdb flags, string user, bool isPublic) 
+		{
+			return session.OpenStore (flags, user, isPublic);
+		}
+		
 		/// <summary>
 		///  Get the private (personal) store of the session.
 		/// </summary>
@@ -144,7 +179,9 @@ namespace NMapi {
 		public byte [] Identity {
 			get {
 				IMsgStore store = (privatemdb != null) ? privatemdb : publicmdb;
-				return store.HrGetOneProp (Property.IdentityEntryId).Value.Binary.lpb;
+				var propHelper = new MapiPropHelper (store);
+				BinaryProperty binProp = ((BinaryProperty) propHelper.HrGetOneProp (Property.IdentityEntryId));
+				return binProp.Value.lpb;
 			}
 		}
 	
@@ -161,7 +198,8 @@ namespace NMapi {
 			TeamXChangeSession session;
 			session = (privatemdb != null) ? privatemdb.session : publicmdb.session;
 			return session.GetConfig (category, id, flags);
-		}	
+		}
+	
 		/// <summary>
 		///  Gets a server config variable.
 		/// </summary>
@@ -181,7 +219,22 @@ namespace NMapi {
 				throw e;
 			}
 		}
-	
+		
+			
+		public Address ResolveEntryID (byte [] eid)
+		{
+			return session.ResolveEntryID (eid);
+		}
+
+		public Address ResolveSmtpAddress (string smtpaddress, string displayname)
+		{
+			return session.ResolveSmtpAddress (smtpaddress, displayname);
+		}
+		
+		
+		
+		
+		
 	}
 
 }

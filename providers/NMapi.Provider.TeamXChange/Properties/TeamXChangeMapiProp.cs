@@ -26,7 +26,7 @@ namespace NMapi.Properties {
 
 	using System;
 	using System.IO;
-	using RemoteTea.OncRpc;
+	using CompactTeaSharp;
 	using NMapi.Interop;
 	using NMapi.Interop.MapiRPC;
 
@@ -136,19 +136,12 @@ namespace NMapi.Properties {
 		public IBase OpenProperty (int propTag, NMapiGuid interFace,
 			int interfaceOptions, int flags)
 		{
-			long obj = OpenProp (propTag, interFace, interfaceOptions, flags);
-			return session.CreateObject (this, obj, interFace, propTag);
-		}
-
-		protected long OpenProp (int propTag, NMapiGuid iid, 
-			int interfaceOptions, int flags)
-		{
 			var arg = new MAPIProp_OpenProperty_arg(); 
 			MAPIProp_OpenProperty_res res;
 		
 			arg.obj = new HObject (new LongLong (obj));
 			arg.ulPropTag = propTag;
-			arg.lpiid = new LPGuid (iid);
+			arg.lpiid = new LPGuid (interFace);
 			arg.ulInterfaceOptions = interfaceOptions;
 			arg.ulFlags = flags;
 			try {
@@ -162,7 +155,7 @@ namespace NMapi.Properties {
 			}
 			if (Error.CallHasFailed (res.hr))
 				throw new MapiException(res.hr);
-			return res.obj.Value.Value;
+			return session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace, propTag);
 		}
 
 		public SPropProblemArray SetProps (SPropValue[] propArray)
