@@ -1,5 +1,26 @@
 2009-01-02  Johannes Roith <johannes@jroith.de>
 
+	* NMapi/Core/Table/IMapiTable.partial.cs:
+	* NMapi/Core/Properties/Special/IMsgStore.partial.cs:
+	* NMapi/Core/xslt:
+	* NMapi/Core/xslt/mapi_interface_gen.xsl
+	* NMapi/Core/xslt/remote_call.xsl NEW. interface is now auto-generated
+	
+	* NMapi/Core/IAttach.cs:
+	* NMapi/Core/Table/IMapiTable.cs:
+	* NMapi/Core/Table/IMapiTableReader.cs:
+	* NMapi/Core/IBase.cs:
+	* NMapi/Core/Properties/Special/IMapiFolder.cs:
+	* NMapi/Core/Properties/Special/IMsgStore.cs:
+	* NMapi/Core/Properties/Special/IMessage.cs:
+	* NMapi/Core/Properties/Special/IMapiContainer.cs:
+	* NMapi/Core/Properties/IMapiProp.cs:
+	* NMapi/Core/IMapiSession.cs:
+	* NMapi/Core/IStream.cs: removed
+	
+
+2009-01-02  Johannes Roith <johannes@jroith.de>
+
 	* Merge new server
 
 2009-01-02  Johannes Roith <johannes@jroith.de>

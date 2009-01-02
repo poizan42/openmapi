@@ -1,9 +1,10 @@
 //
-// openmapi.org - NMapi C# Mapi API - IAttach.cs
+// openmapi.org - NMapi C# Mapi API - IMsgStore.partial.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008 VipCom AG
 //
-// Author: Johannes Roith <johannes@jroith.de>
+// Author (Javajumapi): VipCOM AG
+// Author (C# port):    Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -21,20 +22,23 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
-using NMapi.Properties;
-using NMapi.Properties.Special;
+namespace NMapi.Properties.Special {
 
-namespace NMapi {
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using CompactTeaSharp;
+	using NMapi.Interop;
 
-	/// <summary>
-	///  The IAttach interface.
-	/// </summary>
-	/// <remarks>
-	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms529617.aspx
-	/// </remarks>
-	public interface IAttach : IMapiProp
+	using NMapi.Flags;
+	using NMapi.Events;
+	using NMapi.Table;
+
+	public partial interface IMsgStore : IMapiProp, IAdvisor
 	{
-
+		ObjectEventProxy Events {
+			get;
+		}
 	}
 
 }
