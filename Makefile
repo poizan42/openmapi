@@ -122,6 +122,7 @@ mapiserver:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Server.ICalls.dll /nowarn:$(NO_WARN) \
 	/r:bin/NMapi.dll \
 	/r:System.Runtime.Remoting.dll \
+	/r:bin/NMapi.Tools.Shell.dll \
 	/target:library `find server/ICalls -name "*.cs"`
 
 	cp bin/NMapi.Server.ICalls.dll server/aspx/Bin/NMapi.Server.ICalls.dll
