@@ -1,3 +1,9 @@
+2009-01-02  Johannes Roith <johannes@jroith.de>
+
+	* xml: NEW directory
+	* xml/mapi.xml: NEW. Define the NMapi interface in xml and 
+					generate the C# interface from that.
+
 2009-01-01  Johannes Roith <johannes@jroith.de>
 
 	* tools/mapishell/CommandContext.cs: renamed
