@@ -350,7 +350,7 @@
 			<param type="IMapiProgress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="AssignIMAP4UID">
+<!--		<method id="AssignIMAP4UID">
 			<doc>
 				<summary></summary>
 			</doc>
@@ -358,6 +358,7 @@
 			<param type="byte[]">entryID</param>
 			<param type="int">flags</param>
 		</method>
+//-->
 	</interface>
 	
 
