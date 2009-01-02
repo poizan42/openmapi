@@ -1,5 +1,9 @@
 2009-01-02  Johannes Roith <johannes@jroith.de>
 
+	* fix build
+
+2009-01-02  Johannes Roith <johannes@jroith.de>
+
 	* Makefile: update
 	* tests/updateserver/ConnectionStringTest.cs: update
 	* xml/mapi.xml: set login name

@@ -140,12 +140,13 @@ mapiserver:
 	/r:bin/RemoteTeaSharp.dll \
 	/r:System.Runtime.Remoting.dll \
 	/r:System.Web.dll \
-#	/r:bin/Jayrock.dll \
-#	/r:bin/Jayrock.Json.dll \
 	/r:bin/NMapi.Provider.TeamXChange.dll \
 	/r:bin/NMapi.Tools.Shell.dll \
 	/r:bin/NMapi.Server.ICalls.dll \
 	/r:bin/NMapi.dll $(NDESK_OPTIONS) $(SERVER_SOURCES)
+	
+#	/r:bin/Jayrock.dll \
+#	/r:bin/Jayrock.Json.dll \
 
 mmetal:
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \

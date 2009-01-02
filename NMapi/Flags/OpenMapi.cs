@@ -34,14 +34,13 @@ using NMapi.Table;
 namespace NMapi.Flags {
 
 	/// <summary>
-	///   OpenMapi specific constants. 
+	///   OpenMapi-specific constants. 
 	/// </summary>
 	public static class OpenMapi
 	{
-
-		public static readonly NMapiGui Guid = Guids.DefineGuid (0x6ED8DA90, 
+		public static readonly NMapiGuid Guid = Guids.DefineGuid (0x6ED8DA90, 
 				(short) 0x450B, (short) 0x101B, (byte) 0x98, (byte) 0xDA, (byte) 0x00, 
-				(byte) 0xAA, (byte) 0x00, (byte) 0x3F, (byte) 0x13, (byte) 0x05);
-					0x00062003, (short) 0x0000, (short) 0x0000);
+				(byte) 0xaa, (byte) 0x00, (byte) 0x3F, (byte) 0x13, (byte) 0x05, 
+					(byte) 0xbb, (byte) 0x0000, (byte) 0x0000);
 	}
 }

@@ -62,8 +62,8 @@ namespace NMapi.Utility {
 			get {
 				if (Index != -1) {
 					SPropValue val = SPropValue.GetArrayProp(props, Index);
-					if (val != null && val.Value.Unicode != null)
-						return val.Value.Unicode;
+					if (val != null && val is UnicodeProperty && ((UnicodeProperty) val).Value != null)
+						return ((UnicodeProperty) val).Value;
 				}
 				return "";
 			}
@@ -83,7 +83,7 @@ namespace NMapi.Utility {
 				if (Index != -1) {
 					SPropValue val = SPropValue.GetArrayProp(props, Index);
 					if (val != null)
-						return val.Value.l;
+						return ((IntProperty) val).Value;
 				}
 				return 0;
 			}
@@ -94,7 +94,7 @@ namespace NMapi.Utility {
 				if (Index != -1) {
 					SPropValue val = SPropValue.GetArrayProp(props, Index);
 					if (val != null)
-						return val.Value.l.ToString ();
+						return ((IntProperty) val).Value.ToString ();
 				}
 				return "";
 			}
@@ -112,8 +112,8 @@ namespace NMapi.Utility {
 			get {
 				if (Index != -1) {
 					SPropValue val = SPropValue.GetArrayProp(props, Index);
-					if (val != null && val.Value.String != null)
-						return val.Value.String;
+					if (val != null && val is String8Property && ((String8Property) val).Value != null)
+						return ((String8Property) val).Value;
 				}
 				return "";
 			}
