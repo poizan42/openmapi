@@ -619,6 +619,7 @@
 			<!-- VOID //-->
 			<proxyCodeVoid><!-- TODO! ==> PLUGIN! //-->
 				Console.WriteLine ("CODEPAGE: " + codePage);
+				request.ProxySession.LoginName = user;
 				obj.Logon ("127.0.0.1:7000", sessionFlags, user, password, codePage);
 			</proxyCodeVoid>
 			<param type="string">host</param>
