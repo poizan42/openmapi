@@ -20,6 +20,8 @@ MMETAL_SOURCES=$(shell find mapimetal -name "*.cs")
 SERVER_SOURCES=$(shell find server/Modules -name "*.cs") $(shell find server/Protocols -name "*.cs")  $(shell find server/Modules -name "*.cs") server/*.cs
 MAPIWAIT_SOURCES=$(shell find tools/mapiwait -name "*.cs")
 MAPITOOL_SOURCES=$(shell find tools/mapitool -name "*.cs")
+CUP_SOURCES=$(shell find lib/cup/Runtime -name "*.cs")
+IMAP_SOURCES=$(shell find gateways/imap -name "*.cs")
 
 all: code docs
 
@@ -162,6 +164,15 @@ mmetal:
 #
 
 alltools: mapishell mapiwait mapitool
+
+cup:
+	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
+	/out:bin/cup.dll $(CUP_SOURCES)
+	
+imap: cup
+	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
+	/out:bin/mapiimap.exe  \/r:bin/NMapi.dll /r:bin/cup.dll \
+	/r:System.Web.dll /r:System.Data.dll $(IMAP_SOURCES)
 
 mapishell:
 	$(MONO) bin/mapimetal.exe tools/mapishell/ShellObject.xml
