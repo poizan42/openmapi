@@ -1,5 +1,9 @@
 2009-01-02  Johannes Roith <johannes@jroith.de>
 
+	* Add imap server to makefile
+
+2009-01-02  Johannes Roith <johannes@jroith.de>
+
 	* fix build
 
 2009-01-02  Johannes Roith <johannes@jroith.de>
