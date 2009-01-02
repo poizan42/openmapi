@@ -53,6 +53,7 @@
 	<dummy name="Session_AdmLogon" />
 
 	<!-- not required //-->
+	<dummy name="MAPIFolder_AssignIMAP4UID" />	
 	<dummy name="Admin_AdmSetPassword" />
 	<dummy name="Admin_UserCreate" />
 	<dummy name="Admin_UserDelete" />
@@ -314,12 +315,6 @@
 		<extract left="progress" right="pBar.Value" />
 		<extract left="flags" right="ulFlags" />
 		<voidcall params="null, flags" /><!-- TODO: NULL = Progress //-->
-	</call>
-	<call name="MAPIFolder_AssignIMAP4UID" targetClass="IMapiFolder" targetMethod="AssignIMAP4UID">
-		<extract left="eid" right="msgeid.ByteArray" />
-		<extract left="flags" right="ulFlags" />
-		<valuedcall params="eid, flags" />
-		<put result="msguid" value="new LongLong (callResult)" />
 	</call>
 
 	<!--	

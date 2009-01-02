@@ -17,7 +17,6 @@ MONO_GETLINE=lib/getline/getline.cs
 GOLDPARSER_SOURCES=$(shell find lib/GoldParser -name "*.cs")
 REMOTETEA_SOURCES=$(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES=$(shell find mapimetal -name "*.cs")
-SERVER_SOURCES=$(shell find server/Modules -name "*.cs") $(shell find server/Protocols -name "*.cs")  $(shell find server/Modules -name "*.cs") server/*.cs
 MAPIWAIT_SOURCES=$(shell find tools/mapiwait -name "*.cs")
 MAPITOOL_SOURCES=$(shell find tools/mapitool -name "*.cs")
 CUP_SOURCES=$(shell find lib/cup/Runtime -name "*.cs")
@@ -147,7 +146,10 @@ mapiserver:
 	/r:bin/NMapi.Provider.TeamXChange.dll \
 	/r:bin/NMapi.Tools.Shell.dll \
 	/r:bin/NMapi.Server.ICalls.dll \
-	/r:bin/NMapi.dll $(NDESK_OPTIONS) $(SERVER_SOURCES)
+	/r:bin/NMapi.dll $(NDESK_OPTIONS) \
+	$(shell find server/Modules -name "*.cs") \
+	$(shell find server/Protocols -name "*.cs")  \
+	$(shell find server/Modules -name "*.cs") server/*.cs
 	
 #	/r:bin/Jayrock.dll \
 #	/r:bin/Jayrock.Json.dll \
