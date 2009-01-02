@@ -130,6 +130,7 @@ mapiserver:
 	cp bin/NMapi.Server.ICalls.dll server/aspx/Bin/NMapi.Server.ICalls.dll
 	cp bin/NMapi.dll server/aspx/Bin/NMapi.dll
 	cp bin/RemoteTeaSharp.dll server/aspx/Bin/RemoteTeaSharp.dll
+	cp bin/NMapi.Tools.Shell.dll server/aspx/Bin/NMapi.Tools.Shell.dll
 
 	-unlink server.zip
 	cd server/aspx; zip -r ../../server.zip * -x *.svn* -x *~ ; cd ../..
