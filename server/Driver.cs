@@ -1,24 +1,19 @@
 //
-// openmapi.org - NMapi C# Mapi API - Driver.cs
+// openmapi.org - OpenMapi Proxy Server - Driver.cs
 //
 // Copyright 2008 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
-// This is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as
-// published by the Free Software Foundation; either version 2.1 of
-// the License, or (at your option) any later version.
-//
-// This software is distributed in the hope that it will be useful,
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this software; if not, write to the Free
-// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
 //
 
 using System;
@@ -36,9 +31,7 @@ using System.Collections.Generic;
 using NMapi;
 //using NMapi.WCF.Xmpp;
 
-using Mono.WebServer;
-using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using NMapi.Server.ICalls;
 
 namespace NMapi.Server {
 
@@ -76,6 +69,9 @@ namespace NMapi.Server {
 				this.PassValuesByRef = true;
 			}
 		}
+
+		private SessionManager sessionMan;
+		private ProxyInformation pinfo;
 
 		private List<IServerModule> modules; // TODO: This needs to be the same as the module list in the server-class!
 		private Dictionary<RemoteCall, List<ServerModuleCall>> preCalls;
@@ -136,115 +132,79 @@ namespace NMapi.Server {
 
 		public Driver ()
 		{
-			this.modules = new List<IServerModule> (); // TODO: Make read-only in server-class!
+			this.sessionMan = new SessionManager ();
+			this.pinfo = new ProxyInformation ();
+			this.modules = new List<IServerModule> ();
 			this.preCalls = new Dictionary<RemoteCall, List<ServerModuleCall>> ();
 			this.postCalls = new Dictionary<RemoteCall, List<ServerModuleCall>> ();
 		}
 
+
+		#region public interface
+
+		public ProxyInformation ProxyInformation {
+			get { return pinfo; }
+		}
+
+		public List<IServerModule> Modules {
+			get { return modules; }
+		}
+
+		public SessionManager SessionManager {
+			get { return sessionMan; }
+		}
+
+
+
+		#endregion
 
 		private static string GetTempDir ()
 		{
 			return Environment.GetEnvironmentVariable ("temp");
 		}
 
-
 		public void Run ()
 		{
-			int port = 9001;
-			string path = null;
-			do {
-				path = GetTempDir () + "omprxy" + new Random ().Next();
-			} while (Directory.Exists (path));
-			Directory.CreateDirectory (path);
+			Console.Write ("Loading 'web <-> proxy remoting' ... ");
 
-			XSPWebSource websource = new XSPWebSource (IPAddress.Any, port);
-			ApplicationServer WebAppServer = new ApplicationServer (websource);
+			InternalCallServer.Driver = this;
 
-			Assembly asm = Assembly.GetExecutingAssembly();
-			Stream zipResource = asm.GetManifestResourceStream ("server.zip");
+			InternalCallServer icall = new InternalCallServer ();
+			icall.Run ();
+			Console.WriteLine ("done.");
 
-			using (ZipInputStream s = new ZipInputStream (zipResource)) {
-				ZipEntry theEntry;
-				while ((theEntry = s.GetNextEntry ()) != null) {				
-					string directoryName = Path.GetDirectoryName (theEntry.Name);
-					string fileName      = Path.GetFileName (theEntry.Name);
-				
-					if (directoryName.Length > 0 )
-						Directory.CreateDirectory (Path.Combine (path, directoryName));
-
-					if (fileName != String.Empty) {
-						using (FileStream streamWriter = File.Create (Path.Combine (path, theEntry.Name))) {
-							int size = 2048;
-							byte[] data = new byte[2048];
-							while (true) {
-								size = s.Read (data, 0, data.Length);
-								if (size > 0)
-									streamWriter.Write(data, 0, size);
-								else
-									break;
-							}
-						}
-					}
-				}
-			}
-
-			string absPath = Path.GetFullPath (path);
-			WebAppServer.AddApplicationsFromCommandLine (":" + port + ":/:" + absPath);
-			WebAppServer.Start (true);
-			try {
-				var request = WebRequest.Create ("http://localhost:" + port + "/");
-				Action<IAsyncResult> callback = (result) => 
-					Console.WriteLine ("INFO: Request to WebServer finished.");
-
-				request.BeginGetResponse (new AsyncCallback (callback), null);
-			} catch (Exception) {
-				// Do nothing.
-				throw;
-			}
-
-//			WebAppServer.Stop();
-
+			Console.Write ("Loading 'http server' ... ");
+			WebServer svr = new WebServer ();
+			svr.Run ();
+			Console.WriteLine ("done.");
 
 			DetectModules ();
+			CommonRpcService decoratedRpc = GenerateAssembly ();
 
-//			Uri uri = new Uri ("http://localhost:9000/IMapiOverIndigo");
-			Uri uri = new Uri ("net.tcp://localhost:9000/IMapiOverIndigo");
-//			Uri uri = new Uri ("net.xmpp://localhost:9000/IMapiOverIndigo");
+			Console.Write ("Loading 'onc server' ... ");
 
-			MapiOverIndigoService decoratedService = GenerateAssembly ();
+			OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, IPAddress.Any, 8000);
+			Thread oncThread = new Thread (new ThreadStart (oncService.Run));
+			oncThread.Start ();
 
-			// TODO: ensure, that this instance is NOT shared between all clients!
-			// TODO: ensure, that the module instances are NOT shared between clients (?)
+			Console.WriteLine ("done.");
 
-			using (ServiceHost host = new ServiceHost (decoratedService, uri)) {
-				var type = typeof (IMapiOverIndigo);
-				string name = "MapiOverIndigoService";
-				host.AddServiceEndpoint (type, Binding, name);
-				host.Open ();
-				Console.WriteLine ("Press ENTER to stop server.");
-				Console.ReadLine ();
-			}
-		}
-
-		private Binding Binding {
-			get {
-		//		return new WSDualHttpBinding ();
-		//		return new XmppTransportBinding ();
-				return new NetTcpBinding ();
-			}
+			Console.WriteLine ("Press ENTER to stop server.");
+			Console.ReadLine ();
+			Environment.Exit (1);
 		}
 
 		/*******************************************************************************/
 
-		private MapiOverIndigoService GenerateAssembly ()
+		private CommonRpcService GenerateAssembly ()
 		{
 			object[] args = new object [1];
 			args [0] = this.modules;
 
-			Type baseType = typeof (MapiOverIndigoService);
+			Type baseType = typeof (CommonRpcService);
 
 			AssemblyName asmName = new AssemblyName ();
-			asmName.Name = "DecoratedMapiOverIndigoServiceAssembly";
+			asmName.Name = "DecoratedCommonRpcServiceAssembly";
 			var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly (
 						asmName, AssemblyBuilderAccess.RunAndSave);
 
@@ -253,7 +213,7 @@ namespace NMapi.Server {
 
 			TypeAttributes attributes = TypeAttributes.Public;
 			TypeBuilder typeBuilder = moduleBuilder.DefineType (
-						"DecoratedMapiOverIndigoService", 
+						"DecoratedCommonRpcService", 
 						attributes, baseType);
 
 			AddSingleParamConstructor (baseType, typeBuilder, typeof (List<IServerModule>) );
@@ -274,7 +234,7 @@ namespace NMapi.Server {
 					var preMethods = new List<ServerModuleCall> ();
 					var postMethods = new List<ServerModuleCall> ();
 
-					if (preCalls.ContainsKey (attribute.RemoteCall)) // TODO: bad code!
+					if (preCalls.ContainsKey (attribute.RemoteCall))
 						preMethods = preCalls [attribute.RemoteCall];
 					if (postCalls.ContainsKey (attribute.RemoteCall))
 						postMethods = postCalls [attribute.RemoteCall];
@@ -292,7 +252,7 @@ namespace NMapi.Server {
 
 			Type generatedClass = typeBuilder.CreateType ();
 
-			return (MapiOverIndigoService) Activator.CreateInstance (generatedClass, args);
+			return (CommonRpcService) Activator.CreateInstance (generatedClass, args);
 		}
 
 		private void CreateMethod (Type baseType, TypeBuilder typeBuilder, 

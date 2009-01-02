@@ -1,31 +1,74 @@
-<%@ Page language="C#" MasterPageFile="~/Master.master" %>
-<script runat="server">
-//
-// openmapi.org - NMapi C# Mapi API - index.aspx
-//
-// Copyright 2008 Topalis AG
-//
-// Author: Johannes Roith <johannes@jroith.de>
-//
-// This is free software; you can redistribute it and/or modify it
-// under the terms of the GNU Lesser General Public License as
-// published by the Free Software Foundation; either version 2.1 of
-// the License, or (at your option) any later version.
-//
-// This software is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this software; if not, write to the Free
-// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-//
+<%@ Page language="C#" MasterPageFile="~/Master.master" 
+	CodeFile="index.aspx.cs" Inherits="NMapi.Server.UI.Pages.IndexPage" %>
+<%@ MasterType VirtualPath="~/Master.master" %>
 
-
-</script>
+<asp:content contentplaceholderid="Header" runat="server">
+	<script type="text/javascript">
+		$(document).ready ( function() {
+			$("#overviewTable").tablesorter (); 
+		});
+	</script>
+</asp:content>
 <asp:content id="MainContent" contentplaceholderid="Main" runat="server">
 	<h1>Overview</h1>
 
+<!--	<div id="mustConfigureBackendNote" class="task" runat="server">
+		No backend has been added to the list of backends. 
+		You should configure at least one backend.
+	</div>
+//-->
+
+	<div class="overviewPanel">
+		<h3>Summary</h3>
+
+		<table id="overviewTable" class="tablesorter" >
+			<thead>
+				<tr class="vtableHead"><th>Name</th><th>Value</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>Server started:</td><td><asp:label id="startedAt" runat="server" /></td></tr>
+				<tr><td>Last login (admin):</td><td><asp:label id="lastLoginAdmin" runat="server" /></td></tr>
+				<tr><td>Uptime:</td><td><asp:label id="uptime" runat="server" /></td></tr>
+				<tr><td>Restarts:</td><td><asp:label id="timesRestarted" runat="server" /></td></tr>
+				<tr><td>Last Start:</td><td><asp:label id="lastStartTime" runat="server" /></td></tr>
+				<tr><td>Sessions:</td><td><asp:label id="sessions" runat="server" /></td></tr>
+				<tr><td>Version:</td><td><asp:label id="version" runat="server" /></td></tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="overviewPanel">
+		<h3>Server Control</h3>
+		<form runat="server">
+			<asp:button text="Restart Server" runat="server" /><br /><br />
+			<asp:button text="Shutdown Server" runat="server" />
+		</form>
+	</div>
+
+	<div class="overviewPanel">
+		<h3>Installed Backends</h3>
+		
+		...
+		
+	</div>
+
+	<div class="overviewPanel">
+		<h3>Recent Events</h3>
+		
+		...
+	</div>
+
+	<div style="clear:both;"></div>
+
+
+</asp:content>
+<asp:content contentplaceholderid="SidebarContent" runat="server">
+	<h3>Links</h3>
+	<p>
+		<a href="http://www.openmapi.org">http://www.openmapi.org</a>
+	</p>
+	<h3>About OpenMapi.org Server</h3>
+
+	<p>
+		...
+	</p>
 </asp:content>

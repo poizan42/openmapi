@@ -1,0 +1,617 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - gen.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<?xml-stylesheet type="text/xsl" href="oncserver.xsl"?>
+<autogen classname="OncRpcService">
+	
+	<!--
+		Not-Implemented-Dummies
+	//-->
+
+	<!-- TODO //-->
+	<dummy name="Session_ABGetUserDataBySmtpAddress" />
+	<dummy name="Session_ABGetUserDataByInternalAddress" />
+	<dummy name="Session_ABGetChangeTime" />
+	<dummy name="Session_ABGetUserList" />	
+	<dummy name="MsgStore_SetLockState" />
+	<dummy name="MsgStore_FinishedMsg" />
+	<dummy name="MsgStore_NotifyNewMail" />
+	
+	<dummy name="TblData_SetTags" /><!-- not mapi! //-->
+	<dummy name="MAPIFolder_CopyFolder" />
+	<dummy name="MAPIFolder_CopyMessages" />
+	<dummy name="MsgStore_GetReceiveFolderTable" />
+	
+	<!-- IExchangeModifyTable //-->
+	<dummy name="ModifyTable_GetLastError" />
+	<dummy name="ModifyTable_GetTable" />
+	<dummy name="ModifyTable_ModifyRow" />
+	
+	<dummy name="MsgStore_GetOutgoingQueue" />
+	
+	
+	<!-- probably required //-->
+	<dummy name="Session_GetConfig" />
+	<dummy name="Session_SetPassword" />
+	<dummy name="Session_AdmLogon" />
+
+	<!-- not required //-->
+	<dummy name="Admin_AdmSetPassword" />
+	<dummy name="Admin_UserCreate" />
+	<dummy name="Admin_UserDelete" />
+	<dummy name="Admin_UserGet" />
+	<dummy name="Admin_UserPut" />
+	<dummy name="Admin_UserGetFirst" />
+	<dummy name="Admin_UserGetNext" />
+	<dummy name="Admin_UserSetPassword" />
+	<dummy name="Admin_UserAddGroup" />
+	<dummy name="Admin_UserRemGroup" />
+	<dummy name="Admin_UserGetGroupsFirst" />
+	<dummy name="Admin_UserGetGroupsNext" />
+	<dummy name="Admin_GroupCreate" />
+	<dummy name="Admin_GroupDelete" />
+	<dummy name="Admin_GroupGet" />
+	<dummy name="Admin_GroupPut" />
+	<dummy name="Admin_GroupGetFirst" />
+	<dummy name="Admin_GroupGetNext" />
+	<dummy name="Admin_GroupGetMembersFirst" />
+	<dummy name="Admin_GroupGetMembersNext" />
+	<dummy name="Admin_FolderGetFirst" />
+	<dummy name="Admin_FolderGetNext" />
+	<dummy name="Admin_FolderGetAcl" />
+	<dummy name="Admin_FolderPutAcl" />
+	<dummy name="Admin_FolderGetRights" />
+	<dummy name="Admin_FolderGet" />
+	<dummy name="Admin_TraceWrite" />
+	<dummy name="Admin_TraceSetLevel" />
+	<dummy name="Admin_TraceSetFlags" />
+	<dummy name="Admin_ConfigPut" />
+	<dummy name="Admin_ConfigGet" />
+	<dummy name="Admin_ConfigDel" />
+	<dummy name="Admin_ConfigGetCategories" />
+	<dummy name="Admin_ConfigGetCategoryVars" />
+	<dummy name="Admin_LicensePut" />
+	
+	
+	<!--
+		DUMMIES
+	//-->
+	<dummy name="MsgStore_SetWrappedEID" />
+	<dummy name="SimpleStream_BeginWrite" />
+	<dummy name="SimpleStream_BeginRead" />
+	<dummy name="SimpleStream_EndRead" />
+
+	<!--
+		Session
+	//-->
+
+	<call name="Session_Logon2" targetClass="IMapiSession" targetMethod="Logon">
+		<extract left="orig_host" right="pszHost.value" /><!-- UNUSED (currently) //-->
+		<extract left="user" right="pwszUser.value" />
+		<extract left="password" right="pwszPassword.value" />
+		<extract left="codePage" right="ulCodePage" />
+		<extract left="sessionFlags" right="ulSessionFlags" />
+		<extract left="localId" right="ulLocaleID" />
+		<voidcall params="null, sessionFlags, user, password, codePage" />
+	</call>
+	<call name="Session_OpenStore" targetClass="IMapiSession" targetMethod="OpenStore">
+		<extract left="storeUser" right="pwszStoreUser.value" />
+		<extract left="flags" right="ulFlags" />
+		<extract left="bIsPublic" right="bIsPublic" />
+		<pre>
+			<![CDATA[
+				bool isPublicStore = (bIsPublic != 0);
+			]]>
+		</pre>
+		<valuedcall params="(Mdb) flags, storeUser, isPublicStore" />
+		<putmap result="obj" />
+	</call>
+
+	<!--	
+		IMsgStore
+	//-->
+	<call name="MsgStore_Advise" targetClass="IMsgStore" targetMethod="Advise">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="eventMask" right="ulEventMask" />
+		<extract left="clientID" right="ulClientID" />
+		<valuedcall params="eid, (NotificationEventType) eventMask, clientID" />
+		<put result="obj" value="new HObject (new LongLong (callResult))" />
+	</call>
+	<call name="MsgStore_Unadvise" targetClass="IMsgStore" targetMethod="Unadvise">
+		<extract left="connHObj" right="connObj" />
+		<voidcall params="Convert.ToInt32 (connHObj.Value.Value)" /><!-- Hopefully no problem: we cut off some of the length! //-->
+	</call>
+	<call name="MsgStore_OpenEntry" targetClass="IMsgStore" targetMethod="OpenEntry_3">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="lpInterface" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="eid, lpInterface, flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="MsgStore_CompareEntryIDs" targetClass="IMsgStore" targetMethod="CompareEntryIDs">
+		<extract left="eid1" right="eid1.ByteArray" />
+		<extract left="eid2" right="eid2.ByteArray" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="eid1, eid2, flags" />
+		<put result="ulResult" value="callResult" />
+	</call>
+	<call name="MsgStore_SetReceiveFolder" targetClass="IMsgStore" targetMethod="SetReceiveFolder">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="msgClassA" right="lpszMessageClassA.Value" />
+		<extract left="msgClassW" right="lpszMessageClassW.Value" />
+		<extract left="flags" right="ulFlags" />
+		<pre>
+			<![CDATA[
+				string messageClass = msgClassW; // TODO !!
+			]]>
+		</pre>
+		<voidcall params="messageClass, eid, flags" />
+	</call>
+	<call name="MsgStore_GetReceiveFolder" targetClass="IMsgStore" targetMethod="GetReceiveFolder">
+		<extract left="msgClassA" right="lpszMessageClassA.Value" />
+		<extract left="msgClassW" right="lpszMessageClassW.Value" />
+		<extract left="flags" right="ulFlags" />
+		<pre>
+			<![CDATA[
+				
+				// TODO: DEBUG!!!
+				_response.eid = new SBinary (new byte [] {0});
+				_response.lpszExplicitClassA = new LPStr ("");
+				_response.lpszExplicitClassW = new LPWStr ("");
+				
+				string messageClass = msgClassW; // TODO !!
+			]]>
+		</pre>
+		<valuedcall params="messageClass, flags" />
+		<put result="eid" value="new SBinary (callResult.EntryID)" />
+		<put result="lpszExplicitClassA" value="new LPStr (callResult.ExplicitClass)" />
+		<put result="lpszExplicitClassW" value="new LPWStr (callResult.ExplicitClass)" />
+	</call>
+	<call name="MsgStore_StoreLogoff" targetClass="IMsgStore" targetMethod="StoreLogoff">
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="flags" />
+	</call>
+	<call name="MsgStore_AbortSubmit" targetClass="IMsgStore" targetMethod="AbortSubmit">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="eid, flags" />
+	</call>
+
+	<!--	
+		IMapiContainer
+	//-->
+	<call name="MAPIContainer_GetContentsTable" targetClass="IMapiContainer" targetMethod="GetContentsTable">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="MAPIContainer_GetHierarchyTable" targetClass="IMapiContainer" targetMethod="GetHierarchyTable">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+
+	<!-- TODO: Make interface 1:1 //-->
+	<call name="MAPIContainer_OpenEntry" targetClass="IMapiContainer" targetMethod="OpenEntry_3">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="lpInterface" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="eid, lpInterface, flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="MAPIContainer_SetSearchCriteria" targetClass="IMapiContainer" targetMethod="SetSearchCriteria">
+		<extract left="containerList" right="lpContainerList.Value" />
+		<extract left="restriction" right="lpRestriction.Value" />
+		<extract left="searchFlags" right="ulSearchFlags" />
+		<voidcall params="restriction, containerList, searchFlags" />
+	</call>
+	<call name="MAPIContainer_GetSearchCriteria" targetClass="IMapiContainer" targetMethod="GetSearchCriteria">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="lpContainerList" value="new LPEntryList (callResult.ContainerList)" />
+		<put result="lpRestriction" value="new LPSRestriction (callResult.Restriction)" />
+		<put result="ulSearchState" value="callResult.SearchState" />
+	</call>
+
+	<!--	
+		IMapiFolder
+	//-->
+	<call name="MAPIFolder_CreateMessage" targetClass="IMapiFolder" targetMethod="CreateMessage">
+		<extract left="lpInterface" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="lpInterface, flags" />
+		<putmap result="obj" />
+	</call>
+<!--
+	<call name="MAPIFolder_CopyMessages" targetClass="IMapiFolder" targetMethod="CopyMessages">
+		<extract left="msgList" right="lpMsgList.Value" />
+		<extract left="lpInterface" right="lpInterface.Value" />
+		<extract left="destFolder" right="dsteid.ByteArray" /> TODO: MUST BE A POINTER!!!
+		<extract left="progress" right="pBar.Value" /> TODO
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="msgList, lpInterface, destFolder, progress, flags" />
+	</call>
+//-->
+	<call name="MAPIFolder_DeleteMessages" targetClass="IMapiFolder" targetMethod="DeleteMessages">
+		<extract left="msgList" right="lpMsgList.Value" />
+		<extract left="progress" right="pBar.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="msgList, null, flags" /><!-- TODO: NULL = Progress //-->
+	</call>
+	<call name="MAPIFolder_CreateFolder" targetClass="IMapiFolder" targetMethod="CreateFolder">
+		
+		<!--
+			lpszFolderCommentA	 NMapi.Interop.LPStr . Documentation for this section has not yet been entered.
+			lpszFolderNameA	 NMapi.Interop.LPStr . Documentation for this section has not yet been entered.
+		//-->
+		<extract left="folderType" right="ulFolderType" />
+		<extract left="folderName" right="lpwszFolderNameW.Value" />
+		<extract left="folderComment" right="lpwszFolderCommentW.Value" />
+		<extract left="interFace" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="(Folder) folderType, folderName, folderComment, interFace, flags" /> <!-- CAST!  //-->
+		<putmap result="obj" />
+	</call>
+<!--
+	<call name="MAPIFolder_CopyFolder" targetClass="IMapiFolder" targetMethod="CopyFolder">
+		<extract left="eid" right="srceid.ByteArray" />
+		<extract left="interFace" right="lpInterface.Value" />
+		<extract left="destFolder" right="dsteid.ByteArray" /> TODO: MUST BE A POINTER!!!
+		<extract left="newFolderName" right="pszNewNameW.Value" />
+		<extract left="progress" right="pBar.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="eid, interFace, destFolder, newFolderName, null, flags" /> TODO: NULL = Progress
+	</call>
+//-->
+	<call name="MAPIFolder_DeleteFolder" targetClass="IMapiFolder" targetMethod="DeleteFolder">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="progress" right="pBar.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="eid, null, flags" /><!-- TODO: NULL = Progress //-->
+	</call>
+	<call name="MAPIFolder_SetReadFlags" targetClass="IMapiFolder" targetMethod="SetReadFlags">
+		<extract left="msgList" right="lpMsgList.Value" />
+		<extract left="progress" right="pBar.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="msgList, null, flags" /><!-- TODO: NULL = Progress //-->
+	</call>
+	<call name="MAPIFolder_GetMessageStatus" targetClass="IMapiFolder" targetMethod="GetMessageStatus">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="eid, flags" />
+		<put result="ulMessageStatus" value="callResult" />
+	</call>
+	<call name="MAPIFolder_SetMessageStatus" targetClass="IMapiFolder" targetMethod="SetMessageStatus">
+		<extract left="eid" right="eid.ByteArray" />
+		<extract left="newStatus" right="ulNewStatus" />
+		<extract left="newStatusMask" right="ulNewStatusMask" />
+		<valuedcall params="eid, newStatus, newStatusMask" />
+		<put result="ulOldStatus" value="callResult" />
+	</call>
+	<call name="MAPIFolder_SaveContentsSort" targetClass="IMapiFolder" targetMethod="SaveContentsSort">
+		<extract left="sortOrder" right="lpSort.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="sortOrder, flags" />
+	</call>
+	<call name="MAPIFolder_EmptyFolder" targetClass="IMapiFolder" targetMethod="EmptyFolder">
+		<extract left="progress" right="pBar.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="null, flags" /><!-- TODO: NULL = Progress //-->
+	</call>
+	<call name="MAPIFolder_AssignIMAP4UID" targetClass="IMapiFolder" targetMethod="AssignIMAP4UID">
+		<extract left="eid" right="msgeid.ByteArray" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="eid, flags" />
+		<put result="msguid" value="new LongLong (callResult)" />
+	</call>
+
+	<!--	
+		IMapiTable
+	//-->
+	<call name="MAPITable_Advise" targetClass="IMapiTable" targetMethod="Advise">
+		<extract left="eventMask" right="ulEventMask" />
+		<extract left="clientID" right="ulClientID" /> <!-- UNUSED //-->
+		<valuedcall params="(NotificationEventType) eventMask, clientID" />
+		<put result="obj" value="new HObject (new LongLong (callResult))" />
+	</call>
+	<call name="MAPITable_Unadvise" targetClass="IMapiTable" targetMethod="Unadvise">
+		<extract left="connHObj" right="connObj" />
+		<voidcall params="Convert.ToInt32 (connHObj.Value.Value)" /><!-- Hopefully no problem: we cut off some of the length! //-->
+	</call>
+	<call name="MAPITable_GetLastError" targetClass="IMapiTable" targetMethod="GetLastError">
+		<extract left="hresult" right="hResult" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="hresult, flags" />
+		<put result="lpMapiErrorA" value="new LPMapiErrorA (callResult)" />
+		<put result="lpMapiErrorW" value="new LPMapiErrorW (callResult)" />
+	</call>
+	<call name="MAPITable_GetStatus" targetClass="IMapiTable" targetMethod="GetStatus">
+		<valuedcall params="" />
+		<put result="ulTableStatus" value="callResult.TableStatus" />
+		<put result="ulTableType" value="callResult.TableType" />
+	</call>
+	<call name="MAPITable_SetColumns" targetClass="IMapiTable" targetMethod="SetColumns">
+		<extract left="pTags" right="pTags.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="pTags, flags" />
+	</call>
+	<call name="MAPITable_QueryColumns" targetClass="IMapiTable" targetMethod="QueryColumns">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="pTags" value="new LPSPropTagArray (callResult)" />
+	</call>
+	<call name="MAPITable_GetRowCount" targetClass="IMapiTable" targetMethod="GetRowCount">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="ulCount" value="callResult" />
+	</call>
+	<call name="MAPITable_SeekRow" targetClass="IMapiTable" targetMethod="SeekRow">
+		<extract left="bkOrigin" right="bkOrigin" />
+		<extract left="rowCount" right="lRowCount" />
+		<valuedcall params="bkOrigin, rowCount" />
+		<put result="lRowsSought" value="callResult" />
+	</call>
+	<call name="MAPITable_SeekRowApprox" targetClass="IMapiTable" targetMethod="SeekRowApprox">
+		<extract left="denominator" right="ulDenominator" />
+		<extract left="numerator" right="ulNumerator" />
+		<voidcall params="denominator, numerator" />
+	</call>
+	<call name="MAPITable_QueryPosition" targetClass="IMapiTable" targetMethod="QueryPosition">
+		<valuedcall params="" />
+		<put result="ulDenominator" value="callResult.Denominator" />
+		<put result="ulNumerator" value="callResult.Numerator" />
+		<put result="ulRow" value="callResult.Row" />
+	</call>
+	<call name="MAPITable_FindRow" targetClass="IMapiTable" targetMethod="FindRow">
+		<extract left="restriction" right="lpRestriction.Value" />
+		<extract left="origin" right="bkOrigin" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="restriction, origin, flags" />
+	</call>
+	<call name="MAPITable_Restrict" targetClass="IMapiTable" targetMethod="Restrict">
+		<extract left="restriction" right="lpRestriction.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="restriction, flags" />
+	</call>
+	<call name="MAPITable_CreateBookmark" targetClass="IMapiTable" targetMethod="CreateBookmark">
+		<valuedcall params="" />
+		<put result="bkPosition" value="callResult" />
+	</call>
+	<call name="MAPITable_FreeBookmark" targetClass="IMapiTable" targetMethod="FreeBookmark">
+		<extract left="bkPosition" right="bkPosition" />
+		<voidcall params="bkPosition" />
+	</call>
+	<call name="MAPITable_SortTable" targetClass="IMapiTable" targetMethod="SortTable">
+		<extract left="sortCriteria" right="lpSortCriteria.Value" />
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="sortCriteria, flags" />
+	</call>
+	<call name="MAPITable_QuerySortOrder" targetClass="IMapiTable" targetMethod="QuerySortOrder">
+		<valuedcall params="" />
+		<put result="lpSortCriteria" value="new LPSSortOrderSet (callResult)" />
+	</call>
+	<call name="MAPITable_QueryRows" targetClass="IMapiTable" targetMethod="QueryRows">
+		<extract left="rowCount" right="lRowCount" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="rowCount, flags" />
+		<put result="lpRows" value="new LPSRowSet (callResult)" />	
+	</call>
+	<call name="MAPITable_Abort" targetClass="IMapiTable" targetMethod="Abort">
+		<voidcall params="" />
+	</call>
+	<call name="MAPITable_ExpandRow" targetClass="IMapiTable" targetMethod="ExpandRow">
+		<extract left="instkey" right="instkey" />
+		<extract left="flags" right="ulFlags" />
+		<extract left="rowCount" right="ulRowCount" />
+		<valuedcall params="instkey, flags, rowCount" />
+		<put result="lpRows" value="new LPSRowSet (callResult.Rows)" />
+		<put result="ulMoreRows" value="callResult.MoreRows" />
+	</call>
+	<call name="MAPITable_CollapseRow" targetClass="IMapiTable" targetMethod="CollapseRow">
+		<extract left="instkey" right="instkey" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="instkey, flags" />
+		<put result="ulRowCount" value="callResult" />
+	</call>
+	<call name="MAPITable_WaitForCompletion" targetClass="IMapiTable" targetMethod="WaitForCompletion">
+		<extract left="timeout" right="ulTimeout" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="timeout, flags" />
+		<put result="ulTableStatus" value="callResult" />
+	</call>
+	<call name="MAPITable_GetCollapseState" targetClass="IMapiTable" targetMethod="GetCollapseState">
+		<extract left="instkey" right="instkey" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags, instkey" />
+		<put result="state" value="callResult" />
+	</call>
+	<call name="MAPITable_SetCollapseState" targetClass="IMapiTable" targetMethod="SetCollapseState">
+		<extract left="state" right="state" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags, state" />
+		<put result="bkLocation" value="callResult" />
+	</call>
+
+	<!--	
+		IMapiProp
+	//-->
+	<call name="MAPIProp_GetLastError" targetClass="IMapiProp" targetMethod="GetLastError">
+		<extract left="hresult" right="hResult" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="hresult, flags" />
+		<put result="lpMapiErrorA" value="new LPMapiErrorA (callResult)" />
+		<put result="lpMapiErrorW" value="new LPMapiErrorW (callResult)" />
+	</call>
+	<call name="MAPIProp_SaveChanges" targetClass="IMapiProp" targetMethod="SaveChanges">
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="flags" />
+	</call>
+	<call name="MAPIProp_GetProps" targetClass="IMapiProp" targetMethod="GetProps">
+		<extract left="propTagArray" right="lpPropTagArray.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="propTagArray, flags" />
+		<put result="props" value="callResult" />
+	</call>
+	<call name="MAPIProp_GetPropList" targetClass="IMapiProp" targetMethod="GetPropList">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="lpPropTagArray" value="new LPSPropTagArray (callResult)" />
+	</call>
+	<call name="MAPIProp_OpenProperty" targetClass="IMapiProp" targetMethod="OpenProperty_4">
+		<extract left="iid" right="lpiid.Value" />
+		<extract left="interfaceOptions" right="ulInterfaceOptions" />
+		<extract left="propTag" right="ulPropTag" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="propTag, iid, interfaceOptions, flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="MAPIProp_SetProps" targetClass="IMapiProp" targetMethod="SetProps">
+		<extract left="props" right="props" />
+		<valuedcall params="props" />
+		<put result="lpProblems" value="new LPSPropProblemArray (callResult)" />
+	</call>
+	<call name="MAPIProp_DeleteProps" targetClass="IMapiProp" targetMethod="DeleteProps">
+		<extract left="propTagArray" right="lpPropTagArray.Value" />
+		<valuedcall params="propTagArray" />
+		<put result="lpProblems" value="new LPSPropProblemArray (callResult)" />
+	</call>
+	<call name="MAPIProp_GetNamesFromIDs" targetClass="IMapiProp" targetMethod="GetNamesFromIDs">
+		<extract left="propTags" right="lpPropTags.Value" />
+		<extract left="propSetGuid" right="lpPropSetGuid.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="propTags, propSetGuid, flags" />
+		<post>
+				<![CDATA[
+				LPMapiNameId[] lpNames = null;
+				if (callResult.PropNames != null) {
+					lpNames = new LPMapiNameId [callResult.PropNames.Length];
+					for (int i=0; i < callResult.PropNames.Length; i++)
+						lpNames [i] = new LPMapiNameId (callResult.PropNames [i]);
+				}
+				]]>
+		</post>
+		<put result="lpPropTags" value="new LPSPropTagArray (callResult.PropTags)" />
+		<put result="names" value="lpNames" />
+	</call>
+	<call name="MAPIProp_GetIDsFromNames" targetClass="IMapiProp" targetMethod="GetIDsFromNames">
+		<extract left="flags" right="ulFlags" />
+		<pre>
+			<![CDATA[
+				MapiNameId[] propNames = null;
+				LPMapiNameId[] lpNames = _arg1.names;
+				if (lpNames != null) {
+					propNames = new MapiNameId [lpNames.Length];
+					for (int i=0; i < lpNames.Length; i++)
+						propNames [i] = lpNames [i].Value;
+				}
+				]]>
+		</pre>
+		<valuedcall params="propNames, flags" />
+		<put result="lpPropTags" value="new LPSPropTagArray (callResult)" />
+	</call>
+
+	<!--	
+		IMessage
+	//-->
+	<call name="Message_GetAttachmentTable" targetClass="IMessage" targetMethod="GetAttachmentTable">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="Message_OpenAttach" targetClass="IMessage" targetMethod="OpenAttach">
+		<extract left="attachmentNum" right="ulAttachmentNum" />
+		<extract left="interFace" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="attachmentNum, interFace, flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="Message_CreateAttach" targetClass="IMessage" targetMethod="CreateAttach">
+		<extract left="interFace" right="lpInterface.Value" />
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="interFace, flags" />
+		<putmap result="obj" />
+		<!--				
+			TODO:
+				put result="ulAttachmentNum" value="new LPSPropTagArray (callResult.AttachmentNum" 
+		//-->
+	</call>
+	<call name="Message_DeleteAttach" targetClass="IMessage" targetMethod="DeleteAttach"><!-- TODO: RPC must provide Progress indicator! //-->
+			<extract left="attachmentNum" right="ulAttachmentNum" />
+			<extract left="flags" right="ulFlags" />
+			<voidcall params="attachmentNum, null, flags" /><!-- TODO: NULL = Progress //-->
+	</call>
+	<call name="Message_GetRecipientTable" targetClass="IMessage" targetMethod="GetRecipientTable">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="Message_AddRecipient" targetClass="IMessage" targetMethod="ModifyRecipients"><!-- NOTE: EXCEPTION from rule //-->
+		<pre>
+			<![CDATA[
+				int flags = ModRecip.Add;
+				AdrEntry entry = _arg1.pEntry.Value;
+				var entryList = new AdrList (new AdrEntry [] { entry });
+			]]>
+		</pre>
+		<voidcall params="flags, entryList" />
+		<!-- put result="ulRowid" value="callResult.RowId"  TODO: !!!!!!!!! REQUIRED !!!!!!!!! //-->
+	</call>
+	<call name="Message_ModifyRecipient" targetClass="IMessage" targetMethod="ModifyRecipients"><!-- NOTE: EXCEPTION from rule //-->
+		<pre>
+			<![CDATA[
+				int flags = ModRecip.Modify;
+				AdrEntry entry = _arg1.pEntry.Value;
+				var entryList = new AdrList (new AdrEntry [] { entry });
+			]]>
+		</pre>
+		<voidcall params="flags, entryList" />
+	</call>
+	<call name="Message_DeleteRecipient" targetClass="IMessage" targetMethod="ModifyRecipients"><!-- NOTE: EXCEPTION from rule //-->
+		<pre>
+			<![CDATA[
+				int flags = ModRecip.Remove;
+				AdrEntry entry = _arg1.pEntry.Value;
+				var entryList = new AdrList (new AdrEntry [] { entry });
+			]]>
+		</pre>
+		<voidcall params="flags, entryList" />
+	</call>
+	<call name="Message_SubmitMessage" targetClass="IMessage" targetMethod="SubmitMessage">
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="flags" />
+	</call>
+	<call name="Message_SetReadFlag" targetClass="IMessage" targetMethod="SetReadFlag">
+		<extract left="flags" right="ulFlags" />
+		<voidcall params="flags" />
+	</call>
+	
+	<!--	
+		ITableReader
+	//-->
+	<call name="TblData_GetTags" targetClass="IMapiTableReader" targetMethod="GetTags">
+		<valuedcall params="" />
+		<put result="pTags" value="new LPSPropTagArray (callResult)" />
+	</call>
+	<call name="TblData_GetRows" targetClass="IMapiTableReader" targetMethod="GetRows">
+		<extract left="cRows" right="cRows" />
+		<valuedcall params="cRows" />
+		<put result="pRows" value="new LPSRowSet (callResult)" />
+	</call>
+</autogen>
