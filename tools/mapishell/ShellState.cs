@@ -369,7 +369,7 @@ namespace NMapi.Tools.Shell {
 				return null;
 			Func<IMapiContainer, SBinary, object> action = (prnt, entryId) => {
 				return (IMapiContainer) prnt.OpenEntry (
-					entryId.ByteArray, null, Mapi.Modify).Unk;
+					entryId.ByteArray, null, Mapi.Modify);
 			};
 
 			return (IMapiContainer) _SharedGetSubDir (parent, match, action);
@@ -391,9 +391,9 @@ namespace NMapi.Tools.Shell {
 			string[] parts = PathHelper.Path2Array (path);
 
 			if (path == String.Empty)
-				return (IMapiFolder) store.Root.Unk;
+				return (IMapiFolder) store.Root;
 
-			IMapiContainer container = (IMapiContainer) store.Root.Unk;
+			IMapiContainer container = (IMapiContainer) store.Root;
 
 			foreach (string part in parts) {
 				if (container == null)
@@ -469,7 +469,7 @@ namespace NMapi.Tools.Shell {
 			SBinary entryID = keyList.InteractiveResolveEntryID (keyName);
 			if (entryID == null)
 				return null;
-			return (IMapiProp) currentFolder.OpenEntry  (entryID.ByteArray).Unk; // TODO: IMapi Prop assumed!
+			return (IMapiProp) currentFolder.OpenEntry  (entryID.ByteArray); // TODO: IMapi Prop assumed!
 		}
 
 

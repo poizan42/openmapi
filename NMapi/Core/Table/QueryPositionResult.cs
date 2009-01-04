@@ -27,46 +27,29 @@ using System.Runtime.Serialization;
 namespace NMapi.Table {
 
 	/// <summary>
-	///  The result of {@link IMAPITable#QueryPosition} method.
+	///  The result of the IMapiTable.QueryPosition () method.
 	/// </summary>
-
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class QueryPositionResult
+	public sealed class QueryPositionResult
 	{	
-		private int _ulRow;
-		private int _ulNumerator;
-		private int _ulDenominator;
-	
 		/// <summary>
 		///
 		/// </summary>
 		[DataMember (Name="Row")]
-		public int Row {
-			get { return _ulRow; }
-			set { _ulRow = value; }
-		}
+		public int Row { get; set; }
 
 		/// <summary>
 		///
 		/// </summary>
 		[DataMember (Name="Numerator")]
-		public int Numerator {
-			get { return _ulNumerator; }
-			set { _ulNumerator = value; }
-		}
+		public int Numerator { get; set; }
 
 		/// <summary>
 		///
 		/// </summary>
 		[DataMember (Name="Denominator")]
-		public int Denominator {
-			get { return _ulDenominator; }
-			set { _ulDenominator = value; }
-		}
+		public int Denominator { get; set; }
 
-		public QueryPositionResult ()
-		{
-		}
-	
 	}
-}
+
+}

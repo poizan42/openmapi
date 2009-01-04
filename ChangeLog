@@ -1,3 +1,36 @@
+2009-01-04  Johannes Roith <johannes@jroith.de>
+
+	* xml/mapi.xml:	- add addressbook interface
+					- add language-specific hints to identifiers
+
+	* xml/generated: new
+	* xml/preproc.cs: new language-specific preprocessor
+
+	* Makefile: update
+	
+	* tools/mapishell/ShellState.cs:
+	* NMapi/Core/Table/GetStatusResult.cs:
+	* NMapi/Core/Table/ExpandRowResult.cs:
+	* NMapi/Core/Table/QueryPositionResult.cs:
+	* NMapi/Core/Properties/Special/GetReceiveFolderResult.cs:
+	* NMapi/Core/Properties/GetNamesFromIDsResult.cs: update
+	
+	* NMapi/Core/Properties/Special/OpenEntryResult.cs: removed, OpenEntry () returns IBase now.
+	
+	* NMapi/Core/AddressBook:
+	* NMapi/Core/AddressBook/IABContainer.cs:
+	* NMapi/Core/AddressBook/IAddrBook.cs:
+	* NMapi/Core/AddressBook/IABSession.cs:
+	* NMapi/Core/AddressBook/IDistList.cs:
+	* NMapi/Core/AddressBook/IMailUser.cs: removed (added to mapi.xml).
+
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiContainer.cs:
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMapiFolder.cs:
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMsgStore.cs:
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMessage.cs:
+	* providers/NMapi.Provider.TeamXChange/AddressBook/TxABContainer.cs: update
+
+
 2009-01-02  Johannes Roith <johannes@jroith.de>
 
 	* xml/mapi.xml: remove AssignIMAP4UID from mapi interface

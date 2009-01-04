@@ -31,30 +31,18 @@ namespace NMapi.Table {
 	/// </summary>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class GetStatusResult
+	public sealed class GetStatusResult
 	{	
-		private int _ulTableStatus;
-		private int _ulTableType;
-	
-		/// <summary>
-		///
-		/// </summary>
-		public int TableStatus {
-			get { return _ulTableStatus; }
-			set { _ulTableStatus = value; }
-		}
 
 		/// <summary>
 		///
 		/// </summary>
-		public int TableType {
-			get { return _ulTableType; }
-			set { _ulTableType = value; }
-		}
+		public int TableStatus  { get; set; }
 
-		public GetStatusResult ()
-		{
-		}
+		/// <summary>
+		///
+		/// </summary>
+		public int TableType  { get; set; }
 	
 	}
 

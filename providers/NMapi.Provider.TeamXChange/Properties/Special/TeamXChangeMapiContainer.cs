@@ -66,12 +66,12 @@ namespace NMapi.Properties.Special {
 				res.obj.Value.Value, res.ulObjType, null);
 		}
 
-		public OpenEntryResult OpenEntry (byte [] entryID)
+		public IBase OpenEntry (byte [] entryID)
 		{
 			return OpenEntry (entryID, null, 0);
 		}
 
-		public OpenEntryResult OpenEntry (
+		public IBase OpenEntry (
 			byte [] entryID, NMapiGuid interFace,int flags)
 		{
 			var prms = new MAPIContainer_OpenEntry_arg ();
@@ -84,11 +84,8 @@ namespace NMapi.Properties.Special {
 				MAPIContainer_OpenEntry_arg> (
 					clnt.MAPIContainer_OpenEntry_1, prms);
 
-			OpenEntryResult ret = new OpenEntryResult();
-			ret.ObjType = res.ulObjType;
-			ret.Unk = session.CreateObject (this, 
+			return session.CreateObject (this, 
 				res.obj.Value.Value, res.ulObjType, interFace);
-			return ret;
 		}
 
 		public void SetSearchCriteria (SRestriction restriction,

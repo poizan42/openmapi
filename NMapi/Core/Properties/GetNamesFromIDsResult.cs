@@ -33,28 +33,20 @@ namespace NMapi.Properties {
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public class GetNamesFromIDsResult
-	{	
-		private SPropTagArray _lpPropTags;
-		private MapiNameId [] _lpPropNames;
-	
+	{
+		
 		/// <summary>
 		///  An SPropTagArray containing the PropTags that match 
 		///  the requested Property Names returned in "PropNames".
 		/// </summary>
 		[DataMember (Name="PropTags")]
-		public SPropTagArray PropTags {
-			get { return _lpPropTags; }
-			set { _lpPropTags = value; }
-		}
+		public SPropTagArray PropTags { get; set; }
 
 		/// <summary>
 		///  The Property Names for the Properties listed in "PropTags".
 		/// </summary>
 		[DataMember (Name="PropNames")]
-		public MapiNameId [] PropNames {
-			get { return _lpPropNames; }
-			set { _lpPropNames = value; }
-		}
+		public MapiNameId [] PropNames { get; set; }
 
 
 		public GetNamesFromIDsResult ()

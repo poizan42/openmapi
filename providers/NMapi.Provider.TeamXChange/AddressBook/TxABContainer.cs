@@ -88,12 +88,12 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public OpenEntryResult OpenEntry (byte [] entryID)
+		public IBase OpenEntry (byte [] entryID)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public OpenEntryResult OpenEntry (
+		public IBase OpenEntry (
 			byte [] entryID, NMapiGuid interFace,int flags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");

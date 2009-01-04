@@ -27,37 +27,22 @@ using System.Runtime.Serialization;
 namespace NMapi.Table {
 
 	/// <summary>
-	///  The result of the {@link IMAPITable#ExpandRow} method.
+	///  The result of the IMapiTable.ExpandRow () method.
 	/// </summary>
-
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class ExpandRowResult
+	public sealed class ExpandRowResult
 	{	
-		private SRowSet _lpRows;
-		private int _ulMoreRows;
-	
-
 		/// <summary>
 		///
 		/// </summary>
 		[DataMember (Name="Rows")]
-		public SRowSet Rows {
-			get { return _lpRows; }
-			set { _lpRows = value; }
-		}
+		public SRowSet Rows { get; set; }
 
 		/// <summary>
 		///
 		/// </summary>
 		[DataMember (Name="MoreRows")]
-		public int MoreRows {
-			get { return _ulMoreRows; }
-			set { _ulMoreRows = value; }
-		}
-
-		public ExpandRowResult ()
-		{
-		}
+		public int MoreRows { get; set; }
 	
 	}
 

@@ -275,11 +275,11 @@ namespace NMapi.Properties.Special {
 				msglist.Bin [0] = ((BinaryProperty) props[1]).Value;
 			
 				srcfolder = (TeamXChangeMapiFolder) store.OpenEntry (
-					((BinaryProperty) props[0]).Value.lpb, null, Mapi.Modify).Unk;
+					((BinaryProperty) props[0]).Value.lpb, null, Mapi.Modify);
 			
 				if (props[2].PropTag == Property.SentMailEntryId) {
 					dstfolder = (TeamXChangeMapiFolder) store.OpenEntry (
-						((BinaryProperty) props[2]).Value.lpb, null, Mapi.Modify).Unk;
+						((BinaryProperty) props[2]).Value.lpb, null, Mapi.Modify);
 				
 					srcfolder.CopyMessages (msglist, null, 
 						dstfolder, null, NMAPI.MESSAGE_MOVE);

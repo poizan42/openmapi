@@ -65,7 +65,7 @@ namespace NMapi.Properties.Special {
 		{
 			IMessage msgSource = null, msgDest = null;
 			try {
-				msgSource = (IMessage) OpenEntry (eid, null, 0).Unk;
+				msgSource = (IMessage) OpenEntry (eid, null, 0);
 				msgDest = destFolder.CreateMessage (null, 0);
 				MessageCopyHelper.MyCopyMessage (msgSource, msgDest);
 				var prop = (BinaryProperty) new MapiPropHelper (msgDest).HrGetOneProp (Property.EntryId);

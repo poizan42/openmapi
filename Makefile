@@ -17,6 +17,7 @@ MONO_GETLINE=lib/getline/getline.cs
 GOLDPARSER_SOURCES=$(shell find lib/GoldParser -name "*.cs")
 REMOTETEA_SOURCES=$(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES=$(shell find mapimetal -name "*.cs")
+SERVER_SOURCES=$(shell find server/Modules -name "*.cs") $(shell find server/Protocols -name "*.cs")  $(shell find server/Modules -name "*.cs") server/*.cs
 MAPIWAIT_SOURCES=$(shell find tools/mapiwait -name "*.cs")
 MAPITOOL_SOURCES=$(shell find tools/mapitool -name "*.cs")
 CUP_SOURCES=$(shell find lib/cup/Runtime -name "*.cs")
@@ -24,8 +25,14 @@ IMAP_SOURCES=$(shell find gateways/imap -name "*.cs")
 
 all: code docs
 
-code: GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample test
+code: mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample test
 
+mapi.xml:
+	$(MCS) /debug /r:System.Core.dll /r:System.Xml.Linq.dll /out:bin/preproc.exe xml/preproc.cs
+	$(MONO) --debug bin/preproc.exe strip xml/mapi.xml xml/generated/mapi.stripped.generated.xml
+	$(MONO) --debug bin/preproc.exe csharp xml/mapi.xml xml/generated/mapi.cs.generated.xml
+	$(MONO) --debug bin/preproc.exe java xml/mapi.xml xml/generated/mapi.java.generated.xml
+	$(MONO) --debug bin/preproc.exe python xml/mapi.xml xml/generated/mapi.python.generated.xml
 
 GoldParser.dll: 
 	$(MCS) $(DEBUG) $(TRACE) /target:library \
@@ -37,13 +44,13 @@ RemoteTeaSharp.dll:
 
 NMapi.dll:
 	$(XSLTPROC) -o NMapi/Core/NMapi_Generated.cs \
-	NMapi/Core/xslt/mapi_interface_gen.xsl  xml/mapi.xml
+	NMapi/Core/xslt/mapi_interface_gen.xsl xml/generated/mapi.cs.generated.xml
 
 	$(XSLTPROC) -o NMapi/Core/RemoteCall_Generated.cs \
-	NMapi/Core/xslt/remote_call.xsl  xml/mapi.xml
+	NMapi/Core/xslt/remote_call.xsl xml/generated/mapi.cs.generated.xml
 
 	$(XSLTPROC) -o NMapi/Data/Data_Generated.cs \
-	NMapi/Data/xslt/cs/xdrgen.xsl  NMapi/Data/Defs.xml
+	NMapi/Data/xslt/cs/xdrgen.xsl NMapi/Data/Defs.xml
 
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.dll \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
@@ -115,7 +122,7 @@ mapiserver:
 #	/target:exe OncClientTest.cs
 
 	$(XSLTPROC) -o server/CommonRpcService_Generated.cs \
-	server/xslt/mapi_common_rpc.xsl  xml/mapi.xml
+	server/xslt/mapi_common_rpc.xsl xml/generated/mapi.cs.generated.xml
 
 	$(XSLTPROC) -o server/Protocols/OncRpc/OncRpcService_Generated.cs \
 	server/Protocols/OncRpc/oncserver.xsl  server/Protocols/OncRpc/gen.xml
@@ -146,10 +153,7 @@ mapiserver:
 	/r:bin/NMapi.Provider.TeamXChange.dll \
 	/r:bin/NMapi.Tools.Shell.dll \
 	/r:bin/NMapi.Server.ICalls.dll \
-	/r:bin/NMapi.dll $(NDESK_OPTIONS) \
-	$(shell find server/Modules -name "*.cs") \
-	$(shell find server/Protocols -name "*.cs")  \
-	$(shell find server/Modules -name "*.cs") server/*.cs
+	/r:bin/NMapi.dll $(NDESK_OPTIONS) $(SERVER_SOURCES)
 	
 #	/r:bin/Jayrock.dll \
 #	/r:bin/Jayrock.Json.dll \
@@ -160,7 +164,6 @@ mmetal:
 	/resource:mapimetal/MapiMetal.xsd,MapiMetal.xsd \
 	$(WITH_BOO_CODEDOM) /r:bin/Mono.Cecil.dll /r:Microsoft.JScript.dll \
 	/r:System.Data.dll /r:bin/NMapi.dll $(NDESK_OPTIONS) $(MMETAL_SOURCES)
-
 
 #
 # Tools
@@ -241,7 +244,8 @@ clean:
 	-rm -f server.zip samples/*.xml_Generated.cs  bin/*.config bin/*.exe bin/*.xmldoc bin/*.dll \
 		bin/*.mdb providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/*.* \
 		NMapi/Code/NMapi_Generated.cs NMapi/Code/RemoteCalls_Generated.cs \
-		NMapi/Data/Data_Generated.cs  server/CommonRpcService_Generated.cs
+		NMapi/Data/Data_Generated.cs  server/CommonRpcService_Generated.cs \
+		xml/generated/*.xml
 	-rm -R *~
 	-rm -f -R docs xmldocs
 

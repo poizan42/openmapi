@@ -116,16 +116,16 @@ namespace NMapi.Properties.Special {
 			return res.ulResult;
 		}
 
-		public OpenEntryResult OpenEntry (byte [] entryID)
+		public IBase OpenEntry (byte [] entryID)
 		{
 			return OpenEntry (entryID, null, 0);
 		}
 
-		public OpenEntryResult Root {
+		public IBase Root {
 			get { return OpenEntry (null, null, 0); }
 		}
 
-		public OpenEntryResult OpenEntry (
+		public IBase OpenEntry (
 			byte [] entryID, NMapiGuid interFace, int flags)
 		{
 			var prms = new MsgStore_OpenEntry_arg ();
@@ -138,10 +138,7 @@ namespace NMapi.Properties.Special {
 				MsgStore_OpenEntry_arg> (
 					clnt.MsgStore_OpenEntry_1, prms);
 			
-			OpenEntryResult ret = new OpenEntryResult();
-			ret.ObjType = res.ulObjType;
-			ret.Unk = session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace);
-			return ret;
+			return session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace);
 		}
 
 		public void SetReceiveFolder (
@@ -226,7 +223,7 @@ namespace NMapi.Properties.Special {
 
 			var binProp = (BinaryProperty) new MapiPropHelper (this).HrGetOneProp (Property.IpmSubtreeEntryId);
 			eidroot = binProp.Value.lpb;
-			folder  = (IMapiFolder) OpenEntry (eidroot, null, flags).Unk;
+			folder  = (IMapiFolder) OpenEntry (eidroot, null, flags);
 			if (path == "/")
 				return folder;
 		
@@ -262,7 +259,7 @@ namespace NMapi.Properties.Special {
 								SPropValue name = SPropValue.GetArrayProp (prps, idx_name);
 								BinaryProperty eid = (BinaryProperty) SPropValue.GetArrayProp (prps, idx_eid);
 								if (name != null && ((UnicodeProperty) name).Value == match) {
-									folder = (IMapiFolder) OpenEntry (eid.Value.lpb, null, flags).Unk;
+									folder = (IMapiFolder) OpenEntry (eid.Value.lpb, null, flags);
 									found = true;
 									break;
 								}

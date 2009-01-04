@@ -25,17 +25,66 @@
 //-->
 
 <!--
-	Definition of the OpenMapi/MAPI interface.
+	===========================================
+	 Definition of the OpenMapi/MAPI interface
+	===========================================
+	
+	This file defines the Mapi API in a generic xml format. 
+	The definition is first preprocessed by an xslt stylesheet for each 
+	language to interpret the nameing convention "hints" and some variables:
+	
+	^ 	a new "word". Underscore in C/Python, UpperCase in C#/Java
+			If this is at the start of an method identifier lowerCase in Java.
+	# 	UpperCase in C#/Java, but NOT á new word, no underscore in C/Pyton
+
+	_	Underscores are always stripped, except for C.
+
+	$$INTERFACE - the id of the current interface (also can be used comments)
+	$$METHOD    - the id of the current method (also can be used comments)
+	$$MSDN_     - a reference to MSDN.
+	
+	So, for example:
+	
+	<interface id="^I#MAPI^Prop" implements="^I#Base">
+		<method id="^Get^Last^Error">
+
+	Would be translated to ... 
+	
+	C# - mapi.cs.xml:
+	
+	<interface id="IMapiProp" implements="IBase">
+		<method id="GetLastError">
+	
+	Java - mapi.java.xml:
+	
+	<interface id="IMapiProp" implements="IBase">
+		<method id="getLastError">
+
+	Python - mapi.py.xml:
+	
+	<interface id="imapi_prop" implements="ibase">
+		<method id="get_last_error">
+	
+	The C definition is created, yb simply stripping all symbols:
+	
+	<interface id="IMAPIProp" implements="IBase">
+		<method id="GetLastError">
+			
+	
+	The resulting definitions are then used by other XSLT scripts.
+	For example the C# defintion is used to generate the NMapi API, 
+	the RemoteCall enumeration and the call interface in the proxy server.
+
 //-->
 <interfaces>
-	<interface id="IBase" implements="IDisposable">
+	<interface id="^I#Base" implements="^I#Disposable">
 		<doc>
 			<summary>
 				This is an abstract base-class that provides common 
 				functionality for all the other Mapi-Classes.
 			</summary>
 		</doc>
-		<method id="Dispose">
+		<method id="^Dispose">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -43,7 +92,7 @@
 			<!-- VOID //-->
 		</method>
 
-		<method id="Close">
+		<method id="^Close">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -51,306 +100,305 @@
 			<!-- VOID //-->
 		</method>
 	</interface>
-
-	<interface id="IMapiProp" implements="IBase">
+	<interface id="^I#MAPI^Prop" implements="^I#Base">
 		<doc>
 			<summary>
-				The IMAPIProp interface is the basic interface that is supported by  
+				The $$INTERFACE interface is the basic interface that is supported by  
 				most MAPI-Objects (more precisely by all objects that support properties.)
 			</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms526807.aspx</remarks>
+			<remarks>$$MSDN_526807.aspx</remarks>
 		</doc>
-		<method id="GetLastError">
+		<method id="^Get^Last^Error">
 			<doc>
 				<summary>Returns information about the last error.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530341.aspx</remarks>
+				<remarks>$$MSDN_530341.aspx</remarks>
 			</doc>
-			<returns>MapiError</returns>
+			<returns>^Mapi^Error</returns>
 			<param type="int">hresult</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="SaveChanges">
+		<method id="^Save^Changes">
 			<doc>
 				<summary>Saves all changes.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530678.aspx</remarks>
+				<remarks>$$MSDN_530678.aspx</remarks>
 			</doc>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetProps">
+		<method id="^Get^Props">
 			<doc>
 				<summary>Reads several properties of the object and returns an array of matching values.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528406.aspx</remarks>
+				<remarks>$$MSDN_528406.aspx</remarks>
 			</doc>
-			<returns>SPropValue []</returns>
-			<param type="SPropTagArray">propTagArray</param>
+			<returns>^S#Prop^Value []</returns>
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetPropList">
+		<method id="^Get^Prop^List">
 			<doc>
 				<summary>Returns an Property-Tag array of all supported properties.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527424.aspx</remarks>
+				<remarks>$$MSDN_527424.aspx</remarks>
 			</doc>
-			<returns>SPropTagArray</returns>
+			<returns>^S#Prop^Tag^Array</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="OpenProperty" rpcId="OpenProperty_4">
+		<method id="^Open^Property" rpcId="OpenProperty_4">
 			<doc>
 				<summary>Returns an object to access a property.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527926.aspx</remarks>
+				<remarks>$$MSDN_527926.aspx</remarks>
 			</doc>
-			<returns map="true">IBase</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="int">propTag</param>
-			<param type="NMapiGuid">interFace</param>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">interfaceOptions</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="OpenProperty">
+		<method id="^Open^Property">
 			<doc>
 				<summary>Shortcut for OpenProperty (propTag, null, 0, 0). NMapi only.</summary>
 			</doc>
-			<returns map="true">IBase</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="int">propTag</param>
 		</method>
-		<method id="SetProps">
+		<method id="^Set^Props">
 			<doc>
 				<summary>Sets the value of several properties.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527310.aspx</remarks>
+				<remarks>$$MSDN_527310.aspx</remarks>
 			</doc>
-			<returns>SPropProblemArray</returns>
-			<param type="SPropValue[]">propArray</param>
+			<returns>^S#Prop^Problem^Array</returns>
+			<param type="^S#Prop^Value[]">propArray</param>
 		</method>
-		<method id="DeleteProps">
+		<method id="^Delete^Props">
 			<doc>
 				<summary>Deletes several properties.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528863.aspx</remarks>
+				<remarks>$$MSDN_528863.aspx</remarks>
 			</doc>
-			<returns>SPropProblemArray</returns>
-			<param type="SPropTagArray">propTagArray</param>
+			<returns>^S#Prop^Problem^Array</returns>
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
 		</method>
-		<method id="GetNamesFromIDs">
+		<method id="^Get^Names^From^I#Ds">
 			<doc>
 				<summary>Resolves the named properties for several Property-Tags in the specified namespace (guid).</summary>
 				<remarks>
 					"lppPropTags" and "lppPropNames" are returned in the 
 					<see cref="C:GetNamesFromIDsResult">GetNamesFromIDsResult</see> class.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528577.aspx</para>
+					<para>$$MSDN_528577.aspx</para>
 				</remarks>
 			</doc>
-			<returns>GetNamesFromIDsResult</returns>
-			<param type="SPropTagArray">propTags</param>
-			<param type="NMapiGuid">propSetGuid</param>
+			<returns>^Get^Names^From^I#Ds^Result</returns>
+			<param type="^S#Prop^Tag^Array">propTags</param>
+			<param type="^N#Mapi^Guid">propSetGuid</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetIDsFromNames">
+		<method id="^Get^I#Ds^From^Names">
 			<doc>
 				<summary>Resolves the Property-Tags for several named properties.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms529684.aspx</remarks>
+				<remarks>$$MSDN_529684.aspx</remarks>
 			</doc>
-			<returns>SPropTagArray</returns>
-			<param type="MapiNameId[]">propNames</param>
+			<returns>^S#Prop^Tag^Array</returns>
+			<param type="^Mapi^Name^Id[]">propNames</param>
 			<param type="int">flags</param>
 		</method>
 	</interface>
 	
 
-	<interface id="IMapiContainer" implements="IMapiProp">
+	<interface id="^I#MAPI^Container" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>
-				The IMAPIContainer interface. This abstract class implements common 
+				The $$INTERFACE interface. This abstract class implements common 
 				functions of containers. Concrete container classes like IMapiFolder 
 			 	always inherit from this class.
 			</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527118.aspx</remarks>
+			<remarks>$$MSDN_527118.aspx</remarks>
 		</doc>
-		<method id="GetContentsTable">
+		<method id="^Get^Contents^Table">
 			<doc>
 				<summary>
 					Returns an IMapiTable object representing the Contents-Table 
 					of the container. The table provides fast access to objects 
 					stored in the container.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528853.aspx</remarks>
+				<remarks>$$MSDN_528853.aspx</remarks>
 			</doc>
-			<returns map="true">IMapiTable</returns>
+			<returns map="true">^I#MAPI^Table</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetHierarchyTable">
+		<method id="^Get^Hierarchy^Table">
 			<doc>
 				<summary>
 					Returns an IMapiTable object representing the Hierarchy-Table 
 					of the container. The table provides fast access to sub-containers 
 					of the container (e.g. Sub-Folders of an IMapiFolder).
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528330.aspx</remarks>
+				<remarks>$$MSDN_528330.aspx</remarks>
 			</doc>
-			<returns map="true">IMapiTableReader</returns>
+			<returns map="true">^I#MAPI^Table^Reader</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="OpenEntry">
+		<method id="^Open^Entry">
 			<doc>
 				<summary>Shortcut for OpenEntry (entryID, null, 0). NMapi only.</summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">OpenEntryResult</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="byte[]">entryID</param>
 		</method>
-		<method id="OpenEntry" rpcId="OpenEntry_3">
+		<method id="^Open^Entry" rpcId="OpenEntry_3">
 			<doc>
 				<summary>Opens an Entry stored in the container.</summary>
 				<remarks>
-					An object of type <see cref="T:OpenEntryResult">OpenEntryResult</see> is returned.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527583.aspx</para>
+					An object of type IBase is returned.
+					<para>$$MSDN_527583.aspx</para>
 				</remarks>
 			</doc>
-			<returns map="true">OpenEntryResult</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="byte[]">entryID</param>
-			<param type="NMapiGuid">interFace</param>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="SetSearchCriteria">
+		<method id="^Set^Search^Criteria">
 			<doc>
 				<summary>Sets the search criteria for the container.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528903.aspx</remarks>
+				<remarks>$$MSDN_528903.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SRestriction">restriction</param>
-			<param type="EntryList">containerList</param>
+			<param type="^S#Restriction">restriction</param>
+			<param type="^Entry^List">containerList</param>
 			<param type="int">searchFlags</param>
 		</method>
-		<method id="GetSearchCriteria">
+		<method id="^Get^Search^Criteria">
 			<doc>
 				<summary>Returns the search criteria that are currently applied to the container.</summary>
 				<remarks>
-					An object of type <see cref="T:GetSearchCriteriaResult">GetSearchCriteriaResult</see> is returned.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527639.aspx</para>
+					An object of type GetSearchCriteriaResult is returned.
+					<para>$$MSDN_527639.aspx</para>
 				</remarks>
 			</doc>
-			<returns>GetSearchCriteriaResult</returns>
+			<returns>^Get^Search^Criteria^Result</returns>
 			<param type="int">flags</param>
 		</method>
 	</interface>
 	
 	
-	<interface id="IMapiFolder" implements="IMapiContainer">
+	<interface id="^I#MAPI^Folder" implements="^I#Mapi^Container">
 		<doc>
-			<summary>The IMAPIFolder interface. This class provides access to Mapi-Folders.</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527118.aspx</remarks>
+			<summary>The $$INTERFACE interface. This class provides access to Mapi-Folders.</summary>
+			<remarks>$$MSDN_527118.aspx</remarks>
 		</doc>
-		<method id="CreateMessage">
+		<method id="^Create^Message">
 			<doc>
 				<summary>Creates a new Message.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531134.aspx</remarks>
+				<remarks>$$MSDN_531134.aspx</remarks>
 			</doc>
-			<returns map="true">IMessage</returns>
-			<param type="NMapiGuid">interFace</param>
+			<returns map="true">^I#Message</returns>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="CopyMessages">
+		<method id="^Copy^Messages">
 			<doc>
 				<summary>Copies/Moves several messages to another folder.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527602.aspx</remarks>
+				<remarks>$$MSDN_527602.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="EntryList">msgList</param>
-			<param type="NMapiGuid">interFace</param>
-			<param type="IMapiFolder">destFolder</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^Entry^List">msgList</param>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="^I#MAPI^Folder">destFolder</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="DeleteMessages">
+		<method id="^Delete^Messages">
 			<doc>
 				<summary>Deletes several messages.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528910.aspx</remarks>
+				<remarks>$$MSDN_528910.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="EntryList">msgList</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^Entry^List">msgList</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="CreateFolder">
+		<method id="^Create^Folder">
 			<doc>
 				<summary>Creates a new sub-folder.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531288.aspx</remarks>
+				<remarks>$$MSDN_531288.aspx</remarks>
 			</doc>
-			<returns map="true">IMapiFolder</returns>
-			<param type="Folder">folderType</param>
+			<returns map="true">^I#MAPI^Folder</returns>
+			<param type="^Folder">folderType</param>
 			<param type="string">folderName</param>
 			<param type="string">folderComment</param>
-			<param type="NMapiGuid">interFace</param>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
 
-		<method id="CopyFolder">
+		<method id="^Copy^Folder">
 			<doc>
 				<summary>Copies/Moves a sub-folder.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531685.aspx</remarks>
+				<remarks>$$MSDN_531685.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="byte[]">entryID</param>
-			<param type="NMapiGuid">interFace</param>
-			<param type="IMapiFolder">destFolder</param>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="^I#MAPI^Folder">destFolder</param>
 			<param type="string">newFolderName</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="DeleteFolder">
+		<method id="^Delete^Folder">
 			<doc>
 				<summary>Deletes a sub-folder.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530974.aspx</remarks>
+				<remarks>$$MSDN_530974.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="byte[]">entryID</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="SetReadFlags">
+		<method id="^Set^Read^Flags">
 			<doc>
 				<summary></summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527975.aspx</remarks>
+				<remarks>$$MSDN_527975.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="EntryList">msgList</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^Entry^List">msgList</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetMessageStatus">
+		<method id="^Get^Message^Status">
 			<doc>
 				<summary>Returns the status of a message.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528941.aspx</remarks>
+				<remarks>$$MSDN_528941.aspx</remarks>
 			</doc>
 			<returns>int</returns>
 			<param type="byte[]">entryID</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="SetMessageStatus">
+		<method id="^Set^Message^Status">
 			<doc>
 				<summary>Sets the Status of a Message.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530055.aspx</remarks>
+				<remarks>$$MSDN_530055.aspx</remarks>
 			</doc>
 			<returns>int</returns>
 			<param type="byte[]">entryID</param>
 			<param type="int">newStatus</param>
 			<param type="int">newStatusMask</param>
 		</method>
-		<method id="SaveContentsSort">
+		<method id="^Save^Contents^Sort">
 			<doc>
 				<summary>Sets the specified sort order as the default for this folder.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528598.aspx</remarks>
+				<remarks>$$MSDN_528598.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SSortOrderSet">sortOrder</param>
+			<param type="^S#Sort^Order^Set">sortOrder</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="EmptyFolder">
+		<method id="^Empty^Folder">
 			<doc>
 				<summary>Deletes the content of a folder. The folder itself will not be removed.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527127.aspx</remarks>
+				<remarks>$$MSDN_527127.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="IMapiProgress">progress</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-<!--		<method id="AssignIMAP4UID">
+<!--		<method id="^Assign^I#M#A#P4#U#I#D">
 			<doc>
 				<summary></summary>
 			</doc>
@@ -362,89 +410,89 @@
 	</interface>
 	
 
-	<interface id="IMessage" implements="IMapiProp">
+	<interface id="^I#Message" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>
-				The IMessage class implements the IMessage-Mapi-Interface and 
+				The $$INTERFACE class implements the IMessage-Mapi-Interface and 
 				provides access to Message-Objects.
 			</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527112.aspx</remarks>
+			<remarks>$$MSDN_527112.aspx</remarks>
 		</doc>
 
-		<method id="GetAttachmentTable">
+		<method id="^Get^Attachment^Table">
 			<doc>
 				<summary>Returns the attachment table.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530463.aspx</remarks>
+				<remarks>$$MSDN_530463.aspx</remarks>
 			</doc>
-			<returns map="true">IMapiTableReader</returns>
+			<returns map="true">^I#MAPI^Table^Reader</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="OpenAttach">
+		<method id="^Open^Attach">
 			<doc>
 				<summary>Returns the attachment with index "attachmentNum".</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531264.aspx</remarks>
+				<remarks>$$MSDN_531264.aspx</remarks>
 			</doc>
-			<returns map="true">IAttach</returns>
+			<returns map="true">^I#Attach</returns>
 			<param type="int">attachmentNum</param>
-			<param type="NMapiGuid">interFace</param>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="CreateAttach">
+		<method id="^Create^Attach">
 			<doc>
 				<summary>Creates a new attachment.</summary>
 				<remarks>
 					Note: lpulAttachmentNum and lppAttach re returned in the 
 					CreateAttachResult structure.
 
-					See MSDN: http://msdn2.microsoft.com/en-us/library/ms529067.aspx
+					$$MSDN_529067.aspx
 				</remarks>
 			</doc>
-			<returns map="true">CreateAttachResult</returns>
-			<param type="NMapiGuid">interFace</param>
+			<returns map="true">^Create^Attach^Result</returns>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="DeleteAttach">
+		<method id="^Delete^Attach">
 			<doc>
 				<summary>Deletes an attachment.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530409.aspx</remarks>
+				<remarks>$$MSDN_530409.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="int">attachmentNum</param>
-			<param type="IMapiProgress">progress</param>
+			<param type="^I#MAPI^Progress">progress</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetRecipientTable">
+		<method id="^Get^Recipient^Table">
 			<doc>
 				<summary>Returns the recipient table.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531239.aspx</remarks>
+				<remarks>$$MSDN_531239.aspx</remarks>
 			</doc>
-			<returns map="true">IMapiTableReader</returns>
+			<returns map="true">^I#MAPI^Table^Reader</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="ModifyRecipients">
+		<method id="^Modify^Recipients">
 			<doc>
 				<summary>
 					Changes (or adds and removes, depending on the flags) 
 					recipients of the current message.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531489.aspx</remarks>
+				<remarks>$$MSDN_531489.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
-			<param type="AdrList">mods</param>
+			<param type="^Adr^List">mods</param>
 		</method>
-		<method id="SubmitMessage">
+		<method id="^Submit^Message">
 			<doc>
 				<summary>Submits a message.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms526509.aspx</remarks>
+				<remarks>$$MSDN_526509.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
 		</method>
-		<method id="SetReadFlag">
+		<method id="^Set^Read^Flag">
 			<doc>
 				<summary></summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527993.aspx</remarks>
+				<remarks>$$MSDN_527993.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
@@ -452,22 +500,22 @@
 	</interface>
 	
 	
-	<interface id="IMsgStore" implements="IMapiProp, IAdvisor"><!-- TODO: multiple interfaces! //-->
+	<interface id="^I#Msg^Store" implements="^I#MAPI^Prop, ^I#Advisor"><!-- TODO: multiple interfaces! //-->
 		<doc>
 			<summary>Represents a MessageStore, the entry point to access any stored data.</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531692.aspx</remarks>
+			<remarks>$$MSDN_531692.aspx</remarks>
 		</doc>
-		<method id="Advise">
+		<method id="^Advise">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<returns>int</returns>
 			<param type="byte[]">entryID</param>
-			<param type="NotificationEventType">eventMask</param>
-			<param type="IMapiAdviseSink">sink</param>
+			<param type="^Notification^Event^Type">eventMask</param>
+			<param type="^I#MAPI^Advise^Sink">sink</param>
 		</method>
-		<method id="Unadvise">
+		<method id="^Unadvise">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -478,62 +526,62 @@
 			</proxyCodeVoid>
 			<param type="int">txcOutlookHackConnection</param>
 		</method>
-		<method id="CompareEntryIDs">
+		<method id="^Compare^Entry^I#Ds">
 			<doc>
 				<summary>
 					Returns true if the two Entry-IDs refer to the same object. 
 					Please note, that both Entry-IDs should be stored in the same store.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531531.aspx</remarks>
+				<remarks>$$MSDN_531531.aspx</remarks>
 			</doc>
 			<returns>int</returns>
 			<param type="byte[]">entryID1</param>
 			<param type="byte[]">entryID2</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="OpenEntry">
+		<method id="^Open^Entry">
 			<doc>
 				<summary>This is a shortcut for OpenEntry (entryID, null, 0);</summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">OpenEntryResult</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="byte[]">entryID</param>
 		</method>
-		<property id="Root" rpcId="GetRoot">
+		<property id="^Root" rpcId="GetRoot">
 			<doc>
 				<summary>This is a shortcut for OpenEntry (null, null, 0);</summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">OpenEntryResult</returns>
+			<returns map="true">^I#Base</returns>
 			<get />
 		</property>
-		<method id="OpenEntry" rpcId="OpenEntry_3">
+		<method id="^Open^Entry" rpcId="OpenEntry_3">
 			<doc>
 				<summary>Opens an entry.</summary>
 				<remarks>
-					A class of type OpenEntryResult is returned.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528268.aspx</para>
+					A class of type IBase is returned.
+					<para>$$MSDN_528268.aspx</para>
 				</remarks>
 			</doc>
-			<returns map="true">OpenEntryResult</returns>
+			<returns map="true">^I#Base</returns>
 			<param type="byte[]">entryID</param>
-			<param type="NMapiGuid">interFace</param>
+			<param type="^N#Mapi^Guid">interFace</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="SetReceiveFolder">
+		<method id="^Set^Receive^Folder">
 			<doc>
 				<summary>
 					Sets a folder as the default Folder for a class of messages. 
 					Incoming messages of that message class are stored in that folder.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531141.aspx</remarks>
+				<remarks>$$MSDN_531141.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="string">messageClass</param>
 			<param type="byte[]">entryID</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetReceiveFolder">
+		<method id="^Get^Receive^Folder">
 			<doc>
 				<summary>
 					Gets the default folder for a class of messages. Incoming 
@@ -541,78 +589,78 @@
 				</summary>
 				<remarks>
 					A class of type GetReceiveFolderResult is returned.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms528651.aspx</para>
+					<para>$$MSDN_528651.aspx</para>
 				</remarks>
 			</doc>
-			<returns>GetReceiveFolderResult</returns>
+			<returns>^Get^Receive^Folder^Result</returns>
 			<param type="string">messageClass</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="StoreLogoff">
+		<method id="^Store^Logoff">
 			<doc>
 				<summary>Log out of the MessageStore.</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms529433.aspx</remarks>
+				<remarks>$$MSDN_529433.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
 		</method>
-		<method id="AbortSubmit">
+		<method id="^Abort^Submit">
 			<doc>
 				<summary>
 					This call will try to cancel the submission of a message, 
 					(with the Entry-ID passed in entryID) that has already been submitted.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms530671.aspx</remarks>
+				<remarks>$$MSDN_530671.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<param type="byte[]">entryID</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="HrOpenIPMFolder">
+		<method id="^Hr^Open^I#P#M^Folder">
 			<doc>
 				<summary>Provides easy access to folder with a known path.</summary>
 			</doc>
-			<returns map="true">IMapiFolder</returns>
+			<returns map="true">^I#MAPI^Folder</returns>
 			<param type="string">path</param>
 			<param type="int">flags</param>
 		</method>
 	</interface>
 
 
-	<interface id="IMapiSession" implements="IDisposable">
+	<interface id="^I^Mapi^Session" implements="^I#Disposable">
 		<doc>
 			<summary>
 				The representation of a NMapi session. This is the starting
 				point for every use of NMapi. The first call must be the 'Logon' method.
 			</summary>
 		</doc>
-		<method id="OpenStore">
+		<method id="^Open^Store">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">IMsgStore</returns>
-			<param type="Mdb">flags</param>
+			<returns map="true">^I#Msg^Store</returns>
+			<param type="^Mdb">flags</param>
 			<param type="string">user</param>
 			<param type="bool">isPublic</param>
 		</method>
-		<property id="PrivateStore" rpcId="GetPrivateStore">
+		<property id="^Private^Store" rpcId="GetPrivateStore">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">IMsgStore</returns>
+			<returns map="true">^I#Msg^Store</returns>
 			<get />
 		</property>
-		<property id="PublicStore" rpcId="GetPublicStore">
+		<property id="^Public^Store" rpcId="GetPublicStore">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns map="true">IMsgStore</returns>
+			<returns map="true">^I#Msg^Store</returns>
 			<get />
 		</property>
-		<method id="Logon">
+		<method id="^Logon">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -629,7 +677,7 @@
 			<param type="string">password</param>
 			<param type="int">codePage</param>
 		</method>
-		<method id="Logon" rpcId="Logon_3">
+		<method id="^Logon" rpcId="Logon_3">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -638,7 +686,7 @@
 			<param type="string">user</param>
 			<param type="string">password</param>
 		</method>
-		<property id="Identity" rpcId="GetIdentity">
+		<property id="^Identity" rpcId="GetIdentity">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -646,7 +694,7 @@
 			<returns>byte[]</returns>
 			<get />
 		</property>
-		<method id="GetConfig">
+		<method id="^Get^Config">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -656,7 +704,7 @@
 			<param type="string">id</param>
 			<param type="int">flags</param>		
 		</method>
-		<method id="GetConfigNull">
+		<method id="^Get^Config^Null">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -669,64 +717,64 @@
 	</interface>
 	
 	
-	<interface id="IMapiTableReader" implements="IBase">
+	<interface id="^I#MAPI^Table^Reader" implements="^I#Base">
 		<doc>
 			<summary>Retrieves all rows from a table. </summary>
 			<remarks>This is a TXC class that implements a sub-set of IMapiTable; TODO: Should be replaced!</remarks>
 		</doc>
-		<method id="GetTags">
+		<method id="^Get^Tags">
 			<doc>
 				<summary>Gets the current column set of the table.</summary>
 			</doc>
-			<returns>SPropTagArray</returns>
+			<returns>^S#Prop^Tag^Array</returns>
 		</method>
-		<method id="GetRows">
+		<method id="^Get^Rows">
 			<doc>
 				<summary>Retrieves the rows from the table.</summary>
 			</doc>
-			<returns>SRowSet</returns>
+			<returns>^S#Row^Set</returns>
 			<param type="int">cRows</param>
 		</method>
 	</interface>
 	
 	
-	<interface id="IMapiTable" implements="IBase, IAdvisor"><!-- TODO: multiple interfaces! //-->
+	<interface id="^I#MAPI^Table" implements="^I#Base, ^I#Advisor"><!-- TODO: multiple interfaces! //-->
 		<doc>
 			<summary>
-				The IMAPITable interface provides fast access to a set of 
+				The $$INTERFACE interface provides fast access to a set of 
 				properties of the items in a container.
 			</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms527898.aspx</remarks>
+			<remarks>$$MSDN_527898.aspx</remarks>
 		</doc>
-		<method id="Advise" rpcId="Advise_2">
+		<method id="^Advise" rpcId="Advise_2">
 			<doc>
 				<summary>
 					Register an AdviseSink for the specified events. An integer 
 					that identifies the connection is returned.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms526773.aspx</remarks>
+				<remarks>$$MSDN_526773.aspx</remarks>
 			</doc>
 			<returns>int</returns>
 			<param type="byte[]">ignored</param>
-			<param type="NotificationEventType">eventMask</param>
-			<param type="IMapiAdviseSink">sink</param>
+			<param type="^Notification^Event^Type">eventMask</param>
+			<param type="^I#MAPI^Advise^Sink">sink</param>
 		</method>
-		<method id="Advise">
+		<method id="^Advise">
 			<doc>
 				<summary>
 					Register an AdviseSink for the specified events. An integer 
 					that identifies the connection is returned.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms526773.aspx</remarks>
+				<remarks>$$MSDN_526773.aspx</remarks>
 			</doc>
 			<returns>int</returns>
-			<param type="NotificationEventType">eventMask</param>
-			<param type="IMapiAdviseSink">sink</param>
+			<param type="^Notification^Event^Type">eventMask</param>
+			<param type="^I#MAPI^Advise^Sink">sink</param>
 		</method>
-		<method id="Unadvise">
+		<method id="^Unadvise">
 			<doc>
 				<summary>Unregister an advise sink, passing the integer that was returned by Advise ().</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531520.aspx</remarks>
+				<remarks>$$MSDN_531520.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
 			<proxyCodeVoid>
@@ -734,47 +782,47 @@
 			</proxyCodeVoid>
 			<param type="int">txcOutlookHackConnection</param>
 		</method>
-		<method id="GetLastError">
+		<method id="^Get^Last^Error">
 			<doc>
 				<summary>
 					Returns information about the last error. If the last 
 					error is unknown, null is returned.
 				</summary>
-				<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531476.aspx</remarks>
+				<remarks>$$MSDN_531476.aspx</remarks>
 			</doc>
-			<returns>MapiError</returns>
+			<returns>^Mapi^Error</returns>
 			<param type="int">hresult</param>
 			<param type="int">flags</param>
 		</method>
-		<property id="Status" rpcId="GetStatus">
+		<property id="^Status" rpcId="GetStatus">
 			<doc>
 				<summary></summary>
 				<remarks>
 					Note: lpulTableStatus and lpulTableType are returned in the 'GetStatusResult' structure.
-					<para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531476.aspx</para>
+					<para>$$MSDN_531476.aspx</para>
 				</remarks>
 			</doc>
-			<returns>GetStatusResult</returns>
+			<returns>^Get^Status^Result</returns>
 			<get />
 		</property>
-		<method id="SetColumns">
+		<method id="^Set^Columns">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SPropTagArray">propTagArray</param>
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="QueryColumns">
+		<method id="^Query^Columns">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>SPropTagArray</returns>
+			<returns>^S#Prop^Tag^Array</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="GetRowCount">
+		<method id="^Get^Row^Count">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -782,7 +830,7 @@
 			<returns>int</returns>
 			<param type="int">flags</param>
 		</method>
-		<method id="SeekRow">
+		<method id="^Seek^Row">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -791,7 +839,7 @@
 			<param type="int">bkOrigin</param>
 			<param type="int">rowCount</param>
 		</method>
-		<method id="SeekRowApprox">
+		<method id="^Seek^Row^Approx">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -800,40 +848,40 @@
 			<param type="int">numerator</param>
 			<param type="int">denominator</param>
 		</method>
-		<method id="QueryPosition">
+		<method id="^Query^Position">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>QueryPositionResult</returns>
+			<returns>^Query^Position^Result</returns>
 		</method>
-		<method id="FindRow">
+		<method id="^Find^Row">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SRestriction">restriction</param>
+			<param type="^S#Restriction">restriction</param>
 			<param type="int">numerator</param>
 			<param type="int">denominator</param>
 		</method>
-		<method id="Restrict">
+		<method id="^Restrict">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SRestriction">restriction</param>
+			<param type="^S#Restriction">restriction</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="CreateBookmark">
+		<method id="^Create^Bookmark">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<returns>int</returns>
 		</method>
-		<method id="FreeBookmark">
+		<method id="^Free^Bookmark">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -841,51 +889,51 @@
 			<!-- VOID //-->
 			<param type="int">position</param>
 		</method>
-		<method id="SortTable">
+		<method id="^Sort^Table">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="SSortOrderSet">sortCriteria</param>
+			<param type="^S#Sort^Order^Set">sortCriteria</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="QuerySortOrder">
+		<method id="^Query^Sort^Order">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<returns>SSortOrderSet</returns>
+			<returns>^S#Sort^Order^Set</returns>
 		</method>
-		<method id="QueryRows">
+		<method id="^Query^Rows">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<returns>SRowSet</returns>
+			<returns>^S#Row^Set</returns>
 			<param type="int">rowCount</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="Abort">
+		<method id="^Abort">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
 		</method>
-		<method id="ExpandRow">
+		<method id="^Expand^Row">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>ExpandRowResult</returns>
+			<returns>^Expand^Row^Result</returns>
 			<param type="byte[]">instanceKey</param>
 			<param type="int">rowCount</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="CollapseRow">
+		<method id="^Collapse^Row">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -894,7 +942,7 @@
 			<param type="byte[]">instanceKey</param>
 			<param type="int">flags</param>
 		</method>
-		<method id="WaitForCompletion">
+		<method id="^Wait^For^Completion">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -903,7 +951,7 @@
 			<param type="int">flags</param>
 			<param type="int">timeout</param>
 		</method>
-		<method id="GetCollapseState">
+		<method id="^Get^Collapse^State">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -912,7 +960,7 @@
 			<param type="int">flags</param>
 			<param type="byte[]">instanceKey</param>
 		</method>
-		<method id="SetCollapseState">
+		<method id="^Set^Collapse^State">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
@@ -924,44 +972,308 @@
 	</interface>
 
 
-	<interface id="IAttach" implements="IMapiProp">
+	<interface id="^I#Attach" implements="^I#MAPI^Prop">
 		<doc>
-			<summary> The IAttach interface.</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms529617.aspx</remarks>
+			<summary> The $$INTERFACE interface.</summary>
+			<remarks>$$MSDN_529617.aspx</remarks>
 		</doc>
 	</interface>	
-	<interface id="IStream" implements="IBase">
+	<interface id="^I#Stream" implements="^I#Base">
 		<doc>
 			<summary>
 				Provides access to large data objects like 
 				Property.Body or Property.AttachDataBin.
 			</summary>
-			<remarks>See MSDN: http://msdn2.microsoft.com/en-us/library/ms529617.aspx</remarks>
+			<remarks>$$MSDN_529617.aspx</remarks>
 		</doc>
-		<property id="IsText">
+		<property id="^Is^Text">
 			<doc>
 				<summary>Returns true if stream is Property.String8.</summary>
 			</doc>
 			<returns>bool</returns>
 			<get />
 		</property>
-		<method id="GetData">
+		<method id="^Get^Data">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 				<exception cref="System.IO.IOException">Throws IOException</exception>
 			</doc>
 			<!-- VOID //-->
-			<param type="Stream">destination</param>
+			<param type="^Stream">destination</param>
 		</method>
-		<method id="PutData">
+		<method id="^Put^Data">
 			<doc>
 				<summary></summary>
 				<remarks></remarks>
 				<exception cref="System.IO.IOException">Throws IOException</exception>
 			</doc>
 			<!-- VOID //-->
-			<param type="Stream">source</param>
+			<param type="^Stream">source</param>
 		</method>
-	</interface>	
+	</interface>
+
+
+
+	<interface id="^I#A#B^Container" implements="^I#MAPI^Container">
+		<doc>
+			<summary>The $$INTERFACE interface.</summary>
+			<remarks></remarks>
+		</doc>
+		<method id="^Create^Entry">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^I#MAPI^Prop</returns>
+			<param type="byte[]">entryID</param>
+			<param type="int">createFlags</param>
+		</method>
+		<method id="^Copy^Entries">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="^Entry^List">entries</param>
+			<param type="int">v</param>
+			<param type="^I#MAPI^Progress">progress</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Delete^Entries">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="^Entry^List">entries</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Resolve^Names">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="int">flags</param>
+			<param type="^Adr^List">adrList</param>
+			<param type="int[]">flagList</param>
+		</method>
+	</interface>
+	
+	
+	
+	<interface id="^I#Addr^Book" implements="^I#MAPI^Prop">
+		<doc>
+			<summary>The $$INTERFACE interface.</summary>
+			<remarks></remarks>
+		</doc>
+		<method id="^Open^Entry">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^I#Base</returns>
+			<param type="byte[]">lpEntryID</param>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Compare^Entry^I#Ds">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>bool</returns>
+			<param type="byte[]">lpEntryID1</param>
+			<param type="byte[]">lpEntryID2</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Advise">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>int</returns>
+			<param type="byte[]">lpEntryID</param>
+			<param type="^Notification^Event^Type">eventMask</param>
+			<param type="^I#MAPI^Advise^Sink">sink</param>
+		</method>
+		<method id="^Unadvise">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">connection</param>
+		</method>
+		<method id="^Create^One^Off">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>byte[]</returns>
+			<param type="string">name</param>
+			<param type="string">adrType</param>
+			<param type="string">address</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^New^Entry">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>byte[]</returns>
+			<!-- first param "ULONG_PTR ulUIParam" removed! //-->
+			<param type="int">flags</param>
+			<param type="byte[]">lpEIDContainer</param>
+			<param type="byte[]">lpEIDNewEntryTpl</param>
+		</method>
+		<method id="^Resolve^Name">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>byte[]</returns>
+			<!-- first param "ULONG_PTR ulUIParam" removed! //-->
+			<param type="int">flags</param>
+			<param type="string">newEntryTitle</param>
+			<param type="^Adr^List">adrList</param>
+		</method>
+		<method id="^Get^P#A#B">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>byte[]</returns>
+		</method>
+		<method id="^Get^Search^Path">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^S#Row^Set</returns>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Prepare^Recips">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">flags</param>
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Adr^List">adrList</param>
+		</method>			
+	</interface>
+
+
+
+	<interface id="^I#A#B^Session" implements="^I#Base">
+		<doc>
+			<summary>The $$INTERFACE interface.</summary>
+			<remarks></remarks>
+		</doc>
+		<method id="^Get^Last^Error">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">hresult</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Logoff">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">flags</param>
+		</method>
+		<method id="^Open^Entry">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^I#Base</returns>
+			<param type="byte[]">entryID</param>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Compare^Entry^I#Ds">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>int</returns>
+			<param type="byte[]">entryID1</param>
+			<param type="byte[]">entryID2</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Advise">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>int</returns>
+			<param type="byte[]">lpEntryID</param>
+			<param type="^Notification^Event^Type">eventMask</param>
+			<param type="^I#MAPI^Advise^Sink">sink</param>
+		</method>
+		<method id="^Unadvise">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">connection</param>
+		</method>
+		<method id="^Open^Status^Entry">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^I#Base</returns>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Get^One^Off^Table">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">flags</param>
+			<param type="^I#MAPI^Table">table</param>
+		</method>
+		<method id="^Prepare^Recips">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<!-- VOID //-->
+			<param type="int">flags</param>
+			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Adr^List">recipList</param>
+		</method>
+	</interface>
+	
+	
+	
+	<interface id="^I#Dist^List" implements="^I#MAPI^Container">
+		<doc>
+			<summary>The $$INTERFACE interface.</summary>
+			<remarks></remarks>
+		</doc>
+	</interface>
+	
+	
+	
+	<interface id="^I#Mail^User" implements="^I#MAPI^Prop">
+		<doc>
+			<summary>The $$INTERFACE interface.</summary>
+			<remarks></remarks>
+		</doc>
+	</interface>
 </interfaces>

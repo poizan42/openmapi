@@ -34,30 +34,22 @@ namespace NMapi.Properties.Special {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public class GetReceiveFolderResult
 	{	
-		private  byte[] _lpEntryID;
-		private string _lpszExplicitClass;
-	
 		/// <summary>
 		///  TODO
 		/// </summary>
 		[DataMember (Name="EntryID")]
-		public byte[] EntryID {
-			get { return _lpEntryID; }
-			set { _lpEntryID = value; }
-		}
+		public byte[] EntryID { get; set; }
 
 		/// <summary>
 		///  TODO
 		/// </summary>
 		[DataMember (Name="ExplicitClass")]
-		public string ExplicitClass {
-			get { return _lpszExplicitClass; }
-			set { _lpszExplicitClass = value; }
-		}
+		public string ExplicitClass { get; set; }
 
 		public GetReceiveFolderResult ()
 		{
 		}
 	
 	}
-}
+
+}
