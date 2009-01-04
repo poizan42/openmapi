@@ -1,0 +1,109 @@
+﻿<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - mapi.xsd
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//	
+//-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+	<xs:element name="interfaces">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" name="interface" type="interface" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="interface">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="doc" type="doc" />
+				<xs:element maxOccurs="unbounded" name="method" type="methodOrProp" />
+				<xs:element maxOccurs="unbounded" name="property" type="methodOrProp" />
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+		<xs:attribute name="implements" type="xs:string" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="doc">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element name="summary" type="xs:string"/>
+				<xs:element name="remarks">
+					<xs:complexType mixed="true">
+						<xs:sequence minOccurs="0">
+							<xs:choice maxOccurs="unbounded">
+								
+								<xs:element name="see">
+									<xs:complexType mixed="true">
+										<xs:attribute name="cref" type="xs:string" use="required"/>
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="para" type="xs:string"/>
+								
+							</xs:choice>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="exception">
+					<xs:complexType mixed="true">
+						<xs:attribute name="cref" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="methodOrProp">
+		<xs:sequence>
+			<xs:choice maxOccurs="unbounded">
+			
+				<xs:element name="doc" type="doc" />
+
+				<xs:element name="returns">
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="map" type="xs:boolean" use="optional"/>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			
+				<xs:element name="param">
+					<xs:complexType mixed="true">
+						<xs:attribute name="type" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			
+				<xs:element name="proxyCodeVoid" type="xs:string"/>
+				
+				<xs:element name="get" type="xs:string"/>
+				<xs:element name="set" type="xs:string"/>
+				
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:string" use="required"/>
+		<xs:attribute name="rpcId" type="xs:string" use="optional"/>
+	</xs:complexType>
+</xs:schema>

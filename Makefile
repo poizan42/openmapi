@@ -6,6 +6,7 @@ MLOG = mono bin/mlog.exe
 XSLTPROC = xsltproc
 MONODOCER = monodocer
 MONODOCS2HTML = monodocs2html
+PREPROC = $(MONO) bin/preproc.exe 
 
 NO_WARN=0612,0618,1591
 DEBUG= /debug -d:DEBUG 
@@ -28,11 +29,11 @@ all: code docs
 code: mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample test
 
 mapi.xml:
-	$(MCS) /debug /r:System.Core.dll /r:System.Xml.Linq.dll /out:bin/preproc.exe xml/preproc.cs
-	$(MONO) --debug bin/preproc.exe strip xml/mapi.xml xml/generated/mapi.stripped.generated.xml
-	$(MONO) --debug bin/preproc.exe csharp xml/mapi.xml xml/generated/mapi.cs.generated.xml
-	$(MONO) --debug bin/preproc.exe java xml/mapi.xml xml/generated/mapi.java.generated.xml
-	$(MONO) --debug bin/preproc.exe python xml/mapi.xml xml/generated/mapi.python.generated.xml
+	$(MCS) $(DEBUG) /r:System.Core.dll /r:System.Xml.Linq.dll /out:bin/preproc.exe xml/preproc.cs
+	$(PREPROC) strip  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.stripped.generated.xml
+	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.cs.generated.xml
+	$(PREPROC) java  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.java.generated.xml
+	$(PREPROC) python  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.python.generated.xml
 
 GoldParser.dll: 
 	$(MCS) $(DEBUG) $(TRACE) /target:library \

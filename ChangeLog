@@ -1,5 +1,12 @@
 2009-01-04  Johannes Roith <johannes@jroith.de>
 
+	* xml/Makefile:
+	* xml/preproc.cs:
+	* xml/schema:
+	* xml/schema/mapi.xsd: add schema validation for mapi.xml
+
+2009-01-04  Johannes Roith <johannes@jroith.de>
+
 	* xml/mapi.xml:	- add addressbook interface
 					- add language-specific hints to identifiers
 
