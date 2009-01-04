@@ -234,15 +234,13 @@ namespace NMapi.Linq {
 
 		public IMapiProp GetAssociatedIMapiProp (int loadMode)
 		{
-			OpenEntryResult entry = null;
 			try {
-				entry = container.OpenEntry (entryId.ByteArray, null, loadMode);
+				return (IMapiProp) container.OpenEntry (entryId.ByteArray, null, loadMode);
 			} catch (MapiException e) {
 				if (e.HResult == Error.NotFound)
 					throw new Exception ("Entity has been deleted!");
 				throw;
 			}
-			return (IMapiProp) entry.Unk;
 		}
 
 		private void UpdateWriteLocal (PropertyInfo pInfo, object remote)

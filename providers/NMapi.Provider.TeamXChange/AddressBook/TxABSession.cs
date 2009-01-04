@@ -61,7 +61,7 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotImplementedException ("Not implemented by the TXC provider.");
 		}
 		
-		public OpenEntryResult OpenEntry (byte[] entryID, NMapiGuid interFace, int flags)
+		public IBase OpenEntry (byte[] entryID, NMapiGuid interFace, int flags)
 		{
 			throw new NotImplementedException ("Not implemented by the TXC provider.");
 		}
