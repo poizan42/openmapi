@@ -49,7 +49,6 @@ namespace NMapi.Properties {
 	public abstract class MapiNameId : IXdrEncodeable
 	{
 		private NMapiGuid lpguid;
-		private MnId ulKind;
 
 		[DataMember (Name="Guid")]
 		public NMapiGuid  Guid {
@@ -63,8 +62,11 @@ namespace NMapi.Properties {
 		/// </summary>
 		[DataMember (Name="UlKind")]
 		public MnId  UlKind {
-			get { return ulKind; }
-			set { ulKind = value; }
+			get {
+				if (this is StringMapiNameId)
+					return MnId.String;
+				return MnId.Id;
+			}
 		}
 		
 /*
@@ -109,8 +111,7 @@ namespace NMapi.Properties {
 				case MnId.Id: result = new NumericMapiNameId (xdr); break;
 			}
 			result.Guid = guid;
-			result.UlKind = ulKind;
-			return result;			
+			return result;
 		}
 		
 		[Obsolete]
@@ -119,7 +120,7 @@ namespace NMapi.Properties {
 			Trace.WriteLine ("XdrEncode called: MapiNameId");
 			// must be called by derived classes!
 			new LPGuid (lpguid).XdrEncode (xdr);
-			xdr.XdrEncodeInt ((int) ulKind);
+			xdr.XdrEncodeInt ((int) UlKind);
 		}
 		
 		[Obsolete] public virtual void XdrDecode (XdrDecodingStream xdr)

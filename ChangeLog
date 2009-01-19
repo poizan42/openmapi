@@ -1,3 +1,7 @@
+2009-01-19  Johannes Roith <johannes@jroith.de>
+
+	* NMapi/Data/Properties/MapiNameId.cs: bugfix
+
 2009-01-10  Johannes Roith <johannes@jroith.de>
 
 	* server/nmapisvr.exe.config: enable tracing
