@@ -31,13 +31,13 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// the stream coming from the client connection
 		/// </summary>
-		private ClientConnection clientConnection;
+		private AbstractClientConnection clientConnection;
 		private StreamReader _inSR;
 		private parser parser_obj; 
 		private Yylex yy;
 
 		
-		public CommandAnalyserParserInterface(CommandAnalyser parent, ClientConnection client)
+		public CommandAnalyserParserInterface(CommandAnalyser parent, AbstractClientConnection client)
 		{
 			this.parent = parent;
 			clientConnection = client;
@@ -112,7 +112,7 @@ namespace NMapi.Gateways.IMAP
 				s = clientConnection.ReadBlock(count);
 				Trace.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
 	
-				/* read the rest of the command an set the parser up with the new stream reader*/
+				/* read the rest of the command and set the parser up with the new stream reader*/
 				SetupStreamReader();
 				parser_obj.SetNewInput(_inSR);
 			}

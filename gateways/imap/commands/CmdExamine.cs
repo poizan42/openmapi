@@ -42,7 +42,7 @@ namespace NMapi.Gateways.IMAP {
 			if (state.CurrentState == IMAPConnectionStates.AUTHENTICATED ||
 			    state.CurrentState == IMAPConnectionStates.SELECTED) {
 				state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
-				bool res = DoRun(command);
+				bool res = DoRun(command, true);
 				if (res)
 					state.CurrentState = IMAPConnectionStates.SELECTED;
 			}

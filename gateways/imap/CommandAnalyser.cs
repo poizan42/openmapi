@@ -51,7 +51,7 @@ namespace NMapi.Gateways.IMAP
 			set { stateLogout = value; }
 		}
 
-		public CommandAnalyser(ClientConnection client)
+		public CommandAnalyser(AbstractClientConnection client)
 		{
 			parseInt = new CommandAnalyserParserInterface (this, client);
 		}

@@ -104,9 +104,6 @@ namespace NMapi.Gateways.IMAP {
 
 		public void Close ()
 		{
-			if (notificationHandler != null)
-				notificationHandler.Dispose ();
-			
 			Disconnect ();
 			
 			if (clientConnection != null)
@@ -137,12 +134,18 @@ namespace NMapi.Gateways.IMAP {
 		
 		public void InitServerConnection (string host, string user, string password)
 		{
+			Disconnect ();
+			
 			serverConnection = new ServerConnection (host, user, password);
 			folderMappingAgent = new FolderMappingAgent (this);
 		}
 
 		public void Disconnect()
 		{
+			if (notificationHandler != null)
+				notificationHandler.Dispose ();
+			notificationHandler = null;
+			
 			if (serverConnection != null)
 				serverConnection.Disconnect();
 		 	serverConnection = null;
@@ -164,10 +167,17 @@ namespace NMapi.Gateways.IMAP {
 			ProcessTimeout ();
 		}
 
+		public void AddExistsRequestDummy ()
+		{
+			lock (existsRequests) {
+					existsRequests.Add (new SequenceNumberListItem ());
+			}
+		}
+
 		public void AddExistsRequest (SequenceNumberListItem snli)
 		{
 			lock (existsRequests) {
-				existsRequests.Add (snli);
+					existsRequests.Add (snli);
 			}
 		}
 
@@ -224,24 +234,20 @@ namespace NMapi.Gateways.IMAP {
 				
 				// we keep the lock on the expungeRequests while processing the existsRequests
 				lock (existsRequests) {
-					if (existsRequests.Count != 0) {
+					if (existsRequests.Count != 0 && serverConnection != null) {
 
 						// save old SequenceNumberList
 						SequenceNumberList snlOld = serverConnection.SequenceNumberList;
-
-notificationHandler.Dispose();
-						
-						// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
-						// build sequence number list
-						serverConnection.BuildSequenceNumberList ();
-
 						// save size of old list;
 						int snlOldLength = snlOld.Count;
 
-						// fix UIDS in Messagesif missing or broken
-						Trace.WriteLine ("fixUIDs");
-						int recent = serverConnection.FixUIDsInSequenceNumberList ();
-	
+						if (notificationHandler != null)
+							notificationHandler.Dispose();
+
+						// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
+
+						int recent = serverConnection.RebuildSequenceNumberListPlusUIDFix ();
+						
 						// restore Notificationsubscription as currentFolderTable has changed
 						Trace.WriteLine ("new NotificationHandler");
 						new NotificationHandler (this);
@@ -276,7 +282,7 @@ notificationHandler.Dispose();
 								if (snliNew.MessageFlags != snliOld.MessageFlags ||
 									snliNew.MsgStatus != snliOld.MsgStatus) {
 									r = new Response (ResponseState.NONE, "FETCH");
-									r.Val = new ResponseItemText (serverConnection.SequenceNumberList.IndexOfSNLI (snliNew).ToString ());
+									r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
 									r.AddResponseItem (new ResponseItemList ()
 									    .AddResponseItem ("UID")
 									    .AddResponseItem (snliNew.UID.ToString ())
@@ -338,5 +344,4 @@ notificationHandler.Dispose();
 			}
 		}
 	}
-
 }

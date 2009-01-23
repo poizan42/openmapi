@@ -23,13 +23,36 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Authentication;
 using System.Diagnostics;
+using System.Threading;
 
 namespace NMapi.Gateways.IMAP
 {
 
 	public delegate void LogDelegate(string message);
+
+	public abstract class AbstractClientConnection
+	{
+		public abstract void Close ();
+		public abstract LogDelegate LogInput { set; } 
+		public abstract LogDelegate LogOutput { set; }
+		
+		/// <summary>
+		/// does the data source have data waiting
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// </returns>
+		public abstract bool DataAvailable();
+			
+		public abstract void Send (string s);
+
+		public abstract string ReadLine ();
 	
-	public class ClientConnection
+		public abstract string ReadBlock (int count);
+}
+
+	
+	public class ClientConnection : AbstractClientConnection
 	{
 		TcpClient tcpClient;
 		Stream inOut;
@@ -52,15 +75,15 @@ namespace NMapi.Gateways.IMAP
 
 		}
 
-		public void Close ()
+		public override void Close ()
 		{
 			inReader.Close ();
 			inOut.Close ();
 			tcpClient.Close ();
 		}
 
-		public LogDelegate LogInput { set { logInput = value; } } 
-		public LogDelegate LogOutput { set { logOutput = value; } }
+		public override LogDelegate LogInput { set { logInput = value; } } 
+		public override LogDelegate LogOutput { set { logOutput = value; } }
 		
 		/// <summary>
 		/// does the data source have data waiting
@@ -68,10 +91,12 @@ namespace NMapi.Gateways.IMAP
 		/// <returns>
 		/// A <see cref="System.Boolean"/>
 		/// </returns>
-		public bool DataAvailable()
+		public override bool DataAvailable()
 		{
 			// needs to ask the client interface later.
 			// now we simply check this:
+			if (inReader.Peek () > 0)
+				return true;
 			
 			if (inOut.GetType() == typeof(NetworkStream))
 				return ((NetworkStream) inOut).DataAvailable;
@@ -80,7 +105,7 @@ namespace NMapi.Gateways.IMAP
 		}
 
 			
-		public void Send (string s)
+		public override void Send (string s)
 		{
 			Byte [] b = Encoding.ASCII.GetBytes (s);
 			
@@ -88,13 +113,16 @@ namespace NMapi.Gateways.IMAP
 				logOutput("S: "+ Encoding.ASCII.GetString(b));
 
 			try {
-				inOut.Write(b,0,b.Length);
-			} catch (SocketException) {
-			} catch (IOException) {
+				inOut.Write (b,0,b.Length);
+				inOut.Flush ();
+			} catch (SocketException e) {
+				Trace.WriteLine ("ClientConnection Send: " + e.Message);
+			} catch (IOException e) {
+				Trace.WriteLine ("ClientConnection Send: " + e.Message);
 			}
 		}
 		
-		public string ReadLine ()
+		public override string ReadLine ()
 		{
 			string s = null;
 			try {
@@ -108,7 +136,7 @@ namespace NMapi.Gateways.IMAP
 			return s;
 		}
 		
-		public string ReadBlock (int count)
+		public override string ReadBlock (int count)
 		{
 			char[] ba = new char[count];
 			try {

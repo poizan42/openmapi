@@ -42,10 +42,12 @@ namespace NMapi.Gateways.IMAP {
 			// if it is a tagged response or a BYE response, send all pending Responses
 			if (response.Tag != null || response.Name == "BYE") {
 				
-				// Expunge responses
-				if (!"FETCH STORE SEARCH".Contains (response.Name) || response.UIDResponse) {
-					foreach (Response r in imapConnectionState.ProcessNotificationResponses ()) {
-						imapConnectionState.ClientConnection.Send (r.ToString());
+				// Expunge/exists/fetch responses to update the client
+				if (response.State == ResponseState.OK) {
+					if (!"FETCH STORE SEARCH".Contains (response.Name) || response.UIDResponse) {
+						foreach (Response r in imapConnectionState.ProcessNotificationResponses ()) {
+							imapConnectionState.ClientConnection.Send (r.ToString());
+						}
 					}
 				}
 				

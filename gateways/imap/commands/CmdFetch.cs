@@ -65,7 +65,7 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (r);
 			}
 			catch (Exception e) {
-throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 			}
 			return;
 		}
@@ -95,32 +95,28 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 				int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
 				for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
 					SPropertyRestriction entryPropRestr = new SPropertyRestriction ();
-					SPropValue eId = new SPropValue (Property.EntryId);
-					eId.Value.Binary = slq[msgno2].EntryId;
+					BinaryProperty eId = new BinaryProperty();
+					eId.PropTag = Property.EntryId;
+					eId.Value = slq[msgno2].EntryId;
 					entryPropRestr.Prop = eId;
 					entryPropRestr.PropTag = Property.EntryId;
 					entryPropRestr.RelOp = RelOp.Eq;
-					SRestriction entryRestr = new SRestriction ();
-					entryRestr.Rt = RestrictionType.Property;
-					entryRestr.Res.ResProperty = entryPropRestr;
-					entryRestrictions.Add (entryRestr);
+					entryRestrictions.Add (entryPropRestr);
 				}
 				// create head restriction, append the single restrictions and add head restriction to contentsTable
 				SOrRestriction orRestr = new SOrRestriction (entryRestrictions.ToArray ());
-				SRestriction srestr = new SRestriction ();
-				srestr.Rt = RestrictionType.Or;
-				srestr.Res.ResOr =  orRestr;
-				contentsTable.Restrict (srestr, 0);
+				contentsTable.Restrict (orRestr, 0);
 				// get rows
 				SRowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
 				if (rows.Count == 0)
 					break;
 				foreach (SRow row in rows) {
-					uint uid = (uint)SPropValue.GetArrayProp(row.Props, 1).Value.l;
+					uint uid = (uint) ((IntProperty) SPropValue.GetArrayProp(row.Props, 1)).Value;
 					if (uid != 0) {
 						SequenceNumberListItem snli;
 						snli = slq.Find ((a) => uid == a.UID);
-						BuildFetchResponseRow (command, snli, row);
+						if (snli != null) 
+							BuildFetchResponseRow (command, snli, row);
 					}
 				}
 			}
@@ -140,54 +136,54 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 			PropertyHelper props = new PropertyHelper (rowProperties.Props);
 			
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
-				if (cfi.Fetch_att_key == "UID" || command.UIDCommand) {
+				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
+				string section_text = (cfi.Section_text != null) ? cfi.Section_text.ToUpper () : null;
+				
+				if (Fetch_att_key == "UID" || command.UIDCommand) {
 					if (!uidSupplied) {
 						fetchItems.AddResponseItem ("UID");
 						fetchItems.AddResponseItem (snli.UID.ToString ());
 						uidSupplied = true;
 					}
 				}
-				if ("FLAGS ALL FAST FULL".Contains (cfi.Fetch_att_key)) {
+				if ("FLAGS ALL FAST FULL".Contains (Fetch_att_key)) {
 					fetchItems.AddResponseItem ("FLAGS");
 					fetchItems.AddResponseItem (Flags (props));
 				}
-				if ("ENVELOPE ALL FULL".Contains (cfi.Fetch_att_key)) {
+				if ("ENVELOPE ALL FULL".Contains (Fetch_att_key)) {
 				}
-				if (cfi.Fetch_att_key == "RFC822") {
+				if (Fetch_att_key == "RFC822") {
 				}
-				if (cfi.Fetch_att_key == "RFC822.TEXT") {
+				if (Fetch_att_key == "RFC822.TEXT") {
 				}
-				if (cfi.Fetch_att_key == "RFC822.HEADER") {
+				if (Fetch_att_key == "RFC822.HEADER") {
 				}
-				if ("RFC822.SIZE ALL FAST FULL".Contains(cfi.Fetch_att_key)) {
+				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
 					props.Prop = Property.MessageSize;
 					fetchItems.AddResponseItem ("RFC822.SIZE");
 					fetchItems.AddResponseItem (props.LongNIL);
 				}
-				if ("INTERNALDATE ALL FAST FULL".Contains(cfi.Fetch_att_key)) {
+				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
 					fetchItems.AddResponseItem ("INTERNALDATE");
 							// TODO:   real format is different from  format in Date Header!!!
 					//fetchItems.AddResponseItem (MapiReturnPropFileTime(rowProperties, Property.CreationTime));
 					fetchItems.AddResponseItem ("17-Jul-1996 02:44:25 -0700");
 				}
-				if (cfi.Fetch_att_key == "BODYSTRUCTURE") {
+				if (Fetch_att_key == "BODYSTRUCTURE") {
 				}
-				if ("BODY.PEEK BODY FULL".Contains(cfi.Fetch_att_key)) {
+				if ("BODY.PEEK BODY FULL".Contains(Fetch_att_key)) {
 					StringBuilder bodyPeekResult = new StringBuilder ();
 					ResponseItemList bodyItems = null;
-					if (cfi.Fetch_att_key == "BODY.PEEK")
-						bodyItems= new ResponseItemList().SetSigns ("BODY[", "]");
-					else
-						bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
+					bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
 					MimeMessage mm = null;
 					HeaderGenerator headerGenerator = null;
 					// preparation for HEADER/TEXT/MIME
-					if (cfi.Section_text == null || "HEADER TEXT MIME".Contains (cfi.Section_text.ToUpper ())) {
+					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
 						props.Prop = 0x3FDE0003; //    #define PR_INTERNET_CPID 
-						Encoding encoding = (props.Exists && props.Long != "")?Encoding.GetEncoding(Convert.ToInt32 (props.Long)) : Encoding.UTF8;
+						Encoding encoding = (props.Exists && props.Long != "") ? Encoding.GetEncoding(Convert.ToInt32 (props.Long)) : Encoding.UTF8;
 
 						// set headers
-						headerGenerator = new HeaderGenerator (props, state, this);
+						headerGenerator = new HeaderGenerator (props, state, snli.EntryId);
 						headerGenerator.DoAll ();
 						// set content headers
 						InternetHeader ih = new InternetHeader(MimePart.CONTENT_TYPE_NAME, "text/plain");
@@ -198,13 +194,13 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 						props.Prop = Property.Body;
 						if (props.Exists) {
 							// fill message
-							if (cfi.Section_text == null || cfi.Section_text == "TEXT") {
+							if (section_text == null || section_text == "TEXT") {
 								Trace.WriteLine ("memory test1");
 								mm = BuildMimeMessageFromMapi (props, snli, headerGenerator.InternetHeaders);
 							}
 						}
 					}
-					if (cfi.Section_text == null) {
+					if (section_text == null) {
 						if (mm != null) {
 							// generate result string
 							MemoryStream ms = new MemoryStream();
@@ -212,7 +208,7 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 							bodyPeekResult.Append (Encoding.ASCII.GetString (ms.ToArray ()));
 						}
 					}
-					if (cfi.Section_text == "HEADER") {
+					if (section_text == "HEADER") {
 						if (headerGenerator != null && headerGenerator.InternetHeaders != null) {
 							bodyItems.AddResponseItem ("HEADER");
 							MemoryStream headers_ms = new MemoryStream ();
@@ -220,19 +216,19 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 							bodyPeekResult.Append (Encoding.ASCII.GetString (headers_ms.ToArray ()));
 						}
 					}
-					if (cfi.Section_text == "TEXT") {
+					if (section_text == "TEXT") {
 						if (mm != null)
 							bodyPeekResult.Append (Encoding.ASCII.GetString (mm.RawContent));
 					}
-					if (cfi.Section_text == "MIME") {
+					if (section_text == "MIME") {
 									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
 					}
-					if (cfi.Section_text == "HEADER.FIELDS.NOT") {
+					if (section_text == "HEADER.FIELDS.NOT") {
 					}
-					if (cfi.Section_text == "HEADER.FIELDS") {
+					if (section_text == "HEADER.FIELDS") {
 						bodyItems.AddResponseItem ("HEADER.FIELDS");
 						ResponseItemList headerItems = new ResponseItemList();
-						headerGenerator = new HeaderGenerator (props, state, this);
+						headerGenerator = new HeaderGenerator (props, state, snli.EntryId);
 
 						foreach (String headerItem1 in cfi.Header_list) {
 							string headerItem = headerItem1.ToUpper ();
@@ -317,7 +313,7 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 					fetchItems.AddResponseItem (bodyItems);
 					fetchItems.AddResponseItem (bodyPeekResult.ToString (), ResponseItemMode.Literal);
 				}
-				if ("BODY FULL".Contains(cfi.Fetch_att_key)) {
+				if ("BODY FULL".Contains(Fetch_att_key)) {
 					//TODO: Set the read-flag of the message
 				}
 			}
@@ -329,7 +325,7 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 		protected IMessage GetMessage (SequenceNumberListItem snli) 
 		{
 			if (currentMessage == null)
-				currentMessage = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, 0).Unk;
+				currentMessage = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, 0);
 			return currentMessage;
 		}
 
@@ -380,88 +376,179 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 		
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, SequenceNumberListItem snli, InternetHeaders ih) 
 		{
+			PropertyHelper propsBody = new PropertyHelper (props.Props);
+			propsBody.Prop = Property.Body;
+			
+			if (propsBody.Exists) {
+				IMessage im = GetMessage (snli);
+				return BuildMimeMessageFromMapi (props, im, ih);
+			}
+			return null;
+		}
+
+		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, IMessage im, InternetHeaders ih)
+		{
 			// transfer headers into MimeMessage
 			// TODO: make MimeMessage have a method to consume InternetHeaders objects
 			MimeMessage mm = new MimeMessage();
 			foreach (InternetHeader ih1 in ih)
 				mm.SetHeader (new InternetHeader (ih1.ToString ()));
-			props.Prop = Property.Body;
-			if (props.Exists) {
-				IMessage im = GetMessage (snli);
+
+			PropertyHelper propsBody = new PropertyHelper (props.Props);
+			propsBody.Prop = Property.Body;
+			PropertyHelper propsRTFCompressed = new PropertyHelper (props.Props);
+			propsRTFCompressed.Prop = Property.RtfCompressed;
+			PropertyHelper propsHtml = new PropertyHelper (props.Props);
+			propsHtml.Prop = Outlook.Property_HTML;
+			
+			if (propsBody.Exists) {
 				IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
 				SRowSet rs = tr.GetRows (1);
-				if (rs.Count == 0) {
+				if (rs.Count == 0 && !propsRTFCompressed.Exists && !propsHtml.Exists) {
 					mm.Content = props.Unicode;
 				} else {
-					int attachCnt = 1;
 					mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
 					mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
 					MimeMultipart mmp = new MimeMultipart (mm);
 					// new Body Part for the text part
 					MimeBodyPart mbp = new MimeBodyPart ();
-					mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME));
-					mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
-					mbp.Content = props.Unicode;
-					mmp.AddBodyPart (mbp);
-							
-					while (rs.Count > 0) {
-						foreach (SRow row in rs) {
-							Trace.WriteLine ("next Attachment");
-							// handle content-type and content-transport-encoding headers
-							PropertyHelper aProps = new PropertyHelper (row.Props);
-							String mimeType;
-							aProps.Prop = Property.AttachExtension;
-							if (aProps.Exists && aProps.String.Length > 1) {
-								mimeType = MimeUtility.ExtToMime (aProps.String.Substring (1).ToLower ());
-							} else {
-								mimeType = MimeUtility.ExtToMime ("dummy");
-							}
-							InternetHeader ih_fname = new InternetHeader (MimePart.CONTENT_TYPE_NAME, mimeType);
-							string charset = null;
-							string encoding = "base64";
-							if (mimeType.StartsWith ("text")) {
-								if (mimeType == "text/plain") {
-									charset = ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME).GetParam ("charset");
-									if (charset == null)
-										charset = "utf-8";
-									ih_fname.SetParam ("charset", charset);
-								}
-								encoding = "quoted-printable";
-							}
-							aProps.Prop = Property.DisplayName;
-							if (aProps.Exists) {
-								ih_fname.SetParam ("name", aProps.String);
-							}
+					
+					if (propsRTFCompressed.Exists && 
+					    propsHtml.Exists
 
-							mbp = new MimeBodyPart ();
-							mbp.SetHeader (ih_fname);
-							mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, encoding);
-							
-							Trace.WriteLine("now comes the contentn:");
-							try {
-								IAttach ia = im.OpenAttach (attachCnt, null, 0);
-								MemoryStream ms = new MemoryStream ();
-								IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
-								if (iss != null) {
-									iss.GetData (ms);
-									mbp.Content = ms.ToArray ();
-								}
-							} catch (Exception e) {
-//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
-							}
-							mmp.AddBodyPart (mbp);
-							
-							attachCnt ++;
-						}
-						rs = tr.GetRows (1);
+					    
+						&& false
+					    
+						)
+					{
+Console.WriteLine ("html");
+Console.WriteLine (propsRTFCompressed.Unicode);
+//Console.WriteLine (Encoding.ASCII.GetString (propsHtml.Binary.ByteArray));
+						// do html body
+						mbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
+						MimeMultipart mmpHtml = new MimeMultipart (mbp);
+
+/*						// text/html alternative
+						MimeBodyPart mbpTextHtmlAlternative = new MimeBodyPart ();
+						mbpTextHtmlAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html");
+						mbpTextHtmlAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+						mbpTextHtmlAlternative.Content = propsHtml.Unicode;						
+						mmpHtml.AddBodyPart (mbpTextHtmlAlternative);
+*/						
+						// Text/plain alternative
+						MimeBodyPart mbpTextPlainAlternative = new MimeBodyPart ();
+						mbpTextPlainAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/plain");
+						mbpTextPlainAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+						mbpTextPlainAlternative.Content = propsBody.Unicode;
+						mmpHtml.AddBodyPart (mbpTextPlainAlternative);
+
+ObjectDumper.Write (mmpHtml,1);						
+					} else {
+						// do basic text body
+						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME));
+						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+						mbp.Content = propsBody.Unicode;
 					}
+					mmp.AddBodyPart (mbp);
+
+					AppendAttachments (mmp, (IMessage) im, ih);
+					
 				}
 			}
 			return mm;
 		}
 
 
-		private int[] propsAllHeaders = new int[]
+		private void AppendAttachments (MimeMultipart mmp, IMessage im, InternetHeaders ih)
+		{
+			int attachCnt = 1;
+			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
+			SRowSet rs = tr.GetRows (1);
+			
+			while (rs.Count > 0) {
+				foreach (SRow row in rs) {
+					Trace.WriteLine ("next Attachment");
+					// handle content-type and content-transport-encoding headers
+					PropertyHelper aProps = new PropertyHelper (row.Props);
+					PropertyHelper attachMethProps = new PropertyHelper (row.Props);
+					attachMethProps.Prop = Property.AttachMethod;
+
+					// embedded Messages
+					if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
+						IAttach ia1 = im.OpenAttach (attachCnt, null, 0);
+						IMessage embeddedIMsg = (IMessage) ia1.OpenProperty (Property.AttachDataObj);
+
+						SPropValue[] props = embeddedIMsg.GetProps (new SPropTagArray (propsAllProperties), Mapi.Unicode);
+						PropertyHelper embeddedPH = new PropertyHelper (props);
+
+						embeddedPH.Prop = Property.MessageClass;
+						if (embeddedPH.Unicode == "IMP.Message") {
+						
+							HeaderGenerator hg = new HeaderGenerator (embeddedPH, state, embeddedIMsg);
+							hg.DoAll ();
+							
+							MimeMessage embeddedMsg = BuildMimeMessageFromMapi (embeddedPH, embeddedIMsg, hg.InternetHeaders);
+	
+							MimeBodyPart embeddedMbp = new MimeBodyPart ();
+							embeddedMbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "message/rfc822");
+							embeddedMbp.Content = embeddedMsg;
+							
+							mmp.AddBodyPart (embeddedMbp);
+							continue;
+						}
+						continue;
+					}
+					
+					String mimeType;
+					aProps.Prop = Property.AttachExtension;
+					if (aProps.Exists && aProps.String.Length > 1) {
+						mimeType = MimeUtility.ExtToMime (aProps.String.Substring (1).ToLower ());
+					} else {
+						mimeType = MimeUtility.ExtToMime ("dummy");
+					}
+					
+					InternetHeader ih_fname = new InternetHeader (MimePart.CONTENT_TYPE_NAME, mimeType);
+					string charset = null;
+					string encoding = "base64";
+					if (mimeType.StartsWith ("text")) {
+						if (mimeType == "text/plain") {
+							charset = ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME).GetParam ("charset");
+							if (charset == null)
+								charset = "utf-8";
+							ih_fname.SetParam ("charset", charset);
+						}
+						encoding = "quoted-printable";
+					}
+					aProps.Prop = Property.DisplayName;
+					if (aProps.Exists) {
+						ih_fname.SetParam ("name", aProps.String);
+					}
+
+					MimeBodyPart mbp = new MimeBodyPart ();
+					mbp.SetHeader (ih_fname);
+					mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, encoding);
+					
+					Trace.WriteLine("now comes the contentn:");
+					try {
+						IAttach ia = im.OpenAttach (attachCnt, null, 0);
+						MemoryStream ms = new MemoryStream ();
+						IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
+						if (iss != null) {
+							iss.GetData (ms);
+							mbp.Content = ms.ToArray ();
+						}
+					} catch (Exception e) {
+//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
+					}
+					mmp.AddBodyPart (mbp);
+					
+					attachCnt ++;
+				}
+				rs = tr.GetRows (1);
+			}
+		}
+
+		private int[] propsAllHeaderProperties = new int[]
 		{
 			Property.Subject, 
 			Property.SenderName,
@@ -469,6 +556,24 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 			Property.DisplayTo,
 			Property.CreationTime, 
 			Property.TransportMessageHeaders
+		};
+
+		private int[] propsAllProperties = new int[]
+		{
+			Property.Subject, 
+			Property.SenderName,
+			Property.SenderEmailAddress,
+			Property.DisplayTo,
+			Property.DisplayCc,
+			Property.CreationTime, 
+			Property.TransportMessageHeaders,
+			Property.MsgStatus,
+			Property.MessageFlags,
+			Property.MessageSize,
+			Property.MessageClass,
+			Property.Body,
+			Property.RtfCompressed,
+			Outlook.Property_HTML
 		};
 
 		public int[] PropertyListFromCommand (Command command)
@@ -480,61 +585,71 @@ throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Nam
 			//propList.Add (Property.ReportName); // TODO: Replace for named property for folder path
 					
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
-				if ("FLAGS ALL FAST FULL".Contains (cfi.Fetch_att_key)) {
+				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
+				string section_text = (cfi.Section_text != null) ? cfi.Section_text.ToUpper () : null;
+				
+				if ("FLAGS ALL FAST FULL".Contains (Fetch_att_key)) {
 					propList.Add (Property.MsgStatus);
 					propList.Add (Property.MessageFlags);
 				}
-				if ("ENVELOPE ALL FULL".Contains (cfi.Fetch_att_key)) {
+				if ("ENVELOPE ALL FULL".Contains (Fetch_att_key)) {
 				}
-				if (cfi.Fetch_att_key == "UID") {
+				if (Fetch_att_key == "UID") {
 				}
-				if (cfi.Fetch_att_key == "RFC822") {
+				if (Fetch_att_key == "RFC822") {
 				}
-				if (cfi.Fetch_att_key == "RFC822.TEXT") {
+				if (Fetch_att_key == "RFC822.TEXT") {
 					propList.Add (Property.Body);
 					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 				}
-				if (cfi.Fetch_att_key == "RFC822.HEADER") {
-					propList.AddRange (propsAllHeaders);
+				if (Fetch_att_key == "RFC822.HEADER") {
+					propList.AddRange (propsAllHeaderProperties);
 				}
-				if ("RFC822.SIZE ALL FAST FULL".Contains(cfi.Fetch_att_key)) {
+				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
 					propList.Add (Property.MessageSize);
 				}
-				if ("INTERNALDATE ALL FAST FULL".Contains(cfi.Fetch_att_key)) {
+				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
 					propList.Add (Property.CreationTime);
 				}
-				if (cfi.Fetch_att_key == "BODYSTRUCTURE") {
-					propList.AddRange (propsAllHeaders);
+				if (Fetch_att_key == "BODYSTRUCTURE") {
+					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
 					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 				}
-				if ("BODY FULL".Contains(cfi.Fetch_att_key)) {
-					propList.AddRange (propsAllHeaders);
+				if ("BODY FULL".Contains(Fetch_att_key)) {
+					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
+					propList.Add (Property.RtfCompressed);
+					propList.Add (Outlook.Property_HTML);
 					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 				}
-				if (cfi.Fetch_att_key == "BODY.PEEK") {
-					if (cfi.Section_text == null || "HEADER TEXT MIME".Contains (cfi.Section_text)) {
-						propList.AddRange (propsAllHeaders);
+				if (Fetch_att_key == "BODY.PEEK") {
+					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
+						propList.AddRange (propsAllHeaderProperties);
 					}
-					if (cfi.Section_text == null) {
+					if (section_text == null) {
 						propList.Add (Property.Body);
+						propList.Add (Property.RtfCompressed);
+						propList.Add (Outlook.Property_HTML);
 						propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 					}
-					if (cfi.Section_text == "HEADER") {
+					if (section_text == "HEADER") {
 					}
-					if (cfi.Section_text == "TEXT") {
+					if (section_text == "TEXT") {
 						propList.Add (Property.Body);
+						propList.Add (Property.RtfCompressed);
+						propList.Add (Outlook.Property_HTML);
 						propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
 					}
-					if (cfi.Section_text == "MIME") {
+					if (section_text == "MIME") {
 //									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
 					}
-					if (cfi.Section_text == "HEADER.FIELDS.NOT") {
+					if (section_text == "HEADER.FIELDS.NOT") {
 					}
-					if (cfi.Section_text == "HEADER.FIELDS") {
+					if (section_text == "HEADER.FIELDS") {
 						foreach (String headerItem1 in cfi.Header_list) {
 							string headerItem = headerItem1.ToUpper ();
+							
 							if (headerItem == "DATE") {
 								propList.Add (Property.CreationTime);
 							}

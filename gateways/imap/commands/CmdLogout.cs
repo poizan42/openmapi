@@ -43,8 +43,7 @@ namespace NMapi.Gateways.IMAP {
 			try {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NONE, "BYE").AddResponseItem("IMAP4rev1 Server logging out"));
 				
-				if (ServCon != null)
-					state.Disconnect();
+				state.Disconnect();
 				state.CurrentState = IMAPConnectionStates.LOGOUT;
 				
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));

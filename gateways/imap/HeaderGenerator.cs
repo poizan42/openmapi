@@ -38,22 +38,41 @@ namespace NMapi.Gateways.IMAP {
 	{
 		private PropertyHelper props;
 		private IMAPConnectionState state;
-		private CmdFetch fetch;
+		private SBinary msgEntryId;
+		private IMessage msg;
 		private InternetHeaders ih = new InternetHeaders ();
 
 		public InternetHeaders InternetHeaders {
 			get { return ih; }
 		}
 
-		public HeaderGenerator (PropertyHelper propertyHelper, IMAPConnectionState state, CmdFetch fetch) 
+		public HeaderGenerator (PropertyHelper propertyHelper, IMAPConnectionState state, SBinary entryId) 
 		{
 			// create new Property Helper, so that the original Property Helper does not get
 			// disturbed.
 			this.props = new PropertyHelper(propertyHelper.Props);
 			this.state = state;
-			this.fetch = fetch;
+			this.msgEntryId = entryId;
 		}
 
+		public HeaderGenerator (PropertyHelper propertyHelper, IMAPConnectionState state, IMessage msg)
+		{
+			// create new Property Helper, so that the original Property Helper does not get
+			// disturbed.
+			this.props = new PropertyHelper(propertyHelper.Props);
+			this.state = state;
+			this.msg = msg;
+		}
+
+
+		private IMessage GetMessage ()
+		{
+			if (msgEntryId != null)
+				return (IMessage) state.ServerConnection.Store.OpenEntry (msgEntryId.ByteArray);
+			if (msg != null)
+				return msg;
+			return null;
+		}
 
 		public bool DoTransportMessageHeaders ()
 		{
@@ -116,7 +135,7 @@ namespace NMapi.Gateways.IMAP {
 		public bool DoRecipients ()
 		{
 			Trace.WriteLine ("doRecipients ");				
-			IMessage msg = fetch.GetCurrentMessage ();
+			IMessage msg = GetMessage();
 			IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode);
 //			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
 			SRowSet rs = mtr.GetRows (20);
@@ -183,9 +202,9 @@ namespace NMapi.Gateways.IMAP {
 		{
 			int index = SPropValue.GetArrayIndex (props, prop);
 			if (index != -1) {
-				SPropValue val = props[index];
-				if (val != null && val.Value.FileTime != null){
-					FileTime ft = val.Value.FileTime;
+				FileTimeProperty val = (FileTimeProperty) props[index];
+				if (val != null && val.Value != null){
+					FileTime ft = val.Value;
 					string dt = ft.DateTime.ToString ("r", System.Globalization.DateTimeFormatInfo.InvariantInfo);
 					dt = dt.Replace ("GMT", DateTime.Now.ToString ("zz", System.Globalization.DateTimeFormatInfo.InvariantInfo) + "00");
 					return dt;

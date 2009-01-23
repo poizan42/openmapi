@@ -27,7 +27,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -62,9 +62,12 @@ namespace NMapi.Gateways.IMAP {
 				}
 
 				string nameNew = PathHelper.Path2Array(ConversionHelper.MailboxIMAPToUnicode (command.Mailbox2)).Last ();
-				SPropValue nameProp = new SPropValue (Property.DisplayNameW);
-				nameProp.Value.Unicode = nameNew;
-				folder.HrSetOneProp (nameProp);
+				UnicodeProperty nameProp = new UnicodeProperty ();
+				nameProp.PropTag = Property.DisplayNameW;
+				nameProp.Value = nameNew;
+				
+				MapiPropHelper mph = new MapiPropHelper (folder);
+				mph.HrSetOneProp (nameProp);
 				folder.SaveChanges (NMAPI.FORCE_SAVE);
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			}

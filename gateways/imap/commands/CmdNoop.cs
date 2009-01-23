@@ -39,7 +39,12 @@ namespace NMapi.Gateways.IMAP {
 
 		public override void Run (Command command)
 		{
-			state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+			try {
+				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+			}
+			catch (Exception e) {
+				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+			}				
 		}
 
 	}

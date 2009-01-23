@@ -27,7 +27,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -60,9 +60,10 @@ namespace NMapi.Gateways.IMAP {
 						new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
 					return;
 				}
-				
-				SPropValue eId= folder.HrGetOneProp (Property.EntryId);
-				folder.DeleteFolder (eId.Value.Binary.ByteArray, null, 0);
+
+				MapiPropHelper mph = new MapiPropHelper (folder);
+				BinaryProperty eId = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
+				folder.DeleteFolder (eId.Value.ByteArray, null, 0);
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			}
 			catch (Exception e) {

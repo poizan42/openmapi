@@ -28,7 +28,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 
 namespace NMapi.Gateways.IMAP {
@@ -51,13 +51,12 @@ namespace NMapi.Gateways.IMAP {
 				IMapiFolder folder = ServCon.OpenFolder (string.Empty + PathHelper.PathSeparator);
 				if (folder == null)
 					throw new Exception ("internal error");
+				MapiPropHelper mph = new MapiPropHelper (folder);
 
-				SPropValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
+				UnicodeArrayProperty subscriptions = (UnicodeArrayProperty) ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
 				Trace.WriteLine ("unsubscribe 4");
 
-				string [] subsArray = subscriptions.Value.UnicodeArray;
-				if (subsArray == null)
-					subsArray = subscriptions.Value.StringArray;
+				string [] subsArray = subscriptions.Value;
 				if (subsArray == null)
 					subsArray = new string[] { };
 
@@ -67,9 +66,9 @@ namespace NMapi.Gateways.IMAP {
 					List<string> subs = subsArray.ToList ();
 					subs.Remove (newSub);
 					subsArray = subs.Distinct ().ToArray ();
-					subscriptions.Value.UnicodeArray = subsArray;
-					subscriptions.Value.StringArray = subsArray;
-					folder.HrSetOneProp (subscriptions);
+					subscriptions.Value = subsArray;
+					mph.HrSetOneProp (subscriptions);
+					folder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 				}
 				Trace.WriteLine ("unsubscribe 6");
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));

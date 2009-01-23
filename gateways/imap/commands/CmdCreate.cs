@@ -27,7 +27,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 

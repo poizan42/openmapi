@@ -41,17 +41,27 @@ namespace NMapi.Gateways.IMAP {
 		{
 			try {
 				if (state.CurrentState == IMAPConnectionStates.SELECTED) {
-					if (ServCon.CurrentFolder != null)
-						ServCon.CurrentFolder.Dispose ();
-					state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
+
+					// execute Expunges
+					CmdExpunge.DoExpunge (state, ServCon);
+					
+					// send response first, as it requires access to the Mapi Store for exists/expunges ..
 					state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+					// ... then disconnect
+					if (ServCon.CurrentFolder != null) {
+						state.NotificationHandler = null;
+						ServCon.CurrentFolder.Dispose ();
+					}
+					state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
 				} else {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag)
 															.AddResponseItem ("server is not in a selected state", ResponseItemMode.ForceAtom));
+					state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
 				}					
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
 			}
 		}
 

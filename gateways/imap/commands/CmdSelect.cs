@@ -19,6 +19,7 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using NMapi;
 using NMapi.Table;
@@ -26,7 +27,7 @@ using NMapi.Flags;
 using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -47,17 +48,18 @@ namespace NMapi.Gateways.IMAP {
 			if (state.CurrentState == IMAPConnectionStates.AUTHENTICATED ||
 			    state.CurrentState == IMAPConnectionStates.SELECTED) {
 				state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
-				bool res = DoRun(command);
+				bool res = DoRun(command, false);
 				if (res)
 					state.CurrentState = IMAPConnectionStates.SELECTED;
 			}
 		}
 
-		protected bool DoRun (Command command) 
+		protected bool DoRun (Command command, bool examine) 
 		{
 			if (command.Mailbox1 != null) {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
+					Trace.WriteLine ("Select: path = " + path);					
 					if (!ServCon.ChangeDir (path)) {
 						state.ResponseManager.AddResponse (
 							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
@@ -70,15 +72,12 @@ namespace NMapi.Gateways.IMAP {
 					// clear ExistsRequestList
 					state.ResetExistsRequests ();
 					
-					// build sequence number list
-					ServCon.BuildSequenceNumberList ();
-							
 					// if UIDNEXT/UIDVALIDITY is not set, go fix that and UIDVALIDITY
 					if (ServCon.UIDNEXT == 0 || ServCon.UIDVALIDITY == 0)
 						ServCon.UpdateNextUid ();
-					
-					// fix UIDS in Messagesif missing or broken
-					int recent = ServCon.FixUIDsInSequenceNumberList ();
+
+					// build sequence number list
+					int recent = ServCon.RebuildSequenceNumberListPlusUIDFix ();
 					
 					// connect notification handler. Need to wait until SequenceNumberList is finally prepared
 					new NotificationHandler (state);
@@ -128,7 +127,7 @@ namespace NMapi.Gateways.IMAP {
 												.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom); //MSGSTATUS_DRAFT //use setMessageStatus
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.OK, Name, command.Tag);
-					r.Val= new ResponseItemText("READ-WRITE");
+					r.Val= new ResponseItemText((examine) ? "READ-ONLY" : "READ-WRITE");
 					state.ResponseManager.AddResponse (r);
 	/*						sendText ("* 0 RECENT\r\n");
 							sendText ("* OK [UNSEEN 3] Message 3 is first unseen\r\n");

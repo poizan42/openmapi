@@ -26,7 +26,7 @@ using NMapi.Flags;
 using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -50,10 +50,9 @@ namespace NMapi.Gateways.IMAP {
 					throw new Exception ("internal error");
 
 				SPropValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
+ObjectDumper.Write  (subscriptions, 3);
 				Trace.WriteLine ("lsub 1");
-				string [] subsArray = subscriptions.Value.UnicodeArray;
-				if (subsArray == null)
-					subsArray = subscriptions.Value.StringArray;
+				string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
 				if (subsArray == null)
 					subsArray = new string[] { };
 				List<string> subs = subsArray.ToList ();
@@ -61,14 +60,16 @@ namespace NMapi.Gateways.IMAP {
 
 				string path = ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox);
 				path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + path);
+				string path_no_jokers = path.Replace ("*", "").Replace ("%", "");
+				Trace.WriteLine ("LSUB path: " + path);				
 				int pathLength = PathHelper.Path2Array (path).Length;
 				
 				foreach (string s in subs) {
-					Trace.WriteLine ("lsub 2");
-					if (command.List_mailbox == "*" || s.StartsWith (path)) {
-						int sPathLength = s.Trim () != string.Empty?PathHelper.Path2Array (s).Length : 0;
+					Trace.WriteLine ("lsub 2, s: " + s);
+					if (s.StartsWith (path_no_jokers)) {
+						int sPathLength = (s.Trim () != string.Empty) ? PathHelper.Path2Array (s).Length : 0;
 						Trace.WriteLine ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
-						if ((path.EndsWith ("%") && sPathLength <= pathLength + 1) ||
+						if ((path.EndsWith ("%") && sPathLength <= pathLength) ||
 						    (path.EndsWith ("*") && sPathLength >= pathLength) ||
 						    (!path.EndsWith ("%") && !path.EndsWith ("*") && sPathLength == pathLength)) {
 								Trace.WriteLine ("lsub 4");

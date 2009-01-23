@@ -36,9 +36,15 @@ namespace NMapi.Gateways.IMAP {
 		{
 			// check for parse errors and stop processing:
 			if (command.Parse_error != null) {
-				imapConnectionState.ResponseManager.AddResponse (
-					new Response (ResponseState.BAD, command.Command_name, command.Tag)
-						.AddResponseItem (command.Parse_error, ResponseItemMode.ForceAtom));
+				if (command.Command_name != null && command.Tag != null) {
+					imapConnectionState.ResponseManager.AddResponse (
+						new Response (ResponseState.BAD, command.Command_name, command.Tag)
+							.AddResponseItem (command.Parse_error, ResponseItemMode.ForceAtom));
+				} else {
+					imapConnectionState.ResponseManager.AddResponse (
+						new Response (ResponseState.BAD, "XXX", command.Tag)
+							.AddResponseItem ("Unrecognized Command", ResponseItemMode.ForceAtom));
+				}					
 				return;
 			}
 			
@@ -63,6 +69,8 @@ namespace NMapi.Gateways.IMAP {
 				command.Mailbox2 = imapConnectionState.FolderMappingAgent.MapIMAPToMAPI (command.Mailbox2);
 				command.List_mailbox = imapConnectionState.FolderMappingAgent.MapIMAPToMAPI (command.List_mailbox);
 			}
+
+ObjectDumper.Write(command,3);			
 				
 			AbstractBaseCommandProcessor cmd = null;
 			switch (command.Command_name) {
@@ -84,6 +92,7 @@ namespace NMapi.Gateways.IMAP {
 			case "RENAME": cmd = new CmdRename (imapConnectionState); break;
 			case "SELECT": cmd = new CmdSelect (imapConnectionState); break;
 			case "STORE": cmd = new CmdStore (imapConnectionState); break;
+			case "STATUS": cmd = new CmdStatus (imapConnectionState); break;
 			case "SUBSCRIBE": cmd = new CmdSubscribe (imapConnectionState); break;
 			case "UNSUBSCRIBE": cmd = new CmdUnsubscribe (imapConnectionState); break;
 			default:

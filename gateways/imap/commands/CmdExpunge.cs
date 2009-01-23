@@ -53,23 +53,7 @@ namespace NMapi.Gateways.IMAP {
 			// Property permanently. (See CmdStore)
 
 			try {
-				var query = from toDel in ServCon.SequenceNumberList
-							where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
-							select toDel.EntryId;
-	
-				EntryList el = new EntryList (query.ToArray ());
-				ServCon.CurrentFolder.DeleteMessages (el, null, 0);
-
-				ServCon.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
-				
-				// handle Expunge responses and manage SequenceNumberList
-				var query2 = from toDel in ServCon.SequenceNumberList
-							where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
-							select toDel;
-				foreach (SequenceNumberListItem snli in query2) {
-					state.AddExpungeRequest (snli);
-				}
-				
+				DoExpunge (state, ServCon);
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			} catch (Exception e) { 
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
@@ -77,6 +61,25 @@ namespace NMapi.Gateways.IMAP {
 				
 		}
 
+		public static void DoExpunge (IMAPConnectionState state, ServerConnection servCon) {
+			
+			var query = from toDel in servCon.SequenceNumberList
+			where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
+			select toDel.EntryId;
+
+			EntryList el = new EntryList (query.ToArray ());
+			servCon.CurrentFolder.DeleteMessages (el, null, 0);
+
+			servCon.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+			
+			// handle Expunge responses and manage SequenceNumberList
+			var query2 = from toDel in servCon.SequenceNumberList
+						where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
+						select toDel;
+			foreach (SequenceNumberListItem snli in query2) {
+				state.AddExpungeRequest (snli);
+			}
+		}
 
 	}
 }

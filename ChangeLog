@@ -1,5 +1,44 @@
 2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
 
+	bugfixes IMAP Gateway:
+	*  gateways/imap/CommandAnalyserParserInterface.cs                               
+	*  gateways/imap/CommandAnalyser.cs                                          
+	*  gateways/imap/CommandProcessor.cs                                          
+	*  gateways/imap/NotificationHandler.cs                                          
+	*  gateways/imap/ServerConnection.cs                                          
+	*  gateways/imap/ResponseManager.cs                                          
+	*  gateways/imap/commands/CmdFetch.cs                                          
+	*  gateways/imap/commands/CmdStore.cs                                          
+	*  gateways/imap/commands/CmdDelete.cs                                          
+	*  gateways/imap/commands/CmdCreate.cs                                          
+	*  gateways/imap/commands/CmdLsub.cs                                          
+	*  gateways/imap/commands/CmdSearch.cs                                          
+	*  gateways/imap/commands/CmdClose.cs                                          
+	*  gateways/imap/commands/CmdAppend.cs                                          
+	*  gateways/imap/commands/CmdRename.cs                                          
+	*  gateways/imap/commands/CmdLogin.cs                                          
+	*  gateways/imap/commands/CmdLogout.cs                                          
+	*  gateways/imap/commands/CmdCopy.cs                                          
+	*  gateways/imap/commands/CmdNoop.cs                                          
+	*  gateways/imap/commands/CmdList.cs                                          
+	*  gateways/imap/commands/CmdExpunge.cs                                          
+	*  gateways/imap/commands/CmdSelect.cs                                          
+	*  gateways/imap/commands/CmdSubscribe.cs                                        
+	*  gateways/imap/commands/CmdStatus.cs                                          
+	*  gateways/imap/commands/CmdUnsubscribe.cs                                      
+	*  gateways/imap/commands/CmdExamine.cs                                          
+	*  gateways/imap/ClientConnection.cs                                          
+	*  gateways/imap/IMAP_Parser/IMAP_lexer.lex.cs                                   
+	*  gateways/imap/IMAP_Parser/parser.cs                                          
+	*  gateways/imap/IMAP_Parser/parser.cup                                          
+	*  gateways/imap/IMAP_Parser/sym.cs                                          
+	*  gateways/imap/IMAP_Parser/IMAP_lexer.lex                                      
+	*  gateways/imap/HeaderGenerator.cs                                          
+	*  gateways/imap/IMAPConnectionState.cs                                          
+
+
+2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
+
 	bugfixes:
 	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs
 	* NMapi/Utility/PropertyHelper.cs

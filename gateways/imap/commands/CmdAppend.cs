@@ -31,7 +31,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 
 namespace NMapi.Gateways.IMAP {
@@ -58,25 +58,31 @@ namespace NMapi.Gateways.IMAP {
 	
 				IMessage im = appendFolder.CreateMessage (null, 0);
 				List<SPropValue> props = new List<SPropValue> ();
-				SPropValue prop = null;
+				UnicodeProperty uprop = null;
 				
-				prop = new SPropValue (Property.Subject);
-				prop.Value.Unicode = mm.GetHeader ("Subject", ";");
-				props.Add (prop);
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.Subject;
+				uprop.Value = string.Empty + mm.GetHeader ("Subject", ";");
+				props.Add (uprop);
 
 				//sender address
 				foreach (InternetAddress ia in mm.GetFrom ()) {
-					prop = new SPropValue (Property.SenderAddrType);
-					prop.Value.Unicode = "SMTP";
-					props.Add (prop);
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.SenderAddrType;
+					uprop.Value = "SMTP";
+					props.Add (uprop);
 
-					prop = new SPropValue (Property.SenderEmailAddress);
-					prop.Value.Unicode = ia.Email;
-					props.Add (prop);
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.SenderEmailAddress;
+					uprop.Value = string.Empty + ia.Email;
+					props.Add (uprop);
 
-					prop = new SPropValue (Property.SenderName);
-					prop.Value.Unicode = ia.Personal;
-					props.Add (prop);
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.SenderName;
+					uprop.Value = string.Empty + ia.Personal;
+					props.Add (uprop);
+
+					break;
 				}
 	
 				MimeToMapiRecipients (mm, im, props, command);
@@ -84,10 +90,16 @@ namespace NMapi.Gateways.IMAP {
 				MimeToMapiAttachments (mm, im, props, command);
 
 				SPropProblemArray sppa = im.SetProps (props.ToArray ());
-				for (int i = 0; i < sppa.AProblem.Length; i++)
-					if (sppa.AProblem[i].SCode != Error.Computed)
+				for (int i = 0; i < sppa.AProblem.Length; i++) 
+					if (sppa.AProblem[i].SCode != Error.Computed) {
+						Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
 						throw new MapiException (sppa.AProblem [i].SCode);
+				}
 				im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+
+				state.AddExistsRequestDummy ();
+				
+				Trace.WriteLine ("CmdAppend.Run finish");
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			} catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
@@ -104,38 +116,37 @@ namespace NMapi.Gateways.IMAP {
 					Trace.WriteLine ("MimeToMapiRecipients 3");
 					List<SPropValue> lpv= new List<SPropValue> ();
 					
-					SPropValue pv = new SPropValue (Property.RecipientType);
+					IntProperty lprop = new IntProperty ();
+					lprop.PropTag = Property.RecipientType;
 					switch (rt.ToString ()) {
 					case "To": 
-						pv.Value.l = Mapi.To;
+						lprop.Value = Mapi.To;
 						break;
 					case "Cc": 
-						pv.Value.l = Mapi.Cc;
+						lprop.Value = Mapi.Cc;
 						break;
 					case "Bcc": 
-						pv.Value.l = Mapi.Bcc;
+						lprop.Value = Mapi.Bcc;
 						break;
 					default:
 						continue;
 					}
-					lpv.Add (pv);
+					lpv.Add (lprop);
 
-					pv = new SPropValue (Property.AddrType);
-					pv.Value.lpszA = "SMTP";
-					pv.Value.Unicode = "SMTP";
-					lpv.Add (pv);
+					UnicodeProperty uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.AddrType;
+					uprop.Value = "SMTP";
+					lpv.Add (uprop);
 
-					pv = new SPropValue (Property.EmailAddress);
-					pv.Value.lpszA = ia.Email==null?"":ia.Email;
-					pv.Value.String = ia.Email==null?"":ia.Email;
-					pv.Value.Unicode = ia.Email==null?"":ia.Email;
-					lpv.Add (pv);
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.EmailAddress;
+					uprop.Value = ia.Email==null?"":ia.Email;
+					lpv.Add (uprop);
 
-					pv = new SPropValue (Property.DisplayName);
-					pv.Value.lpszA = ia.Personal==null?"":ia.Personal;
-					pv.Value.String = ia.Personal==null?"":ia.Personal;
-					pv.Value.Unicode = ia.Personal==null?"":ia.Personal;
-					lpv.Add (pv);
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.DisplayName;
+					uprop.Value = ia.Personal==null?"":ia.Personal;
+					lpv.Add (uprop);
 					
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
@@ -158,33 +169,33 @@ namespace NMapi.Gateways.IMAP {
 		
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<SPropValue> props, Command command) 
 		{
-			SPropValue prop = null;
+			UnicodeProperty uprop = null;
 			Trace.WriteLine ("MimeToMapiAttachments 1");			
-			if (mm.ContentType == null)
-			{
+			if (mm.ContentType == null)	{
 				Trace.WriteLine ("MimeToMapiAttachments Prop Body");			
-				prop = new SPropValue (Property.Body);
-				prop.Value.Unicode = mm.Text;
-				props.Add (prop);
-			}
-			if (mm.ContentType.ToLower () == "text/plain") {
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.Body;
+ObjectDumper.Write (mm, 4);				
+				uprop.Value = Encoding.ASCII.GetString (mm.RawContent);
+				props.Add (uprop);
+			} else if (mm.ContentType.ToLower () == "text/plain") {
+				Trace.WriteLine ("MimeToMapiAttachments text/plain");			
 				string charset = mm.ContentTypeHeader.GetParam ("charset");
 				if (charset != null) {
-					prop = new SPropValue (0x3FDE0003); //    #define PR_INTERNET_CPID
-					prop.Value.l = Encoding.GetEncoding(charset).CodePage;
-					props.Add (prop);
+					IntProperty lprop = new IntProperty ();
+					lprop.PropTag = 0x3FDE0003; //    #define PR_INTERNET_CPID
+					lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
+					props.Add (lprop);
 				}
 
-				prop = new SPropValue (Property.Body);
-				prop.Value.Unicode = mm.Text;
-				props.Add (prop);
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.Body;
+				uprop.Value = mm.Text;
+				props.Add (uprop);
 				
 			} else if (mm.ContentType.ToLower () == "text/html") {
 				// TODO
-			}
-			
-			if (mm.ContentType.ToLower () == ("multipart/alternative"))
-			{
+			} else if (mm.ContentType.ToLower () == ("multipart/alternative")) {
 				Trace.WriteLine ("MimeToMapiAttachments mutlipart/alternative");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				foreach (MimeBodyPart mp in mmp) {
@@ -196,6 +207,7 @@ namespace NMapi.Gateways.IMAP {
 				int mpCount = 0;
 				foreach (MimeBodyPart mp in mmp) {
 					Trace.WriteLine (mp.Content.GetType());
+					Trace.WriteLine (mp.ContentType);
 
 					// identify main body content if there are multiple attachments
 					// (use first multipart/alternative or text/plain)
@@ -218,62 +230,61 @@ namespace NMapi.Gateways.IMAP {
 							ms.Close ();
 
 							List<SPropValue> aprops = new List<SPropValue> ();
-							SPropValue aprop = null;
 							
-							aprop = new SPropValue (Property.AttachMethod);
-							aprop.Value.li = (long) Attach.ByValue;
-							aprop.Value.l = (int) Attach.ByValue;
-							aprops.Add (aprop);
+							IntProperty lprop = new IntProperty ();
+							lprop.PropTag = Property.AttachMethod;
+							lprop.Value = (int) Attach.ByValue;
+							aprops.Add (lprop);
 
 							Trace.WriteLine ("MimeToMapiAttachments name");			
 							string name = mp.ContentTypeHeader.GetParam ("name");
 							if (name != null) {
-								aprop = new SPropValue (Property.DisplayName);
-								aprop.Value.lpszA = name;
-								aprop.Value.String = name;
-								aprop.Value.Unicode = name;
-								aprops.Add (aprop);
+								uprop = new UnicodeProperty ();
+								uprop.PropTag = Property.DisplayName;
+								uprop.Value = name;
+								aprops.Add (uprop);
 
-								aprop = new SPropValue (Property.AttachFilename);
-								aprop.Value.lpszA = name;
-								aprop.Value.String = name;
-								aprop.Value.Unicode = name;
-								aprops.Add (aprop);
+								uprop = new UnicodeProperty ();
+								uprop.PropTag = Property.AttachFilename;
+								uprop.Value = name;
+								aprops.Add (uprop);
 
-								aprop = new SPropValue (Property.AttachLongFilename);
-								aprop.Value.lpszA = name;
-								aprop.Value.String = name;
-								aprop.Value.Unicode = name;
-								aprops.Add (aprop);
+								uprop = new UnicodeProperty ();
+								uprop.PropTag = Property.AttachLongFilename;
+								uprop.Value = name;
+								aprops.Add (uprop);
 							}
 							
 							Trace.WriteLine ("MimeToMapiAttachments content type");			
 							string extension = MimeUtility.MimeToExt (mp.ContentType);
 							if (extension != null) {
-								aprop = new SPropValue (Property.AttachExtension);
-								aprop.Value.lpszA = "." + extension;
-								aprop.Value.String = "." + extension;
-								aprop.Value.Unicode = "." + extension;
-								aprops.Add (aprop);
+								uprop = new UnicodeProperty ();
+								uprop.PropTag = Property.AttachExtension;
+								uprop.Value = "." + extension;
+								aprops.Add (uprop);
 							}
 							Trace.WriteLine (extension);
 
 							Trace.WriteLine ("MimeToMapiAttachments mime tag");
-							aprop = new SPropValue (Property.AttachMimeTag);
-							aprop.Value.lpszA = mp.ContentType;
-							aprop.Value.Unicode = mp.ContentType;
-							aprops.Add (aprop);
+							uprop = new UnicodeProperty ();
+							uprop.PropTag = Property.AttachMimeTag;
+							uprop.Value = mp.ContentType;
+							aprops.Add (uprop);
 
 							Trace.WriteLine ("MimeToMapiAttachments rendering positiion ");			
-							aprop = new SPropValue (Property.RenderingPosition);
-							aprop.Value.i = -1;
-							aprops.Add (aprop);
+							IntProperty iprop = new IntProperty ();
+							iprop.PropTag = Property.RenderingPosition;
+							iprop.Value = -1;
+							aprops.Add (iprop);
 
+							
 							try {
 								SPropProblemArray sppa = ia.SetProps (aprops.ToArray ());
 								for (int i = 0; i < sppa.AProblem.Length; i++)
-									if (sppa.AProblem[i].SCode != Error.Computed)
+									if (sppa.AProblem[i].SCode != Error.Computed) {
+										Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
 										throw new MapiException (sppa.AProblem [i].SCode);
+								}
 								ia.SaveChanges (NMAPI.FORCE_SAVE);
 							} catch (Exception e) {
 								throw e;

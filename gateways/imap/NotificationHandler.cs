@@ -127,7 +127,7 @@ namespace NMapi.Gateways.IMAP {
 		private void RowDeleted (TableNotification n)
 		{
 			try {
-			SBinary instanceKey = n.PropIndex.Value.Binary;
+			SBinary instanceKey = ((BinaryProperty) n.PropIndex).Value;
 
 			SequenceNumberListItem snli = ServCon.SequenceNumberList.Find ((x)=> ServCon.CompareEntryIDs(x.InstanceKey.ByteArray, instanceKey.ByteArray));
 			imapConnectionState.AddExpungeRequest (snli);
@@ -184,7 +184,11 @@ namespace NMapi.Gateways.IMAP {
 
 		private void UnsubscribeEventHandlers ()
 		{
-			mt.Events.TableModified -= TableModifiedHandler;
+			try {
+				mt.Events.TableModified -= TableModifiedHandler;
+			}
+			catch (Exception) { }
+	
 
 /*
 			ServCon.Store.Events [subscribeId].CriticalError -= CriticalErrorHandler;

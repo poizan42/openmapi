@@ -71,7 +71,8 @@ namespace NMapi.Gateways.IMAP {
 				
 				// store the changes
 				try {
-					IMessage msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Modify).Unk;
+					Trace.WriteLine ("Store uid: " + snli.UID);
+					IMessage msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Modify);
 
 					// special handling read-Flag
 					if ((flags & 0x00000001 /*MSGFLAG_READ*/) == 0)
@@ -79,8 +80,9 @@ namespace NMapi.Gateways.IMAP {
 					else
 						msg.SetReadFlag (0);
 					// rest of flags in regular Propertyhandling
-					SPropValue flagsProp = new SPropValue (Property.MessageFlags);
-					flagsProp.Value.l = (int) flags;
+					IntProperty flagsProp = new IntProperty ();
+					flagsProp.PropTag = Property.MessageFlags;
+					flagsProp.Value = (int) flags;
 //					msg.HrSetOneProp (flagsProp);    // can't be done, Store answeres MAPE_E_COMPUTED
 					msg.SaveChanges (NMAPI.FORCE_SAVE);
 					                 
@@ -97,10 +99,13 @@ namespace NMapi.Gateways.IMAP {
 					//fldr.SaveChanges (NMAPI.FORCE_SAVE);
 				} catch (Exception e) { 
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+					return;
 				}
 				
 			}
 
+			state.AddExistsRequestDummy ();
+			
 			Response r = new Response (ResponseState.OK, Name, command.Tag);
 			r.UIDResponse = command.UIDCommand;
 			state.ResponseManager.AddResponse (r);

@@ -40,10 +40,7 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			try {
-//				state.InitServerConnection("192.168.5.114", command.Userid, command.Password);
-				state.InitServerConnection("192.168.5.101", command.Userid, command.Password);
-//				state.InitServerConnection("192.168.2.211", command.Userid, command.Password);
-				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag));
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));

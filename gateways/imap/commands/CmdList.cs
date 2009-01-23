@@ -28,7 +28,7 @@ using NMapi.Properties;
 using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
-using NMapi.Utility;
+using NMapi.DirectoryModel;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -56,11 +56,13 @@ namespace NMapi.Gateways.IMAP {
 					state.ResponseManager.AddResponse (
 					    new Response (ResponseState.OK, Name, command.Tag)
 					        .AddResponseItem ("completed"));
+					return;
 				}
 				//TODO: handle reference information (base mailbox given in mailbox1 parameter)
 				//TODO: handle hierarchy given in Mailbox1.
 				if (ServCon.CheckSessionMsg()) {
 					string path;
+					string filter = null;
 					IMapiFolder folder;						
 					int depth = 0;
 					path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox));
@@ -94,6 +96,10 @@ namespace NMapi.Gateways.IMAP {
 					} else if (path == "*") {
 						path = string.Empty + PathHelper.PathSeparator;
 						depth = 99;
+					} else if (path.EndsWith ("imaptest*")) {
+						path = string.Empty + PathHelper.PathSeparator;
+						filter = "imaptest";
+						depth = 99;
 					}
 
 					folder = ServCon.OpenFolder (path);
@@ -108,7 +114,7 @@ namespace NMapi.Gateways.IMAP {
 						path = "/";
 					
 					List<Response> subDirs;
-					subDirs = FindSubDirs (folder, path, depth);
+					subDirs = FindSubDirs (folder, path, depth, filter);
 /*					if (command.List_mailbox == "*" || command.List_mailbox == "%" || command.List_mailbox == string.Empty + PathHelper.PathSeparator) {
 						subDirs.Insert (0, 
 							new Response (ResponseState.NONE, Name)
@@ -118,10 +124,10 @@ namespace NMapi.Gateways.IMAP {
 					}
 */					
 					if (path != "/") {
-						if (subDirs.Count > 0)
-							subDirs.Insert (0, CreateLineResponse (true, "", path));
-						else
-							subDirs.Add (CreateLineResponse (false, "", path));
+//						if (subDirs.Count > 0)
+							subDirs.Insert (0, CreateLineResponse (true, "", path.TrimEnd (new char[] {'/'})));
+//						else
+//							subDirs.Add (CreateLineResponse (false, "", path));
 					}
 					
 					subDirs.Add (
@@ -140,9 +146,9 @@ namespace NMapi.Gateways.IMAP {
 		}
 
 
-		internal List<Response> FindSubDirs (IMapiContainer parent, string path, int depth)
+		internal List<Response> FindSubDirs (IMapiContainer parent, string path, int depth, string filter)
 		{
-			Trace.WriteLine ("findsubdirs:"+path+":"+depth);			
+			Trace.WriteLine ("findsubdirs:"+path+":"+depth+":"+filter);			
 			List<Response> nameList = new List<Response> ();
 			IMapiTableReader tableReader = null;
 			try {
@@ -161,18 +167,25 @@ namespace NMapi.Gateways.IMAP {
 				foreach (SRow row in rows) {
 					if (nameIndex == -1)
 						nameIndex = SPropValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-					SPropValue name = SPropValue.GetArrayProp (row.Props, nameIndex);
-					List<Response> childNameList = new List<Response> ();
-					
-					if (depth > -1) {
-						IMapiContainer childFolder= ServCon.GetSubDir(parent, name.Value.Unicode);
-						childNameList = FindSubDirs(childFolder, path + name.Value.Unicode + "/", depth - 1);
+					UnicodeProperty name = (UnicodeProperty) SPropValue.GetArrayProp (row.Props, nameIndex);
+
+					if (filter == null ||
+					    name.Value.StartsWith (filter))
+					{
+						string pathWork = path.Replace ("*", "");
+						List<Response> childNameList = new List<Response> ();
+						
+						if (depth > -1) {
+							IMapiContainer childFolder = ServCon.GetSubDir(parent, name.Value);
+							childNameList = FindSubDirs(childFolder, pathWork + name.Value + "/", depth - 1, null);
+						}
+
+						if (!path.EndsWith ("*"))
+							nameList.Add (CreateLineResponse (childNameList.Count > 0, pathWork, name.Value));
+						
+						if (depth > 0)
+							nameList.AddRange (childNameList);
 					}
-					
-					nameList.Add (CreateLineResponse (childNameList.Count > 0, path, name.Value.Unicode));
-					
-					if (depth > 0)
-						nameList.AddRange (childNameList);
 				}
 			}
 			return nameList;
