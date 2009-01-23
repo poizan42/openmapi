@@ -1,5 +1,14 @@
 2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
 
+	bugfixes IMAP Gateway, Parser:
+	* gateways/imap/IMAP_Parser/IMAP_lexer.lex.cs
+	* gateways/imap/IMAP_Parser/parser.cs
+	* gateways/imap/IMAP_Parser/parser.cup
+	* gateways/imap/IMAP_Parser/sym.cs
+	* gateways/imap/IMAP_Parser/IMAP_lexer.lex
+
+2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
+
 	bugfixes IMAP Gateway:
 	*  gateways/imap/CommandAnalyserParserInterface.cs                               
 	*  gateways/imap/CommandAnalyser.cs                                          
@@ -28,11 +37,6 @@
 	*  gateways/imap/commands/CmdUnsubscribe.cs                                      
 	*  gateways/imap/commands/CmdExamine.cs                                          
 	*  gateways/imap/ClientConnection.cs                                          
-	*  gateways/imap/IMAP_Parser/IMAP_lexer.lex.cs                                   
-	*  gateways/imap/IMAP_Parser/parser.cs                                          
-	*  gateways/imap/IMAP_Parser/parser.cup                                          
-	*  gateways/imap/IMAP_Parser/sym.cs                                          
-	*  gateways/imap/IMAP_Parser/IMAP_lexer.lex                                      
 	*  gateways/imap/HeaderGenerator.cs                                          
 	*  gateways/imap/IMAPConnectionState.cs                                          
 
@@ -40,7 +44,6 @@
 2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
 
 	bugfixes:
-	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs
 	* NMapi/Utility/PropertyHelper.cs
 	* NMapi/Core/Properties/MapiPropHelper.cs
 	* NMapi/Format/Mime/MimeBodyPart.cs

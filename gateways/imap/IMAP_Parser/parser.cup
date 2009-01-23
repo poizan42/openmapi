@@ -306,9 +306,9 @@ command_nonauth ::=
 	LOGIN:n {: ParseInt.command.Command_name=n.ToUpper(); :}
 	cmd_login
 	|
-	AUTHENTICATE
+	AUTHENTICATE:n {: ParseInt.command.Command_name=n.ToUpper(); :}
 	|
-	STARTTLS
+	STARTTLS:n {: ParseInt.command.Command_name=n.ToUpper(); :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 

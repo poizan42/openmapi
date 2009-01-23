@@ -23,6 +23,7 @@ using System.Text;
 using System.Collections;
 using TUVienna.CS_CUP.Runtime;
 using TUVienna;
+using NMapi.Gateways.IMAP;
 /*
 */
 
@@ -241,13 +242,13 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandbase> {SP}(LSUB){SP} { yybegin(commanddetail); return new Symbol(sym.LSUB, yytext().Substring(1, yytext().Length-2)); } 
 <commandbase> {SP}(RENAME){SP} { yybegin(commanddetail); return new Symbol(sym.RENAME, yytext().Substring(1, yytext().Length-2)); } 
 <commandbase> {SP}(SELECT){SP} { yybegin(commanddetail); return new Symbol(sym.SELECT, yytext().Substring(1, yytext().Length-2)); } 
-<commandbase> {SP}(STATUS){SP} { yybegin(commandstatus); return new Symbol(sym.STATUS, yytext().Substring(1)); } 
+<commandbase> {SP}(STATUS){SP} { yybegin(commandstatus); return new Symbol(sym.STATUS, yytext().Substring(1, yytext().Length-2)); } 
 <commandbase> {SP}(SUBSCRIBE){SP} { yybegin(commanddetail); return new Symbol(sym.SUBSCRIBE, yytext().Substring(1, yytext().Length-2)); } 
 <commandbase> {SP}(UNSUBSCRIBE){SP} { yybegin(commanddetail); return new Symbol(sym.UNSUBSCRIBE, yytext().Substring(1, yytext().Length-2)); } 
 <commandbase> {SP}(LOGIN){SP} { yybegin(commanddetail); return new Symbol(sym.LOGIN, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(AUTHENTICATE){SP} { yybegin(commanddetail); return new Symbol(sym.AUTHENTICATE, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(STARTTLS) { yybegin(commanddetail); return new Symbol(sym.STARTTLS, yytext().Substring(1)); }
-<commandbase> {SP}(CHECK){SP} { yybegin(commanddetail); return new Symbol(sym.CHECK, yytext().Substring(1, yytext().Length-2)); }
+<commandbase> {SP}(CHECK) { yybegin(commanddetail); return new Symbol(sym.CHECK, yytext().Substring(1, yytext().Length-1)); }
 <commandbase> {SP}(CLOSE) { yybegin(commanddetail); return new Symbol(sym.CLOSE, yytext().Substring(1)); }
 <commandbase> {SP}(EXPUNGE) { yybegin(commanddetail); return new Symbol(sym.EXPUNGE, yytext().Substring(1)); }
 <commandbase> {SP}(COPY){SP} { yybegin(commandsequence); return new Symbol(sym.COPY, yytext().Substring(1, yytext().Length-2)); }
