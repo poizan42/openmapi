@@ -1,3 +1,12 @@
+2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
+
+	bugfixes:
+	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs
+	* NMapi/Utility/PropertyHelper.cs
+	* NMapi/Core/Properties/MapiPropHelper.cs
+	* NMapi/Format/Mime/MimeBodyPart.cs
+	* NMapi/Data/xslt/cs/xdr_data.xsl
+
 2009-01-19  Johannes Roith <johannes@jroith.de>
 
 	* NMapi/Data/Properties/MapiNameId.cs: bugfix

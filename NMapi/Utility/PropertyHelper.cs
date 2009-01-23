@@ -119,6 +119,17 @@ namespace NMapi.Utility {
 			}
 		}
 
+		public SBinary Binary {
+			get {
+				if (Index != -1) {
+					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					if (val != null && val is BinaryProperty && ((BinaryProperty) val).Value != null)
+						return ((BinaryProperty) val).Value;
+				}
+				return null;
+			}
+		}
+
 
 	}
 }

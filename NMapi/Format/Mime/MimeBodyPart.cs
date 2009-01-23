@@ -255,8 +255,11 @@ namespace NMapi.Format.Mime
 		{
 			headers.WriteTo (os);
 
-			if (contentObject != null && ContentType.StartsWith ("message")) {
+			string ct = ContentType;
+			if (contentObject != null && ct.StartsWith ("message")) {
 				((MimeMessage)Content).WriteTo (os);
+			} else if (ct != null && ct.StartsWith ("multipart")) {
+				((MimeMultipart)Content).WriteTo (os);
 			} else if (contentStream != null) {
 				lock (lockContentStream) {
 					Stream s = RawContentStream;

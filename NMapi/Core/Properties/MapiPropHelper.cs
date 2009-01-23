@@ -56,7 +56,7 @@ namespace NMapi.Properties {
 			ErrorProperty errProp = props [0] as ErrorProperty;
 			if (errProp != null)
 				throw new MapiException (errProp.Value);
-			return errProp;
+			return props[0];
 		}
 
 		/// <summary>

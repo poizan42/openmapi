@@ -251,7 +251,7 @@
 	<xsl:value-of select="@in" />[] wrapped = 
 		xdr.DecodeCountedSizeArray&lt;<xsl:value-of select="@in" />&gt; ();
 	<xsl:value-of select="@type" />[] result = 
-		new <xsl:value-of select="@type" /> [<xsl:value-of select="text()" />.Length];
+		new <xsl:value-of select="@type" /> [wrapped.Length];
 	for (int i=0; i &lt; wrapped.Length; i++)
 		result [i] = wrapped [i].Value;
 	<xsl:value-of select="text()" /><xsl:text> = result;</xsl:text>
