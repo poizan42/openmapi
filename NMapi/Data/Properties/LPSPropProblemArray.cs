@@ -97,9 +97,9 @@ namespace NMapi.Interop {
 				value = null;
 			else {
 				value = new SPropProblemArray ();
-				value.AProblem = new SPropProblem [len];
+				value.AProblem = new PropProblem [len];
 				for (int idx = 0; idx < len; idx++)
-					value.AProblem [idx] = new SPropProblem (xdr);
+					value.AProblem [idx] = new PropProblem (xdr);
 			}
 		}
 	}

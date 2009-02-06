@@ -341,7 +341,7 @@ namespace NMapi.Linq {
 		internal object Average {
 			get {
 				int total;
-
+				
 				//return SumCount (out total) / total;
 				throw new Exception ("UNCOMMENT LINE ABOVE AND FIX!"); // TODO
 				
@@ -473,7 +473,7 @@ namespace NMapi.Linq {
 			if (reverseIndexCache.ContainsKey (entity))
 				return reverseIndexCache [entity];
 
-			var restriction = new SPropertyRestriction ();
+			var restriction = new PropertyRestriction ();
 			
 			var bprop = new BinaryProperty ();
 			bprop.PropTag = Property.EntryId;

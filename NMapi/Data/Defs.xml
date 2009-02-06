@@ -159,7 +159,7 @@
 
 	<namespace name="NMapi.Table">
 
-		<class id="SAndRestriction" inherits="SRestriction">
+		<class id="AndRestriction" inherits="SRestriction">
 			<declare type="SRestriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.And</int> <!-- SPECIAL //-->
@@ -170,7 +170,7 @@
 			</decode>
 		</class>
 
-		<class id="SBitMaskRestriction" inherits="SRestriction">
+		<class id="BitMaskRestriction" inherits="SRestriction">
 			<declare type="int" privName="relBMR">RelBMR</declare>
 			<declare type="int" privName="ulPropTag" constrarg="true">PropTag</declare>
 			<declare type="int" privName="ulMask" constrarg="true">Mask</declare>
@@ -187,7 +187,7 @@
 			</decode>
 		</class>
 
-		<class id="SCommentRestriction" inherits="SRestriction">
+		<class id="CommentRestriction" inherits="SRestriction">
 			<declare type="SPropValue" isArray="true" privName="lpProp">Prop</declare>
 			<declare type="SRestriction" privName="lpRes">Res</declare>
 			<encode>
@@ -201,7 +201,7 @@
 			</decode>
 		</class>
 
-		<class id="SComparePropsRestriction" inherits="SRestriction">
+		<class id="ComparePropsRestriction" inherits="SRestriction">
 			<declare type="RelOp" privName="relop">RelOp</declare>
 			<declare type="int" privName="ulPropTag1">PropTag1</declare>
 			<declare type="int" privName="ulPropTag2">PropTag2</declare>
@@ -218,7 +218,7 @@
 			</decode>
 		</class>
 	
-		<class id="SContentRestriction" inherits="SRestriction">
+		<class id="ContentRestriction" inherits="SRestriction">
 			<declare type="FuzzyLevel" privName="ulFuzzyLevel">FuzzyLevel</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="SPropValue" privName="lpProp">Prop</declare>
@@ -235,7 +235,7 @@
 			</decode>
 		</class>
 
-		<class id="SExistRestriction" inherits="SRestriction">
+		<class id="ExistRestriction" inherits="SRestriction">
 			<declare type="int" privName="ulReserved1">Reserved1</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="int" privName="ulReserved2">Reserved2</declare>
@@ -259,7 +259,7 @@
 			</decode>
 		</class>
 
-		<class id="SNotRestriction" inherits="SRestriction">
+		<class id="NotRestriction" inherits="SRestriction">
 			<declare type="int" privName="ulReserved">Reserved</declare>
 			<declare type="SRestriction" privName="lpRes" constrarg="true">Res</declare>
 			<encode>
@@ -277,7 +277,7 @@
 			</decode>
 		</class>
 
-		<class id="SOrRestriction" inherits="SRestriction">
+		<class id="OrRestriction" inherits="SRestriction">
 			<declare type="SRestriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.Or</int> <!-- SPECIAL //-->
@@ -295,7 +295,7 @@
 			</decode>
 		</class>
 
-		<class id="SPropertyRestriction" inherits="SRestriction">
+		<class id="PropertyRestriction" inherits="SRestriction">
 			<declare type="RelOp" privName="relOp">RelOp</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="SPropValue" privName="lpProp">Prop</declare>
@@ -312,7 +312,7 @@
 			</decode>
 		</class>
 
-		<class id="SSizeRestriction" inherits="SRestriction">
+		<class id="SizeRestriction" inherits="SRestriction">
 			<declare type="int" privName="relop">RelOp</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="int" privName="cb">Cb</declare>
@@ -329,7 +329,7 @@
 			</decode>
 		</class>
 
-		<class id="SSubRestriction" inherits="SRestriction">
+		<class id="SubRestriction" inherits="SRestriction">
 			<declare type="int" privName="ulSubObject">SubObject</declare>
 			<declare type="SRestriction" privName="lpRes">Res</declare>
 			<encode>
@@ -343,7 +343,7 @@
 			</decode>
 		</class>
 	
-		<class id="SPropProblem">
+		<class id="PropProblem">
 			<declare type="int" privName="ulIndex">Index</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="int" privName="scode">SCode</declare>
@@ -354,7 +354,7 @@
 			</both>
 		</class>
 
-		<class id="SSortOrder">
+		<class id="SortOrder">
 			<declare type="int" privName="ulPropTag">PropTag</declare>
 			<declare type="TableSort" privName="ulOrder">Order</declare>
 			<both>

@@ -66,7 +66,7 @@ namespace NMapi.Linq {
 	internal sealed class QueryState<MEntity>
 	{
 		private List<SRestriction> andList;
-		private List<SSortOrder> orderByList;
+		private List<SortOrder> orderByList;
 		private CommandType currentCommand;
 		private int offset;
 		private int __amount;
@@ -87,7 +87,7 @@ namespace NMapi.Linq {
 			get { return andList; }
 		}
 
-		public List<SSortOrder> OrderByList {
+		public List<SortOrder> OrderByList {
 			get { return orderByList; }
 		}
 
@@ -132,7 +132,7 @@ namespace NMapi.Linq {
 		public QueryState ()
 		{
 			andList = new List<SRestriction> ();
-			orderByList = new List<SSortOrder> ();
+			orderByList = new List<SortOrder> ();
 			currentCommand = CommandType.START;
 			scalarOperation = ScalarOperation.None;
 			offset = 0;
@@ -153,13 +153,13 @@ namespace NMapi.Linq {
 				return null;
 			if (andList.Count == 1)
 				return andList [0];
-			SAndRestriction joined = new SAndRestriction ();
+			AndRestriction joined = new AndRestriction ();
 			joined.Res = andList.ToArray ();
 			return joined;
 		}
 
 /*
-			SAndRestriction connector = new SAndRestriction ();
+			AndRestriction connector = new AndRestriction ();
 
 			SRestriction root = new SRestriction ();
 			root.Rt = RestrictionType.And;
@@ -174,7 +174,7 @@ namespace NMapi.Linq {
 					children [1] = andList [i+1];
 				else {
 					children [1] = new SRestriction ();
-					var and = new SAndRestriction (); // next!
+					var and = new AndRestriction (); // next!
 					children [1].Rt = RestrictionType.And;
 					children [1].Res.ResAnd = and;
 					connector.Res = children;
@@ -184,12 +184,12 @@ namespace NMapi.Linq {
 			return root;
 		}
 */
-		public void PrependOrderBy (SSortOrder sortOrder)
+		public void PrependOrderBy (SortOrder sortOrder)
 		{
 			orderByList.Insert (0, sortOrder);
 		}
 
-		public void AddOrderBy (SSortOrder sortOrder)
+		public void AddOrderBy (SortOrder sortOrder)
 		{
 			orderByList.Add (sortOrder);
 		}
@@ -236,24 +236,24 @@ namespace NMapi.Linq {
 			Console.Write (")");
 		}
 
-		private void PrintAnd (SAndRestriction andRes)
+		private void PrintAnd (AndRestriction andRes)
 		{
 			PrintJoinRestrictions (andRes.Res, " && ");
 		}
 
-		private void PrintNot (SNotRestriction notRes)
+		private void PrintNot (NotRestriction notRes)
 		{
 			Console.Write ("! (");
 			PrintRestriction (notRes.Res);
 			Console.Write (")");
 		}
 
-		private void PrintOr (SOrRestriction orRes)
+		private void PrintOr (OrRestriction orRes)
 		{
 			PrintJoinRestrictions (orRes.Res, " || ");
 		}
 
-		private void PrintPropConst (SPropertyRestriction propRes)
+		private void PrintPropConst (PropertyRestriction propRes)
 		{
 			Console.Write ("(" + ResolveObjectPropertyName (propRes.PropTag));
 			string opName = "UNKNOWN_OPERATOR";
@@ -270,7 +270,7 @@ namespace NMapi.Linq {
 			Console.Write ("\"" + propRes.Prop.GetValueObj () + "\")");
 		}
 
-		private void PrintPropProp (SComparePropsRestriction propRes)
+		private void PrintPropProp (ComparePropsRestriction propRes)
 		{
 			Console.Write ("PrintPropProp() NOT IMPLEMENTED!");		
 		}
@@ -281,11 +281,11 @@ namespace NMapi.Linq {
 				Console.Write ("NULL");
 				return;
 			}
-			if (res is SAndRestriction) PrintAnd ((SAndRestriction) res);
-			else if (res is SNotRestriction) PrintNot ((SNotRestriction) res);
-			else if (res is SOrRestriction) PrintOr ((SOrRestriction) res);
-			else if (res is SPropertyRestriction) PrintPropConst ((SPropertyRestriction) res);
-			else if (res is SComparePropsRestriction) PrintPropProp ((SComparePropsRestriction) res);
+			if (res is AndRestriction) PrintAnd ((AndRestriction) res);
+			else if (res is NotRestriction) PrintNot ((NotRestriction) res);
+			else if (res is OrRestriction) PrintOr ((OrRestriction) res);
+			else if (res is PropertyRestriction) PrintPropConst ((PropertyRestriction) res);
+			else if (res is ComparePropsRestriction) PrintPropProp ((ComparePropsRestriction) res);
 			else
 				throw new NotSupportedException ("unknown SRestriction!");
 		}
@@ -294,7 +294,7 @@ namespace NMapi.Linq {
 		{
 			string sortType;
 			for (int i=0; i<orderByList.Count;i++) {
-				SSortOrder sorder = orderByList [i];
+				SortOrder sorder = orderByList [i];
 				switch (sorder.Order) {
 					case TableSort.Ascend:
 						sortType = "ascending";

@@ -1,9 +1,16 @@
 2009-02-06  Johannes Roith <johannes@jroith.de>
 
+	* NMapi/Core/Data/Def.xml: remove "S" prefix for structures
+	* NMapi/Core/Data/Properties/LPSPropProblemArray.cs: adapt.
+	* NMapi/Core/Data/SPropProblemArray.cs: adapt.
+	* NMapi/Linq/QueryState.cs: adapt.
+	* NMapi/Linq/TableQuerier.cs: adapt.
+
+2009-02-06  Johannes Roith <johannes@jroith.de>
+
 	* README: update
 	* xml/mapi.xml: fix
 	* xml/preproc.cs: add javascript support
-
 
 2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
 

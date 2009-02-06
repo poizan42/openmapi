@@ -48,10 +48,10 @@ namespace NMapi.Properties {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public sealed class SPropProblemArray
 	{
-		private SPropProblem [] aProblem;
+		private PropProblem [] aProblem;
 
 		[DataMember (Name="AProblem")]
-		public SPropProblem [] AProblem {
+		public PropProblem [] AProblem {
 			get { return aProblem; }
 			set { aProblem = value; }
 		}
