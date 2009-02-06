@@ -38,6 +38,54 @@ namespace NMapi.Tools.PreProc
 			return StripChars (txt, '^', '#');
 		}
 	}
+
+
+	/// <summary>
+	///  Generates JavaScript identifiers.
+	/// <summary>
+	public sealed class JavaScriptProc : BasePreProc
+	{
+		public JavaScriptProc ()
+		{
+			SetKeywords ("abstract", "boolean", "break", "byte", "case", 
+				"catch", "char", "class", "const", "continue", "debugger", 
+				"default", "delete", "do", "double", "else", "enum", "export", 
+				"extends", "false", "final", "finally", "float", "for", 
+				"function", "goto", "if", "implements", "import", "in", 
+				"instanceof", "int", "interface", "long", "native", "new", 
+				"null", "package", "private", "protected", "public", "return", 
+				"short", "static", "super", "switch", "synchronized", "this", 
+				"throw", "throws", "transient", "true", "try", "typeof", 
+				"var", "void", "volatile", "while", "with");
+		}
+		
+		// copied from JavaProc
+		protected override string Transform (string txt, IdentifierType itype)
+		{
+			string result = "";
+			bool nextUpper = false;
+			string lowerStripped = StripChars (txt, '_').ToLower ();
+			foreach (char _c in lowerStripped) {
+				char currentChar = _c;
+				if (currentChar == '^' || currentChar == '#') {
+					if ( (itype != IdentifierType.Method && 
+							itype != IdentifierType.Property)
+						|| result.Length > 0)
+					{
+						nextUpper = true;
+					}
+					continue;
+				}
+				if (nextUpper) {
+					currentChar = Char.ToUpper (currentChar);
+					nextUpper = false;
+				}
+				result += currentChar;
+			}
+			return result;
+		}
+	}
+	
 	
 	/// <summary>
 	///  Generates pythonic identifiers.
@@ -193,6 +241,7 @@ namespace NMapi.Tools.PreProc
 				case "csharp": proc = new CSharpProc (); break;
 				case "java": proc = new JavaProc (); break;
 				case "python": proc = new PythonProc (); break;
+				case "jscript": proc = new JavaScriptProc (); break;
 				case "strip": proc = new StripProc (); break;
 				default:
 					Console.WriteLine ("ERROR: Invalid language selected!");

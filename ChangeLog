@@ -1,3 +1,10 @@
+2009-02-06  Johannes Roith <johannes@jroith.de>
+
+	* README: update
+	* xml/mapi.xml: fix
+	* xml/preproc.cs: add javascript support
+
+
 2009-01-23  Andreas Huegel <andreas.huegel@topalis.com>
 
 	bugfixes IMAP Gateway, Parser:

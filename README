@@ -2,7 +2,7 @@ NMapi is an implementation of MAPI for the C# programming language and
 provides a fully managed, cross-platform implementation of the 
 OpenMapi.org API.
 
-It supports Mono 2.0 and the .NET Framework 3.5 or higher.
+It supports Mono 2.2 and the .NET Framework 3.5 or higher.
 
-It is based on jumapi, which was developed by VIPcom AG and is a 
+It is based on jumapi, which was developed by VIPcom GmbH and is a 
 100% Java implementation of the Microsoft MAPI API.
