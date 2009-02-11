@@ -1613,7 +1613,7 @@ Console.WriteLine("outputgeneration now");
 			mm.SetFrom (new InternetAddress ("Andreas Hügel<andreas.huegel@topalis.com>", null));
 
 			List<InternetAddress> ia = new List<InternetAddress> ();
-			ia.Add (new InternetAddress ("Johannes Roith<johannes.roith@topalis.com>", null));
+			ia.Add (new InternetAddress ("Johannes<johannes@xxxxxxx.com>", null));
 			mm.SetRecipients (RecipientType.TO, ia);
 
 			InternetHeader ih = new InternetHeader ("Content-Type", "multipart/plain; charset=utf-8");

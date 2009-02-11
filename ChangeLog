@@ -1,3 +1,12 @@
+
+2009-02-11  Andreas Huegel <andreas.huegel@topalis.com>
+	bugfixes in Tests
+
+	* tests/nmapi/mime/TestMimeMessage.cs
+	* tests/nmapi/mime/TestMimePart.cs
+	* tests/nmapi/mime/TestMime.cs
+
+
 2009-02-06  Johannes Roith <johannes@jroith.de>
 
 	* NMapi/Core/Data/Def.xml: remove "S" prefix for structures

@@ -379,24 +379,19 @@ QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
 		[Test]
 		public void MimeMessage_Parse_Addresses()
 		{
-			string msgStream = @"Message-ID: <49339FDC.6020707@topalis.com>
+			string msgStream = @"Message-ID: <49339FDC.6020707@xxxxx.com>
 Date: Mon, 01 Dec 2008 09:27:08 +0100
 From: =?ISO-8859-15?Q?Andreas_H=FCgel?= <andreas.huegel@topalis.com>
-To: johannes.roith@topalis.com, Tom Uhl <thomas.uhl@topalis.com>, 
- Dominik Sommer <dominik.sommer@topalis.com>
+To: johannes@xxxxx.com, Tomas<thomas@xxxxx.com>, 
+ Dominik Sommer <dominik@xxxxx.com>
 Subject: IMAP Gateway, Status 28.11.08
-In-Reply-To: <491D75AD.90107@topalis.com>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=ISO-8859-15
-FCC: imap://ahuegel@notes-001.str.topalis/Sent
 X-Identity-Key: id2
 X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; uuencode=0
 User-Agent: Thunderbird 2.0.0.12 (Windows/20080213)
 MIME-Version: 1.0
-References: <491448E9.7080709@topalis.com> <491D75AD.90107@topalis.com>
 X-Enigmail-Version: 0.95.7
-X-MIMETrack: Itemize by IMAP Server on notes-001/Server/Topalis(Release 8.0.1HF758 |
- October 6, 2008) at 01.12.2008 09:27:39
 
 Hallo Johannes,
 ";
@@ -406,12 +401,12 @@ Hallo Johannes,
 				Assert.AreEqual ("andreas.huegel@topalis.com", mm.GetFrom ()[0].Email);
 				Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", mm.GetFrom ()[0].Address);
 
-				Assert.AreEqual ("johannes.roith@topalis.com", mm.GetRecipients (RecipientType.TO)[0].Email);
+				Assert.AreEqual ("johannes@xxxxx.com", mm.GetRecipients (RecipientType.TO)[0].Email);
 				Assert.AreEqual ("Tom Uhl", mm.GetRecipients (RecipientType.TO)[1].Personal);
-				Assert.AreEqual ("dominik.sommer@topalis.com", mm.GetRecipients (RecipientType.TO)[2].Email);
+				Assert.AreEqual ("dominik@xxxxx.com", mm.GetRecipients (RecipientType.TO)[2].Email);
 
-				Assert.AreEqual ("johannes.roith@topalis.com", mm.GetRecipients(RecipientType.TO)[0].Address);
-				Assert.AreEqual ("Tom Uhl <thomas.uhl@topalis.com>", mm.GetRecipients(RecipientType.TO)[1].Address);
+				Assert.AreEqual ("johannes@xxxxx.com", mm.GetRecipients(RecipientType.TO)[0].Address);
+				Assert.AreEqual ("Tomas<thomas@xxxxx.com>", mm.GetRecipients(RecipientType.TO)[1].Address);
 		}
 	}
 }

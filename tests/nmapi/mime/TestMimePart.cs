@@ -144,22 +144,22 @@ namespace NMapi.Format.Mime
 		public void _MimePart1()
 		{
 			String inString = 
-@"Received: from topalis.com ([192.168.10.5])
-          by notes-001.str.topalis (Lotus Domino Release 8.0.1HF110)
+@"Received: from xxxxx.com ([192.168.10.5])
+          by notes-001.str.xxxxx (Lotus Domino Release 8.0.1HF110)
           with ESMTP id 2008090115141866-9341 ;
           Mon, 1 Sep 2008 15:14:18 +0200
 Received: from jake.think (localhost.localdomain [127.0.0.1])
-    by topalis.com (Postfix) with ESMTP id CEF23400DE;
+    by xxxxx.com (Postfix) with ESMTP id CEF23400DE;
     Mon,  1 Sep 2008 15:14:15 +0200 (CEST)
 Received: from [192.168.10.38] (termsrv02.think [192.168.10.38])
-	by topalis.com (Postfix) with ESMTP id 9F04A400DE;
+	by xxxxx.com (Postfix) with ESMTP id 9F04A400DE;
 	Mon,  1 Sep 2008 15:14:13 +0200 (CEST)
-Message-ID: <48BBEAA5.7090708@topalis.com>
+Message-ID: <48BBEAA5.7090708@xxxxx.com>
 Date: Mon, 01 Sep 2008 15:14:13 +0200
-From: Annett Wagner <annett.wagner@topalis.com>
-To: alle-ep@empalis.com, alle-id@innovidata.com, alle-mx@millenux.com,
-	alle-to@to.com, alle-topalis@topalis.com
-Subject: [Alle-topalis] Erinnerung Typberatung/Business Outfit
+From: Annett Wagner <annett@xxxxx.com>
+To: alle-xxxx@xxxxx.com, alle-xxx@xxxxx.com, alle-xx@xxxxx.com,
+	alle-xxxxx@xxxxx.com, alle-xxxxx@xxxxx.com
+Subject: [Alle-xxxxx] Erinnerung Typberatung/Business Outfit
 
 Hello all,";
 			inString = inString.Replace("\n", "\r\n");
@@ -183,14 +183,14 @@ Hello all,";
 		public void _MimePart2()
 		{
 			String inString = 
-@"Received: from topalis.com ([192.168.10.5])
-          by notes-001.str.topalis (Lotus Domino Release 8.0.1HF110)
+@"Received: from xxxxx.com ([192.168.10.5])
+          by notes-001.str.toxxxxxpalis (Lotus Domino Release 8.0.1HF110)
           with ESMTP id 2008090115141866-9341 ;
           Mon, 1 Sep 2008 15:14:18 +0200
-From: Annett Wagner <annett.wagner@topalis.com>
-To: alle-ep@empalis.com, alle-id@innovidata.com, alle-mx@millenux.com,
-	alle-to@to.com, alle-topalis@topalis.com
-Subject: [Alle-topalis] Erinnerung Typberatung/Business Outfit
+From: Annett Wagner <annett@xxxxx.com>
+To: alle-xxxx@xxxxx.com, alle-xxx@xxxxx.com, alle-xx@xxxxx.com,
+	alle-xxxxx@xxxxx.com, alle-xxxxx@xxxxx.com
+Subject: [Alle-xxxxx] Erinnerung Typberatung/Business Outfit
 
 Hello all,";
 			inString = inString.Replace("\n", "\r\n");
