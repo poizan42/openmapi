@@ -16,6 +16,8 @@
 //
 
 using System;
+using System.Diagnostics;
+
 using NMapi.Utility;
 
 namespace NMapi.Gateways.IMAP {
@@ -71,7 +73,8 @@ namespace NMapi.Gateways.IMAP {
 			}
 
 ObjectDumper.Write(command,3);			
-				
+
+			
 			AbstractBaseCommandProcessor cmd = null;
 			switch (command.Command_name) {
 			case "APPEND": cmd = new CmdAppend (imapConnectionState); break;

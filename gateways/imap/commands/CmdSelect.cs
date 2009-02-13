@@ -59,7 +59,7 @@ namespace NMapi.Gateways.IMAP {
 			if (command.Mailbox1 != null) {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-					Trace.WriteLine ("Select: path = " + path);					
+					state.Log ("Select: path = " + path);					
 					if (!ServCon.ChangeDir (path)) {
 						state.ResponseManager.AddResponse (
 							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));

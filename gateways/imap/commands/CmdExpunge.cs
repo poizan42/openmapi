@@ -53,7 +53,7 @@ namespace NMapi.Gateways.IMAP {
 			// Property permanently. (See CmdStore)
 
 			try {
-				DoExpunge (state, ServCon);
+				DoExpunge (state, ServCon, command);
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			} catch (Exception e) { 
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
@@ -61,7 +61,7 @@ namespace NMapi.Gateways.IMAP {
 				
 		}
 
-		public static void DoExpunge (IMAPConnectionState state, ServerConnection servCon) {
+		public static void DoExpunge (IMAPConnectionState state, ServerConnection servCon, Command command) {
 			
 			var query = from toDel in servCon.SequenceNumberList
 			where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
@@ -69,7 +69,6 @@ namespace NMapi.Gateways.IMAP {
 
 			EntryList el = new EntryList (query.ToArray ());
 			servCon.CurrentFolder.DeleteMessages (el, null, 0);
-
 			servCon.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 			
 			// handle Expunge responses and manage SequenceNumberList

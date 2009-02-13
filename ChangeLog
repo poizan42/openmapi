@@ -1,3 +1,33 @@
+2009-02-13  Andreas Huegel <andreas.huegel@topalis.com>
+	stabilisation + features (Mailinglist support, mail priority, Html bodies)
+
+	* gateways/imap/SequenceNumberList.cs
+	* gateways/imap/CommandProcessor.cs
+	* gateways/imap/NotificationHandler.cs
+	* gateways/imap/Main.cs
+	* gateways/imap/ConversionHelper.cs
+	* gateways/imap/ServerConnection.cs
+	* gateways/imap/ResponseManager.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* gateways/imap/commands/CmdStore.cs
+	* gateways/imap/commands/CmdCreate.cs
+	* gateways/imap/commands/CmdClose.cs
+	* gateways/imap/commands/CmdLsub.cs
+	* gateways/imap/commands/CmdAppend.cs
+	* gateways/imap/commands/CmdLogin.cs
+	* gateways/imap/commands/CmdCopy.cs
+	* gateways/imap/commands/CmdList.cs
+	* gateways/imap/commands/CmdExpunge.cs
+	* gateways/imap/commands/CmdAuthenticate.cs
+	* gateways/imap/commands/CmdSelect.cs
+	* gateways/imap/commands/CmdStarttls.cs
+	* gateways/imap/commands/CmdSubscribe.cs
+	* gateways/imap/commands/CmdStatus.cs
+	* gateways/imap/commands/CmdUnsubscribe.cs
+	* gateways/imap/ClientConnection.cs
+	* gateways/imap/HeaderGenerator.cs
+	* gateways/imap/IMAPConnectionState.cs
+
 
 2009-02-11  Andreas Huegel <andreas.huegel@topalis.com>
 	bugfixes in Tests

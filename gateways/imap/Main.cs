@@ -70,8 +70,8 @@ namespace NMapi.Gateways.IMAP
 				
 				imapState = new IMAPConnectionState(c);
 				cc = imapState.ClientConnection;
-				cc.LogInput = this.writeText;
-				cc.LogOutput = this.writeText;
+//				cc.LogInput = this.writeText;
+//				cc.LogOutput = this.writeText;
 		
 				ThreadStart connectionDelegate = new ThreadStart(imapState.DoWork);
 				Thread t = new Thread (connectionDelegate);

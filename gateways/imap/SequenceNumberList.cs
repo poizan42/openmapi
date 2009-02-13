@@ -54,6 +54,7 @@ namespace NMapi.Gateways.IMAP {
 		private SBinary creationEntryId;
 		private ulong messageFlags;
 		private ulong msgStatus;
+		private ulong flagStatus;
 
 		public SBinary EntryId {
 			get { return entryId; }
@@ -89,6 +90,11 @@ namespace NMapi.Gateways.IMAP {
 		public ulong MsgStatus {
 			get { return msgStatus; }
 			set { msgStatus = value; }
+		}
+
+		public ulong FlagStatus {
+			get { return flagStatus; }
+			set { flagStatus = value; }
 		}
 
 		public SequenceNumberListItem () 

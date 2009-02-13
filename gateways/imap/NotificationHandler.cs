@@ -52,30 +52,30 @@ namespace NMapi.Gateways.IMAP {
 
 		private void CriticalErrorHandler (object sender, ErrorEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 		private void ExtendedHandler (object sender, ExtendedEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 
 		private void NewMailHandler (object sender, NewMailEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 
 		private void ObjectCopiedHandler (object sender, ObjectEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 
 		private void ObjectCreatedHandler (object sender, ObjectEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 
@@ -85,7 +85,7 @@ namespace NMapi.Gateways.IMAP {
 
 		private void ObjectModifiedHandler (object sender, ObjectEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 		private void ObjectMovedHandler (object sender, ObjectEventArgs ea)
@@ -95,33 +95,36 @@ namespace NMapi.Gateways.IMAP {
 
 		private void SearchCompleteHandler (object sender, ObjectEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived");
+			imapConnectionState.Log ("An Event has arrived");
 		}
 
 		private void TableModifiedHandler (object sender, TableEventArgs ea)
 		{
-			Trace.WriteLine ("An Event has arrived: " + ea.EventType + ":" + ea.Notification.TableEvent);
-			Trace.WriteLine (ea.Notification.TableEvent.GetTypeCode ());
-			
-			switch (ea.Notification.TableEvent) {
-			case TableNotificationType.Changed:
-			case TableNotificationType.RowModified:
-				TableChanged (ea.Notification);
-				break;
-			case TableNotificationType.Error:
-				//PrepareReload (n.HResult);
-				break;
-			case TableNotificationType.Reload:
-				//PrepareReload (null);
-				break;
-			case TableNotificationType.RowAdded:
-				RowAdded (ea.Notification);
-				break;
-			case TableNotificationType.RowDeleted:
-				RowDeleted (ea.Notification);
-				break;
-			}
+			imapConnectionState.Log ("An Event has arrived: " + ea.EventType + ":" + ea.Notification.TableEvent);
+			imapConnectionState.Log (ea.Notification.TableEvent.GetTypeCode ().ToString ());
 
+			// lock execution against the execution of a command in the same ImapConnection
+//			lock (this.imapConnectionState)
+			{
+				switch (ea.Notification.TableEvent) {
+				case TableNotificationType.Changed:
+				case TableNotificationType.RowModified:
+					TableChanged (ea.Notification);
+					break;
+				case TableNotificationType.Error:
+					//PrepareReload (n.HResult);
+					break;
+				case TableNotificationType.Reload:
+					//PrepareReload (null);
+					break;
+				case TableNotificationType.RowAdded:
+					RowAdded (ea.Notification);
+					break;
+				case TableNotificationType.RowDeleted:
+					RowDeleted (ea.Notification);
+					break;
+				}
+			}
 		}
 
 		private void RowDeleted (TableNotification n)
@@ -132,7 +135,7 @@ namespace NMapi.Gateways.IMAP {
 			SequenceNumberListItem snli = ServCon.SequenceNumberList.Find ((x)=> ServCon.CompareEntryIDs(x.InstanceKey.ByteArray, instanceKey.ByteArray));
 			imapConnectionState.AddExpungeRequest (snli);
 			} catch (Exception e) {
-				Trace.WriteLine ("NotificationHandler.RowDeleted, Exception: " + e.Message);
+				imapConnectionState.Log ("NotificationHandler.RowDeleted, Exception: " + e.Message);
 				throw;
 			}
 		}
@@ -144,7 +147,7 @@ namespace NMapi.Gateways.IMAP {
 			try {
 				imapConnectionState.AddExistsRequest (new SequenceNumberListItem ());
 			} catch (Exception e) {
-				Trace.WriteLine ("NotificationHandler.RowAdded, Exception: " + e.Message);
+				imapConnectionState.Log ("NotificationHandler.RowAdded, Exception: " + e.Message);
 				throw;
 			}
 		}
@@ -156,7 +159,7 @@ namespace NMapi.Gateways.IMAP {
 			try {
 				imapConnectionState.AddExistsRequest (new SequenceNumberListItem ());
 			} catch (Exception e) {
-				Trace.WriteLine ("NotificationHandler.TableChanged, Exception: " + e.Message);
+				imapConnectionState.Log ("NotificationHandler.TableChanged, Exception: " + e.Message);
 				throw;
 			}
 		}
@@ -185,10 +188,13 @@ namespace NMapi.Gateways.IMAP {
 		private void UnsubscribeEventHandlers ()
 		{
 			try {
+imapConnectionState.Log ("NotificationHandlerUnsubscribe1");
 				mt.Events.TableModified -= TableModifiedHandler;
+imapConnectionState.Log ("NotificationHandlerUnsubscribe2");
 			}
 			catch (Exception) { }
 	
+imapConnectionState.Log ("NotificationHandlerUnsubscribe3");
 
 /*
 			ServCon.Store.Events [subscribeId].CriticalError -= CriticalErrorHandler;

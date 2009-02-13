@@ -179,7 +179,7 @@ namespace NMapi.Gateways.IMAP {
 					HeaderGenerator headerGenerator = null;
 					// preparation for HEADER/TEXT/MIME
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
-						props.Prop = 0x3FDE0003; //    #define PR_INTERNET_CPID 
+						props.Prop = Outlook.Property_INTERNET_CPID;
 						Encoding encoding = (props.Exists && props.Long != "") ? Encoding.GetEncoding(Convert.ToInt32 (props.Long)) : Encoding.UTF8;
 
 						// set headers
@@ -195,7 +195,7 @@ namespace NMapi.Gateways.IMAP {
 						if (props.Exists) {
 							// fill message
 							if (section_text == null || section_text == "TEXT") {
-								Trace.WriteLine ("memory test1");
+								state.Log ("memory test1");
 								mm = BuildMimeMessageFromMapi (props, snli, headerGenerator.InternetHeaders);
 							}
 						}
@@ -218,7 +218,11 @@ namespace NMapi.Gateways.IMAP {
 					}
 					if (section_text == "TEXT") {
 						if (mm != null)
+						try {
 							bodyPeekResult.Append (Encoding.ASCII.GetString (mm.RawContent));
+						} catch (ArgumentNullException) {
+							// had unexplainable ArgumentNullExceptions when calling GetString while doing stress testing.
+						}
 					}
 					if (section_text == "MIME") {
 									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
@@ -229,9 +233,11 @@ namespace NMapi.Gateways.IMAP {
 						bodyItems.AddResponseItem ("HEADER.FIELDS");
 						ResponseItemList headerItems = new ResponseItemList();
 						headerGenerator = new HeaderGenerator (props, state, snli.EntryId);
+						headerGenerator.DoTransportMessageHeaders (); // for the moment, add all headers
 
 						foreach (String headerItem1 in cfi.Header_list) {
 							string headerItem = headerItem1.ToUpper ();
+
 							if (headerItem == "DATE") {
 								headerItems.AddResponseItem ("DATE");
 								headerGenerator.DoDate ();
@@ -251,6 +257,14 @@ namespace NMapi.Gateways.IMAP {
 							if (headerItem == "SUBJECT") {
 								headerItems.AddResponseItem ("SUBJECT");
 								headerGenerator.DoSubject ();
+							}
+							if (headerItem == "PRIORITY") {
+								headerItems.AddResponseItem ("PRIORITY");
+								headerGenerator.DoPriority ();
+							}
+							if (headerItem == "X-PRIORITY") {
+								headerItems.AddResponseItem ("X-PRIORITY");
+								headerGenerator.DoXPriority ();
 							}
 							if (headerItem == "REFERENCES") {
 								headerItems.AddResponseItem ("REFERENCES");
@@ -339,12 +353,12 @@ namespace NMapi.Gateways.IMAP {
 			ResponseItemList ril = new ResponseItemList ();
 			ulong flags = 0;
 			ulong status = 0;
+			ulong flagStatus = 0;
 			
 			propertyHelper.Prop = Property.MessageFlags;
 			if (propertyHelper.Exists) {
 				flags = (ulong) propertyHelper.LongNum;
 			}
-
 
 			// !!!!!!!!!! use getMessageStatus for msgstatus. Reading the Flag as a property doesn't seem to return anything but 0
 			propertyHelper.Prop = Property.MsgStatus;
@@ -352,10 +366,15 @@ namespace NMapi.Gateways.IMAP {
 				status = (ulong) propertyHelper.LongNum;
 			}
 							
-			return Flags (flags, status);
+			propertyHelper.Prop = Outlook.Property_FLAG_STATUS;
+			if (propertyHelper.Exists) {
+				flagStatus = (ulong) propertyHelper.LongNum;
+			}
+							
+			return Flags (flags, status, flagStatus);
 		}
 
-		public static ResponseItemList Flags (ulong flags, ulong status)
+		public static ResponseItemList Flags (ulong flags, ulong status, ulong flagStatus)
 		{
 			ResponseItemList ril = new ResponseItemList ();
 
@@ -368,9 +387,12 @@ namespace NMapi.Gateways.IMAP {
 				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
 			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
 				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
-			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
+//			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
+//				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
+			if (flagStatus > 0)  //PR_FLAG_STATUS
 				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
-							
+
+			
 			return ril;
 		}
 		
@@ -398,43 +420,35 @@ namespace NMapi.Gateways.IMAP {
 			propsBody.Prop = Property.Body;
 			PropertyHelper propsRTFCompressed = new PropertyHelper (props.Props);
 			propsRTFCompressed.Prop = Property.RtfCompressed;
-			PropertyHelper propsHtml = new PropertyHelper (props.Props);
-			propsHtml.Prop = Outlook.Property_HTML;
 			
 			if (propsBody.Exists) {
 				IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
 				SRowSet rs = tr.GetRows (1);
-				if (rs.Count == 0 && !propsRTFCompressed.Exists && !propsHtml.Exists) {
+				
+				if (rs.Count == 0) {
+					// Message contains of pure text only
 					mm.Content = props.Unicode;
 				} else {
-					mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
+					mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/related");
 					mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
 					MimeMultipart mmp = new MimeMultipart (mm);
 					// new Body Part for the text part
 					MimeBodyPart mbp = new MimeBodyPart ();
-					
-					if (propsRTFCompressed.Exists && 
-					    propsHtml.Exists
 
-					    
-						&& false
-					    
-						)
-					{
-Console.WriteLine ("html");
-Console.WriteLine (propsRTFCompressed.Unicode);
-//Console.WriteLine (Encoding.ASCII.GetString (propsHtml.Binary.ByteArray));
+					RTFParser rtfParser = null;
+					if (propsRTFCompressed.Exists) {
+						IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, 0);
+						MemoryStream ms = new MemoryStream ();
+						x.GetData (ms);
+
+						ms = new MemoryStream (Encoding.ASCII.GetBytes (ConversionHelper.UncompressRTF( ms.ToArray ())));
+						rtfParser = new RTFParser (ms);
+					}
+					if (rtfParser != null && rtfParser.IsHTML ()) {
 						// do html body
 						mbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
 						MimeMultipart mmpHtml = new MimeMultipart (mbp);
 
-/*						// text/html alternative
-						MimeBodyPart mbpTextHtmlAlternative = new MimeBodyPart ();
-						mbpTextHtmlAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html");
-						mbpTextHtmlAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
-						mbpTextHtmlAlternative.Content = propsHtml.Unicode;						
-						mmpHtml.AddBodyPart (mbpTextHtmlAlternative);
-*/						
 						// Text/plain alternative
 						MimeBodyPart mbpTextPlainAlternative = new MimeBodyPart ();
 						mbpTextPlainAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/plain");
@@ -442,12 +456,22 @@ Console.WriteLine (propsRTFCompressed.Unicode);
 						mbpTextPlainAlternative.Content = propsBody.Unicode;
 						mmpHtml.AddBodyPart (mbpTextPlainAlternative);
 
-ObjectDumper.Write (mmpHtml,1);						
+						// text/html alternative
+						MimeBodyPart mbpTextHtmlAlternative = new MimeBodyPart ();
+						mbpTextHtmlAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html");
+						mbpTextHtmlAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+						MemoryStream mso = new MemoryStream ();
+						rtfParser.WriteHtmlTo (mso, "us-ascii");
+						mbpTextHtmlAlternative.Content = Encoding.ASCII.GetString (mso.ToArray ());
+						mmpHtml.AddBodyPart (mbpTextHtmlAlternative);
+
 					} else {
+
 						// do basic text body
 						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME));
 						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
 						mbp.Content = propsBody.Unicode;
+
 					}
 					mmp.AddBodyPart (mbp);
 
@@ -461,18 +485,19 @@ ObjectDumper.Write (mmpHtml,1);
 
 		private void AppendAttachments (MimeMultipart mmp, IMessage im, InternetHeaders ih)
 		{
-			int attachCnt = 1;
+			int attachCnt = 0;
 			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
 			SRowSet rs = tr.GetRows (1);
 			
 			while (rs.Count > 0) {
 				foreach (SRow row in rs) {
-					Trace.WriteLine ("next Attachment");
+					state.Log ("next Attachment");
 					// handle content-type and content-transport-encoding headers
 					PropertyHelper aProps = new PropertyHelper (row.Props);
 					PropertyHelper attachMethProps = new PropertyHelper (row.Props);
 					attachMethProps.Prop = Property.AttachMethod;
-
+ObjectDumper.Write (row.Props);
+					
 					// embedded Messages
 					if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
 						IAttach ia1 = im.OpenAttach (attachCnt, null, 0);
@@ -498,11 +523,17 @@ ObjectDumper.Write (mmpHtml,1);
 						}
 						continue;
 					}
+
+					MimeBodyPart mbp = new MimeBodyPart ();
 					
-					String mimeType;
+					String mimeType = null;
 					aProps.Prop = Property.AttachExtension;
 					if (aProps.Exists && aProps.String.Length > 1) {
 						mimeType = MimeUtility.ExtToMime (aProps.String.Substring (1).ToLower ());
+					}
+					aProps.Prop = Property.AttachMimeTag;
+					if (mimeType == null && aProps.Exists) {
+						mimeType = aProps.String;
 					} else {
 						mimeType = MimeUtility.ExtToMime ("dummy");
 					}
@@ -523,22 +554,36 @@ ObjectDumper.Write (mmpHtml,1);
 					if (aProps.Exists) {
 						ih_fname.SetParam ("name", aProps.String);
 					}
-
-					MimeBodyPart mbp = new MimeBodyPart ();
-					mbp.SetHeader (ih_fname);
+					aProps.Prop = Property.AttachFilename;
+					if (aProps.Exists) {
+						ih_fname.SetParam ("name", ConversionHelper.Trim0Terminator (aProps.String));
+					}
+					aProps.Prop = Property.AttachLongFilename;
+					if (aProps.Exists) {
+						ih_fname.SetParam ("name", ConversionHelper.Trim0Terminator (aProps.String));
+					}
 					mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, encoding);
-					
-					Trace.WriteLine("now comes the contentn:");
-					try {
-						IAttach ia = im.OpenAttach (attachCnt, null, 0);
-						MemoryStream ms = new MemoryStream ();
-						IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
-						if (iss != null) {
-							iss.GetData (ms);
-							mbp.Content = ms.ToArray ();
+					mbp.SetHeader (ih_fname);
+
+					aProps.Prop = Outlook.Property_ATTACH_CONTENT_ID_W;
+					if (aProps.Exists) {
+						mbp.SetHeader ("Content-ID", "<"+aProps.String+">");
+					}
+
+					aProps.Prop = Property.AttachNum;
+					if (aProps.Exists) {					
+						state.Log("now comes the contentn:");
+						try {
+							IAttach ia = im.OpenAttach ((int) aProps.LongNum, null, 0);
+							MemoryStream ms = new MemoryStream ();
+							IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
+							if (iss != null) {
+								iss.GetData (ms);
+								mbp.Content = ms.ToArray ();
+							}
+						} catch (Exception e) {
+	//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
 						}
-					} catch (Exception e) {
-//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
 					}
 					mmp.AddBodyPart (mbp);
 					
@@ -550,6 +595,8 @@ ObjectDumper.Write (mmpHtml,1);
 
 		private int[] propsAllHeaderProperties = new int[]
 		{
+			Property.Importance,
+			Property.Priority,
 			Property.Subject, 
 			Property.SenderName,
 			Property.SenderEmailAddress,
@@ -569,6 +616,9 @@ ObjectDumper.Write (mmpHtml,1);
 			Property.TransportMessageHeaders,
 			Property.MsgStatus,
 			Property.MessageFlags,
+			Outlook.Property_FLAG_STATUS,
+			Property.Importance,
+			Property.Priority,
 			Property.MessageSize,
 			Property.MessageClass,
 			Property.Body,
@@ -591,6 +641,7 @@ ObjectDumper.Write (mmpHtml,1);
 				if ("FLAGS ALL FAST FULL".Contains (Fetch_att_key)) {
 					propList.Add (Property.MsgStatus);
 					propList.Add (Property.MessageFlags);
+					propList.Add (Outlook.Property_FLAG_STATUS);
 				}
 				if ("ENVELOPE ALL FULL".Contains (Fetch_att_key)) {
 				}
@@ -600,7 +651,7 @@ ObjectDumper.Write (mmpHtml,1);
 				}
 				if (Fetch_att_key == "RFC822.TEXT") {
 					propList.Add (Property.Body);
-					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
+					propList.Add (Outlook.Property_INTERNET_CPID); 
 				}
 				if (Fetch_att_key == "RFC822.HEADER") {
 					propList.AddRange (propsAllHeaderProperties);
@@ -614,14 +665,14 @@ ObjectDumper.Write (mmpHtml,1);
 				if (Fetch_att_key == "BODYSTRUCTURE") {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
-					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
+					propList.Add (Outlook.Property_INTERNET_CPID);
 				}
 				if ("BODY FULL".Contains(Fetch_att_key)) {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
 					propList.Add (Property.RtfCompressed);
-					propList.Add (Outlook.Property_HTML);
-					propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
+					propList.Add (((int) PropertyType.String8)  | (0x1013 << 16)); //Outlook.Property_HTML);
+					propList.Add (Outlook.Property_INTERNET_CPID);
 				}
 				if (Fetch_att_key == "BODY.PEEK") {
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
@@ -631,7 +682,7 @@ ObjectDumper.Write (mmpHtml,1);
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
 						propList.Add (Outlook.Property_HTML);
-						propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
+						propList.Add (Outlook.Property_INTERNET_CPID);
 					}
 					if (section_text == "HEADER") {
 					}
@@ -639,7 +690,7 @@ ObjectDumper.Write (mmpHtml,1);
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
 						propList.Add (Outlook.Property_HTML);
-						propList.Add (0x3FDE0003); //    #define PR_INTERNET_CPID 
+						propList.Add (Outlook.Property_INTERNET_CPID);
 					}
 					if (section_text == "MIME") {
 //									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
@@ -649,6 +700,7 @@ ObjectDumper.Write (mmpHtml,1);
 					if (section_text == "HEADER.FIELDS") {
 						foreach (String headerItem1 in cfi.Header_list) {
 							string headerItem = headerItem1.ToUpper ();
+							propList.Add (Property.TransportMessageHeaders);
 							
 							if (headerItem == "DATE") {
 								propList.Add (Property.CreationTime);
@@ -665,6 +717,13 @@ ObjectDumper.Write (mmpHtml,1);
 							}
 							if (headerItem == "SUBJECT") {
 								propList.Add (Property.Subject);
+							}
+							if (headerItem == "PRIORITY") {
+								propList.Add (Property.Priority);
+							}
+							if (headerItem == "X-PRIORITY") {
+								propList.Add (Property.Importance);
+								propList.Add (Property.Priority);
 							}
 							if (headerItem == "REFERENCES") {
 							}

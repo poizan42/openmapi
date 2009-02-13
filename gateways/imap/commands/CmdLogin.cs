@@ -52,7 +52,7 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			}
 			catch (Exception e) {
-throw;				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 			}
 		}
 

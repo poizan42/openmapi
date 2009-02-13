@@ -50,8 +50,7 @@ namespace NMapi.Gateways.IMAP {
 					throw new Exception ("internal error");
 
 				SPropValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
-ObjectDumper.Write  (subscriptions, 3);
-				Trace.WriteLine ("lsub 1");
+				state.Log ("lsub 1");
 				string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
 				if (subsArray == null)
 					subsArray = new string[] { };
@@ -61,18 +60,18 @@ ObjectDumper.Write  (subscriptions, 3);
 				string path = ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox);
 				path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + path);
 				string path_no_jokers = path.Replace ("*", "").Replace ("%", "");
-				Trace.WriteLine ("LSUB path: " + path);				
+				state.Log ("LSUB path: " + path);				
 				int pathLength = PathHelper.Path2Array (path).Length;
 				
 				foreach (string s in subs) {
-					Trace.WriteLine ("lsub 2, s: " + s);
+					state.Log ("lsub 2, s: " + s);
 					if (s.StartsWith (path_no_jokers)) {
 						int sPathLength = (s.Trim () != string.Empty) ? PathHelper.Path2Array (s).Length : 0;
-						Trace.WriteLine ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
+						state.Log ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
 						if ((path.EndsWith ("%") && sPathLength <= pathLength) ||
 						    (path.EndsWith ("*") && sPathLength >= pathLength) ||
 						    (!path.EndsWith ("%") && !path.EndsWith ("*") && sPathLength == pathLength)) {
-								Trace.WriteLine ("lsub 4");
+								state.Log ("lsub 4");
 								string sendString = s.TrimStart ('/'); // get rid of leading "/"
 								sendString = state.FolderMappingAgent.MapMAPIToIMAP (sendString);
 								state.ResponseManager.AddResponse (
@@ -83,7 +82,7 @@ ObjectDumper.Write  (subscriptions, 3);
 						}
 					}
 				}
-				Trace.WriteLine ("lsub 6");
+				state.Log ("lsub 6");
 				state.ResponseManager.AddResponse (
 					new Response (ResponseState.OK, Name, command.Tag)
 						.AddResponseItem ("completed"));

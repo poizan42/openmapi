@@ -65,6 +65,31 @@ namespace NMapi.Gateways.IMAP {
 				uprop.Value = string.Empty + mm.GetHeader ("Subject", ";");
 				props.Add (uprop);
 
+				
+				int prioVal = 1;
+				try {
+					switch (mm.GetHeader ("X-Priority", ";")[0])
+					{
+					case '1':
+					case '2':
+						prioVal = 2;
+						break;
+					case '4':
+					case '5':
+						prioVal = 0;
+						break;
+					}
+				} catch (NullReferenceException) {
+				}
+				IntProperty lprop = new IntProperty ();
+				lprop.PropTag = Property.Importance;
+				lprop.Value = prioVal;
+				props.Add (lprop);
+				lprop = new IntProperty ();
+				lprop.PropTag = Property.Priority;
+				lprop.Value = prioVal - 1;
+				props.Add (lprop);
+				
 				//sender address
 				foreach (InternetAddress ia in mm.GetFrom ()) {
 					uprop = new UnicodeProperty ();
@@ -89,31 +114,59 @@ namespace NMapi.Gateways.IMAP {
 
 				MimeToMapiAttachments (mm, im, props, command);
 
+				MimeToMapiTransportHeaders (mm, im, props, command);
+
 				SPropProblemArray sppa = im.SetProps (props.ToArray ());
 				for (int i = 0; i < sppa.AProblem.Length; i++) 
 					if (sppa.AProblem[i].SCode != Error.Computed) {
-						Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
+						state.Log ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
 						throw new MapiException (sppa.AProblem [i].SCode);
 				}
 				im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 
 				state.AddExistsRequestDummy ();
 				
-				Trace.WriteLine ("CmdAppend.Run finish");
+				state.Log ("CmdAppend.Run finish");
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			} catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 			}
 		}
 
+		private void MimeToMapiTransportHeaders (MimeMessage mm, IMessage im, List<SPropValue> props, Command command)
+		{
+			InternetHeaders ih = mm.Headers;
+
+			// remove all headers which are treated elsewhere
+			ih.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
+			ih.RemoveHeader (MimePart.CONTENT_TYPE_NAME);
+			ih.RemoveHeader ("To");
+			ih.RemoveHeader ("From");
+			ih.RemoveHeader ("Cc");
+			ih.RemoveHeader ("Date");
+			ih.RemoveHeader ("Subject");
+			ih.RemoveHeader ("MimeVersion");
+			ih.RemoveHeader ("Priority");
+			ih.RemoveHeader ("X-Priority");
+
+			UnicodeProperty uprop = new UnicodeProperty ();
+			uprop.PropTag = Property.TransportMessageHeadersW;
+			MemoryStream ms = new MemoryStream ();
+			ih.WriteTo (ms);
+			uprop.Value = Encoding.ASCII.GetString (ms.ToArray ());
+
+			props.Add (uprop);
+		}
+		
+		
 		private void MimeToMapiRecipients (MimeMessage mm, IMessage im, List<SPropValue> props, Command command) 
 		{
-			Trace.WriteLine ("MimeToMapiRecipients 1");
+			state.Log ("MimeToMapiRecipients 1");
 			List<AdrEntry> lae = new List<AdrEntry> ();
 			foreach (RecipientType rt in new RecipientType [] {RecipientType.TO, RecipientType.CC, RecipientType.BCC}) {
-				Trace.WriteLine ("MimeToMapiRecipients 2");
+				state.Log ("MimeToMapiRecipients 2");
 				foreach (InternetAddress ia in mm.GetRecipients (rt)) {
-					Trace.WriteLine ("MimeToMapiRecipients 3");
+					state.Log ("MimeToMapiRecipients 3");
 					List<SPropValue> lpv= new List<SPropValue> ();
 					
 					IntProperty lprop = new IntProperty ();
@@ -150,64 +203,63 @@ namespace NMapi.Gateways.IMAP {
 					
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
-					Trace.WriteLine ("MimeToMapiRecipients 8");
+					state.Log ("MimeToMapiRecipients 8");
 				}
 			}
 			
-			Trace.WriteLine ("MimeToMapiRecipients 9");
+			state.Log ("MimeToMapiRecipients 9");
 			if (lae.Count () > 0) {
-				Trace.WriteLine ("MimeToMapiRecipients 10");
+				state.Log ("MimeToMapiRecipients 10");
 				AdrList al = new AdrList (lae.ToArray ());
-				Trace.WriteLine ("MimeToMapiRecipients 11");
+				state.Log ("MimeToMapiRecipients 11");
 				im.ModifyRecipients (ModRecip.Add, al);
-				Trace.WriteLine ("MimeToMapiRecipients 12");
+				state.Log ("MimeToMapiRecipients 12");
 	
 				im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 			}
-			Trace.WriteLine ("recipients end");
+			state.Log ("recipients end");
 		}
 		
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<SPropValue> props, Command command) 
 		{
 			UnicodeProperty uprop = null;
-			Trace.WriteLine ("MimeToMapiAttachments 1");			
+			state.Log ("MimeToMapiAttachments 1");			
 			if (mm.ContentType == null)	{
-				Trace.WriteLine ("MimeToMapiAttachments Prop Body");			
+				state.Log ("MimeToMapiAttachments Prop Body");			
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.Body;
-ObjectDumper.Write (mm, 4);				
-				uprop.Value = Encoding.ASCII.GetString (mm.RawContent);
+				uprop.Value = String.Empty + Encoding.ASCII.GetString (mm.RawContent);
 				props.Add (uprop);
 			} else if (mm.ContentType.ToLower () == "text/plain") {
-				Trace.WriteLine ("MimeToMapiAttachments text/plain");			
+				state.Log ("MimeToMapiAttachments text/plain");			
 				string charset = mm.ContentTypeHeader.GetParam ("charset");
 				if (charset != null) {
 					IntProperty lprop = new IntProperty ();
-					lprop.PropTag = 0x3FDE0003; //    #define PR_INTERNET_CPID
+					lprop.PropTag = Outlook.Property_INTERNET_CPID;
 					lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
 					props.Add (lprop);
 				}
 
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.Body;
-				uprop.Value = mm.Text;
+				uprop.Value = String.Empty + mm.Text;
 				props.Add (uprop);
 				
 			} else if (mm.ContentType.ToLower () == "text/html") {
 				// TODO
 			} else if (mm.ContentType.ToLower () == ("multipart/alternative")) {
-				Trace.WriteLine ("MimeToMapiAttachments mutlipart/alternative");			
+				state.Log ("MimeToMapiAttachments mutlipart/alternative");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				foreach (MimeBodyPart mp in mmp) {
 					MimeToMapiAttachments (mp, im, props, command);
 				}
 			} else if (mm.ContentType.StartsWith ("multipart")) {
-				Trace.WriteLine ("MimeToMapiAttachments nultipart");			
+				state.Log ("MimeToMapiAttachments nultipart");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				int mpCount = 0;
 				foreach (MimeBodyPart mp in mmp) {
-					Trace.WriteLine (mp.Content.GetType());
-					Trace.WriteLine (mp.ContentType);
+					state.Log (mp.Content.GetType ().ToString ());
+					state.Log (mp.ContentType);
 
 					// identify main body content if there are multiple attachments
 					// (use first multipart/alternative or text/plain)
@@ -216,7 +268,7 @@ ObjectDumper.Write (mm, 4);
 						    (mp.ContentType.ToLower () == "multipart/alternative" ||
 						     mp.ContentType.ToLower () == "text/plain" ||
 						     mp.ContentType.ToLower () == "text/html")) {
-							Trace.WriteLine ("MimeToMapiAttachments multipart/alternative or text/plain or text/html");
+							state.Log ("MimeToMapiAttachments multipart/alternative or text/plain or text/html");
 							MimeToMapiAttachments (mp, im, props, command);
 						} else {
 
@@ -225,7 +277,12 @@ ObjectDumper.Write (mm, 4);
 							IAttach ia = car.Attach;
 
 							IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin, Guids.IID_IStream, 0, Mapi.Modify|NMAPI.MAPI_CREATE);
-							MemoryStream ms = new MemoryStream ((byte []) mp.Content);
+
+							MemoryStream ms = null;
+							if (mp.Content.GetType () == typeof (string))
+								ms = new MemoryStream (Encoding.ASCII.GetBytes ( (string) mp.Content));
+							else
+								ms = new MemoryStream ((byte []) mp.Content);
 							iss.PutData (ms);
 							ms.Close ();
 
@@ -236,7 +293,7 @@ ObjectDumper.Write (mm, 4);
 							lprop.Value = (int) Attach.ByValue;
 							aprops.Add (lprop);
 
-							Trace.WriteLine ("MimeToMapiAttachments name");			
+							state.Log ("MimeToMapiAttachments name");			
 							string name = mp.ContentTypeHeader.GetParam ("name");
 							if (name != null) {
 								uprop = new UnicodeProperty ();
@@ -255,7 +312,7 @@ ObjectDumper.Write (mm, 4);
 								aprops.Add (uprop);
 							}
 							
-							Trace.WriteLine ("MimeToMapiAttachments content type");			
+							state.Log ("MimeToMapiAttachments content type");			
 							string extension = MimeUtility.MimeToExt (mp.ContentType);
 							if (extension != null) {
 								uprop = new UnicodeProperty ();
@@ -263,15 +320,15 @@ ObjectDumper.Write (mm, 4);
 								uprop.Value = "." + extension;
 								aprops.Add (uprop);
 							}
-							Trace.WriteLine (extension);
+							state.Log (extension);
 
-							Trace.WriteLine ("MimeToMapiAttachments mime tag");
+							state.Log ("MimeToMapiAttachments mime tag");
 							uprop = new UnicodeProperty ();
 							uprop.PropTag = Property.AttachMimeTag;
 							uprop.Value = mp.ContentType;
 							aprops.Add (uprop);
 
-							Trace.WriteLine ("MimeToMapiAttachments rendering positiion ");			
+							state.Log ("MimeToMapiAttachments rendering positiion ");			
 							IntProperty iprop = new IntProperty ();
 							iprop.PropTag = Property.RenderingPosition;
 							iprop.Value = -1;
@@ -282,7 +339,7 @@ ObjectDumper.Write (mm, 4);
 								SPropProblemArray sppa = ia.SetProps (aprops.ToArray ());
 								for (int i = 0; i < sppa.AProblem.Length; i++)
 									if (sppa.AProblem[i].SCode != Error.Computed) {
-										Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
+										state.Log ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
 										throw new MapiException (sppa.AProblem [i].SCode);
 								}
 								ia.SaveChanges (NMAPI.FORCE_SAVE);

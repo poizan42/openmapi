@@ -50,7 +50,7 @@ namespace NMapi.Gateways.IMAP {
 				if (command.List_mailbox == "") {
 					state.ResponseManager.AddResponse ( 
 						new Response (ResponseState.NONE, Name)
-							.AddResponseItem (new ResponseItemList (new ResponseItemText("\\Noselect", ResponseItemMode.ForceAtom)))
+							.AddResponseItem (new ResponseItemList ())
 					        .AddResponseItem (new ResponseItemText ("/", ResponseItemMode.QuotedOrLiteral))
 					        .AddResponseItem (new ResponseItemText ("", ResponseItemMode.QuotedOrLiteral)));
 					state.ResponseManager.AddResponse (
@@ -148,7 +148,7 @@ namespace NMapi.Gateways.IMAP {
 
 		internal List<Response> FindSubDirs (IMapiContainer parent, string path, int depth, string filter)
 		{
-			Trace.WriteLine ("findsubdirs:"+path+":"+depth+":"+filter);			
+			state.Log ("findsubdirs:"+path+":"+depth+":"+filter);			
 			List<Response> nameList = new List<Response> ();
 			IMapiTableReader tableReader = null;
 			try {

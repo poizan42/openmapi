@@ -44,7 +44,15 @@ namespace NMapi.Gateways.IMAP {
 		private bool loopEnd = false;
 		private DateTime timeoutStamp;
 		private string timeout;
+		private int id;
 
+		private static int idLast;
+		private static Object lockObject = new Object ();
+
+		public static Object LockObject {
+			get { return lockObject; }
+		}
+		
 		public IMAPConnectionStates CurrentState {
 			get { return currentState; }
 			set { currentState = value; }
@@ -85,8 +93,11 @@ namespace NMapi.Gateways.IMAP {
 
 		public IMAPConnectionState (TcpClient tcpClient)
 		{
+			id = idLast++;
 			currentState = IMAPConnectionStates.NOT_AUTHENTICATED;
 			clientConnection = new ClientConnection (tcpClient);
+			clientConnection.LogInput = this.Log;
+			clientConnection.LogOutput = this.Log;
 			commandAnalyser = new CommandAnalyser (clientConnection);
 			commandAnalyser.StateNotAuthenticated = this.StateNotAuthenticated;
 			commandAnalyser.StateAuthenticated = this.StateAuthenticated;
@@ -136,7 +147,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Disconnect ();
 			
-			serverConnection = new ServerConnection (host, user, password);
+			serverConnection = new ServerConnection (this, host, user, password);
 			folderMappingAgent = new FolderMappingAgent (this);
 		}
 
@@ -155,12 +166,12 @@ namespace NMapi.Gateways.IMAP {
 		{
 			if (clientConnection.DataAvailable () && !loopEnd) {
 				ResetTimeout ();
-				Trace.WriteLine("sldkfj");
+				Log ("sldkfj");
 				commandAnalyser.CheckCommand ();
 				Queue q = commandAnalyser.CommandQueue;
 				while (q.Count > 0) {
 					Command cmd = (Command) q.Dequeue();
-					Trace.WriteLine("command processing: \""+cmd.Command_name+"\"");						
+					Log ("command processing: \""+cmd.Command_name+"\"");						
 					commandProcessor.ProcessCommand(cmd);
 				}
 			}
@@ -214,98 +225,119 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Response r;
 			List<Response> l = new List<Response> ();
-			
+			SequenceNumberList localExpungeRequests = null;
+			bool bExistsRequests = false;
+Log ( "ProcessNotificationRespo01");
+
+			// keep locks only to get local copies of the info and to reset the lists
+			// otherwise we create deadlocks with incoming notifications, as soon as we
+			// start to create missing uids for messages.
 			lock (expungeRequests) {
+				localExpungeRequests = expungeRequests;				
+				if (localExpungeRequests.Count > 0) ResetExistsRequests ();
+			}
+			
+Log ( "ProcessNotificationRespo02");
+			lock (existsRequests) {
+				bExistsRequests = existsRequests.Count > 0;
+				if (bExistsRequests) ResetExistsRequests ();
+			}
+
+			
 /*					
-				foreach (SequenceNumberListItem snli in expungeRequests) {
-					// instead of doing anything provoke a handling of existsRequests
-					AddExistsRequest (new SequenceNumberListItem ());
-					break;
-					ulong sqn = (long) serverConnection.SequenceNumberList.IndexOfSNLI(snli);
-					if (sqn > 0) {
-						r = new Response (ResponseState.NONE, "EXPUNGE");
-						r.Val = new ResponseItemText (sqn.ToString ());
-						l.Add (r);
-						serverConnection.SequenceNumberList.Remove (snli);
-					}
+			foreach (SequenceNumberListItem snli in expungeRequests) {
+				// instead of doing anything provoke a handling of existsRequests
+				AddExistsRequest (new SequenceNumberListItem ());
+				break;
+				ulong sqn = (long) serverConnection.SequenceNumberList.IndexOfSNLI(snli);
+				if (sqn > 0) {
+					r = new Response (ResponseState.NONE, "EXPUNGE");
+					r.Val = new ResponseItemText (sqn.ToString ());
+					l.Add (r);
+					serverConnection.SequenceNumberList.Remove (snli);
 				}
+			}
 */			
-				expungeRequests = new SequenceNumberList ();
+					
+Log ( "ProcessNotificationRespo03");
+			if (bExistsRequests && serverConnection != null) {
+Log ( "ProcessNotificationRespo04");
+
+				// save old SequenceNumberList
+				SequenceNumberList snlOld = serverConnection.SequenceNumberList;
+				// save size of old list;
+				int snlOldLength = snlOld.Count;
+
+Log ( "ProcessNotificationRespo05" + notificationHandler);
+				if (notificationHandler != null)
+					notificationHandler.Dispose();
+
+				// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
+
+Log ( "ProcessNotificationRespo1");
+				int recent = serverConnection.RebuildSequenceNumberListPlusUIDFix ();
+Log ( "ProcessNotificationRespo2");
 				
-				// we keep the lock on the expungeRequests while processing the existsRequests
-				lock (existsRequests) {
-					if (existsRequests.Count != 0 && serverConnection != null) {
-
-						// save old SequenceNumberList
-						SequenceNumberList snlOld = serverConnection.SequenceNumberList;
-						// save size of old list;
-						int snlOldLength = snlOld.Count;
-
-						if (notificationHandler != null)
-							notificationHandler.Dispose();
-
-						// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
-
-						int recent = serverConnection.RebuildSequenceNumberListPlusUIDFix ();
-						
-						// restore Notificationsubscription as currentFolderTable has changed
-						Trace.WriteLine ("new NotificationHandler");
-						new NotificationHandler (this);
-
-						// do Expunge handling
-						// as we only get a TableChanged-Notification if more than one Item is being deleted
-						// we need to do this:
-						// identify deleted items and create ExpungeResponses
-						Trace.WriteLine ("do Expunge handling");
-						SequenceNumberListItem snliNew = null;
-						foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
-							snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
-							if (snliNew == null) {
-								long sqn = snlOld.IndexOfSNLI (snliOld);
-								if (sqn > 0) {
-									r = new Response (ResponseState.NONE, "EXPUNGE");
-									r.Val = new ResponseItemText (sqn.ToString ());
-									l.Add (r);
-									snlOld.Remove (snliOld); // remove item, that expunge sequence ids stay consistent
-								}
-							}
-							
+				// restore Notificationsubscription as currentFolderTable has changed
+				Log ("new NotificationHandler");
+				new NotificationHandler (this);
+Log ( "ProcessNotificationRespo3");
+				
+				// do Expunge handling
+				// as we only get a TableChanged-Notification if more than one Item is being deleted
+				// we need to do this:
+				// identify deleted items and create ExpungeResponses
+				Log ("do Expunge handling");
+				SequenceNumberListItem snliNew = null;
+				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
+					snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+					if (snliNew == null) {
+						long sqn = snlOld.IndexOfSNLI (snliOld);
+						if (sqn > 0) {
+							r = new Response (ResponseState.NONE, "EXPUNGE");
+							r.Val = new ResponseItemText (sqn.ToString ());
+							l.Add (r);
+							snlOld.Remove (snliOld); // remove item, that expunge sequence ids stay consistent
 						}
-						
-						// do Flag changes
-						Trace.WriteLine ("do Flag changes");
-						foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
-							snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
-							if (snliNew != null) {
-								Trace.WriteLine ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
-								Trace.WriteLine ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
-								if (snliNew.MessageFlags != snliOld.MessageFlags ||
-									snliNew.MsgStatus != snliOld.MsgStatus) {
-									r = new Response (ResponseState.NONE, "FETCH");
-									r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
-									r.AddResponseItem (new ResponseItemList ()
-									    .AddResponseItem ("UID")
-									    .AddResponseItem (snliNew.UID.ToString ())
-										.AddResponseItem ("FLAGS")
-										.AddResponseItem (CmdFetch.Flags (snliNew.MessageFlags, snliNew.MsgStatus)));
-									l.Add (r);
-								}
-							}
-							
-						}
-
-						if (snlOldLength < serverConnection.SequenceNumberList.Count) {
-							// EXISTS Responses
-							r = new Response (ResponseState.NONE, "EXISTS");
-							r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());
+					}
+					
+				}
+Log ( "ProcessNotificationRespo4");
+				
+				// do Flag changes
+				Log ("do Flag changes");
+				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
+					snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+					if (snliNew != null) {
+						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
+						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
+						Log ("FlagStatus: " + snliNew.FlagStatus + ":" + snliOld.FlagStatus);								
+						if (snliNew.MessageFlags != snliOld.MessageFlags ||
+							snliNew.MsgStatus != snliOld.MsgStatus ||
+						    snliNew.FlagStatus != snliOld.FlagStatus) {
+							r = new Response (ResponseState.NONE, "FETCH");
+							r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
+							r.AddResponseItem (new ResponseItemList ()
+							    .AddResponseItem ("UID")
+							    .AddResponseItem (snliNew.UID.ToString ())
+								.AddResponseItem ("FLAGS")
+								.AddResponseItem (CmdFetch.Flags (snliNew.MessageFlags, snliNew.MsgStatus, snliNew.FlagStatus)));
 							l.Add (r);
 						}
-						
-						existsRequests = new SequenceNumberList ();
-					}				
+					}
+					
 				}
-				return (l);
-			}
+Log ( "ProcessNotificationRespo5");
+
+				if (snlOldLength < serverConnection.SequenceNumberList.Count) {
+					// EXISTS Responses
+					r = new Response (ResponseState.NONE, "EXISTS");
+					r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());
+					l.Add (r);
+				}
+			}				
+Log ( "ProcessNotificationRespo6");
+			return (l);
 		}
 
 		public void DoWork () 
@@ -313,7 +345,7 @@ namespace NMapi.Gateways.IMAP {
 			while (!loopEnd) {
 				Thread.Sleep(50);
 				
-	//				Trace.WriteLine("warte");
+				// lock execution against the execution of a notification request (see NotificationHandler)
 				lock (this){
 					
 					RunLoop();					
@@ -343,5 +375,28 @@ namespace NMapi.Gateways.IMAP {
 				Close ();
 			}
 		}
+
+		public void Log (string text)
+		{
+			Log (text, null);
+		}
+		
+		public void Log (string text, string tag)
+		{
+			DateTime now = DateTime.Now;
+			Trace.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
+			                 now.Month.ToString ().PadLeft (2,'0') + 
+			                 now.Day.ToString ().PadLeft (2,'0') + 
+			                 "-" + 
+			                 now.Hour.ToString ().PadLeft (2,'0') + 
+			                 now.Minute.ToString ().PadLeft (2,'0') + 
+			                 now.Second.ToString ().PadLeft (2,'0') + 
+			                 "." + 
+			                 now.Millisecond.ToString ().PadLeft (3,'0') +
+			                 "||" + id.ToString ().PadLeft (3) +
+			                 "||" + ((serverConnection != null) ? serverConnection.User : "" ).ToString ().PadLeft (3) +
+			                 "||" + text);
+		}
+		
 	}
 }

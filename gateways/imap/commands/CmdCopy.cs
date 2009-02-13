@@ -51,17 +51,17 @@ namespace NMapi.Gateways.IMAP {
 				var slq = ServCon.BuildSequenceSetQuery (command);
 				var entry_ids = from eId in slq
 								select eId.EntryId;
-				Trace.WriteLine ("e_ids");
+				state.Log ("e_ids");
 				EntryList el = new EntryList (entry_ids.ToArray ());
-				Trace.WriteLine ("el");
+				state.Log ("el");
 	
 				string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 				IMapiFolder dest = ServCon.OpenFolder (path);
-				Trace.WriteLine ("dest");
+				state.Log ("dest");
 
 				IMapiProgress imp = null;
 				ServCon.CurrentFolder.CopyMessages (el, null, dest, imp, 0);
-				Trace.WriteLine ("progress");
+				state.Log ("progress");
 
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			}

@@ -33,8 +33,8 @@ namespace NMapi.Gateways.IMAP
 	public abstract class AbstractClientConnection
 	{
 		public abstract void Close ();
-		public abstract LogDelegate LogInput { set; } 
-		public abstract LogDelegate LogOutput { set; }
+		public abstract LogDelegate LogInput { set; get; } 
+		public abstract LogDelegate LogOutput { set; get; }
 		
 		/// <summary>
 		/// does the data source have data waiting
@@ -82,8 +82,8 @@ namespace NMapi.Gateways.IMAP
 			tcpClient.Close ();
 		}
 
-		public override LogDelegate LogInput { set { logInput = value; } } 
-		public override LogDelegate LogOutput { set { logOutput = value; } }
+		public override LogDelegate LogInput { set { logInput = value; } get { return logInput; } } 
+		public override LogDelegate LogOutput { set { logOutput = value; } get { return LogOutput; } }
 		
 		/// <summary>
 		/// does the data source have data waiting

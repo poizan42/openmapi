@@ -183,6 +183,36 @@ namespace NMapi.Gateways.IMAP {
 			return false;
 		}						
 
+		public bool DoPriority ()
+		{
+			props.Prop = Property.Priority;
+			if (props.Exists) {
+				ih.SetHeader ("Priority", props.Long);
+				return true;
+			}
+			return false;
+		}
+
+		public bool DoXPriority ()
+		{
+			// priority settings
+			string[] priomap = { "5 (Lowest)", "3 (Normal)", "1 (Highest)" }; // 2 and 4 cannot be set from outlook
+			
+			props.Prop = Property.Importance;
+			if (props.Exists) {
+				ih.SetHeader ("X-Priority", priomap[(props.LongNum)&3]); // IMPORTANCE_* = 0..2
+				ih.SetHeader ("X-Mailer", "OpenMapi IMAP Gateway 0.1");
+					return true;
+			}
+			props.Prop = Property.Priority;
+			if (props.Exists) {
+				ih.SetHeader ("X-Priority", priomap[(props.LongNum + 1)&3]); // Priority_* = -1 .. +1
+				ih.SetHeader ("X-Mailer", "OpenMapi IMAP Gateway 0.1");
+				return true;
+			}
+			return false;
+		}
+		
 		public bool DoMimeVersion ()
 		{
 			ih.SetHeader ("Mime-Version", "1.0");
@@ -196,6 +226,8 @@ namespace NMapi.Gateways.IMAP {
 				DoFrom ();
 				DoRecipients ();
 				DoSubject ();
+				DoPriority ();
+				DoXPriority ();
 				return true;
 		}
 		private string MapiReturnPropFileTime (SPropValue[] props, int prop)

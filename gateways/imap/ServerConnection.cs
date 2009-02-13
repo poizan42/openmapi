@@ -45,6 +45,7 @@ namespace NMapi.Gateways.IMAP
 		private LogDelegate logInput;
 		private LogDelegate logOutput;
 
+		private IMAPConnectionState state;
 		private Dictionary<string, string[]> providers;
 		private IMapiFactory factory;
 		private IMapiSession session;
@@ -62,6 +63,7 @@ namespace NMapi.Gateways.IMAP
 		private int uidNextTag = 0;
 		private int uidValidityTag = 0;
 		private bool loggedOn;
+		private string user;
 		
 
 		/// <summary>
@@ -136,6 +138,13 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
+		internal string User {
+			get { return user; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		internal bool LoggedOn {
 			get { return loggedOn; }
 			set { loggedOn = value; }
@@ -167,15 +176,17 @@ namespace NMapi.Gateways.IMAP
 		}
 
 
-		public ServerConnection (string host, string user, string password )
+		public ServerConnection (IMAPConnectionState state, string host, string user, string password )
 		{
 
-Trace.WriteLine ("Server0");
+			this.state = state;
+			this.user = user;
+state.Log ("Server0");
 
 /*
 //this just takes endless
 			providers = ProviderManager.FindProviders ();
-Trace.WriteLine ("Server1");
+state.Log ("Server1");
 			factory = ProviderManager.GetFactory (providers ["org.openmapi.txc"]);
 */
 // 			factory = (IMapiFactory) Activator.CreateInstance ("NMapi.Provider.TeamXChange", "NMapi.Provider.TeamXChange.TeamXChangeMapiFactory").Unwrap () as IMapiFactory;
@@ -187,14 +198,14 @@ Trace.WriteLine ("Server1");
 				throw new Exception ("Couldn't create backend factory!");
 			factory = (IMapiFactory) o;
 			
-			Trace.WriteLine ("Server2");
+			state.Log ("Server2");
 			try {
 				session = factory.CreateMapiSession ();
-				Trace.WriteLine ("Server3");
-				mapiContext = new MapiContext (session);
-				Trace.WriteLine ("Server4");
+				state.Log ("Server3");
+//				mapiContext = new MapiContext (session);
+				state.Log ("Server4");
 			} catch (MapiException e) {
-				Trace.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" + e.Message);
+				state.Log ("ERROR: Can't open Mapi-Session!\n\n" + e.Message);
 				return;
 			}
 
@@ -206,11 +217,11 @@ Trace.WriteLine ("Server1");
 				loggedOn = true;
 			} catch (MapiException e) {
 				if (e.HResult == Error.NetworkError) {
-					Trace.WriteLine ("Couldn't connect to host!"+e.Message);
+					state.Log ("Couldn't connect to host!"+e.Message);
 					throw;
 				}
 				else if (e.HResult == Error.NoAccess) {
-					Trace.WriteLine ("No permission!");
+					state.Log ("No permission!");
 					throw;
 				}
 				throw;
@@ -219,7 +230,7 @@ Trace.WriteLine ("Server1");
 			
 			try {
 				store = session.PrivateStore;
-				Trace.WriteLine ("Server5");
+				state.Log ("Server5");
 			} catch (Exception) {
 				throw;
 			}
@@ -227,7 +238,7 @@ Trace.WriteLine ("Server1");
 			SetRootDir();
 			
 			ChangeDir (string.Empty + PathHelper.PathSeparator); // Change to root dir
-			Trace.WriteLine ("Server6");
+			state.Log ("Server6");
 			sequenceNumberList = new SequenceNumberList ();
 		
 		}
@@ -235,7 +246,7 @@ Trace.WriteLine ("Server1");
 		public void Disconnect()
 		{
 			if (session != null) {
-				Trace.WriteLine ("serverconnection, disconnect");
+				state.Log ("serverconnection, disconnect");
 				session.Dispose();
 				session = null;
 			}
@@ -264,25 +275,25 @@ Trace.WriteLine ("Server1");
 
 				byte[] prevEId = new byte[0];
 				List<string> inboxPathEls = new List<string> ();
-				Trace.WriteLine ("setrootdir 1");
+				state.Log ("setrootdir 1");
 				
 				while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
-					Trace.WriteLine ("setrootdir 2");
+					state.Log ("setrootdir 2");
 					prevFolder = folder;
 					folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray);
 					MapiPropHelper folderHelper = new MapiPropHelper (folder);
 					UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
 					string displayName = (propDisplayName != null) ? propDisplayName.Value : null;
 						
-					Trace.WriteLine (folder.GetType ());
-					Trace.WriteLine (displayName);
-					Trace.WriteLine ("setrootdir 3");
+					state.Log (folder.GetType ().ToString ());
+					state.Log (displayName);
+					state.Log ("setrootdir 3");
 					
 					prevEId = eId.Value.ByteArray;
 					if (folder != null) {
 						inboxPathEls.Add (displayName);
 						eId = (BinaryProperty) folderHelper.HrGetOnePropNull (Property.ParentEntryId);
-Trace.WriteLine ("setrootdir 4");
+state.Log ("setrootdir 4");
 					}
 				}
 				if (prevFolder != null) {
@@ -300,7 +311,7 @@ Trace.WriteLine ("setrootdir 4");
 		internal bool CheckStore ()
 		{
 			if (store == null) {
-				Trace.WriteLine ("ERROR: Message-Store not open!");
+				state.Log ("ERROR: Message-Store not open!");
 				return false;
 			}
 			return true;
@@ -309,7 +320,7 @@ Trace.WriteLine ("setrootdir 4");
 		internal bool CheckSessionMsg ()
 		{
 			if (session == null) {
-				Trace.WriteLine ("Session must be open!");
+				state.Log ("Session must be open!");
 				return false;
 			}
 			return true;
@@ -318,7 +329,7 @@ Trace.WriteLine ("setrootdir 4");
 		internal bool CheckLoggedOnMsg ()
 		{
 			if (!loggedOn) {
-				Trace.WriteLine ("ERROR: Not logged on!");
+				state.Log ("ERROR: Not logged on!");
 				return false;
 			}
 			return true;
@@ -339,12 +350,16 @@ Trace.WriteLine ("setrootdir 4");
 			loggedOn = false;
 			if (mapiContext != null)
 				mapiContext.Dispose ();
+			
 			if (currentFolder != null)
 				currentFolder.Dispose ();
+			
 			if (store != null)
 				store.Dispose ();
+			
 			if (session != null)
 				session.Dispose ();
+			
 			mapiContext = null;
 			currentFolder = null;
 			session = null;
@@ -440,15 +455,15 @@ Trace.WriteLine ("setrootdir 4");
 
 		internal bool ChangeDir (string path)
 		{
-			Trace.WriteLine ("ChangeDir: " + path);
+			state.Log ("ChangeDir: " + path);
 			if (!CheckStore())
 				return false;
 			IMapiFolder newFolder = null;
-Console.WriteLine ("changedir0");
+state.Log ("changedir0");
 			newFolder = OpenFolder (path);
-Console.WriteLine ("changedir1");
+state.Log ("changedir1");
 			if (newFolder == null) {
-				Trace.WriteLine ("cd: " + path + ": No such folder.");
+				state.Log ("cd: " + path + ": No such folder.");
 				return false;
 			}
 			currentFolder = newFolder;
@@ -456,14 +471,14 @@ Console.WriteLine ("changedir1");
 			currentFolderTable = null;
 
 			MapiPropHelper mph = new MapiPropHelper (currentFolder);
-Console.WriteLine ("changedir2");
+state.Log ("changedir2");
 			BinaryProperty eid = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
-Console.WriteLine ("changedir3");
+state.Log ("changedir3");
 			currentFolderEntryId = (eid != null) ? eid.Value : null;
 
 			if (currentFolderEntryId == null)
 				throw new Exception ("ServerConnection.ChangeDir: could not prepare currentFolderEntryId");
-Console.WriteLine ("changedir almost done");
+state.Log ("changedir almost done");
 			return GetFolderProps ();
 		}
 
@@ -496,32 +511,40 @@ Console.WriteLine ("changedir almost done");
 
 		internal bool GetFolderProps ()
 		{
+			return _GetFolderProps (out uidValidity, out uidNext, currentFolder);
+		}
+
+		public bool _GetFolderProps (out long _uidValidity, out long _uidNext, IMapiFolder folder)
+		{
+			_uidValidity = 0;
+			_uidNext = 0;
 			try {
 				// UIDNEXT
-				IntProperty val = (IntProperty) GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UIDNEXT);
+				IntProperty val = (IntProperty) GetNamedProp (folder, IMAPGatewayNamedProperty.UIDNEXT);
 				if (val != null) {
-					uidNext = val.Value;
+					_uidNext = val.Value;
 					uidNextTag = val.PropTag;
 				}
-				Trace.WriteLine ("uidnext from folder: "+ uidNext);
-				Trace.WriteLine ("uidNextTag from folder: "+ uidNextTag);
+				state.Log ("uidnext from folder: "+ uidNext);
+				state.Log ("uidNextTag from folder: "+ uidNextTag);
 				
 				//UIDVALIDITY
-				val = (IntProperty) GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UIDVALIDITY);
+				val = (IntProperty) GetNamedProp (folder, IMAPGatewayNamedProperty.UIDVALIDITY);
 				if (val != null) {
-					uidValidity = val.Value;
+					_uidValidity = val.Value;
 					uidValidityTag = val.PropTag;
 				}
-				Trace.WriteLine ("uidvalidity from folder: "+ uidValidity);
-				Trace.WriteLine ("uidValidityTag from folder: "+ uidValidityTag);
+				state.Log ("uidvalidity from folder: "+ uidValidity);
+				state.Log ("uidValidityTag from folder: "+ uidValidityTag);
 				
 				return true;
 			} catch (Exception e) {
-				Trace.WriteLine ("GetFolderProps: Error: " + e.Message);
+				state.Log ("GetFolderProps: Error: " + e.Message);
 				return false;
 			}
 		}			
 
+		
 		private void SetUID (SequenceNumberListItem snli)
 		{
 			
@@ -531,9 +554,9 @@ Console.WriteLine ("changedir almost done");
 
 			IMapiProp message = null;
 			try {
-				message = (IMapiProp) currentFolder.OpenEntry(snli.EntryId.ByteArray, null, 1 /* MAPI_MODIFY*/);
+				message = (IMapiProp) currentFolder.OpenEntry(snli.EntryId.ByteArray, null, Mapi.Modify);
 			} catch (MapiException e) {
-				Trace.WriteLine ("SetUID: uid " + snli.UID + " error: "+ e.Message  );
+				state.Log ("SetUID: uid " + snli.UID + " error: "+ e.Message  );
 				throw;
 			}
 			
@@ -541,7 +564,6 @@ Console.WriteLine ("changedir almost done");
 			IntProperty longValue = (IntProperty) GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID);
 			longValue.Value = (int) snli.UID;
 			lv.Add (longValue);
-ObjectDumper.Write (longValue,4);
 			
 			UnicodeProperty unicodeValue = (UnicodeProperty) GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Path);
 			unicodeValue.Value = snli.Path;
@@ -553,13 +575,12 @@ ObjectDumper.Write (longValue,4);
 
 
 			
-			Trace.WriteLine ("Select: Message loaded");
+			state.Log ("Select: Message loaded");
 			SPropProblemArray sppa = ((IMapiProp) message).SetProps(lv.ToArray ());
 
-Console.WriteLine ("setUID");
-ObjectDumper.Write (sppa, 5);
+			state.Log ("setUID");
 			
-			Trace.WriteLine ("Select: Props set");
+			state.Log ("Select: Props set");
 			((IMapiProp) message).SaveChanges (0);
 				
 		}
@@ -576,7 +597,7 @@ ObjectDumper.Write (sppa, 5);
 			longValue.PropTag = uidNextTag;
 			longValue.Value = (int) luidNext + 1;
 			lv.Add (longValue);
-			Trace.WriteLine ("new uidnext: "+ longValue.Value);
+			state.Log ("new uidnext: "+ longValue.Value);
 
 			// if not available, set UIDVALIDITY
 			if (uidValidity == 0) {
@@ -586,7 +607,7 @@ ObjectDumper.Write (sppa, 5);
 				// this gives us UIDVALIDITYs that are about 1 second sharp for 130 years starting from Nov. 2008
 				longValue.Value = (int) ((dt.Ticks >> 22) & 0xFFFFFFFF) - 2^29;
 				lv.Add (longValue);
-				Trace.WriteLine ("new uidvalidity: "+ longValue.Value);
+				state.Log ("new uidvalidity: "+ longValue.Value);
 			}
 
 			
@@ -602,45 +623,57 @@ ObjectDumper.Write (sppa, 5);
 
 		internal void BuildSequenceNumberList ()
 		{
-			sequenceNumberList = new SequenceNumberList();
-			Trace.WriteLine ("Selectstart");
-			IMapiTable contentsTable = null;
+			sequenceNumberList = _BuildSequenceNumberList (out currentFolderTable, currentFolder);
+		}
+
+		public SequenceNumberList _BuildSequenceNumberList (IMapiFolder folder)
+		{
+			IMapiTable dummyTable;
+			return _BuildSequenceNumberList (out dummyTable, folder);
+		}
+
+		public SequenceNumberList _BuildSequenceNumberList (out IMapiTable currentTable, IMapiFolder folder)
+		{
+			SequenceNumberList snl = new SequenceNumberList();
+			state.Log ("Selectstart");
+			currentTable = null;
 			try {
-				currentFolderTable = currentFolder.GetContentsTable (Mapi.Unicode);
-				Trace.WriteLine ("Select2");
+				currentTable = folder.GetContentsTable (Mapi.Unicode);
+				state.Log ("Select2");
 			} catch (MapiException e) {
 				if (e.HResult != Error.NoSupport)
 					throw;
-				return;
+				return snl;
 			}
 
-			SPropValue uidProp = GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID);
-			SPropValue uidPathProp = GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Path);
-			SPropValue uidEntryIdProp = GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
+			SPropValue uidProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID);
+			SPropValue uidPathProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Path);
+			SPropValue uidEntryIdProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
 			
-			currentFolderTable.SetColumns( 
+			currentTable.SetColumns( 
 				new SPropTagArray (
 					new int[] { Property.EntryId, Property.InstanceKey, Property.Subject, uidProp.PropTag, 
-								uidPathProp.PropTag, uidEntryIdProp.PropTag, Property.MsgStatus, Property.MessageFlags
+								uidPathProp.PropTag, uidEntryIdProp.PropTag, Property.MsgStatus, Property.MessageFlags,
+								Outlook.Property_FLAG_STATUS
 							  }), 0);
 			
-			Trace.WriteLine ("Select1");
+			state.Log ("Select1");
 			while (true) {
-				Trace.WriteLine ("Select3");
-				Trace.WriteLine ("Select3b");
-				SRowSet rows = currentFolderTable.QueryRows (10, Mapi.Unicode);
-				Trace.WriteLine ("Select4");
+				state.Log ("Select3");
+				state.Log ("Select3b");
+				SRowSet rows = currentTable.QueryRows (10, Mapi.Unicode);
+				state.Log ("Select4");
 				if (rows.Count == 0)
 					break;
 				foreach (SRow row in rows) {
-					Trace.WriteLine ("Select5");
+					state.Log ("Select5");
 					SequenceNumberListItem snli = new SequenceNumberListItem ();
 					BinaryProperty entryId = (BinaryProperty) SPropValue.GetArrayProp(row.Props, 0);
 						
-					Trace.WriteLine ("Select5a");
+					state.Log ("Select5a");
 					if (entryId != null) 
 						snli.EntryId = entryId.Value;
-					Trace.WriteLine ("Select5b");
+					state.Log ("Select5b");
 						
 					SPropValue val = SPropValue.GetArrayProp(row.Props, 1);
 					if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
@@ -660,10 +693,14 @@ ObjectDumper.Write (sppa, 5);
 					val = SPropValue.GetArrayProp(row.Props, 7);
 					if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
 
-					Trace.WriteLine ("Select8");
-					sequenceNumberList.Add (snli);
+					val = SPropValue.GetArrayProp(row.Props, 8);
+					if (val != null) snli.FlagStatus = (ulong) ((IntProperty) val).Value;
+
+					state.Log ("Select8");
+					snl.Add (snli);
 				}
 			}
+			return snl;
 		}
 
 		internal int FixUIDsInSequenceNumberList ()
@@ -676,8 +713,7 @@ ObjectDumper.Write (sppa, 5);
 			int cnt = query.Count();
 			
 			foreach (SequenceNumberListItem snli in query) {
-Console.WriteLine ("FixUIDsIn");
-ObjectDumper.Write (snli, 4);
+state.Log ("FixUIDsIn");
 				SetUID (snli);
 			}
 
@@ -715,8 +751,6 @@ ObjectDumper.Write (snli, 4);
 						second = snl.Max (n => n.UID);
 					else
 						second = snl.Max (n => (uint) snl.IndexOfSNLI (n));
-					Trace.WriteLine ("first: "+first);
-					Trace.WriteLine ("second: "+second);
 				/* handle cases */
 				if (sel.Second != null) { /* Range */
 					if (command.UIDCommand)
@@ -781,32 +815,38 @@ ObjectDumper.Write (snli, 4);
 
 		public int RebuildSequenceNumberListPlusUIDFix ()
 		{
+			// lock this part against any other Session, that wants to execute this as well 
+			// (in case they try to update their table of the same mailbox and conflicts occur)
+			//lock (IMAPConnectionState.LockObject) 
+				{
 			int retrys = 2;
 			while (retrys > 0) {
 
 				try {
-					Trace.WriteLine ("RebuildSequenceNumberListPlusUIDFix, retrys: " + retrys);
+					state.Log ("RebuildSequenceNumberListPlusUIDFix, retrys left: " + retrys);
 					retrys --;
 					// build sequence number list
 					BuildSequenceNumberList ();
 
 					// fix UIDS in Messagesif missing or broken
-					Trace.WriteLine ("fixUIDs");
+					state.Log ("fixUIDs");
 					int recent = FixUIDsInSequenceNumberList ();
 					return recent;
 				} catch (MapiException e) {
-					Trace.WriteLine ("RebuildSequenceNumberListPlusUIDFix, Exception: " + e.Message);
+					state.Log ("RebuildSequenceNumberListPlusUIDFix, Exception: " + e.Message);
 					if (retrys <= 0)
 						throw;
 					Thread.Sleep(500);
 				}
 			}
+				}
 			return 0; // should never be reached
 		}						
 
 
 		public bool CompareEntryIDs (byte [] id1, byte [] id2)
 		{
+			
 			if (id1 == null || id2 == null) 
 				return false;
 					
@@ -824,7 +864,7 @@ ObjectDumper.Write (snli, 4);
 
 		public SPropValue GetNamedProp(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
 		{
-			Trace.WriteLine ("GetNamedProp 1");
+			state.Log ("GetNamedProp 1");
 			NMapiGuid guid;
 			SPropValue prop = null;
 			string name;
@@ -870,9 +910,9 @@ ObjectDumper.Write (snli, 4);
 				throw new Exception ("Named Property not defined");
 			}
 					
-			Trace.WriteLine ("GetNamedProp 2. name=" + name);
-			Trace.WriteLine ("GetNamedProp 2. guid=" + guid);
-			Trace.WriteLine ("GetNamedProp 2. type=" + type);
+			state.Log ("GetNamedProp 2. name=" + name);
+			state.Log ("GetNamedProp 2. guid=" + guid);
+			state.Log ("GetNamedProp 2. type=" + type);
 // This version has a problem, because r57 of NMapi.dll does return an Exception, if the property does not jet exist.
 /*			MapiPropHelper mph = new MapiPropHelper (mapiProperty);
 			SPropValue spv = mph.HrGetNamedProp (guid, name);
@@ -890,7 +930,7 @@ ObjectDumper.Write (snli, 4);
 
 			int tag = spv.PropTag;
 				
-			Trace.WriteLine ("GetNamedProp 3. Tag=" + tag);
+			state.Log ("GetNamedProp 3. Tag=" + tag);
 
 // sicherheitsprüfung. Sonst wird evtl. der Store kaputt gemacht und outlook kann sich nicht mehr verbinden
 			if (tag == 10)
@@ -900,13 +940,13 @@ ObjectDumper.Write (snli, 4);
 			try {
 				SPropTagArray xx = new SPropTagArray (new int [] {tag});
 				SPropValue[] props = mapiProperty.GetProps (xx, Mapi.Unicode);
-				Trace.WriteLine ("GetNamedProp 4");
+				state.Log ("GetNamedProp 4");
 
 				if (props.Length == 0  || props[0] is ErrorProperty){
 					PropertyTypeHelper pth = new PropertyTypeHelper ();
 					tag = pth.CHANGE_PROP_TYPE (tag, type);
 					prop.PropTag = tag;
-					Trace.WriteLine ("GetNamedProp 5");
+					state.Log ("GetNamedProp 5");
 				} else {
 					prop = props[0];
 				}
@@ -914,8 +954,8 @@ ObjectDumper.Write (snli, 4);
 			} catch (Exception e) {
 				throw new Exception ("GetNamedProp: Internal Problem: " + e.Message);
 			}
-			Trace.WriteLine ("GetNamedProp 6, PropType:" + prop.GetType ());
-ObjectDumper.Write (prop);				
+			state.Log ("GetNamedProp 6, PropType:" + prop.GetType ());
+//ObjectDumper.Write (prop);				
 			return prop;
 		}
 	}

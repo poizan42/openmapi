@@ -43,7 +43,7 @@ namespace NMapi.Gateways.IMAP {
 				if (state.CurrentState == IMAPConnectionStates.SELECTED) {
 
 					// execute Expunges
-					CmdExpunge.DoExpunge (state, ServCon);
+					CmdExpunge.DoExpunge (state, ServCon, command);
 					
 					// send response first, as it requires access to the Mapi Store for exists/expunges ..
 					state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));

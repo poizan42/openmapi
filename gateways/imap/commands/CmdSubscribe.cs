@@ -54,8 +54,7 @@ namespace NMapi.Gateways.IMAP {
 					throw new Exception ("internal error");
 
 				UnicodeArrayProperty subscriptions = (UnicodeArrayProperty) ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
-				Trace.WriteLine ("subscribe 4");
-ObjectDumper.Write (subscriptions, 4);
+				state.Log ("subscribe 4");
 				
 				string [] subsArray = subscriptions.Value;
 				if (subsArray == null)
@@ -63,16 +62,15 @@ ObjectDumper.Write (subscriptions, 4);
 
 				string newSub = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 			    if (!subsArray.Contains (newSub)) {
-					Trace.WriteLine ("subscribe 5");
+					state.Log ("subscribe 5");
 					List<string> subs = subsArray.ToList ();
 					subs.Add (newSub);
 					subsArray = subs.Distinct ().ToArray ();
 					subscriptions.Value = subsArray;
-ObjectDumper.Write (subscriptions, 4);
 					mph.HrSetOneProp (subscriptions);
 					folder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 				}
-				Trace.WriteLine ("subscribe 6");
+				state.Log ("subscribe 6");
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			}
 			catch (Exception e) {
