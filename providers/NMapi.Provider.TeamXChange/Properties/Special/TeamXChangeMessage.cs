@@ -161,6 +161,7 @@ namespace NMapi.Properties.Special {
 				IntProperty rowid;
 			
 				for (i = 0; i < mods.AEntries.Length; i++) {
+Console.WriteLine ("xxxxxx " + i);
 					arg.obj = new HObject (new LongLong (obj));
 					arg.pEntry = new LPAdrEntry (mods.AEntries [i]);
 					try {
@@ -179,7 +180,10 @@ namespace NMapi.Properties.Special {
 						props = new SPropValue [mods.AEntries[i].PropVals.Length];
 						Array.Copy (mods.AEntries[i].PropVals, 0, props, 0, 
 								     	 mods.AEntries[i].PropVals.Length);
-						rowid = (IntProperty) props [props.Length-1];
+Console.WriteLine (props[props.Length-1].GetType());
+Console.WriteLine (((UnicodeProperty) props[props.Length-1]).Value);
+ObjectDumper.Write (props, 4);
+						rowid = new IntProperty(); //(IntProperty) props [props.Length-1];
 					}
 					rowid.PropTag = Property.RowId;
 					rowid.Value = res.ulRowid;

@@ -42,6 +42,10 @@ namespace NMapi.Utility {
 			set { prop = value; }
 		}
 
+		public SPropValue SPropValue {
+			get { return SPropValue.GetArrayProp(props, Index); }
+		}
+
 		public PropertyHelper () {}
 		
 		public PropertyHelper (SPropValue[] props) {
@@ -49,7 +53,7 @@ namespace NMapi.Utility {
 		}
 
 		public bool Exists {
-			get { return Index > -1; }
+			get { return Index > -1 & SPropValue != null; }
 		}
 		
 		public int Index { 

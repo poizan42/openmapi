@@ -54,7 +54,10 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
 		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_W        = ((int) PropertyType.Unicode) | (0x1042 << 16);
 		[MapiPropDef] public const int Property_HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
+		[MapiPropDef] public const int Property_BODY_HTML_A             = ((int) PropertyType.String8) | (0x1013 << 16);
+		[MapiPropDef] public const int Property_BODY_HTML_W             = ((int) PropertyType.Unicode) | (0x1013 << 16);
 		[MapiPropDef] public const int Property_ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
+		[MapiPropDef] public const int Property_FLAG_STATUS             = ((int) PropertyType.Long)    | (0x1090 << 16);
 		[MapiPropDef] public const int Property_RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
 		[MapiPropDef] public const int Property_RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
 

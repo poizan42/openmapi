@@ -381,7 +381,7 @@ namespace CompactTeaSharp
 	
 		public void EncodeWithBoolGate (IXdrAble obj)
 		{
-			EncodeWithBoolGate (obj);
+			EncodeWithBoolGate ((IXdrEncodeable) obj);
 		}
 		
 		public void EncodeWithBoolGate (IXdrEncodeable obj)
