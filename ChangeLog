@@ -1,4 +1,10 @@
 2009-02-13  Andreas Huegel <andreas.huegel@topalis.com>
+	forgot to add earlier today
+
+	* gateways/imap/RTFParser.cs
+
+
+2009-02-13  Andreas Huegel <andreas.huegel@topalis.com>
 	stabilisation, small changes 
 
 	* RemoteTea-Sharp/OncRpc/XdrEncodingStream.cs
