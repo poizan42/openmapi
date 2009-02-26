@@ -41,13 +41,14 @@ namespace NMapi.Format.Mime
 			: base (inS)
 		{ }
 
-		public Stream ReadToDelimiter (byte[] delimiter)
+		public Stream ReadToDelimiter (byte[] delimiter, int optStart)
 		{
 			if (this.PeekChar () == -1)
 				return null;
 
 			MemoryStream os = new MemoryStream ();
 			MemoryStream os1 = new MemoryStream ();
+			bool firstChar = true;
 
 			int countDel = 0;
 			try {
@@ -61,7 +62,11 @@ namespace NMapi.Format.Mime
 						os1 = new MemoryStream ();
 						countDel = 0;
 					}
-					if (b == delimiter[countDel]) {
+					if (firstChar && optStart > 0 && b == delimiter[optStart]) {
+						// cover the special case, where there is no
+						// surplus /r/n before the 1. delimiter
+						countDel = optStart + 1;
+					} else if (b == delimiter[countDel]) {
 						//recognize delimiter
 						countDel++;
 						os1.WriteByte ((byte)b);
@@ -72,6 +77,7 @@ namespace NMapi.Format.Mime
 						// a regular character has appeared. Add to output
 						os.WriteByte ((byte)b);
 					}
+					firstChar = false;
 				}
 			} catch (EndOfStreamException) { }
 			long len1 = os1.Length;

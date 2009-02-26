@@ -29,7 +29,7 @@
 // controls, output of WriteTo-Tests into File with MethodName of calling funktion
 // uncomment the undef to make it work
 #define WRITETO_FILE
-#undef WRITETO_FILE
+//#undef WRITETO_FILE
 
 namespace NMapi.Format.Mime
 {
@@ -823,7 +823,7 @@ AP///wCAAAAAQAAAAAA=
 			MemoryStream inS = new MemoryStream (b);
 			MimeMessage mm = new MimeMessage(inS);
 
-			// Multipart can be retrieved although only a preamble exists
+			// Multipart can be retrieved 
 			MimeMultipart mp = (MimeMultipart) mm.Content;
 			Assert.IsTrue(mp.GetType() == typeof (MimeMultipart));
 			// does Multipart contain two items?
@@ -837,6 +837,70 @@ AP///wCAAAAAQAAAAAA=
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			Assert.AreEqual(inString + "\r\n--=-t4dRE6cqcdSBHOrMdTQ1--\r\n\r\n", Encoding.ASCII.GetString(os.ToArray()));
+			// WriteTo File as well
+			WriteToFile(mm, ""); 
+
+			// First Item can be accessed
+			MimeBodyPart mb = mp[0];
+			// first header can be accessed
+			Assert.AreEqual ("text/plain", mb.GetHeader(MimePart.CONTENT_TYPE_NAME, ""));
+			// content can be accessed
+			Assert.AreEqual ("QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv", Encoding.ASCII.GetString(mb.RawContent));
+			
+			// Second Item can be accessed
+			mb = mp[1];
+			// first header can be accessed
+			Assert.AreEqual ("application/bmp", mb.GetHeader(MimePart.CONTENT_TYPE_NAME, ""));
+			// content can be accessed
+			Assert.AreEqual ("Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA\r\nAP///wCAAAAAQAAAAAA=\r\n", Encoding.ASCII.GetString (mb.RawContent));
+		}
+		
+		/// <summary>
+		/// Test Multipart generation via parsed input stream. 
+		/// Testing, that identification works, if there is only one empty line
+		/// after the headers. Is tricky, because headers already consume the empty line
+		/// from the input stream.
+		/// </summary>
+		[Test]
+		public void MimeMultipart_ParsedStream_Boundary_without_surplus_CRLF () {
+			String inString = 
+@"Content-Type: multipart/related; boundary=""=-t4dRE6cqcdSBHOrMdTQ1""
+Content-Transfer-Encoding: 7bit
+
+--=-t4dRE6cqcdSBHOrMdTQ1
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
+--=-t4dRE6cqcdSBHOrMdTQ1
+Content-Type: application/bmp
+Content-Transfer-Encoding: base64
+
+Qk1GAAAAAAAAAD4AAAAoAAAAAgAAAAIAAAABAAEAAAAAAAgAAADEDgAAxA4AAAAAAAAAAAAAAAAA
+AP///wCAAAAAQAAAAAA=
+";
+			inString = inString.Replace("\n", "\r\n");
+			Byte[] b = Encoding.ASCII.GetBytes (inString);
+			MemoryStream inS = new MemoryStream (b);
+			MimeMessage mm = new MimeMessage(inS);
+
+			// Multipart can be retrieved 
+			MimeMultipart mp = (MimeMultipart) mm.Content;
+			Assert.IsTrue(mp.GetType() == typeof (MimeMultipart));
+			// does Multipart contain two items?
+			Assert.AreEqual (2, mp.Count);
+			// Preamble is empty
+			Assert.AreEqual ("", mp.Preamble);
+			// Subtype fits
+			Assert.AreEqual ("related", mp.SubType);
+			
+			// original text is reproduced by WriteTo
+			MemoryStream os = new MemoryStream ();
+			mm.WriteTo (os);
+			// we have an additional CRLF in the beginning, because currently
+			// the code will generate an additional CRLF in WriteTo, if the boundary of the multipart
+			// had no surplus CRLF (see Testdescription). We are doing that with the replace
+			Assert.AreEqual(inString.Replace ("7bit", "7bit\r\n") + "\r\n--=-t4dRE6cqcdSBHOrMdTQ1--\r\n\r\n", Encoding.ASCII.GetString(os.ToArray()));
 			// WriteTo File as well
 			WriteToFile(mm, ""); 
 

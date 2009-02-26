@@ -78,8 +78,6 @@ namespace NMapi.Format.Mime
 				
 				int pos = address.IndexOf ('<');
 				if (pos == -1) {
-					if (address.IndexOf ("@") != -1)
-						return null;
 					personal = address;
 				} else {
 					personal = address.Substring (0, pos);

@@ -1,3 +1,13 @@
+2009-02-26  Andreas Huegel <andreas.huegel@topalis.com>
+	changes, to support html bodies 
+
+	* tests/nmapi/mime/TestMimeMessage.cs
+	* tests/nmapi/mime/TestMime.cs
+	* NMapi/Format/Mime/BinarySplitter.cs
+	* NMapi/Format/Mime/MimePart.cs
+	* NMapi/Format/Mime/MimeMultipart.cs
+	* NMapi/Format/Mime/InternetAddress.cs
+
 2009-02-13  Andreas Huegel <andreas.huegel@topalis.com>
 	forgot to add earlier today
 

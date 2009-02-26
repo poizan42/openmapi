@@ -96,7 +96,7 @@ namespace NMapi.Format.Mime
 				BinarySplitter bs = new BinarySplitter (inS);
 				Stream x;
 				bool preambleCheck = false;
-				while ((x = bs.ReadToDelimiter (boundaryBytes)) != null) {
+				while ((x = bs.ReadToDelimiter (boundaryBytes, 2)) != null) {
 					if (!preambleCheck) {
 						preamble = new StreamReader(x,Encoding.ASCII).ReadToEnd();
 						preambleCheck = true;

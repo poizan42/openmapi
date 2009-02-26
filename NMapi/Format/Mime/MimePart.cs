@@ -172,6 +172,7 @@ namespace NMapi.Format.Mime
 			lock (lockContentStream) {
 				// headers
 				long position = inS.Position;
+Console.WriteLine ("position: " + position );
 				headers = new InternetHeaders (inS);
 
 				// Stop, if only reading of headers is required
@@ -189,6 +190,12 @@ namespace NMapi.Format.Mime
 					{
 						len = (int)inS.Length - (int)inS.Position;
 						content = new BinaryReader (inS).ReadBytes (len);
+Console.WriteLine (this.ContentType);
+if (content.Length > 200)						
+Console.WriteLine (Encoding.ASCII.GetString (content).Substring (0,200));
+else
+Console.WriteLine (Encoding.ASCII.GetString (content));
+						
 						try {
 							inS.Seek (position, SeekOrigin.Begin);
 						}
@@ -245,21 +252,23 @@ namespace NMapi.Format.Mime
 
 		public virtual String CharacterSet {
 			get {
-				String contType = GetHeader (MimePart.CONTENT_TYPE_NAME, " ").Trim ();
-				HeaderTokenizer ht = new HeaderTokenizer (contType, HeaderTokenizer.MIME);
-				for (bool done = false; !done; ) {
-					HeaderTokenizer.Token token = ht.Next;
-					switch (token.Type) {
-						case HeaderTokenizer.Token.EOF:
-							done = true;
-							break;
-						case HeaderTokenizer.Token.ATOM:
-							if (token.Value.ToLower ().StartsWith ("charset"))
-								if ((token = ht.Next).Value == "=")
-									return (token = ht.Next).Value;
-							break;
+				String contType = GetHeader (MimePart.CONTENT_TYPE_NAME, " ");
+				if (contType != null) {
+					contType = contType.Trim ();
+					HeaderTokenizer ht = new HeaderTokenizer (contType, HeaderTokenizer.MIME);
+					for (bool done = false; !done; ) {
+						HeaderTokenizer.Token token = ht.Next;
+						switch (token.Type) {
+							case HeaderTokenizer.Token.EOF:
+								done = true;
+								break;
+							case HeaderTokenizer.Token.ATOM:
+								if (token.Value.ToLower ().StartsWith ("charset"))
+									if ((token = ht.Next).Value == "=")
+										return (token = ht.Next).Value;
+								break;
+						}
 					}
-
 				}
 				return null;
 			}

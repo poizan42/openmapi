@@ -208,6 +208,7 @@ namespace NMapi.Format.Mime
 @"Content-Type: multipart/related; boundary=""=-t4dRE6cqcdSBHOrMdTQ1""
 Content-Transfer-Encoding: 7bit
 
+
 --=-t4dRE6cqcdSBHOrMdTQ1
 Content-Type: text/plain
 Content-Transfer-Encoding: base64
@@ -226,14 +227,14 @@ QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
 			MemoryStream inS = new MemoryStream (b);
 			MimeMessage mm = new MimeMessage(inS);
 
-			// check if Raw Content is equals the appropriate part of inString
-			Assert.AreEqual (inString.Substring (inString.IndexOf ("--=-t4")), Encoding.ASCII.GetString(mm.RawContent));
+			// check if Raw Content equals the appropriate part of inString
+			Assert.AreEqual (inString.Substring (inString.IndexOf ("\r\n--=-t4")), Encoding.ASCII.GetString(mm.RawContent));
 			// check if ContentStream is equals the appropriate part of inString
 			Stream s = mm.ContentStream;
 			MemoryStream ms = new MemoryStream();
 			for (int bb = s.ReadByte(); bb != -1; bb = s.ReadByte())
 				ms.WriteByte((byte) bb);
-			Assert.AreEqual (inString.Substring (inString.IndexOf ("--=-t4")), Encoding.ASCII.GetString((ms).ToArray()));
+			Assert.AreEqual (inString.Substring (inString.IndexOf ("\r\n--=-t4")), Encoding.ASCII.GetString((ms).ToArray()));
 
 			// WriteTo should return exactly what has been input. Source here is the RawContent
 			MemoryStream os = new MemoryStream ();
@@ -301,6 +302,7 @@ QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
 			// WriteTo should return exactly what has been input. Source here is RawContent
 			String outString = 
 @"Content-Type: multipart/related; boundary=""=-t4dRE6cqcdSBHOrMdTQ1""
+
 
 --=-t4dRE6cqcdSBHOrMdTQ1
 Content-Type: text/plain
@@ -382,7 +384,7 @@ QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNv
 			string msgStream = @"Message-ID: <49339FDC.6020707@xxxxx.com>
 Date: Mon, 01 Dec 2008 09:27:08 +0100
 From: =?ISO-8859-15?Q?Andreas_H=FCgel?= <andreas.huegel@topalis.com>
-To: johannes@xxxxx.com, Tomas<thomas@xxxxx.com>, 
+To: johannes@xxxxx.com, Thomas<thomas@xxxxx.com>, 
  Dominik Sommer <dominik@xxxxx.com>
 Subject: IMAP Gateway, Status 28.11.08
 Content-Transfer-Encoding: quoted-printable
@@ -402,11 +404,11 @@ Hallo Johannes,
 				Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", mm.GetFrom ()[0].Address);
 
 				Assert.AreEqual ("johannes@xxxxx.com", mm.GetRecipients (RecipientType.TO)[0].Email);
-				Assert.AreEqual ("Tom Uhl", mm.GetRecipients (RecipientType.TO)[1].Personal);
+				Assert.AreEqual ("Thomas", mm.GetRecipients (RecipientType.TO)[1].Personal);
 				Assert.AreEqual ("dominik@xxxxx.com", mm.GetRecipients (RecipientType.TO)[2].Email);
 
 				Assert.AreEqual ("johannes@xxxxx.com", mm.GetRecipients(RecipientType.TO)[0].Address);
-				Assert.AreEqual ("Tomas<thomas@xxxxx.com>", mm.GetRecipients(RecipientType.TO)[1].Address);
+				Assert.AreEqual ("Thomas<thomas@xxxxx.com>", mm.GetRecipients(RecipientType.TO)[1].Address);
 		}
 	}
 }
