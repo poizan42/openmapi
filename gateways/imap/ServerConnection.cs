@@ -689,6 +689,7 @@ state.Log ("changedir almost done");
 						
 					val = SPropValue.GetArrayProp(row.Props, 6);
 					if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
+Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 						
 					val = SPropValue.GetArrayProp(row.Props, 7);
 					if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;

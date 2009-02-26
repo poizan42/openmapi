@@ -32,6 +32,7 @@ using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
 using NMapi.DirectoryModel;
+using NMapi.Utility;
 
 
 namespace NMapi.Gateways.IMAP {
@@ -62,7 +63,7 @@ namespace NMapi.Gateways.IMAP {
 				
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.Subject;
-				uprop.Value = string.Empty + mm.GetHeader ("Subject", ";");
+				uprop.Value = MimeUtility.DecodeText (string.Empty + mm.GetHeader ("Subject", ";") );
 				props.Add (uprop);
 
 				
@@ -130,6 +131,7 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 			} catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.Log (e.StackTrace);
 			}
 		}
 
@@ -198,7 +200,7 @@ namespace NMapi.Gateways.IMAP {
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.DisplayName;
-					uprop.Value = ia.Personal==null?"":ia.Personal;
+					uprop.Value = ia.Personal==null?ia.Email:ia.Personal;
 					lpv.Add (uprop);
 					
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
@@ -223,6 +225,8 @@ namespace NMapi.Gateways.IMAP {
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<SPropValue> props, Command command) 
 		{
 			UnicodeProperty uprop = null;
+			string charset = null;
+			
 			state.Log ("MimeToMapiAttachments 1");			
 			if (mm.ContentType == null)	{
 				state.Log ("MimeToMapiAttachments Prop Body");			
@@ -231,8 +235,8 @@ namespace NMapi.Gateways.IMAP {
 				uprop.Value = String.Empty + Encoding.ASCII.GetString (mm.RawContent);
 				props.Add (uprop);
 			} else if (mm.ContentType.ToLower () == "text/plain") {
-				state.Log ("MimeToMapiAttachments text/plain");			
-				string charset = mm.ContentTypeHeader.GetParam ("charset");
+				state.Log ("MimeToMapiAttachments text/plain");
+				charset = mm.ContentTypeHeader.GetParam ("charset");
 				if (charset != null) {
 					IntProperty lprop = new IntProperty ();
 					lprop.PropTag = Outlook.Property_INTERNET_CPID;
@@ -246,14 +250,44 @@ namespace NMapi.Gateways.IMAP {
 				props.Add (uprop);
 				
 			} else if (mm.ContentType.ToLower () == "text/html") {
-				// TODO
-			} else if (mm.ContentType.ToLower () == ("multipart/alternative")) {
+				PropertyHelper ph = new PropertyHelper (props);
+				ph.Prop = Outlook.Property_INTERNET_CPID;
+				if (!ph.Exists) {
+					// set charset only, if it hasn't been set so far.
+					// otherwise we override the charset of text/plain elements
+					// as the same property is used. Html-charset can be
+					// us-ascii, which is often not sufficient for text/plain els.
+					charset = mm.ContentTypeHeader.GetParam ("charset");
+					if (charset != null) {
+						IntProperty lprop = new IntProperty ();
+						lprop.PropTag = Outlook.Property_INTERNET_CPID;
+						lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
+//						props.Add (lprop);
+					}
+				}
+					
+				MemoryStream msHtml = new MemoryStream ();
+				RTFWriter rtfWriter = new RTFWriter (msHtml, RTFWriter.SOURCE_HTML);
+				rtfWriter.BeginHTML ();
+				rtfWriter.Write ((string) mm.Content);
+				rtfWriter.EndHMTL ();
+				rtfWriter.Close ();
+				IStream issHtml = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, Mapi.Modify|NMAPI.MAPI_CREATE);
+Console.WriteLine (Encoding.ASCII.GetString (msHtml.GetBuffer ()));
+				msHtml = new MemoryStream (msHtml.GetBuffer ());
+				issHtml.PutData (msHtml);
+				msHtml.Close ();
+			} else if (mm.ContentType.ToLower () == ("multipart/alternative") &&
+			           mm.Content != null && 
+			           mm.Content.GetType () == typeof (MimeMultipart)) {
 				state.Log ("MimeToMapiAttachments mutlipart/alternative");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				foreach (MimeBodyPart mp in mmp) {
 					MimeToMapiAttachments (mp, im, props, command);
 				}
-			} else if (mm.ContentType.StartsWith ("multipart")) {
+			} else if (mm.ContentType.StartsWith ("multipart") &&
+			           mm.Content != null && 
+			           mm.Content.GetType () == typeof (MimeMultipart)) {
 				state.Log ("MimeToMapiAttachments nultipart");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				int mpCount = 0;
@@ -334,6 +368,16 @@ namespace NMapi.Gateways.IMAP {
 							iprop.Value = -1;
 							aprops.Add (iprop);
 
+							string content_id = mp.GetHeader ("Content-ID", ";");
+							if (content_id != null) {
+								state.Log ("MimeToMapiAttachments content-id ");			
+								uprop = new UnicodeProperty ();
+								uprop.PropTag = Outlook.Property_ATTACH_CONTENT_ID_W;
+								content_id = content_id.TrimStart (new char [] {'<'});
+								content_id = content_id.TrimEnd (new char [] {'>'});
+								uprop.Value = content_id; 
+								aprops.Add (uprop);
+							}
 							
 							try {
 								SPropProblemArray sppa = ia.SetProps (aprops.ToArray ());

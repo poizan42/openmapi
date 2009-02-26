@@ -1,4 +1,4 @@
-// openmapi.org - NMapi C# IMAP Gateway - Response.cs
+// openmapi.org - NMapi C# IMAP Gateway - RTFReader.cs
 //
 // Copyright 2009 VIPcom GmbH
 //
@@ -302,7 +302,7 @@ namespace NMapi.Gateways.IMAP {
 						}
 					}
 					ostream.Flush();
-					ret.value = Encoding.ASCII.GetString (ostream.ToArray ());
+					ret.value = encoding.GetString (ostream.ToArray ());
 				}
 				finally {
 					ostream.Close();

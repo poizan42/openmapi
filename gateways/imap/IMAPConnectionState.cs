@@ -346,11 +346,13 @@ Log ( "ProcessNotificationRespo6");
 				Thread.Sleep(50);
 				
 				// lock execution against the execution of a notification request (see NotificationHandler)
-				lock (this){
-					
-					RunLoop();					
-				}		
-				
+//				lock (this){
+				try {
+					RunLoop();
+				} catch (Exception e) {
+					Log ("IMAPConnectionState.DoWork (): Exception occured: " + e.Message);
+					Log (e.StackTrace);
+				}
 			}
 		}
 

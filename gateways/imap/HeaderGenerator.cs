@@ -41,6 +41,7 @@ namespace NMapi.Gateways.IMAP {
 		private SBinary msgEntryId;
 		private IMessage msg;
 		private InternetHeaders ih = new InternetHeaders ();
+		private Encoding encoding = Encoding.UTF8;
 
 		public InternetHeaders InternetHeaders {
 			get { return ih; }
@@ -177,7 +178,11 @@ namespace NMapi.Gateways.IMAP {
 		{
 			props.Prop = Property.Subject;
 			if (props.Exists) {
-				ih.SetHeader ("Subject", props.Unicode);
+				MimeMessage mm = new MimeMessage ();
+				mm.Headers = ih;
+				string charset = mm.CharacterSet;
+				charset = (charset != null) ? charset : encoding.WebName;
+				ih.SetHeader ("Subject", MimeUtility.EncodeText (props.Unicode, charset, "Q"));
 				return true;
 			}
 			return false;

@@ -66,6 +66,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.Log (e.StackTrace);
 			}
 			return;
 		}
@@ -191,13 +192,10 @@ namespace NMapi.Gateways.IMAP {
 						headerGenerator.InternetHeaders.SetHeader (ih);
 						headerGenerator.InternetHeaders.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, "quoted-printable");
 
-						props.Prop = Property.Body;
-						if (props.Exists) {
-							// fill message
-							if (section_text == null || section_text == "TEXT") {
-								state.Log ("memory test1");
-								mm = BuildMimeMessageFromMapi (props, snli, headerGenerator.InternetHeaders);
-							}
+						// fill message
+						if (section_text == null || section_text == "TEXT") {
+							state.Log ("memory test1");
+							mm = BuildMimeMessageFromMapi (props, snli, headerGenerator.InternetHeaders);
 						}
 					}
 					if (section_text == null) {
@@ -398,96 +396,122 @@ namespace NMapi.Gateways.IMAP {
 		
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, SequenceNumberListItem snli, InternetHeaders ih) 
 		{
-			PropertyHelper propsBody = new PropertyHelper (props.Props);
-			propsBody.Prop = Property.Body;
-			
-			if (propsBody.Exists) {
-				IMessage im = GetMessage (snli);
-				return BuildMimeMessageFromMapi (props, im, ih);
-			}
-			return null;
+			state.Log ("BuildMimeMessageFromMapi SNLI start");
+			IMessage im = GetMessage (snli);
+			return BuildMimeMessageFromMapi (props, im, ih);
 		}
 
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, IMessage im, InternetHeaders ih)
 		{
 			// transfer headers into MimeMessage
 			// TODO: make MimeMessage have a method to consume InternetHeaders objects
+			state.Log ("BuildMimeMessageFromMapi IM start");
 			MimeMessage mm = new MimeMessage();
 			foreach (InternetHeader ih1 in ih)
 				mm.SetHeader (new InternetHeader (ih1.ToString ()));
 
-			PropertyHelper propsBody = new PropertyHelper (props.Props);
-			propsBody.Prop = Property.Body;
 			PropertyHelper propsRTFCompressed = new PropertyHelper (props.Props);
 			propsRTFCompressed.Prop = Property.RtfCompressed;
 			
-			if (propsBody.Exists) {
-				IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
-				SRowSet rs = tr.GetRows (1);
-				
-				if (rs.Count == 0) {
-					// Message contains of pure text only
-					mm.Content = props.Unicode;
-				} else {
-					mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/related");
-					mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
-					MimeMultipart mmp = new MimeMultipart (mm);
-					// new Body Part for the text part
-					MimeBodyPart mbp = new MimeBodyPart ();
+			RTFParser rtfParser = null;
+			if (propsRTFCompressed.Exists) {
+				IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, 0);
+				MemoryStream ms = new MemoryStream ();
+				x.GetData (ms);
 
-					RTFParser rtfParser = null;
-					if (propsRTFCompressed.Exists) {
-						IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, 0);
-						MemoryStream ms = new MemoryStream ();
-						x.GetData (ms);
+				ms = new MemoryStream (Encoding.ASCII.GetBytes (ConversionHelper.UncompressRTF( ms.ToArray ())));
+string debug =  new StreamReader (ms).ReadToEnd ();
+Console.WriteLine (debug);
+ms.Seek (0, SeekOrigin.Begin);
+				rtfParser = new RTFParser (ms);
+			}
 
-						ms = new MemoryStream (Encoding.ASCII.GetBytes (ConversionHelper.UncompressRTF( ms.ToArray ())));
-						rtfParser = new RTFParser (ms);
-					}
-					if (rtfParser != null && rtfParser.IsHTML ()) {
-						// do html body
-						mbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
-						MimeMultipart mmpHtml = new MimeMultipart (mbp);
+			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
+			SRowSet rs = tr.GetRows (1);
+			string charset = mm.CharacterSet; // save charset
+			
+			if (rs.Count > 0) {
+				mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
+				mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
+				MimeMultipart mmp = new MimeMultipart (mm);
 
-						// Text/plain alternative
-						MimeBodyPart mbpTextPlainAlternative = new MimeBodyPart ();
-						mbpTextPlainAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/plain");
-						mbpTextPlainAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
-						mbpTextPlainAlternative.Content = propsBody.Unicode;
-						mmpHtml.AddBodyPart (mbpTextPlainAlternative);
+				// new Body Part for the text part
+				MimeBodyPart mbp = new MimeBodyPart ();
+				CreateTextOrHtml (mbp, rtfParser, ih, props, charset);
+				mmp.AddBodyPart (mbp);
 
-						// text/html alternative
-						MimeBodyPart mbpTextHtmlAlternative = new MimeBodyPart ();
-						mbpTextHtmlAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html");
-						mbpTextHtmlAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
-						MemoryStream mso = new MemoryStream ();
-						rtfParser.WriteHtmlTo (mso, "us-ascii");
-						mbpTextHtmlAlternative.Content = Encoding.ASCII.GetString (mso.ToArray ());
-						mmpHtml.AddBodyPart (mbpTextHtmlAlternative);
+				bool relatedAttachments = false;
+				AppendAttachments (mmp, (IMessage) im, ih, out relatedAttachments);
 
-					} else {
-
-						// do basic text body
-						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME));
-						mbp.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
-						mbp.Content = propsBody.Unicode;
-
-					}
-					mmp.AddBodyPart (mbp);
-
-					AppendAttachments (mmp, (IMessage) im, ih);
-					
+				if (relatedAttachments) {
+					InternetHeader ihLocal = mm.ContentTypeHeader;
+					ihLocal.SetSubtype ("related");
+					mm.SetHeader (ihLocal);
 				}
+				
+			} else  {
+				CreateTextOrHtml (mm, rtfParser, ih, props, charset);
+				// Message contains of pure text only
 			}
 			return mm;
 		}
 
+		private void CreateTextOrHtml (MimePart targetMP, RTFParser rtfParser, InternetHeaders ih, PropertyHelper props, string charset)
+		{
 
-		private void AppendAttachments (MimeMultipart mmp, IMessage im, InternetHeaders ih)
+			PropertyHelper propsBody = new PropertyHelper (props.Props);
+			propsBody.Prop = Property.Body;
+			
+			if (rtfParser != null && rtfParser.IsHTML () && propsBody.Exists) {
+				// do html body
+				targetMP.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
+				MimeMultipart mmpHtml = new MimeMultipart (targetMP);
+
+				// Text/plain alternative
+				MimeBodyPart mbpTextPlainAlternative = new MimeBodyPart ();
+				mbpTextPlainAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/plain; charset=" + charset);
+				mbpTextPlainAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+				mbpTextPlainAlternative.Content = propsBody.Unicode;
+				mmpHtml.AddBodyPart (mbpTextPlainAlternative);
+
+				// text/html alternative
+				MimeBodyPart mbpTextHtmlAlternative = new MimeBodyPart ();
+				mbpTextHtmlAlternative.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html; charset=" + charset);
+				mbpTextHtmlAlternative.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+				MemoryStream mso = new MemoryStream ();
+				rtfParser.WriteHtmlTo (mso, Encoding.Unicode.WebName);
+				mso.Seek (0, SeekOrigin.Begin);
+				string strgHtml = new StreamReader (mso, Encoding.Unicode).ReadToEnd ();
+
+				// TODO: getting unexplainable \0 characters at the end. Find out why later sometime
+				// HINT: seems to happen only, if the email has been stored by the Append of this Gateway.
+				// Emails stored via Mapi didn't have this behaviour so far
+				mbpTextHtmlAlternative.Content = strgHtml.Replace ("\0", "");
+				
+				mmpHtml.AddBodyPart (mbpTextHtmlAlternative);
+
+			} else if (rtfParser != null && rtfParser.IsHTML ()) {
+				// do html text body
+				targetMP.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/html; charset=" + charset);
+				targetMP.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+				MemoryStream mso = new MemoryStream ();
+				rtfParser.WriteHtmlTo (mso, Encoding.Unicode.WebName);
+				targetMP.Content = Encoding.Unicode.GetString (mso.ToArray ());
+				
+			} else if (propsBody.Exists) {
+				// do basic text body
+				targetMP.SetHeader (MimePart.CONTENT_TYPE_NAME, "text/plain; charset=" + charset);
+				targetMP.SetHeader (ih.GetInternetHeaders (MimePart.CONTENT_TRANSFER_ENCODING_NAME));
+				targetMP.Content = propsBody.Unicode;
+			}
+		}
+
+		private void AppendAttachments (MimeMultipart mmp, IMessage im, InternetHeaders ih, out Boolean relatedAttachments)
 		{
 			int attachCnt = 0;
 			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
 			SRowSet rs = tr.GetRows (1);
+			relatedAttachments = false;
 			
 			while (rs.Count > 0) {
 				foreach (SRow row in rs) {
@@ -496,7 +520,6 @@ namespace NMapi.Gateways.IMAP {
 					PropertyHelper aProps = new PropertyHelper (row.Props);
 					PropertyHelper attachMethProps = new PropertyHelper (row.Props);
 					attachMethProps.Prop = Property.AttachMethod;
-ObjectDumper.Write (row.Props);
 					
 					// embedded Messages
 					if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
@@ -511,6 +534,8 @@ ObjectDumper.Write (row.Props);
 						
 							HeaderGenerator hg = new HeaderGenerator (embeddedPH, state, embeddedIMsg);
 							hg.DoAll ();
+
+							Encoding encoding = Encoding.ASCII;  ///TODO: get encoding from CP-Property. see above
 							
 							MimeMessage embeddedMsg = BuildMimeMessageFromMapi (embeddedPH, embeddedIMsg, hg.InternetHeaders);
 	
@@ -540,7 +565,7 @@ ObjectDumper.Write (row.Props);
 					
 					InternetHeader ih_fname = new InternetHeader (MimePart.CONTENT_TYPE_NAME, mimeType);
 					string charset = null;
-					string encoding = "base64";
+					string transferEncoding = "base64";
 					if (mimeType.StartsWith ("text")) {
 						if (mimeType == "text/plain") {
 							charset = ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME).GetParam ("charset");
@@ -548,7 +573,7 @@ ObjectDumper.Write (row.Props);
 								charset = "utf-8";
 							ih_fname.SetParam ("charset", charset);
 						}
-						encoding = "quoted-printable";
+						transferEncoding = "quoted-printable";
 					}
 					aProps.Prop = Property.DisplayName;
 					if (aProps.Exists) {
@@ -562,12 +587,13 @@ ObjectDumper.Write (row.Props);
 					if (aProps.Exists) {
 						ih_fname.SetParam ("name", ConversionHelper.Trim0Terminator (aProps.String));
 					}
-					mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, encoding);
+					mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, transferEncoding);
 					mbp.SetHeader (ih_fname);
 
 					aProps.Prop = Outlook.Property_ATTACH_CONTENT_ID_W;
 					if (aProps.Exists) {
 						mbp.SetHeader ("Content-ID", "<"+aProps.String+">");
+						relatedAttachments = true;
 					}
 
 					aProps.Prop = Property.AttachNum;

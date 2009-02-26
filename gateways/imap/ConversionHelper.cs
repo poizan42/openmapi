@@ -140,7 +140,7 @@ namespace NMapi.Gateways.IMAP {
 			public UInt32 ulMagic;
 			public UInt32 ulChecksum;
 		};
-		static int RTFHeaderLenght = 16;
+		static int RTFHeaderLength = 16;
 		
 		public static string UncompressRTF(byte[] rtf)
 		{			
@@ -156,22 +156,22 @@ namespace NMapi.Gateways.IMAP {
 			byte[] rtfOut = null;
 			int writeIndex = 0;
 	
-//	for (int i = 0 ;i<rtf.Length	; i++) Console.Write (","+rtf[i]);
-			
 			GCHandle pinnedPacket = GCHandle.Alloc(rtf, GCHandleType.Pinned);
 		    RTFHeader rtfHeader = (RTFHeader)Marshal.PtrToStructure(
 		        pinnedPacket.AddrOfPinnedObject(),
 		        typeof(RTFHeader));        
 					
 			// Check if we have a full header
-			if(rtf.Length < RTFHeaderLenght) 
+			if(rtf.Length < RTFHeaderLength) 
 				throw new Exception ("UncompressRTF: input string does not contain full header structure");
 					
-			lpSrc += RTFHeaderLenght;
+			lpSrc += RTFHeaderLength;
 			
 			if(rtfHeader.ulMagic  == 0x414c454d) {
 				// Uncompressed RTF
-				rtf.CopyTo (rtfOut, rtf.Length - RTFHeaderLenght);
+				rtfOut = new byte [rtf.Length - RTFHeaderLength + 1];
+				for (long i = RTFHeaderLength; i < rtf.Length; i++)
+					rtfOut [i-RTFHeaderLength] = rtf [i];
 			} else if(rtfHeader.ulMagic == 0x75465a4c) {
 				byte[] rtfBuf = new byte[rtfHeader.ulUncompressedSize + lpPrebuf.Length];
 				Encoding.ASCII.GetBytes (lpPrebuf).CopyTo (rtfBuf, 0);
@@ -231,6 +231,8 @@ namespace NMapi.Gateways.IMAP {
 			return Encoding.ASCII.GetString (rtfOut);
 		}
 
+
+		
 		public static string Trim0Terminator (string str)
 		{
 			char [] chars = new char [] {'\0'};

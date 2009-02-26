@@ -107,6 +107,15 @@ namespace NMapi.Gateways.IMAP {
 						//	(int) status,
 						//	NMAPI.MSGSTATUS_DELMARKED | 0x00000200 /*MSGSTATUS_ANSWERED*/ | 0x00000002/*MSGSTATUS_TAGGED*/);
 						//fldr.SaveChanges (NMAPI.FORCE_SAVE);
+						//
+						// Writing the property directly doesn't work either
+						//
+						/*IntProperty statusProp = new IntProperty ();
+						statusProp.PropTag = Property.MsgStatus;
+						statusProp.Value = (int) status;
+						MapiPropHelper mphStatus = new MapiPropHelper (msg);
+						mphStatus.HrSetOneProp (statusProp);
+						*/
 	
 						// handle PR_FLAG_STATUS   (\\FLAGGED Flag in IMAP)
 						IntProperty flagStatusProp = new IntProperty ();
@@ -118,6 +127,7 @@ namespace NMapi.Gateways.IMAP {
 					}
 				} catch (Exception e) {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+					state.Log (e.StackTrace);
 					return;
 				}
 				
