@@ -46,7 +46,7 @@ namespace NMapi.Table {
 	
 		private int cCategories;
 		private int cExpanded;
-		private SSortOrder [] aSort;
+		private SortOrder [] aSort;
 	
 		#region C#-ification
 
@@ -72,7 +72,7 @@ namespace NMapi.Table {
 		///   
 		/// </summary>
 		[DataMember (Name="ASort")]
-		public SSortOrder [] ASort {
+		public SortOrder [] ASort {
 			get { return aSort; }
 			set { aSort = value; }
 		}
