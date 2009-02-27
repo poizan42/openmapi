@@ -250,7 +250,7 @@ namespace NMapi.Gateways.IMAP {
 				props.Add (uprop);
 				
 			} else if (mm.ContentType.ToLower () == "text/html") {
-				PropertyHelper ph = new PropertyHelper (props);
+				PropertyHelper ph = new PropertyHelper (props.ToArray ());
 				ph.Prop = Outlook.Property_INTERNET_CPID;
 				if (!ph.Exists) {
 					// set charset only, if it hasn't been set so far.

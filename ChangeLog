@@ -1,3 +1,7 @@
+2009-02-27  Andreas Huegel <andreas.huegel@topalis.com>
+	bugfix
+	* gateways/imap/commands/CmdAppend.cs
+
 2009-02-26  Andreas Huegel <andreas.huegel@topalis.com>
 	changes, to support html bodies 
 
