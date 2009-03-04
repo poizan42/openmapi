@@ -79,11 +79,15 @@ namespace NMapi.Server {
 		DebugStartCall (); try {
 		<xsl:choose>
 			<xsl:when test="proxyCode">
-				<xsl:value-of select="proxyCode/text()" />
+				<xsl:for-each select="proxyCode">
+					<xsl:value-of select="." />
+				</xsl:for-each>
 				 DebugEndCall (); return result;
 			</xsl:when>
 			<xsl:when test="proxyCodeVoid">
-				<xsl:value-of select="proxyCode/text()" />
+				<xsl:for-each select="proxyCodeVoid">
+					<xsl:value-of select="." />
+			</xsl:for-each>
 			</xsl:when>
 			<xsl:when test="$returnValue = 'CommonRpcObjRef'">
 				var mapObj = obj.<xsl:value-of select="@id" />
