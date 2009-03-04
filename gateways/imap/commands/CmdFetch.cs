@@ -95,7 +95,7 @@ namespace NMapi.Gateways.IMAP {
 				List<SRestriction> entryRestrictions = new List<SRestriction> ();
 				int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
 				for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
-					SPropertyRestriction entryPropRestr = new SPropertyRestriction ();
+					PropertyRestriction entryPropRestr = new PropertyRestriction ();
 					BinaryProperty eId = new BinaryProperty();
 					eId.PropTag = Property.EntryId;
 					eId.Value = slq[msgno2].EntryId;
@@ -105,7 +105,7 @@ namespace NMapi.Gateways.IMAP {
 					entryRestrictions.Add (entryPropRestr);
 				}
 				// create head restriction, append the single restrictions and add head restriction to contentsTable
-				SOrRestriction orRestr = new SOrRestriction (entryRestrictions.ToArray ());
+				OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
 				contentsTable.Restrict (orRestr, 0);
 				// get rows
 				SRowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);

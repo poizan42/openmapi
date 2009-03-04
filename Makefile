@@ -27,7 +27,7 @@ IMAP_SOURCES=$(shell find gateways/imap -name "*.cs")
 
 all: code docs
 
-code: mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample test
+code: mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample gateways test
 
 mapi.xml:
 	$(MCS) $(DEBUG) /r:System.Core.dll /r:System.Xml.Linq.dll /out:bin/preproc.exe xml/preproc.cs
@@ -229,6 +229,32 @@ sample:
 		/r:System.Windows.Forms.dll /r:System.Drawing.dll  /r:bin/NMapi.dll \
 		samples/Grid.cs samples/MyTask.xml_Generated.cs
 	cp samples/*.config bin/
+
+
+#
+# Gateways
+#
+
+gateways: NMapi.dll gateway_imap
+
+gateway_imap:
+	$(MCS) $(DEBUG) /out:bin/NMapi.Gateways.IMAP.exe /doc:bin/NMapi.Gateways.xmldoc /nowarn:$(NO_WARN) /target:exe \
+	/r:nunit.framework.dll \
+	/r:System.Data.dll \
+	/r:System.Configuration.dll \
+	/r:System.Web.Services.dll \
+	/r:System.Web.dll \
+	/r:System.Xml.Linq.dll \
+	/r:System.Runtime.Serialization.dll \
+	/r:System.ServiceModel.dll \
+	 /r:bin/Mono.Cecil.dll \
+	/r:bin/RemoteTeaSharp.dll \
+	/r:bin/NMapi.dll \
+	`find gateways -name "*.cs"` \
+	lib/cup/Runtime/Scanner.cs \
+	lib/cup/Runtime/Symbol.cs \
+	lib/cup/Runtime/virtual_parse_stack.cs \
+	lib/cup/Runtime/lr_parser.cs
 
 #
 # Docs

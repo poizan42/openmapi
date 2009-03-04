@@ -869,42 +869,42 @@ state.Log ("FixUIDsIn");
 			NMapiGuid guid;
 			SPropValue prop = null;
 			string name;
-			int type = 0;
+			PropertyType type = PropertyType.Error;
 			switch (ignp) {
 			case IMAPGatewayNamedProperty.Subscriptions:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-root_folder-subscription_list2";
-				type = PropertyType.MvUnicode.value__;
+				type = PropertyType.MvUnicode;
 				prop = new UnicodeArrayProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UID:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-message-UID";
-				type= PropertyType.Long.value__;
+				type= PropertyType.Long;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UID_Path:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-message-UID_Path";
-				type = PropertyType.Unicode.value__;
+				type = PropertyType.Unicode;
 				prop = new UnicodeProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UID_Creation_EntryId:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-message-UID_CreationEntryId";
-				type = PropertyType.Binary.value__;
+				type = PropertyType.Binary;
 				prop = new BinaryProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDNEXT:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder-UIDNEXT";
-				type= PropertyType.Long.value__;
+				type= PropertyType.Long;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDVALIDITY:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder_UIDVALIDITY";
-				type= PropertyType.Long.value__;
+				type= PropertyType.Long;
 				prop = new IntProperty ();
 				break;
 			default:
@@ -944,8 +944,7 @@ state.Log ("FixUIDsIn");
 				state.Log ("GetNamedProp 4");
 
 				if (props.Length == 0  || props[0] is ErrorProperty){
-					PropertyTypeHelper pth = new PropertyTypeHelper ();
-					tag = pth.CHANGE_PROP_TYPE (tag, type);
+					tag = PropertyTypeHelper.CHANGE_PROP_TYPE (tag, type).value__;
 					prop.PropTag = tag;
 					state.Log ("GetNamedProp 5");
 				} else {

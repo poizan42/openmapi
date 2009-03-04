@@ -1,3 +1,10 @@
+2009-03-04  Andreas Huegel <andreas.huegel@topalis.com>
+	adaptations to new NMapi Version
+
+	* gateways/imap/ServerConnection.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* Makefile
+
 2009-02-27  Andreas Huegel <andreas.huegel@topalis.com>
 	bugfix
 	* gateways/imap/commands/CmdAppend.cs
