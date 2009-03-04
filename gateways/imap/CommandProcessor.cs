@@ -72,9 +72,6 @@ namespace NMapi.Gateways.IMAP {
 				command.List_mailbox = imapConnectionState.FolderMappingAgent.MapIMAPToMAPI (command.List_mailbox);
 			}
 
-ObjectDumper.Write(command,3);			
-
-			
 			AbstractBaseCommandProcessor cmd = null;
 			switch (command.Command_name) {
 			case "APPEND": cmd = new CmdAppend (imapConnectionState); break;

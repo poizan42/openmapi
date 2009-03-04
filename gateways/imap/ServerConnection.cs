@@ -955,7 +955,6 @@ state.Log ("FixUIDsIn");
 				throw new Exception ("GetNamedProp: Internal Problem: " + e.Message);
 			}
 			state.Log ("GetNamedProp 6, PropType:" + prop.GetType ());
-//ObjectDumper.Write (prop);				
 			return prop;
 		}
 	}

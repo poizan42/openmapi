@@ -1,4 +1,9 @@
 2009-03-04  Andreas Huegel <andreas.huegel@topalis.com>
+	removing debug commands that dont compile
+	* gateways/imap/CommandProcessor.cs
+	* gateways/imap/ServerConnection.cs
+
+2009-03-04  Andreas Huegel <andreas.huegel@topalis.com>
 	adaptations to new NMapi Version
 
 	* gateways/imap/ServerConnection.cs
