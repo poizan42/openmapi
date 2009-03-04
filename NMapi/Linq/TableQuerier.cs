@@ -91,7 +91,7 @@ namespace NMapi.Linq {
 
 			table.Restrict (state.MergeRestrictions (), 0);
 
-			SSortOrderSet sOrderSet = new SSortOrderSet ();
+			SortOrderSet sOrderSet = new SortOrderSet ();
 			sOrderSet.ASort = state.OrderByList.ToArray ();
 			table.SortTable (sOrderSet, NMAPI.TBL_BATCH);
 

@@ -386,7 +386,7 @@
 				<remarks>$$MSDN_528598.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Sort^Order^Set">sortOrder</param>
+			<param type="^Sort^Order^Set">sortOrder</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Empty^Folder">
@@ -896,7 +896,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Sort^Order^Set">sortCriteria</param>
+			<param type="^Sort^Order^Set">sortCriteria</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Query^Sort^Order">
@@ -905,7 +905,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<returns>^S#Sort^Order^Set</returns>
+			<returns>^Sort^Order^Set</returns>
 		</method>
 		<method id="^Query^Rows">
 			<doc>

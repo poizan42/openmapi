@@ -36,6 +36,13 @@ namespace NMapi.Meta {
 		public string GetSummary (IBase obj, 
 			Dictionary<int, SPropValue> someProps)
 		{
+			IMapiProp prop = obj as IMapiProp;
+			if (obj != null) {
+				var tags = new SPropTagArray (Property.Subject);
+				SPropValue[] values = prop.GetProps (tags, 0); // read-only
+				// TODO: check length of values!
+				return "IPM.Note: (Subject: '" + (string) values [0] + "')";
+			}
 			return null;
 		}
 
@@ -48,6 +55,13 @@ namespace NMapi.Meta {
 		public MatchLevel GetScore (IBase obj, 
 			Dictionary<int, SPropValue> someProps)
 		{
+			if (obj == null)
+				return MatchLevel.NoMatch;
+
+			if (someProps.ContainsKey (Property.MessageClass) && 
+				((string) someProps [Property.MessageClass]).StartsWith ("IPM.Note"))
+					return MatchLevel.Match;
+
 			return MatchLevel.NoMatch;
 		}
 

@@ -222,7 +222,7 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiFolder_SaveContentsSort (IndigoMapiObjRef obj, SSortOrderSet sortOrder, int flags);
+		void IMapiFolder_SaveContentsSort (IndigoMapiObjRef obj, SortOrderSet sortOrder, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -432,11 +432,11 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiTable_SortTable (IndigoMapiObjRef obj, SSortOrderSet sortCriteria, int flags);
+		void IMapiTable_SortTable (IndigoMapiObjRef obj, SortOrderSet sortCriteria, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SSortOrderSet IMapiTable_QuerySortOrder (IndigoMapiObjRef obj);
+		SortOrderSet IMapiTable_QuerySortOrder (IndigoMapiObjRef obj);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]

@@ -216,7 +216,7 @@ namespace NMapi.Table {
 				MAPITable_FreeBookmark_arg> (clnt.MAPITable_FreeBookmark_1, prms);
 		}
 
-		public void SortTable (SSortOrderSet sortCriteria, int flags)
+		public void SortTable (SortOrderSet sortCriteria, int flags)
 		{
 			var prms = new MAPITable_SortTable_arg ();
 			prms.obj = new HObject (obj);
@@ -227,7 +227,7 @@ namespace NMapi.Table {
 				MAPITable_SortTable_arg> (clnt.MAPITable_SortTable_1, prms);
 		}
 
-		public SSortOrderSet QuerySortOrder ()
+		public SortOrderSet QuerySortOrder ()
 		{
 			var prms = new MAPITable_QuerySortOrder_arg ();
 			prms.obj = new HObject (obj);

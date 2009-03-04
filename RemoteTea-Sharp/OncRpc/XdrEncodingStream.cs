@@ -381,10 +381,15 @@ namespace CompactTeaSharp
 	
 		public void EncodeWithBoolGate (IXdrAble obj)
 		{
-			EncodeWithBoolGate ((IXdrEncodeable) obj);
+			EncodeWithBoolGate2 (obj);
 		}
 		
 		public void EncodeWithBoolGate (IXdrEncodeable obj)
+		{
+			EncodeWithBoolGate2 (obj);
+		}
+		
+		public void EncodeWithBoolGate2 (IXdrEncodeable obj)
 		{
 			if (obj != null) {
 				XdrEncodeBoolean (true);

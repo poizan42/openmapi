@@ -59,7 +59,7 @@ namespace NMapi.Meta {
 				return MatchLevel.NoMatch;
 
 			if (someProps.ContainsKey (Property.MessageClass) && 
-				((UnicodeProperty) someProps [Property.MessageClass]).Value == "IPM.Task")
+				((string) someProps [Property.MessageClass]).StartsWith ("IPM.Task"))
 					return MatchLevel.Match;
 
 			return MatchLevel.NoMatch;

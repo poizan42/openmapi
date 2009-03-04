@@ -52,17 +52,17 @@ namespace NMapi.Table {
 		{
 			RestrictionType rt = (RestrictionType) xdr.XdrDecodeInt ();
 			switch (rt) {
-				case RestrictionType.CompareProps: return new SComparePropsRestriction (xdr);
-				case RestrictionType.And: return new SAndRestriction (xdr);
-				case RestrictionType.Or: return new SOrRestriction (xdr);
-				case RestrictionType.Not: return new SNotRestriction (xdr);
-				case RestrictionType.Content: return new SContentRestriction (xdr);
-				case RestrictionType.Property: return new SPropertyRestriction (xdr);
-				case RestrictionType.Bitmask: return new SBitMaskRestriction (xdr);
-				case RestrictionType.Size: return new SSizeRestriction (xdr);
-				case RestrictionType.Exist: return new SExistRestriction (xdr);
-				case RestrictionType.SubRestriction: return new SSubRestriction (xdr);
-				case RestrictionType.Comment: return new SCommentRestriction (xdr);
+				case RestrictionType.CompareProps: return new ComparePropsRestriction (xdr);
+				case RestrictionType.And: return new AndRestriction (xdr);
+				case RestrictionType.Or: return new OrRestriction (xdr);
+				case RestrictionType.Not: return new NotRestriction (xdr);
+				case RestrictionType.Content: return new ContentRestriction (xdr);
+				case RestrictionType.Property: return new PropertyRestriction (xdr);
+				case RestrictionType.Bitmask: return new BitMaskRestriction (xdr);
+				case RestrictionType.Size: return new SizeRestriction (xdr);
+				case RestrictionType.Exist: return new ExistRestriction (xdr);
+				case RestrictionType.SubRestriction: return new SubRestriction (xdr);
+				case RestrictionType.Comment: return new CommentRestriction (xdr);
 			}
 			throw new Exception ("Shouldn't get here°!");
 		}

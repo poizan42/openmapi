@@ -52,9 +52,7 @@ namespace NMapi.Server {
 
 			var objRef = session.CreateRefObj (mapiObj);
 
-			#if DEBUG
-			Console.WriteLine ("Adding object '" + objRef.RpcObject + "'.");
-			#endif
+			Trace.WriteLine ("Adding object '" + objRef.RpcObject + "'.");
 			
 			objectMap [objRef.RpcObject] = objRef;
 			return objRef;

@@ -53,9 +53,9 @@ namespace NMapi.Flags {
 			return propTag >> 16;
 		}
 
-		public int CHANGE_PROP_TYPE (int propTag, int propType)
+		public static PropertyType CHANGE_PROP_TYPE (int propTag, PropertyType propType)
 		{
-			return (int) (0xFFFF0000 & propTag) | propType;
+			return (PropertyType) ((0xFFFF0000 & propTag) | (int) propType);
 		}
 
 	}

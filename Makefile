@@ -8,7 +8,8 @@ MONODOCER = monodocer
 MONODOCS2HTML = monodocs2html
 PREPROC = $(MONO) bin/preproc.exe 
 
-NO_WARN=0612,0618,1591
+#0612,0618
+NO_WARN=1591
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
@@ -18,7 +19,7 @@ MONO_GETLINE=lib/getline/getline.cs
 GOLDPARSER_SOURCES=$(shell find lib/GoldParser -name "*.cs")
 REMOTETEA_SOURCES=$(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES=$(shell find mapimetal -name "*.cs")
-SERVER_SOURCES=$(shell find server/Modules -name "*.cs") $(shell find server/Protocols -name "*.cs")  $(shell find server/Modules -name "*.cs") server/*.cs
+SERVER_SOURCES=$(shell find server/Modules -name "*.cs") $(shell find server/Protocols -name "*.cs")  $(shell find server/Modules -name "*.cs") server/*.cs server/Protocols/OncRpc/OncRpcService_Generated.cs
 MAPIWAIT_SOURCES=$(shell find tools/mapiwait -name "*.cs")
 MAPITOOL_SOURCES=$(shell find tools/mapitool -name "*.cs")
 CUP_SOURCES=$(shell find lib/cup/Runtime -name "*.cs")
@@ -233,7 +234,7 @@ sample:
 # Docs
 #
 
-docs: nmapi
+docs: NMapi.dll
 	$(MONODOCER) bin/NMapi.dll --import bin/NMapi.xmldoc -out xmldocs
 	$(MONODOCS2HTML) -template:documents/doctemplate.xsl -source:xmldocs -dest:docs
 

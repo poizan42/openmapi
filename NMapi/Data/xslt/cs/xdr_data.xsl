@@ -85,7 +85,9 @@
 		/// &lt;/summary&gt;
 		public <xsl:value-of select="@id" /> (XdrDecodingStream xdr)
 		{
+			#pragma warning disable 0618
 			XdrDecode (xdr);
+			#pragma warning restore 0618
 		}
 		<xsl:apply-templates select="both|encode" mode="encode" />
 		<xsl:apply-templates select="both|decode" mode="decode" />
@@ -93,7 +95,7 @@
 </xsl:template>
 <xsl:template match="both|encode" mode="encode">
 	<xsl:variable name="override"><xsl:if test="parent::node()/@inherits != ''"> override </xsl:if></xsl:variable>
-		[Obsolete]
+		[Obsolete ("XdrEncode MUST only be used by NMapi components and may be removed!", false)]
 		public <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
@@ -103,7 +105,7 @@
 </xsl:template>	
 <xsl:template match="both|decode" mode="decode">
 	<xsl:variable name="override"><xsl:if test="parent::node()/@inherits != ''"> override </xsl:if></xsl:variable>
-		[Obsolete]
+		[Obsolete ("XdrDecode MUST only be used by NMapi components and may be removed!", false)]
 		public <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
@@ -167,7 +169,9 @@
 </xsl:template>
 
 <xsl:template match="complex" mode="encode">
+	#pragma warning disable 0618
 	<xsl:value-of select="text()" />.XdrEncode (xdr); <!-- HACK: ignore static //-->
+	#pragma warning restore 0618
 </xsl:template>
 
 <xsl:template match="countedSizeArray" mode="encode">
@@ -183,7 +187,9 @@
 </xsl:template>
 
 <xsl:template match="wrapped" mode="encode">
+	#pragma warning disable 0618
 	new <xsl:value-of select="@in" /> (<xsl:value-of select="text()" />).XdrEncode (xdr);
+	#pragma warning restore 0618
 </xsl:template>
 
 
@@ -218,9 +224,11 @@
 </xsl:template>
 
 <xsl:template match="long|float|double|short|shortVector|intVector|floatVector|doubleVector|dynamicOpaque" mode="decode">
+	#pragma warning disable 0618
 	<xsl:value-of select="text()" /><xsl:text> = </xsl:text> 
 	xdr.XdrDecode<xsl:value-of select="translate (substring (name(), 1, 1), $lcletters, $ucletters)" />
 	<xsl:value-of select="substring (name(), 2)" /> ();
+	#pragma warning restore 0618
 </xsl:template>
 
 <xsl:template match="complex" mode="decode">

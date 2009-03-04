@@ -34,20 +34,37 @@ namespace NMapi {
 	{
 		private int propTag;
 
+		/// <summary>
+		///  
+		/// </summary>
 		public PropertyType Type {
 			get {
 				return PropertyTypeHelper.PROP_TYPE (propTag);
 			}
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public int Id {
 			get {
 				return PropertyTypeHelper.PROP_ID (propTag);
 			}
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public int Tag {
 			get { return propTag; }
+		}
+
+		/// <summary>
+		///  Converts the tag to a different type.
+		/// </summary>
+		public PropertyType AsType (PropertyType type)
+		{
+			return PropertyTypeHelper.CHANGE_PROP_TYPE (Tag, type);			
 		}
 
 		public PropertyTag (int pt)

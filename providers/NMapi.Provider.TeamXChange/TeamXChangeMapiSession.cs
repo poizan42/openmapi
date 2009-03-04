@@ -132,8 +132,8 @@ namespace NMapi {
 				else
 					session = new TeamXChangeSession (host);
 				session.Logon2 (user, password, sessionFlags, codePage, localeId);
-//				privatemdb = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, false);
-//				publicmdb  = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, true);
+				privatemdb = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, false);
+				publicmdb  = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, true);
 			} 
 			catch (MapiException e) {
 				Console.WriteLine (e);

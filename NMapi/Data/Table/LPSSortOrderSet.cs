@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - SPSSortOrderSet.cs
+// openmapi.org - NMapi C# Mapi API - LPSSortOrderSet.cs
 //
 // Copyright 2008 VipCom AG
 //
@@ -42,12 +42,12 @@ namespace NMapi.Interop {
 	/// </summary>
 	public sealed class LPSSortOrderSet : IXdrAble
 	{
-		private SSortOrderSet _value;
+		private SortOrderSet _value;
 
 		/// <summary>
 		///   
 		/// </summary>
-		public SSortOrderSet Value {
+		public SortOrderSet Value {
 			get { return _value; }
 			set { _value = value; }
 		}
@@ -62,7 +62,7 @@ namespace NMapi.Interop {
 		/// <summary>
 		///
 		/// </summary>
-		public LPSSortOrderSet(SSortOrderSet value)
+		public LPSSortOrderSet (SortOrderSet value)
 		{
 			this._value = value;
 		}
@@ -95,12 +95,12 @@ namespace NMapi.Interop {
 			if (len == ~0)
 				_value = null;
 			else {
-				_value = new SSortOrderSet();
+				_value = new SortOrderSet();
 				_value.CCategories = xdr.XdrDecodeInt();
 				_value.CExpanded = xdr.XdrDecodeInt();
-				_value.ASort = new SSortOrder[len];
+				_value.ASort = new SortOrder[len];
 				for (int idx = 0; idx < len; idx++)
-					_value.ASort[idx] = new SSortOrder (xdr);
+					_value.ASort[idx] = new SortOrder (xdr);
 			}
 		}
 	}

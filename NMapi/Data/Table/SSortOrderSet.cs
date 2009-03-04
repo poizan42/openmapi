@@ -41,7 +41,7 @@ namespace NMapi.Table {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public class SSortOrderSet
+	public class SortOrderSet
 	{
 	
 		private int cCategories;

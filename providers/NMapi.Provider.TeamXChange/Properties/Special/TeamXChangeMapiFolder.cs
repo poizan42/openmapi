@@ -262,7 +262,7 @@ namespace NMapi.Properties.Special {
 			return res.ulOldStatus;
 		}
 
-		public void SaveContentsSort (SSortOrderSet sortOrder, int flags)
+		public void SaveContentsSort (SortOrderSet sortOrder, int flags)
 		{
 			var prms = new MAPIFolder_SaveContentsSort_arg ();
 			prms.obj = new HObject (obj);

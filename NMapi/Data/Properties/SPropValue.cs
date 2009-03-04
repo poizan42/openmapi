@@ -164,6 +164,237 @@ namespace NMapi.Properties {
 			return prop;
 		}
 		
+		//
+		// EXPLICIT CASTING
+		//
+		//  Please note: We only allow casting for derived types if it can be 
+		//               done without creating any confusion about the underlying type!
+		//
+		
+		/// <summary>
+		///  Valid for UnicodeProperty, String8Property
+		/// </summary>
+		public static explicit operator string (SPropValue p)
+		{
+			if (p is UnicodeProperty || p is String8Property)
+		    	return (string) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with types " + 
+			"'UnicodeProperty' or 'String8Property' can be casted to string.");
+		}
+		
+		/// <summary>
+		///  Valid for ShortProperty, BooleanProperty
+		/// </summary>
+		public static explicit operator short (SPropValue p)
+		{
+			if (p is ShortProperty || p is BooleanProperty)
+		    	return (short) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'ShortProperty' or 'BooleanProperty' can be casted to short.");
+		}
+		
+		/// <summary>
+		///  Valid for IntProperty
+		/// </summary>
+		public static explicit operator int (SPropValue p)
+		{
+			if (p is IntProperty)
+		    	return (int) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'IntProperty' can be casted to int.");
+		}
+		
+		/// <summary>
+		///  Valid for FloatProperty
+		/// </summary>
+		public static explicit operator float (SPropValue p)
+		{
+			if (p is FloatProperty)
+		    	return (float) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'FloatProperty' can be casted to float.");
+		}
+
+		/// <summary>
+		///  Valid for DoubleProperty, AppTimeProperty
+		/// </summary>
+		public static explicit operator double (SPropValue p)
+		{
+			if (p is DoubleProperty || p is AppTimeProperty)
+		    	return (double) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'DoubleProperty' or 'AppTimeProperty' can be casted to double.");
+		}
+		
+		/// <summary>
+		///  Valid for FileTimeProperty
+		/// </summary>
+		public static explicit operator FileTime (SPropValue p)
+		{
+			if (p is FileTimeProperty)
+		    	return (FileTime) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'FileTimeProperty' can be casted to FileTime.");
+		}
+		
+		/// <summary>
+		///  Valid for BinaryProperty
+		/// </summary>
+		public static explicit operator SBinary (SPropValue p)
+		{
+			if (p is BinaryProperty)
+		    	return (SBinary) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'BinaryProperty' can be casted to SBinary.");
+		}
+		
+		/// <summary>
+		///  Valid for BinaryProperty
+		/// </summary>
+		public static explicit operator byte[] (SPropValue p)
+		{
+			if (p is BinaryProperty) {
+				if (p.GetValueObj () == null)
+					return null;
+				return ((SBinary) p.GetValueObj ()).ByteArray;
+			}
+			throw new InvalidCastException ("Only properties with type " + 
+			"'BinaryProperty' can be casted to SBinary.");
+		}
+		
+		/// <summary>
+		///  Valid for LongProperty, CurrencyProperty
+		/// </summary>
+		public static explicit operator long (SPropValue p)
+		{
+			if (p is LongProperty || p is CurrencyProperty)
+		    	return (long) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'LongProperty' or 'CurrencyProperty' can be casted to long.");
+		}
+		
+		/// <summary>
+		///  Valid for GuidProperty
+		/// </summary>
+		public static explicit operator NMapiGuid (SPropValue p)
+		{
+			if (p is GuidProperty)
+		    	return (NMapiGuid) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'GuidProperty' can be casted to NMapiGuid.");
+		}
+				
+		/// <summary>
+		///  Valid for UnicodeArrayProperty, String8ArrayProperty
+		/// </summary>
+		public static explicit operator string[] (SPropValue p)
+		{
+			if (p is UnicodeArrayProperty || p is String8ArrayProperty)
+		    	return (string[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with types " + 
+			"'UnicodeArrayProperty' or 'String8ArrayProperty' can be casted to string[].");
+		}
+		
+		/// <summary>
+		///  Valid for ShortArrayProperty
+		/// </summary>
+		public static explicit operator short[] (SPropValue p)
+		{
+			if (p is ShortArrayProperty)
+		    	return (short[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'ShortArrayProperty' can be casted to short[].");
+		}
+		
+		/// <summary>
+		///  Valid for IntArrayProperty
+		/// </summary>
+		public static explicit operator int[] (SPropValue p)
+		{
+			if (p is IntArrayProperty)
+		    	return (int[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'IntArrayProperty' can be casted to int[].");
+		}
+		
+		/// <summary>
+		///  Valid for FloatArrayProperty
+		/// </summary>
+		public static explicit operator float[] (SPropValue p)
+		{
+			if (p is FloatArrayProperty)
+		    	return (float[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'FloatArrayProperty' can be casted to float[].");
+		}
+
+		/// <summary>
+		///  Valid for DoubleArrayProperty, AppTimeArrayProperty
+		/// </summary>
+		public static explicit operator double[] (SPropValue p)
+		{
+			if (p is DoubleArrayProperty || p is AppTimeArrayProperty)
+		    	return (double[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'DoubleArrayProperty' or 'AppTimeArrayProperty' can be casted to double[].");
+		}
+		
+		/// <summary>
+		///  Valid for FileTimeArrayProperty
+		/// </summary>
+		public static explicit operator FileTime[] (SPropValue p)
+		{
+			if (p is FileTimeArrayProperty)
+		    	return (FileTime[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'FileTimeArrayProperty' can be casted to FileTime[].");
+		}
+		
+		/// <summary>
+		///  Valid for BinaryArrayProperty
+		/// </summary>
+		public static explicit operator SBinary[] (SPropValue p)
+		{
+			if (p is BinaryArrayProperty)
+		    	return (SBinary[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'BinaryArrayProperty' can be casted to SBinary[].");
+		}
+		
+		/// <summary>
+		///  Valid for LongArrayProperty, CurrencyArrayProperty
+		/// </summary>
+		public static explicit operator long[] (SPropValue p)
+		{
+			if (p is LongArrayProperty || p is CurrencyArrayProperty)
+		    	return (long[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'LongArrayProperty' or 'CurrencyArrayProperty' can be casted to long[].");
+		}
+		
+		/// <summary>
+		///  Valid for GuidArrayProperty
+		/// </summary>
+		public static explicit operator NMapiGuid[] (SPropValue p)
+		{
+			if (p is GuidArrayProperty)
+		    	return (NMapiGuid[]) p.GetValueObj ();
+			throw new InvalidCastException ("Only properties with type " + 
+			"'GuidArrayProperty' can be casted to NMapiGuid[].");
+		}
+		
+		/// <summary>
+		///  Valid for BooleanProperty
+		/// </summary>
+		public static explicit operator bool (SPropValue p)
+		{
+			if (p is BooleanProperty)
+		    	return ((short) p.GetValueObj ()) == 1;
+			throw new InvalidCastException ("Only properties with type " + 
+			"'BooleanProperty' can be casted to bool.");
+		}
+		
+		
 		private static SPropValue DecodeRest (int ptag, XdrDecodingStream xdr)
 		{
 			switch (PropertyTypeHelper.PROP_TYPE (ptag)) {

@@ -125,8 +125,8 @@ namespace NMapi.Linq {
 			switch (unaryExpr.NodeType) {
 				case ExpressionType.Not:
 					if (qstate.CurrentCommand == CommandType.Where) {
-						currentRestriction = new SNotRestriction ();
-						currentRestriction = ((SNotRestriction) currentRestriction).Res;
+						currentRestriction = new NotRestriction ();
+						currentRestriction = ((NotRestriction) currentRestriction).Res;
 						currentRestrictionUsed = true;
 						this.Visit (unaryExpr.Operand);
 					}
@@ -177,7 +177,7 @@ namespace NMapi.Linq {
 
 			MapiPropertyAttribute prop = GetMapiPropertyAttribute (propExpr.Name);
 
-			SSortOrder sOrder = new SSortOrder ();
+			SortOrder sOrder = new SortOrder ();
 			sOrder.Order = TableSort.Descend;
 			sOrder.PropTag = prop.PropertyOrKind;
 			qstate.AddOrderBy (sOrder);
@@ -278,7 +278,7 @@ namespace NMapi.Linq {
 			return methodCallExpr;
 		}
 
-		private SSortOrder BuildMiniMaxSortOrder (
+		private SortOrder BuildMiniMaxSortOrder (
 			MethodCallExpression methodCallExpr, TableSort sortOrder)
 		{
 			if (methodCallExpr.Arguments.Count < 2)
@@ -296,7 +296,7 @@ namespace NMapi.Linq {
 
 			MapiPropertyAttribute prop = GetMapiPropertyAttribute (propExpr.Name);
 
-			SSortOrder sOrder = new SSortOrder ();
+			SortOrder sOrder = new SortOrder ();
 			sOrder.Order = sortOrder;
 			sOrder.PropTag = prop.PropertyOrKind;
 			return sOrder;
@@ -304,7 +304,7 @@ namespace NMapi.Linq {
 
 		private Expression VisitMinMethod (MethodCallExpression methodCallExpr)
 		{
-			SSortOrder sOrder = BuildMiniMaxSortOrder (methodCallExpr, TableSort.Ascend);
+			SortOrder sOrder = BuildMiniMaxSortOrder (methodCallExpr, TableSort.Ascend);
 			qstate.PrependOrderBy (sOrder);
 			SetScalarOpWithParam (ScalarOperation.Min, methodCallExpr.Arguments[1]);
 			return methodCallExpr;
@@ -312,7 +312,7 @@ namespace NMapi.Linq {
 
 		private Expression VisitMaxMethod (MethodCallExpression methodCallExpr)
 		{
-			SSortOrder sOrder = BuildMiniMaxSortOrder (methodCallExpr, TableSort.Descend);
+			SortOrder sOrder = BuildMiniMaxSortOrder (methodCallExpr, TableSort.Descend);
 			qstate.PrependOrderBy (sOrder);
 			SetScalarOpWithParam (ScalarOperation.Max, methodCallExpr.Arguments[1]);
 			return methodCallExpr;
@@ -382,10 +382,10 @@ namespace NMapi.Linq {
 				throw new NotSupportedException ("Argument must " + 
 					"be constant and not null!");
 
-			currentRestriction = new SContentRestriction ();
-			((SContentRestriction) currentRestriction).FuzzyLevel = FuzzyLevel.Substring;
-			((SContentRestriction) currentRestriction).PropTag = (int) prop.Type;
-			((SContentRestriction) currentRestriction).Prop = MakeSPropValue (prop.Type, matchStrExpr.Value);
+			currentRestriction = new ContentRestriction ();
+			((ContentRestriction) currentRestriction).FuzzyLevel = FuzzyLevel.Substring;
+			((ContentRestriction) currentRestriction).PropTag = (int) prop.Type;
+			((ContentRestriction) currentRestriction).Prop = MakeSPropValue (prop.Type, matchStrExpr.Value);
 			
 			currentRestrictionUsed = true;
 
@@ -495,20 +495,20 @@ namespace NMapi.Linq {
 			return prop;
 		}
 
-		private SComparePropsRestriction BuildComparePropsRestriction (
+		private ComparePropsRestriction BuildComparePropsRestriction (
 			MapiPropertyAttribute prop1, RelOp relOp, MapiPropertyAttribute prop2)
 		{
-			SComparePropsRestriction rest = new SComparePropsRestriction ();
+			ComparePropsRestriction rest = new ComparePropsRestriction ();
 			rest.RelOp = relOp;
 			rest.PropTag1 = prop1.PropertyOrKind;
 			rest.PropTag2 = prop2.PropertyOrKind;
 			return rest;
 		}
 
-		private SPropertyRestriction BuildPropertyRestriction (
+		private PropertyRestriction BuildPropertyRestriction (
 			MapiPropertyAttribute prop, RelOp relOp, object value)
 		{
-			SPropertyRestriction rest = new SPropertyRestriction ();
+			PropertyRestriction rest = new PropertyRestriction ();
 			rest.RelOp = relOp;
 			rest.PropTag = prop.PropertyOrKind;
 			rest.Prop = MakeSPropValue (prop.Type, value);
@@ -531,7 +531,7 @@ namespace NMapi.Linq {
 			this.Visit (binaryExpr.Right);
 			children [1] = currentRestriction;
 			
-			currentRestriction = new SAndRestriction (children);
+			currentRestriction = new AndRestriction (children);
 			currentRestrictionUsed = true;
 		}
 
@@ -550,7 +550,7 @@ namespace NMapi.Linq {
 			this.Visit (binaryExpr.Right);
 			children [1] = currentRestriction;
 			
-			currentRestriction = new SOrRestriction (children);
+			currentRestriction = new OrRestriction (children);
 			currentRestrictionUsed = true;
 		}
 
