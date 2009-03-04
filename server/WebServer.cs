@@ -43,7 +43,7 @@ namespace NMapi.Server {
 
 		private string GetTempDir ()
 		{
-			return Environment.GetEnvironmentVariable ("temp");
+			return Path.GetTempPath ();
 		}
 
 		public void Run ()
@@ -51,7 +51,7 @@ namespace NMapi.Server {
 			int port = 9001;
 			string path = null;
 			do {
-				path = GetTempDir () + "omprxy" + new Random ().Next();
+				path = Path.Combine (GetTempDir (), "omprxy" + new Random ().Next());
 			} while (Directory.Exists (path));
 			Directory.CreateDirectory (path);
 

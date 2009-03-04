@@ -71,7 +71,7 @@ namespace NMapi.Server {
 				
 				if (tcpClient.ReceiveBufferSize < bufferSize)
 					tcpClient.ReceiveBufferSize = bufferSize;
-				if (tcpClient.SendBufferSize < bufferSize)	
+				if (tcpClient.SendBufferSize < bufferSize)
 					tcpClient.SendBufferSize = bufferSize;
 				
 				var evServer = new ReverseEventConnectionServer (this, tcpClient);
