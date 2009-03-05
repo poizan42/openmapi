@@ -91,7 +91,7 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotImplementedException ("Not implemented by the TXC provider.");
 		}
 
-		public void PrepareRecips (int flags, SPropTagArray propTagArray, AdrList recipList)
+		public void PrepareRecips (int flags, PropertyTag[] propTagArray, AdrList recipList)
 		{
 			throw new NotImplementedException ("Not implemented by the TXC provider.");
 		}

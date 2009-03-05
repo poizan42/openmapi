@@ -58,16 +58,16 @@ namespace NMapi.Meta {
 		/// </summary>
 		public string GetSummary (IBase obj)
 		{
-			var someProps = new Dictionary<int, SPropValue> ();
+			var someProps = new Dictionary<int, PropertyValue> ();
 
 			if (obj is IMapiProp) {
-				var propTags = new SPropTagArray (
+				var propTags = PropertyTag.ArrayFromIntegers (
 					Property.EntryId, Property.MessageClass);
 
-				SPropValue[] values = ((IMapiProp) obj).GetProps (propTags, Mapi.Unicode);
+				PropertyValue[] values = ((IMapiProp) obj).GetProps (propTags, Mapi.Unicode);
 				int i = 0;
-				foreach (var val in propTags.PropTagArray)
-					someProps [val] = values [i++]; // TODO: all values???
+				foreach (PropertyTag val in propTags)
+					someProps [val.Tag] = values [i++]; // TODO: all values???
 			}
 
 			MatchLevel current = MatchLevel.NoMatch;

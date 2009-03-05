@@ -38,7 +38,7 @@ namespace NMapi {
 
 	public partial class AdrList
 	{
-		public AdrList (SRowSet rows)
+		public AdrList (RowSet rows)
 		{
 			aEntries = new AdrEntry [rows.ARow.Length];
 			for (int i = 0; i < rows.ARow.Length; i++) {

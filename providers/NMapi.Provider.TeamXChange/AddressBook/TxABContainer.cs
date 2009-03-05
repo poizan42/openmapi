@@ -67,7 +67,7 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 		}
 		
 
-		public void ResolveNames (SPropTagArray propTagArray, int flags, AdrList adrList, int[] flagList)
+		public void ResolveNames (PropertyTag[] propTagArray, int flags, AdrList adrList, int[] flagList)
 		{
 			throw new NotImplementedException ("Not implemented by the TXC provider.");
 		}
@@ -99,7 +99,7 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public void SetSearchCriteria (SRestriction restriction,
+		public void SetSearchCriteria (Restriction restriction,
 			EntryList containerList, int searchFlags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
@@ -123,12 +123,12 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public SPropValue [] GetProps (SPropTagArray propTagArray, int flags)
+		public PropertyValue [] GetProps (PropertyTag[] propTagArray, int flags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public SPropTagArray GetPropList (int flags)
+		public PropertyTag[] GetPropList (int flags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
@@ -144,23 +144,23 @@ namespace NMapi.Provider.TeamXChange.AddressBook {
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public SPropProblemArray SetProps (SPropValue[] propArray)
+		public PropertyProblem[] SetProps (PropertyValue[] propArray)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public SPropProblemArray DeleteProps (SPropTagArray propTagArray)
+		public PropertyProblem[] DeleteProps (PropertyTag[] propTagArray)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
 		public GetNamesFromIDsResult GetNamesFromIDs (
-			SPropTagArray propTags, NMapiGuid propSetGuid, int flags)
+			PropertyTag[] propTags, NMapiGuid propSetGuid, int flags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}
 
-		public SPropTagArray GetIDsFromNames (MapiNameId [] propNames, int flags)
+		public PropertyTag[] GetIDsFromNames (MapiNameId [] propNames, int flags)
 		{
 			throw new NotSupportedException ("Not supported by the TXC provider.");
 		}

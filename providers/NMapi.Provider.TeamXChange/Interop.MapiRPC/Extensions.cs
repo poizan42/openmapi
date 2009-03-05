@@ -42,17 +42,17 @@ namespace NMapi.Interop.MapiRPC {
 
 	public partial class CategoryLL : IXdrAble
 	{
-		public LPStr Category {
+		public StringAdapter Category {
 			get { return pszCategory ; }
 			set { pszCategory = value; }
 		}
 
-		public LPStr ID {
+		public StringAdapter ID {
 			get { return pszID; }
 			set { pszID = value; }
 		}
 
-		public LPStr Value {
+		public StringAdapter Value {
 			get { return pszValue; }
 			set { pszValue = value; }
 		}
@@ -223,7 +223,7 @@ namespace NMapi.Interop.MapiRPC {
 			set { mask = value; }
 		}
 
-		public LPStr ID {
+		public StringAdapter ID {
 			get { return pszId; }
 			set { pszId = value; }
 		}

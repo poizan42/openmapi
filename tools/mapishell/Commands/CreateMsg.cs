@@ -79,7 +79,7 @@ namespace NMapi.Tools.Shell {
 				parent = state.OpenFolder (path);
 				IMessage msg = parent.CreateMessage (null, 0);
 				msg.SaveChanges (0);
-				SPropValue val = new MapiPropHelper (msg).HrGetOneProp (Property.EntryId);
+				PropertyValue val = new MapiPropHelper (msg).HrGetOneProp (Property.EntryId);
 				string hash = new KeyID (((BinaryProperty) val).Value).Hash;
 				driver.WriteLine ("Created '" + hash + "'.");
 			} catch (MapiException e) {

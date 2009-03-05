@@ -211,7 +211,7 @@ namespace NMapi.Linq {
 	
 				object value = null;
 				using (IMapiProp mapiObj = GetAssociatedIMapiProp (0)) { // 0 = read-only
-					SPropValue spv = null;
+					PropertyValue spv = null;
 					try {
 						spv = new MapiPropHelper (mapiObj).HrGetOneProp (prop.PropertyOrKind);
 					} catch (MapiException e) {
@@ -250,7 +250,7 @@ namespace NMapi.Linq {
 			ignorePropertyChangesForSaving = false;
 		}
 
-		public bool Update (int[] remoteChangedProps)
+		public bool Update (PropertyTag[] remoteChangedProps)
 		{
 			if (isDeleted)
 				throw new Exception ("Can't update item,. because it has been deleted!");
@@ -264,12 +264,11 @@ namespace NMapi.Linq {
 			{
 				bool updateRemote = false;
 				var newVals = mapiProp.GetProps (
-						new SPropTagArray (remoteChangedProps),
-						Mapi.Unicode);
+								remoteChangedProps, Mapi.Unicode);
 
 				ForeachMapiProperty ( (pInfo, attribute) => {
 
-					foreach (SPropValue newVal in newVals) {
+					foreach (PropertyValue newVal in newVals) {
 						if (Property.IsSamePropertyId (newVal.PropTag, attribute.PropertyOrKind)) {
 
 							if (!PropertyLoaded (pInfo, attribute)) {
@@ -358,7 +357,7 @@ namespace NMapi.Linq {
 
 			using (IMapiProp mapiProp = GetAssociatedIMapiProp (Mapi.Modify))
 			{
-				SPropValue[] props = new SPropValue [changedPropNames.Length];
+				PropertyValue[] props = new PropertyValue [changedPropNames.Length];
 
 				for (int i=0;i<changedPropNames.Length;i++) {
 					string propName = changedPropNames [i];
@@ -368,7 +367,7 @@ namespace NMapi.Linq {
 					if (attribs.Length > 0) {
 						MapiPropertyAttribute prop = attribs [0] as MapiPropertyAttribute;
 						object value = pinfo.GetValue (this, null);
-						props [i] = SPropValue.Make ((PropertyType) prop.PropertyOrKind, value);
+						props [i] = PropertyValue.Make ((PropertyType) prop.PropertyOrKind, value);
 						// Console.WriteLine ("Saved " + propName + "!");
 					}
 				}

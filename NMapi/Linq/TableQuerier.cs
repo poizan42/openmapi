@@ -59,7 +59,7 @@ namespace NMapi.Linq {
 		private List<PropertyType> types;
 		private List<PropertyInfo> propList;
 		private MEntity current;
-		private SRowSet rows;
+		private RowSet rows;
 
 		private Dictionary<string, int> bookmarks;
 		private List<SBinary> entryIDList;
@@ -98,7 +98,7 @@ namespace NMapi.Linq {
 			bufferSize = Math.Min (state.Amount, MAX_BUFFER_SIZE);
 		}
 
-		private MEntity BuildEntity (SRow row)
+		private MEntity BuildEntity (Row row)
 		{
 			Type type = typeof (MEntity);
 			MEntity entity = (MEntity) Activator.CreateInstance (type);
@@ -147,7 +147,7 @@ namespace NMapi.Linq {
 
 		private void SetSelectedColumns ()
 		{
-			table.SetColumns (new SPropTagArray (tags.ToArray ()), 0);			
+			table.SetColumns (PropertyTag.ArrayFromIntegers (tags.ToArray ()), 0);			
 		}
 
 		//  The total number of items in the table.
@@ -171,7 +171,7 @@ namespace NMapi.Linq {
 				try {
 					// Ensure correct start.
 					table.SeekRow  (Bookmark.Beginning, 0);
-					SRowSet rows = table.QueryRows (1, 0);
+					RowSet rows = table.QueryRows (1, 0);
 					if (rows.Count == 0)
 						throw new MapiException ("No match!", Error.NotFound);
 					result = BuildEntity (rows [0]);					
@@ -190,7 +190,7 @@ namespace NMapi.Linq {
 				try {
 					// Ensure correct start.
 					table.SeekRow  (Bookmark.End, 0);
-					SRowSet rows = table.QueryRows (1, 0);
+					RowSet rows = table.QueryRows (1, 0);
 					if (rows.Count == 0)
 						throw new MapiException ("No match!", Error.NotFound);
 					result = BuildEntity (rows [0]);
@@ -257,7 +257,7 @@ namespace NMapi.Linq {
 						+ "set for scalar operation!");
 				object result;
 				try {
-					table.SetColumns (new SPropTagArray (state.ScalarQueriedProperty), 0);
+					table.SetColumns (PropertyTag.ArrayFromIntegers (state.ScalarQueriedProperty), 0);
 					table.SeekRow  (Bookmark.Beginning, 0); // Ensure correct start.
 					rows = table.QueryRows  (1, 0);
 					if (rows.Count == 0)
@@ -283,17 +283,17 @@ namespace NMapi.Linq {
 
 			object result = null;
 			try {
-				table.SetColumns (new SPropTagArray (state.ScalarQueriedProperty), 0);
+				table.SetColumns (PropertyTag.ArrayFromIntegers (state.ScalarQueriedProperty), 0);
 				// Ensure correct start.
 				table.SeekRow  (Bookmark.Beginning, 0);
 				while (true) {
 					rows = table.QueryRows (MAX_BUFFER_SIZE, 0);
 					if (rows.Count == 0)
 						break;
-					foreach (SRow row in rows) {
+					foreach (Row row in rows) {
 						columnCount++;
 						
-						SPropValue prop = row.Props [0];
+						PropertyValue prop = row.Props [0];
 						
 						if (result == null) {
 							if (prop is IntProperty)
@@ -307,13 +307,13 @@ namespace NMapi.Linq {
 						}
 						
 						if (prop is IntProperty)
-							result = ((int) result) + ((IntProperty) row.Props [0]).Value;
-						else if (prop is IntProperty)
-							result = ((float) result) + ((FloatProperty) row.Props [0]).Value;
-						else if (prop is IntProperty)
-							result = ((double) result) + ((DoubleProperty) row.Props [0]).Value;
-						else if (prop is IntProperty)
-							result = ((short) result) + ((ShortProperty) row.Props [0]).Value;
+							result = ((int) result) + (int) row.Props [0];
+						else if (prop is FloatProperty)
+							result = ((float) result) + (float) row.Props [0];
+						else if (prop is DoubleProperty)
+							result = ((double) result) + (double) row.Props [0];
+						else if (prop is ShortProperty)
+							result = ((short) result) + (short) row.Props [0];
 						else
 							throw new ArgumentException ("only numerical types can be aggregated.");
 					}
@@ -398,7 +398,7 @@ namespace NMapi.Linq {
 			throw new NotImplementedException ("Not implemented, yet.");
 		}
 
-		public void RowAdded (SPropValue index, SPropValue prevIndex, SRow props)
+		public void RowAdded (PropertyValue index, PropertyValue prevIndex, Row props)
 		{
 			InvalidateIndexCache ();
 			lock (entryCache) {
@@ -414,7 +414,7 @@ namespace NMapi.Linq {
 
 		}
 
-		public void RowDeleted (SPropValue index, SRow props)
+		public void RowDeleted (PropertyValue index, Row props)
 		{
 			InvalidateIndexCache ();
 			lock (entryCache) {
@@ -513,7 +513,7 @@ namespace NMapi.Linq {
 			bool foundFirst = false;
 			if (rows.Count > 0) {
 				int index2 = index;
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					var entity = BuildEntity (row);
 					indexCache [index2] = entity;
 					reverseIndexCache [entity] = index2;
@@ -581,7 +581,7 @@ namespace NMapi.Linq {
 					int emptyAtEnd = bufferSize-rows.Count;
 					bindex = lastIndex - emptyAtEnd;
 				}
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					MEntity entity = BuildEntity (row);
 					buffer [bindex] = entity;
 //					entryIDList.Add (entity.EntryId);

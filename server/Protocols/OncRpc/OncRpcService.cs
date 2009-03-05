@@ -83,7 +83,7 @@ namespace NMapi.Server {
 			Trace.WriteLine (" ==> START CALL Session_GetLoginName");
 			var session = GetProxySessionForConnection (call);
 			var response = new Session_GetLoginName_res ();
-			response.pwszLoginName = new LPWStr (session.LoginName);
+			response.pwszLoginName = new UnicodeAdapter (session.LoginName);
 			Trace.WriteLine (" ==> END CALL Session_GetLoginName");
 			return response;
 		}
@@ -164,11 +164,11 @@ namespace NMapi.Server {
 			Trace.WriteLine (" ==> Session_ABGetUserData_1 - NOT IMPLEMENTED!");
 			var res = new Session_ABGetUserData_res (); // STUB
 			var ud = new ABUSERDATA ();
-			ud.pwszId = new LPWStr ("");
-			ud.pwszDisplay = new LPWStr ("");
-			ud.pwszAdrType = new LPWStr ("");
-			ud.pwszSmtpAdr = new LPWStr ("");
-			ud.pwszIntAdr = new LPWStr ("");
+			ud.pwszId = new UnicodeAdapter ("");
+			ud.pwszDisplay = new UnicodeAdapter ("");
+			ud.pwszAdrType = new UnicodeAdapter ("");
+			ud.pwszSmtpAdr = new UnicodeAdapter ("");
+			ud.pwszIntAdr = new UnicodeAdapter ("");
 			ud.eid = new SBinary (new byte [] {0});
 			ud.searchKey = new SBinary (new byte [] {0});
 			res.pData = ud;

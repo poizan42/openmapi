@@ -85,7 +85,7 @@ namespace NMapi.Tools.Shell {
 					driver.WriteLine ("Invalid/unregistered Property!");
 					return;
 				}
-				SPropValue val = null;
+				PropertyValue val = null;
 				try {
 					// TODO: Depends on type!
 

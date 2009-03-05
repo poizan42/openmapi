@@ -35,12 +35,12 @@ namespace NMapi {
 
 	public interface IPropertyStore
 	{
-		void DeleteProperty (SBinary mapiObject, int propTag, SPropValue value);
-		void SetProperty (SBinary mapiObject, int propTag, SPropValue value);
-		void SetProperties (SBinary mapiObject, int[] propTag, SPropValue[] values);
+		void DeleteProperty (SBinary mapiObject, int propTag, PropertyValue value);
+		void SetProperty (SBinary mapiObject, int propTag, PropertyValue value);
+		void SetProperties (SBinary mapiObject, int[] propTag, PropertyValue[] values);
 		void GetProperty (SBinary mapiObject, int propTag);
-		Dictionary<int, SPropValue> GetProperties (SBinary mapiObject, int[] propTag);
-		Dictionary<int, SPropValue> GetAllProperties (SBinary mapiObject);
+		Dictionary<int, PropertyValue> GetProperties (SBinary mapiObject, int[] propTag);
+		Dictionary<int, PropertyValue> GetAllProperties (SBinary mapiObject);
 	}
 
 }

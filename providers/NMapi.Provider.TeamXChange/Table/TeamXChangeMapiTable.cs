@@ -102,18 +102,18 @@ namespace NMapi.Table {
 			}
 		}
 
-		public void SetColumns (SPropTagArray propTagArray, int flags)
+		public void SetColumns (PropertyTag[] propTagArray, int flags)
 		{
 			var prms = new MAPITable_SetColumns_arg ();
 			prms.obj = new HObject (obj);
-			prms.pTags = new LPSPropTagArray (propTagArray);
+			prms.pTags = new PropertyTagArrayPtrAdapter (propTagArray);
 			prms.ulFlags = flags;
 			
 			var res = MakeCall<MAPITable_SetColumns_res, 
 				MAPITable_SetColumns_arg> (clnt.MAPITable_SetColumns_1, prms);
 		}
 
-		public SPropTagArray QueryColumns (int flags)
+		public PropertyTag[] QueryColumns (int flags)
 		{
 			var prms = new MAPITable_QueryColumns_arg ();
 			prms.obj = new HObject (obj);
@@ -173,7 +173,7 @@ namespace NMapi.Table {
 			return ret;
 		}
 
-		public void FindRow (SRestriction restriction, int origin, int flags)
+		public void FindRow (Restriction restriction, int origin, int flags)
 		{
 			var prms = new MAPITable_FindRow_arg ();
 			prms.obj = new HObject (obj);
@@ -185,7 +185,7 @@ namespace NMapi.Table {
 				MAPITable_FindRow_arg> (clnt.MAPITable_FindRow_1, prms);
 		}
 
-		public void Restrict (SRestriction restriction, int flags)
+		public void Restrict (Restriction restriction, int flags)
 		{
 			var prms = new MAPITable_Restrict_arg ();
 			prms.obj = new HObject (obj);
@@ -220,7 +220,7 @@ namespace NMapi.Table {
 		{
 			var prms = new MAPITable_SortTable_arg ();
 			prms.obj = new HObject (obj);
-			prms.lpSortCriteria = new LPSSortOrderSet (sortCriteria);
+			prms.lpSortCriteria = new SortOrderSetPtrAdapter (sortCriteria);
 			prms.ulFlags = flags;
 			
 			var res = MakeCall<MAPITable_SortTable_res, 
@@ -237,7 +237,7 @@ namespace NMapi.Table {
 			return res.lpSortCriteria.Value;
 		}
 
-		public SRowSet QueryRows (int rowCount, int flags)
+		public RowSet QueryRows (int rowCount, int flags)
 		{
 			var prms = new MAPITable_QueryRows_arg ();
 			prms.obj = new HObject (obj);

@@ -65,7 +65,7 @@ namespace NMapi.Linq {
 
 	internal sealed class QueryState<MEntity>
 	{
-		private List<SRestriction> andList;
+		private List<Restriction> andList;
 		private List<SortOrder> orderByList;
 		private CommandType currentCommand;
 		private int offset;
@@ -83,7 +83,7 @@ namespace NMapi.Linq {
 			set { scalarQueriedProperty = value; }
 		}
 
-		public List<SRestriction> AndList {
+		public List<Restriction> AndList {
 			get { return andList; }
 		}
 
@@ -131,7 +131,7 @@ namespace NMapi.Linq {
 
 		public QueryState ()
 		{
-			andList = new List<SRestriction> ();
+			andList = new List<Restriction> ();
 			orderByList = new List<SortOrder> ();
 			currentCommand = CommandType.START;
 			scalarOperation = ScalarOperation.None;
@@ -142,12 +142,12 @@ namespace NMapi.Linq {
 		}
 
 
-		public void AddWhereRestriction (SRestriction restriction)
+		public void AddWhereRestriction (Restriction restriction)
 		{
 			andList.Add (restriction);
 		}
 
-		public SRestriction MergeRestrictions ()
+		public Restriction MergeRestrictions ()
 		{
 			if (andList.Count == 0)
 				return null;
@@ -161,19 +161,19 @@ namespace NMapi.Linq {
 /*
 			AndRestriction connector = new AndRestriction ();
 
-			SRestriction root = new SRestriction ();
+			Restriction root = new Restriction ();
 			root.Rt = RestrictionType.And;
 			root.Res.ResAnd = connector;
 
 			for (int i=0;true;i++) {
-				SRestriction current = andList [i];
+				Restriction current = andList [i];
 
-				SRestriction[] children = new SRestriction [2];
+				Restriction[] children = new Restriction [2];
 				children [0] = current;
 				if (i == andList.Count-2)
 					children [1] = andList [i+1];
 				else {
-					children [1] = new SRestriction ();
+					children [1] = new Restriction ();
 					var and = new AndRestriction (); // next!
 					children [1].Rt = RestrictionType.And;
 					children [1].Res.ResAnd = and;
@@ -225,7 +225,7 @@ namespace NMapi.Linq {
 			return "" + propTag;
 		}
 
-		private void PrintJoinRestrictions (SRestriction[] restrictions, string separator)
+		private void PrintJoinRestrictions (Restriction[] restrictions, string separator)
 		{
 			Console.Write ("(");
 			for (int i=0;i<restrictions.Length;i++) {
@@ -275,7 +275,7 @@ namespace NMapi.Linq {
 			Console.Write ("PrintPropProp() NOT IMPLEMENTED!");		
 		}
 
-		public void PrintRestriction (SRestriction res)
+		public void PrintRestriction (Restriction res)
 		{
 			if (res == null) {
 				Console.Write ("NULL");
@@ -287,7 +287,7 @@ namespace NMapi.Linq {
 			else if (res is PropertyRestriction) PrintPropConst ((PropertyRestriction) res);
 			else if (res is ComparePropsRestriction) PrintPropProp ((ComparePropsRestriction) res);
 			else
-				throw new NotSupportedException ("unknown SRestriction!");
+				throw new NotSupportedException ("unknown Restriction!");
 		}
 
 		private void PrintOrderBy ()

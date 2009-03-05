@@ -71,6 +71,15 @@ namespace NMapi {
 		{
 			propTag = pt;
 		}
+		
+		public static PropertyTag[] ArrayFromIntegers (params int[] intTags)
+		{
+			PropertyTag[] result = new PropertyTag [intTags.Length];
+			int i = 0;
+			foreach (int tag in intTags)
+				result [i++] = new PropertyTag (tag);
+			return result;
+		}
 	}
 
 }

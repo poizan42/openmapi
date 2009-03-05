@@ -38,13 +38,13 @@ namespace NMapi.Meta {
 		/// 	
 		/// </summary>
 		string GetSummary (IBase obj,
-			Dictionary<int, SPropValue> selProps);
+			Dictionary<int, PropertyValue> selProps);
 
 		/// <summary>
 		/// 	
 		/// </summary>
 		Hashtable GetKeyValueSummary (IBase obj,
-			Dictionary<int, SPropValue> selProps);
+			Dictionary<int, PropertyValue> selProps);
 
 		/// <summary>
 		///   Returns an integer from 0 to 10, representing a score.
@@ -52,7 +52,7 @@ namespace NMapi.Meta {
 		///   used for a certain type.
 		/// </summary>
 		MatchLevel GetScore (IBase obj,
-			Dictionary<int, SPropValue> selProps);
+			Dictionary<int, PropertyValue> selProps);
 
 	}
 

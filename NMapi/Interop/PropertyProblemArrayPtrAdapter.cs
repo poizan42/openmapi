@@ -1,7 +1,8 @@
 //
-// openmapi.org - NMapi C# Mapi API - RowEntry.cs
+// openmapi.org - NMapi C# Mapi API - PropertyProblemArrayPtrAdapter.cs
 //
 // Copyright 2008 VipCom AG
+// Copyright 2009 Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -23,11 +24,11 @@
 //
 
 using System;
-using System.Runtime.Serialization;
 using System.IO;
 
 using System.Diagnostics;
 using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -35,38 +36,57 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi {
+namespace NMapi.Interop {
 
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class RowEntry : IXdrAble
-	{
-		[DataMember (Name="RowFlags")]
-		public int ulRowFlags;
+	/// <summary>
+	///  For internal use only.
+	/// </summary>
+	public sealed class PropertyProblemArrayPtrAdapter : IXdrAble
+	{	
+		public PropertyProblem[] value;
 
-		[DataMember (Name="PropVals")]
-		public PropertyValue [] rgPropVals;
-	
-		private const int EMPTY = 5;
-
-		public RowEntry () {
-			ulRowFlags = EMPTY;
+		/// <summary>
+		///
+		/// </summary>
+		public PropertyProblem[] Value {
+			get { return value; }
+			set { this.value = value; }
 		}
 
-		public RowEntry (XdrDecodingStream xdr)
+		/// <summary>
+		///
+		/// </summary>
+		public PropertyProblemArrayPtrAdapter ()
 		{
-			XdrDecode(xdr);
+			value = null;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public PropertyProblemArrayPtrAdapter (PropertyProblem[] value)
+		{
+			this.value = value;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public PropertyProblemArrayPtrAdapter (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
 		}
 
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
-			xdr.XdrEncodeInt (ulRowFlags);
-			if (ulRowFlags != EMPTY) {
-				int i, len = rgPropVals.Length;
-				xdr.XdrEncodeInt(len);
-				for (i = 0; i < len; i++)
-					rgPropVals[i].XdrEncode(xdr);
+			if (value == null)
+				xdr.XdrEncodeInt (-1);
+			else {
+				xdr.XdrEncodeInt (value.Length);
+				for (int i = 0; i < value.Length; i++)
+					value [i].XdrEncode (xdr);
 			}
 		}
 
@@ -74,19 +94,15 @@ namespace NMapi {
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
-			ulRowFlags = xdr.XdrDecodeInt ();
-			if (ulRowFlags == EMPTY) 
-				rgPropVals = null;
+			int len = xdr.XdrDecodeInt ();
+			if (len == ~0)
+				value = null;
 			else {
-				int i, len = xdr.XdrDecodeInt ();
-				if (len == ~0)
-					rgPropVals = null;
-				else {
-					rgPropVals = new PropertyValue [len];
-					for (i = 0; i < len; i++)
-						rgPropVals[i] = PropertyValue.Decode (xdr);
-				}
+				value = new PropertyProblem [len];
+				for (int idx = 0; idx < len; idx++)
+					value [idx] = new PropertyProblem (xdr);
 			}
 		}
 	}
+
 }

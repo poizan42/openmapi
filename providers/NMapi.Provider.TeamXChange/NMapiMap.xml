@@ -32,8 +32,8 @@
 
 	<staticDec>
 		<!-- This are the names AFTER they have been mapped! //-->
-		<type name="NMapi.Table.SRestriction" />
-		<type name="NMapi.Properties.SPropValue" />
+		<type name="NMapi.Table.Restriction" />
+		<type name="NMapi.Properties.PropertyValue" />
 		<type name="NMapi.Events.Notification" />
 	</staticDec>
 
@@ -70,21 +70,21 @@
 		<type from="LPADRLIST"		to="NMapi.Interop.LPAdrList" />
 		<type from="LPENTRYLIST"	to="NMapi.Interop.LPEntryList" />
 		<type from="LPGUID"		to="NMapi.Interop.LPGuid" />
-		<type from="LPMAPIERROR_A"	to="NMapi.Interop.LPMapiErrorA" />
-		<type from="LPMAPIERROR_W"	to="NMapi.Interop.LPMapiErrorW" />
+		<type from="LPMAPIERROR_A"	to="NMapi.Interop.MapiErrorStringAdapter" />
+		<type from="LPMAPIERROR_W"	to="NMapi.Interop.MapiErrorUnicodeAdapter" />
 		<type from="LPMAPINAMEID"	to="NMapi.Interop.LPMapiNameId" />
 		<type from="LPNOTIFICATION"	to="NMapi.Interop.LPNotification" />
 		<type from="LPROWENTRY"		to="NMapi.Interop.LPRowEntry" />
 	
-		<type from="LPSPropProblemArray"	to="NMapi.Interop.LPSPropProblemArray" />
-		<type from="LPSPropTagArray"	to="NMapi.Interop.LPSPropTagArray" />
+		<type from="LPSPropProblemArray"	to="NMapi.Interop.PropertyProblemArrayPtrAdapter" />
+		<type from="LPSPropTagArray"	to="NMapi.Interop.PropertyTagArrayPtrAdapter" />
 		<type from="LPSPropValue"	to="NMapi.Interop.LPSPropValue" />
 		<type from="LPSRestriction"	to="NMapi.Interop.LPSRestriction" />
-		<type from="LPSRowSet"		to="NMapi.Interop.LPSRowSet" />
-		<type from="LPSSortOrderSet"	to="NMapi.Interop.LPSSortOrderSet" />
+		<type from="LPSRowSet"		to="NMapi.Interop.RowSetPtrAdapter" />
+		<type from="LPSSortOrderSet"	to="NMapi.Interop.SortOrderSetPtrAdapter" />
 
-		<type from="LPSTR"		to="NMapi.Interop.LPStr" />
-		<type from="LPWSTR"		to="NMapi.Interop.LPWStr" />
+		<type from="LPSTR"		to="NMapi.Interop.StringAdapter" />
+		<type from="LPWSTR"		to="NMapi.Interop.UnicodeAdapter" />
 
 		<type from="MAPIERROR"		to="NMapi.MapiError" />
 		<type from="MAPINAMEID"		to="NMapi.Properties.MapiNameId" />
@@ -95,28 +95,28 @@
 		<type from="OUTLOOK"		to="NMapi.Flags.Outlook" />
 		<type from="ROWENTRY"		to="NMapi.RowEntry" />
 
-		<type from="SAndRestriction"	to="NMapi.Table.SAndRestriction" />
+		<type from="SAndRestriction"	to="NMapi.Table.AndRestriction" />
 		<type from="SBinary"		to="NMapi.SBinary" />
 
-		<type from="SBitMaskRestriction"	to="NMapi.Table.SBitMaskRestriction" />
-		<type from="SCommentRestriction"	to="NMapi.Table.SCommentRestriction" />
-		<type from="SComparePropsRestriction"	to="NMapi.Table.SComparePropsRestriction" />
-		<type from="SContentRestriction"	to="NMapi.Table.SContentRestriction" />
-		<type from="SExistRestriction"	to="NMapi.Table.SExistRestriction" />
-		<type from="SNotRestriction"	to="NMapi.Table.SNotRestriction" />
-		<type from="SOrRestriction"	to="NMapi.Table.SOrRestriction" />
-		<type from="SPropertyRestriction"	to="NMapi.Table.SPropertyRestriction" />
-		<type from="SPropProblem"	to="NMapi.Properties.SPropProblem" />
-		<type from="SPropProblemArray"	to="NMapi.Properties.SPropProblemArray" />
-		<type from="SPropTagArray"	to="NMapi.Properties.SPropTagArray" />
-		<type from="SPropValue"		to="NMapi.Properties.SPropValue" />
-		<type from="SRestriction"	to="NMapi.Table.SRestriction" />
-		<type from="SRow"		to="NMapi.Table.SRow" />
-		<type from="SRowSet"		to="NMapi.Table.SRowSet" />
-		<type from="SSizeRestriction"	to="NMapi.Table.SSizeRestriction" />
-		<type from="SSortOrder"		to="NMapi.Table.SSortOrder" />
-		<type from="SSortOrderSet"	to="NMapi.Table.SSortOrderSet" />
-		<type from="SSubRestriction"	to="NMapi.Table.SSubRestriction" />
+		<type from="SBitMaskRestriction"	to="NMapi.Table.BitMaskRestriction" />
+		<type from="SCommentRestriction"	to="NMapi.Table.CommentRestriction" />
+		<type from="SComparePropsRestriction"	to="NMapi.Table.ComparePropsRestriction" />
+		<type from="SContentRestriction"	to="NMapi.Table.ContentRestriction" />
+		<type from="SExistRestriction"	to="NMapi.Table.ExistRestriction" />
+		<type from="SNotRestriction"	to="NMapi.Table.NotRestriction" />
+		<type from="SOrRestriction"	to="NMapi.Table.OrRestriction" />
+		<type from="SPropertyRestriction"	to="NMapi.Table.PropertyRestriction" />
+		<type from="SPropProblem"	to="NMapi.Properties.PropProblem" />
+		<type from="SPropProblemArray"	to="NMapi.Properties.PropProblemArray" />
+		<type from="SPropTagArray"	to="NMapi.Properties.PropTagArray" />
+		<type from="SPropValue"		to="NMapi.Properties.PropertyValue" />
+		<type from="SRestriction"	to="NMapi.Table.Restriction" />
+		<type from="SRow"		to="NMapi.Table.Row" />
+		<type from="SRowSet"		to="NMapi.Table.RowSet" />
+		<type from="SSizeRestriction"	to="NMapi.Table.SizeRestriction" />
+		<type from="SSortOrder"		to="NMapi.Table.SortOrder" />
+		<type from="SSortOrderSet"	to="NMapi.Table.SortOrderSet" />
+		<type from="SSubRestriction"	to="NMapi.Table.SubRestriction" />
 	
 		<type from="STATUS_OBJECT_NOTIFICATION"	to="NMapi.Events.StatusObjectNotification" />
 		<type from="TABLE_NOTIFICATION"	to="NMapi.Events.TableNotification" />

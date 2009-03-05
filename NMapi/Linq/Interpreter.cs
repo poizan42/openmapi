@@ -39,7 +39,7 @@ namespace NMapi.Linq {
 	internal class Interpreter<MEntity> : ExpressionTransformer
 	{
 		private QueryState<MEntity> qstate;
-		private SRestriction currentRestriction;
+		private Restriction currentRestriction;
 		private bool currentRestrictionUsed;
 
 		public QueryState<MEntity> QueryState {
@@ -385,7 +385,7 @@ namespace NMapi.Linq {
 			currentRestriction = new ContentRestriction ();
 			((ContentRestriction) currentRestriction).FuzzyLevel = FuzzyLevel.Substring;
 			((ContentRestriction) currentRestriction).PropTag = (int) prop.Type;
-			((ContentRestriction) currentRestriction).Prop = MakeSPropValue (prop.Type, matchStrExpr.Value);
+			((ContentRestriction) currentRestriction).Prop = MakePropertyValue (prop.Type, matchStrExpr.Value);
 			
 			currentRestrictionUsed = true;
 
@@ -511,19 +511,19 @@ namespace NMapi.Linq {
 			PropertyRestriction rest = new PropertyRestriction ();
 			rest.RelOp = relOp;
 			rest.PropTag = prop.PropertyOrKind;
-			rest.Prop = MakeSPropValue (prop.Type, value);
+			rest.Prop = MakePropertyValue (prop.Type, value);
 			return rest;
 		}
 
-		private SPropValue MakeSPropValue (PropertyType propertyType, object value)
+		private PropertyValue MakePropertyValue (PropertyType propertyType, object value)
 		{
-			return SPropValue.Make (propertyType, value);
+			return PropertyValue.Make (propertyType, value);
 		}
 
 
 		private void ConstructAndRestriction (BinaryExpression binaryExpr)
 		{
-			SRestriction[] children = new SRestriction [2];
+			Restriction[] children = new Restriction [2];
 
 			this.Visit (binaryExpr.Left);
 			children [0] = currentRestriction;
@@ -542,7 +542,7 @@ namespace NMapi.Linq {
 
 		private void ConstructOrRestriction (BinaryExpression binaryExpr)
 		{
-			SRestriction[] children = new SRestriction [2];
+			Restriction[] children = new Restriction [2];
 
 			this.Visit (binaryExpr.Left);
 			children [0] = currentRestriction;

@@ -41,7 +41,7 @@ namespace NMapi.Table {
 		{
 		}
 
-		public SPropTagArray GetTags ()
+		public PropertyTag[] GetTags ()
 		{
 			var prms = new TblData_GetTags_arg ();
 			prms.obj = new HObject (obj);
@@ -50,7 +50,7 @@ namespace NMapi.Table {
 			return res.pTags.Value;
 		}
 
-		public SRowSet GetRows (int cRows)
+		public RowSet GetRows (int cRows)
 		{
 			var prms = new TblData_GetRows_arg ();
 			prms.obj = new HObject (obj);

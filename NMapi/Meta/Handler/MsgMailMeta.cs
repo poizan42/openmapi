@@ -34,26 +34,26 @@ namespace NMapi.Meta {
 	public class MsgMailMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			IMapiProp prop = obj as IMapiProp;
 			if (obj != null) {
-				var tags = new SPropTagArray (Property.Subject);
-				SPropValue[] values = prop.GetProps (tags, 0); // read-only
+				var tags = PropertyTag.ArrayFromIntegers (Property.SenderEmailAddress, Property.Subject);
+				PropertyValue[] values = prop.GetProps (tags, 0); // read-only
 				// TODO: check length of values!
-				return "IPM.Note: (Subject: '" + (string) values [0] + "')";
+				return "IPM.Note: (From : '" + (string) values [0] + "', Subject: '" + (string) values [1] + "')";
 			}
 			return null;
 		}
 
 		public Hashtable GetKeyValueSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return null;
 		}
 
 		public MatchLevel GetScore (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			if (obj == null)
 				return MatchLevel.NoMatch;

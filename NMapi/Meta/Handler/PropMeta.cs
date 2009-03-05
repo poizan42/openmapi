@@ -34,7 +34,7 @@ namespace NMapi.Meta {
 	public class PropMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			if (obj != null) {
 				var spropVal = (BinaryProperty) someProps [Property.EntryId];
@@ -45,13 +45,13 @@ namespace NMapi.Meta {
 		}
 
 		public Hashtable GetKeyValueSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return null;
 		}
 
 		public MatchLevel GetScore (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			if (! (obj is IMapiProp))
 				return MatchLevel.NoMatch;

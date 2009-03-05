@@ -34,19 +34,19 @@ namespace NMapi.Meta {
 	public class MsgUnknownMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return null;
 		}
 
 		public Hashtable GetKeyValueSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return null;
 		}
 
 		public MatchLevel GetScore (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return MatchLevel.NoMatch;
 		}

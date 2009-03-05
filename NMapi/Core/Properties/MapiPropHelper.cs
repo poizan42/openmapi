@@ -27,7 +27,6 @@ namespace NMapi.Properties {
 	using System.IO;
 	using CompactTeaSharp;
 	using NMapi.Interop;
-
 	using NMapi.Flags;
 
 	public class MapiPropHelper
@@ -44,19 +43,15 @@ namespace NMapi.Properties {
 		/// </summary>
 		/// <param name="tag">The property to get.</param>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public SPropValue HrGetOneProp (int tag)
+		public PropertyValue HrGetOneProp (int tag)
 		{
-			SPropTagArray tags = new SPropTagArray ();
-			SPropValue [] props;
-		
-			tags.PropTagArray = new int [1];
-			tags.PropTagArray [0] = tag;
-			props = imapiProp.GetProps (tags, 0);
-			
+			PropertyTag[] tags = PropertyTag.ArrayFromIntegers (tag);
+			PropertyValue [] props = imapiProp.GetProps (tags, 0);
+
 			ErrorProperty errProp = props [0] as ErrorProperty;
 			if (errProp != null)
 				throw new MapiException (errProp.Value);
-			return props[0];
+			return props [0];
 		}
 
 		/// <summary>
@@ -65,12 +60,11 @@ namespace NMapi.Properties {
 		/// </summary>
 		/// <param name="tag">The property to get.</param>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public SPropValue HrGetOnePropNull (int tag)
+		public PropertyValue HrGetOnePropNull (int tag)
 		{
 			try {
 				return HrGetOneProp (tag);
-			}
-			catch (MapiException e) {
+			} catch (MapiException e) {
 				if (e.HResult == Error.NotFound)
 					return null;
 				throw;
@@ -82,12 +76,12 @@ namespace NMapi.Properties {
 		/// </summary>
 		/// <param name="prop">The property to set.</param>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public void HrSetOneProp (SPropValue prop)
+		public void HrSetOneProp (PropertyValue prop)
 		{
-			SPropValue [] props = new SPropValue [] {prop};
-			SPropProblemArray problems = imapiProp.SetProps(props);
-			if (problems.AProblem.Length > 0)
-				throw new MapiException (problems.AProblem [0].SCode);
+			PropertyValue [] props = new PropertyValue [] { prop };
+			PropertyProblem[] problems = imapiProp.SetProps (props);
+			if (problems.Length > 0)
+				throw new MapiException (problems [0].SCode);
 		}
 
 		/// <summary>
@@ -97,10 +91,10 @@ namespace NMapi.Properties {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public void HrDeleteOneProp (int propTag)
 		{
-			int [] tags = new int [] { propTag };
-			var problems = imapiProp.DeleteProps (new SPropTagArray (tags));
-			if (problems.AProblem.Length > 0)
-				throw new MapiException (problems.AProblem[0].SCode);
+			PropertyTag [] tags = PropertyTag.ArrayFromIntegers (propTag);
+			var problems = imapiProp.DeleteProps (tags);
+			if (problems.Length > 0)
+				throw new MapiException (problems [0].SCode);
 		}
 	
 		/// <summary>
@@ -111,10 +105,10 @@ namespace NMapi.Properties {
 		/// <param name="mnid">The MapiNameId structure describing the property.</param>
 		/// <returns>The property value.</returns>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public SPropValue HrGetNamedProp (MapiNameId mnid)
+		public PropertyValue HrGetNamedProp (MapiNameId mnid)
 		{
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
-			SPropValue []  props = imapiProp.GetProps (
+			PropertyValue []  props = imapiProp.GetProps (
 					imapiProp.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
 					Mapi.Unicode);			
 			ErrorProperty errProp = props [0] as ErrorProperty;
@@ -131,7 +125,7 @@ namespace NMapi.Properties {
 		/// <param name="guid">The namespace/guid</param>
 		/// <param name="name">The name</param>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public SPropValue HrGetNamedProp (NMapiGuid guid, string name)
+		public PropertyValue HrGetNamedProp (NMapiGuid guid, string name)
 		{
 			StringMapiNameId nmid = new StringMapiNameId (name);
 			nmid.Guid = guid;
@@ -146,7 +140,7 @@ namespace NMapi.Properties {
 		/// <param name="guid">The namespace/guid</param>
 		/// <param name="id">The identifier</param>
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public SPropValue HrGetNamedProp (NMapiGuid guid, int id)
+		public PropertyValue HrGetNamedProp (NMapiGuid guid, int id)
 		{
 			NumericMapiNameId nmid = new NumericMapiNameId (id);
 			nmid.Guid = guid;

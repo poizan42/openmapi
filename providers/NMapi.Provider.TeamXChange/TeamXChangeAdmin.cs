@@ -78,7 +78,7 @@ namespace NMapi {
 			try {
 				
 				var logonArg = new Session_AdmLogon_arg ();
-				logonArg.pszPassword = new LPStr (password);
+				logonArg.pszPassword = new StringAdapter (password);
 				logonArg.ulCodePage = 0;
 				logonArg.ulLocaleID = 0;
 
@@ -162,7 +162,7 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_UserCreate_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (userName);
+				arg.pszId = new StringAdapter (userName);
 
 				var result = session.clnt.Admin_UserCreate_1 (arg);
 			} catch (OncRpcException e) {
@@ -180,7 +180,7 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_UserDelete_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (userName);
+				arg.pszId = new StringAdapter (userName);
 
 				var result = session.clnt.Admin_UserDelete_1 (arg);
 			} catch (OncRpcException e) {
@@ -195,7 +195,7 @@ namespace NMapi {
 			try {
 				var arg = new Admin_GroupCreate_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (groupName);
+				arg.pszId = new StringAdapter (groupName);
 
 				var result = session.clnt.Admin_GroupCreate_1 (arg);
 			} catch (OncRpcException e) {
@@ -210,7 +210,7 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_GroupDelete_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (groupName);
+				arg.pszId = new StringAdapter (groupName);
 
 				var result = session.clnt.Admin_GroupDelete_1 (arg);
 			} catch (OncRpcException e) {
@@ -225,8 +225,8 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_GroupPut_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (group.Id);
-				arg.pszComment = new LPStr (group.Comment);
+				arg.pszId = new StringAdapter (group.Id);
+				arg.pszComment = new StringAdapter (group.Comment);
 
 				var result = session.clnt.Admin_GroupPut_1 (arg);
 			} catch (OncRpcException e) {
@@ -241,8 +241,8 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_UserPut_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (user.Id);
-				arg.pszComment = new LPStr (user.Comment);
+				arg.pszId = new StringAdapter (user.Id);
+				arg.pszComment = new StringAdapter (user.Comment);
 
 				var result = session.clnt.Admin_UserPut_1 (arg);
 			} catch (OncRpcException e) {
@@ -257,7 +257,7 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_AdmSetPassword_arg ();
 				arg.obj = obj;
-				arg.pszPassword = new LPStr (password);
+				arg.pszPassword = new StringAdapter (password);
 
 				var result = session.clnt.Admin_AdmSetPassword_1 (arg);
 			} catch (OncRpcException e) {
@@ -273,8 +273,8 @@ namespace NMapi {
 			try { 
 				var arg = new Admin_UserSetPassword_arg ();
 				arg.obj = obj;
-				arg.pszId = new LPStr (userName);
-				arg.pszPassword = new LPStr (password);
+				arg.pszId = new StringAdapter (userName);
+				arg.pszPassword = new StringAdapter (password);
 
 				var result = session.clnt.Admin_UserSetPassword_1 (arg);
 			} catch (OncRpcException e) {

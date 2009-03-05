@@ -121,7 +121,7 @@ namespace NMapi {
 		{
 			var res = TeamXChangeBase.MakeCall<Session_InitSession_res, Session_InitSession_arg> (
 				client.Session_InitSession_1, 
-				new Session_InitSession_arg { pwszArgs = new LPWStr (initStr) });
+				new Session_InitSession_arg { pwszArgs = new UnicodeAdapter (initStr) });
 			return res.obj;		
 		}
 		
@@ -254,9 +254,9 @@ namespace NMapi {
 			Session_Logon2_res res;
 			
 			arg.obj = obj;
-			arg.pszHost = new LPStr (host);
-			arg.pwszUser = new LPWStr (user);
-			arg.pwszPassword = new LPWStr (password);
+			arg.pszHost = new StringAdapter (host);
+			arg.pwszUser = new UnicodeAdapter (user);
+			arg.pwszPassword = new UnicodeAdapter (password);
 			arg.ulSessionFlags = sessionFlags;
 			arg.ulCodePage = codePage;
 			arg.ulLocaleID = localeID;
@@ -284,7 +284,7 @@ namespace NMapi {
 			Session_OpenStore_res res;
 
 			arg.obj = obj;
-			arg.pwszStoreUser = new LPWStr (user);
+			arg.pwszStoreUser = new UnicodeAdapter (user);
 			arg.ulFlags = (int) flags;
 			arg.bIsPublic = isPublic ? 1 : 0;
 			try {
@@ -311,8 +311,8 @@ namespace NMapi {
 			Session_GetConfig_res res;
 
 			arg.obj = obj;
-			arg.pszCategory = new LPStr (category);
-			arg.pszID = new LPStr (id);
+			arg.pszCategory = new StringAdapter (category);
+			arg.pszID = new StringAdapter (id);
 			arg.ulFlags = flags;
 			try {
 				res = client.Session_GetConfig_1(arg);

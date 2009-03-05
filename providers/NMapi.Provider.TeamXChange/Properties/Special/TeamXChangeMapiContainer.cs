@@ -88,7 +88,7 @@ namespace NMapi.Properties.Special {
 				res.obj.Value.Value, res.ulObjType, interFace);
 		}
 
-		public void SetSearchCriteria (SRestriction restriction,
+		public void SetSearchCriteria (Restriction restriction,
 			EntryList containerList, int searchFlags)
 		{
 			var prms = new MAPIContainer_SetSearchCriteria_arg ();

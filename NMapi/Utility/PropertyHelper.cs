@@ -29,10 +29,10 @@ namespace NMapi.Utility {
 	
 	public class PropertyHelper 
 	{
-		private SPropValue[] props;
+		private PropertyValue[] props;
 		private int prop;
 
-		public SPropValue[] Props {
+		public PropertyValue[] Props {
 			get { return props; }
 			set { props = value; }
 		}
@@ -42,30 +42,30 @@ namespace NMapi.Utility {
 			set { prop = value; }
 		}
 
-		public SPropValue SPropValue {
-			get { return SPropValue.GetArrayProp(props, Index); }
+		public PropertyValue PropertyValue {
+			get { return PropertyValue.GetArrayProp(props, Index); }
 		}
 
 		public PropertyHelper () {}
 		
-		public PropertyHelper (SPropValue[] props) {
+		public PropertyHelper (PropertyValue[] props) {
 			this.props = props;
 		}
 
 		public bool Exists {
-			get { return Index > -1 & SPropValue != null; }
+			get { return Index > -1 & PropertyValue != null; }
 		}
 		
 		public int Index { 
 			get {
-				return SPropValue.GetArrayIndex (props, prop); 
+				return PropertyValue.GetArrayIndex (props, prop); 
 			}
 		}
 
 		public string Unicode {
 			get {
 				if (Index != -1) {
-					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
 					if (val != null && val is UnicodeProperty && ((UnicodeProperty) val).Value != null)
 						return ((UnicodeProperty) val).Value;
 				}
@@ -85,9 +85,9 @@ namespace NMapi.Utility {
 		public long LongNum {
 			get {
 				if (Index != -1) {
-					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					PropertyValue val = PropertyValue.GetArrayProp (props, Index);
 					if (val != null)
-						return ((IntProperty) val).Value;
+						return (int) val;
 				}
 				return 0;
 			}
@@ -96,9 +96,9 @@ namespace NMapi.Utility {
 		public string Long {
 			get {
 				if (Index != -1) {
-					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
 					if (val != null)
-						return ((IntProperty) val).Value.ToString ();
+						return ((int) val).ToString ();
 				}
 				return "";
 			}
@@ -115,7 +115,7 @@ namespace NMapi.Utility {
 		public string String {
 			get {
 				if (Index != -1) {
-					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
 					if (val != null && val is String8Property && ((String8Property) val).Value != null)
 						return ((String8Property) val).Value;
 				}
@@ -126,7 +126,7 @@ namespace NMapi.Utility {
 		public SBinary Binary {
 			get {
 				if (Index != -1) {
-					SPropValue val = SPropValue.GetArrayProp(props, Index);
+					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
 					if (val != null && val is BinaryProperty && ((BinaryProperty) val).Value != null)
 						return ((BinaryProperty) val).Value;
 				}

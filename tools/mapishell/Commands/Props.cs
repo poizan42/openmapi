@@ -74,10 +74,10 @@ namespace NMapi.Tools.Shell {
 					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
-				var tags = obj.GetPropList (0).PropTagArray;
+				var tags = obj.GetPropList (0);
 				int i = 0;
 				foreach (var propTag in tags) {
-					string name = state.PropTag2Name (propTag);
+					string name = state.PropTag2Name (propTag.Tag);
 
 					if (name.Length <= 39) {
 						driver.Write (String.Format ("{0,-40}", name));

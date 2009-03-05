@@ -35,7 +35,7 @@ namespace NMapi.Properties.Special {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public class GetSearchCriteriaResult
 	{	
-		private SRestriction _lpRestriction;
+		private Restriction _lpRestriction;
 		private EntryList    _lpContainerList;
 		private int          _ulSearchState;
 	
@@ -43,7 +43,7 @@ namespace NMapi.Properties.Special {
 		///  The restriction currently set on the container.
 		/// </summary>
 		[DataMember (Name="Restriction")]
-		public SRestriction Restriction {
+		public Restriction Restriction {
 			get { return _lpRestriction; }
 			set { _lpRestriction = value; }
 		}

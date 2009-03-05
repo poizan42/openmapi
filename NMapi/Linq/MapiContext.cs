@@ -192,7 +192,7 @@ namespace NMapi.Linq {
 				return;
 			IMapiEntity entity = entryIDBuffer [entryId];
 
-			int[] changedProps = ea.Notification.PropTagArray.PropTagArray;
+			PropertyTag[] changedProps = ea.Notification.PropTagArray;
 			bool localChangesMade = entity.Update (changedProps);
 
 			MapiEntityEventArgs args = new MapiEntityEventArgs (entity, 

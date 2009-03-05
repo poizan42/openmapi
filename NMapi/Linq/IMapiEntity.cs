@@ -105,7 +105,7 @@ namespace NMapi.Linq {
 		/// <summary>
 		///   Updates (remotely) changed properties.
 		/// </summary>
-		bool Update (int[] changedPropTags);
+		bool Update (PropertyTag[] changedPropTags);
 
 		/// <summary>
 		///   Deletes the object.

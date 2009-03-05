@@ -110,7 +110,7 @@ namespace NMapi.Properties.Special {
 				res.obj.Value.Value, res.ulObjType, null);
 		}
 	
-		private SPropValue FindProp (int propTag, SPropValue [] props)
+		private PropertyValue FindProp (int propTag, PropertyValue [] props)
 		{
 			foreach (var item in props)
 				if (item.PropTag == propTag)
@@ -157,7 +157,7 @@ namespace NMapi.Properties.Special {
 			{
 				var arg = new Message_AddRecipient_arg();
 				Message_AddRecipient_res res;
-				SPropValue[] props;
+				PropertyValue[] props;
 				IntProperty rowid;
 			
 				for (i = 0; i < mods.AEntries.Length; i++) {
@@ -176,7 +176,7 @@ namespace NMapi.Properties.Special {
 						throw new MapiException (res.hr);
 					rowid = (IntProperty) FindProp (Property.RowId, mods.AEntries[i].PropVals);
 					if (rowid == null) {
-						props = new SPropValue [mods.AEntries[i].PropVals.Length];
+						props = new PropertyValue [mods.AEntries[i].PropVals.Length];
 						Array.Copy (mods.AEntries[i].PropVals, 0, props, 0, 
 								     	 mods.AEntries[i].PropVals.Length);
 						rowid = (IntProperty) props [props.Length-1];
@@ -264,12 +264,13 @@ namespace NMapi.Properties.Special {
 			TeamXChangeMapiFolder srcfolder = null, dstfolder = null;
 		
 			try {
-				int [] tags = { Property.ParentEntryId,
-								Property.EntryId,
-								Property.SentMailEntryId, 
-								Property.DeleteAfterSubmit };
+				PropertyTag [] tags = PropertyTag.ArrayFromIntegers (
+						Property.ParentEntryId,
+						Property.EntryId,
+						Property.SentMailEntryId, 
+						Property.DeleteAfterSubmit);
 			
-				SPropValue [] props = GetProps (new SPropTagArray(tags), 0);
+				PropertyValue [] props = GetProps (tags, 0);
 			
 				EntryList msglist = new EntryList (1);
 				msglist.Bin [0] = ((BinaryProperty) props[1]).Value;

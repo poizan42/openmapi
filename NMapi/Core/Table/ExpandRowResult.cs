@@ -36,7 +36,7 @@ namespace NMapi.Table {
 		///
 		/// </summary>
 		[DataMember (Name="Rows")]
-		public SRowSet Rows { get; set; }
+		public RowSet Rows { get; set; }
 
 		/// <summary>
 		///

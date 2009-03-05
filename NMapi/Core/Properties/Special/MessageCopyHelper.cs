@@ -26,9 +26,8 @@ namespace NMapi.Properties.Special {
 
 	using System;
 	using System.IO;
-	using CompactTeaSharp;
-	using NMapi.Interop;
-
+	using System.Collections.Generic;
+	
 	using NMapi.Flags;
 	using NMapi.Table;
 
@@ -37,29 +36,19 @@ namespace NMapi.Properties.Special {
 	/// </summary>
 	public sealed class MessageCopyHelper
 	{
-		private static int[] ResizeArray (int [] oa, int ns) 
-		{
-			int os = oa.Length;
-			int [] na = new int [ns];
-			int pr = Math.Min (os, ns);
-
-			if (pr > 0)
-				Array.Copy (oa, 0, na, 0, pr);
-			return na;
-		}
-
+		
 		/// <exception cref="MapiException">Throws MapiException</exception>
-		public static void MyMsgCopyStream (IMapiProp source, IMapiProp dest, int propTag)
+		public static void MyMsgCopyStream (IMapiProp source, IMapiProp dest, PropertyTag propTag)
 		{
 			string fileName = null;
 			IStream streamsrc = null, streamdst = null;
 
 			try { 
 				fileName = Path.GetTempFileName ();
-				streamsrc = (IStream) source.OpenProperty (propTag,
-						Guids.IID_IStream, 0, 0);
-				streamdst = (IStream) dest.OpenProperty (propTag,
-						Guids.IID_IStream, 0, NMAPI.MAPI_CREATE|Mapi.Modify);
+				streamsrc = (IStream) source.OpenProperty (propTag.Tag,
+					Guids.IID_IStream, 0, 0);
+				streamdst = (IStream) dest.OpenProperty (propTag.Tag,
+					Guids.IID_IStream, 0, NMAPI.MAPI_CREATE|Mapi.Modify);
 				Stream fs = File.OpenWrite (fileName);
 				streamsrc.GetData (fs);
 				fs.Close ();
@@ -83,37 +72,30 @@ namespace NMapi.Properties.Special {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public static void MyMsgCopyProps (IMapiProp source, IMapiProp dest)
 		{
-			int []            alltags = source.GetPropList (Mapi.Unicode).PropTagArray;
-			int []            srctags = new int [alltags.Length];
-			int               i, count;
-			SPropValue []     srcprops;
-			SPropProblemArray problems;
-		
-			count = 0;
-			for (i = 0; i < alltags.Length; i++) {
-				if (PropertyTypeHelper.PROP_TYPE (alltags[i]) != PropertyType.Object)
-					srctags[count++] = alltags[i];
-			}
-			srctags  = ResizeArray (srctags, count);
-			srcprops = source.GetProps (new SPropTagArray (srctags), 0);
-			count = 0;
-			for (i = 0; i < srcprops.Length; i++) {
-				
-				ErrorProperty errProp = srcprops [i] as ErrorProperty;
+			PropertyTag [] allTags = source.GetPropList (Mapi.Unicode);
+			List<PropertyTag> tmp = new List<PropertyTag> ();
+			foreach (var tag in allTags)
+				if (tag.Type != PropertyType.Object)
+					tmp.Add (tag);
+			PropertyTag[] srcTags = tmp.ToArray ();
+
+			PropertyValue [] srcProps = source.GetProps (srcTags, 0);
+			for (int i = 0; i < srcProps.Length; i++) {
+				ErrorProperty errProp = srcProps [i] as ErrorProperty;
 				if (errProp != null) {
 					switch (errProp.Value) {
-						case Error.NotEnoughMemory: MyMsgCopyStream (source, dest, srctags[i]); break; // the streams.
+						case Error.NotEnoughMemory: MyMsgCopyStream (source, dest, srcTags [i]); break; // the streams.
 						case Error.NotFound: break; // may happen.
 						default: throw new MapiException (errProp.Value); // this is an error.
 					}
-					srcprops [i].PropTag = (int) PropertyType.Null;
+					srcProps [i].PropTag = (int) PropertyType.Null;
 				}
 			}
-			problems = dest.SetProps (srcprops);
-			for (i = 0; i < problems.AProblem.Length; i++) {
-				if (problems.AProblem[i].SCode != Error.Computed)
-					throw new MapiException (problems.AProblem [i].SCode);
-			}
+			
+			PropertyProblem[] problems = dest.SetProps (srcProps);
+			foreach (var problem in problems)
+				if (problem.SCode != Error.Computed)
+					throw new MapiException (problem.SCode);
 		}
 
 		/// <exception cref="MapiException">Throws MapiException</exception>
@@ -169,17 +151,17 @@ namespace NMapi.Properties.Special {
 			try {
 				tbl = messageSource.GetAttachmentTable (Mapi.Unicode);
 				while (true) {
-					SRowSet rows = tbl.GetRows (10);
+					RowSet rows = tbl.GetRows (10);
 					if (rows.ARow.Length == 0) break;
 					for (int i = 0; i < rows.ARow.Length; i++) {
-						SPropValue [] props = rows.ARow [i].lpProps;
-						SPropValue    propnum;
+						PropertyValue [] props = rows.ARow [i].lpProps;
+						PropertyValue    propnum;
 
 						if (first) {
 							first = false;
-							idx_num = SPropValue.GetArrayIndex (props, Property.AttachNum);
+							idx_num = PropertyValue.GetArrayIndex (props, Property.AttachNum);
 						}
-						propnum = SPropValue.GetArrayProp (props, idx_num);
+						propnum = PropertyValue.GetArrayProp (props, idx_num);
 						MyMsgCopyAttach (messageSource, messageDest, ((IntProperty) propnum).Value);
 					}
 				}
@@ -193,19 +175,19 @@ namespace NMapi.Properties.Special {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public static void MyMsgCopyRecipients (IMessage messageSource, IMessage messageDest)
 		{
-			IMapiTableReader tbl = null;
+			IMapiTableReader table = null;
 			try {
-				tbl = messageSource.GetRecipientTable (Mapi.Unicode);
+				table = messageSource.GetRecipientTable (Mapi.Unicode);
 				while (true) {
-					SRowSet rows = tbl.GetRows (10);
+					RowSet rows = table.GetRows (10);
 					if (rows.ARow.Length == 0)
 						break;
 					messageDest.ModifyRecipients (ModRecip.Add, new AdrList (rows));
 				}
 			}
 			finally {
-				if (tbl != null)
-					tbl.Close ();
+				if (table != null)
+					table.Close ();
 			}
 		}
 

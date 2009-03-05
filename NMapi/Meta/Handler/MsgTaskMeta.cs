@@ -34,12 +34,12 @@ namespace NMapi.Meta {
 	public class MsgTaskMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			IMapiProp prop = obj as IMapiProp;
 			if (obj != null) {
-				var tags = new SPropTagArray (Property.Subject);
-				SPropValue[] values = prop.GetProps (tags, 0); // read-only
+				var tags = PropertyTag.ArrayFromIntegers (Property.Subject);
+				PropertyValue[] values = prop.GetProps (tags, 0); // read-only
 				string subject = ((UnicodeProperty) values [0]).Value; // TODO: check length!
 				return "IPM.Task: (Subject: '" + subject + "')";
 			}
@@ -47,13 +47,13 @@ namespace NMapi.Meta {
 		}
 
 		public Hashtable GetKeyValueSummary (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			return null;
 		}
 
 		public MatchLevel GetScore (IBase obj, 
-			Dictionary<int, SPropValue> someProps)
+			Dictionary<int, PropertyValue> someProps)
 		{
 			if (obj == null)
 				return MatchLevel.NoMatch;

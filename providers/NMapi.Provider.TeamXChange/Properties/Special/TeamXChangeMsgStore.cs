@@ -149,9 +149,9 @@ namespace NMapi.Properties.Special {
 			prms.eid = new SBinary(entryID);
 			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0)
-				prms.lpszMessageClassW = new LPWStr (messageClass);
+				prms.lpszMessageClassW = new UnicodeAdapter (messageClass);
 			else
-				prms.lpszMessageClassA = new LPStr (messageClass);
+				prms.lpszMessageClassA = new StringAdapter (messageClass);
 			
 			var res = MakeCall<MsgStore_SetReceiveFolder_res, 
 				MsgStore_SetReceiveFolder_arg> (
@@ -164,11 +164,11 @@ namespace NMapi.Properties.Special {
 			prms.obj = new HObject (obj);
 			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0) {
-				prms.lpszMessageClassW = new LPWStr (messageClass);
-				prms.lpszMessageClassA = new LPStr ();
+				prms.lpszMessageClassW = new UnicodeAdapter (messageClass);
+				prms.lpszMessageClassA = new StringAdapter ();
 			} else {
-				prms.lpszMessageClassA = new LPStr (messageClass);
-				prms.lpszMessageClassW = new LPWStr ();
+				prms.lpszMessageClassA = new StringAdapter (messageClass);
+				prms.lpszMessageClassW = new UnicodeAdapter ();
 			}
 						
 			var res = MakeCall<MsgStore_GetReceiveFolder_res, 
@@ -240,24 +240,24 @@ namespace NMapi.Properties.Special {
 						found = false;
 						tableReader = folder.GetHierarchyTable (Mapi.Unicode);
 						while (!found) {
-							SRowSet rows = tableReader.GetRows(10);
+							RowSet rows = tableReader.GetRows(10);
 							if (rows.ARow.Length == 0)
 								break;
 
 							for (int idx = 0; idx < rows.ARow.Length; idx++) {
-								SPropValue [] prps = rows.ARow [idx].lpProps;
+								PropertyValue [] prps = rows.ARow [idx].lpProps;
 
 								if (first) {
 									first = false;
-									idx_name = SPropValue.GetArrayIndex (
+									idx_name = PropertyValue.GetArrayIndex (
 										prps, Property.DisplayNameW);
 
-									idx_eid  = SPropValue.GetArrayIndex (
+									idx_eid  = PropertyValue.GetArrayIndex (
 										prps, Property.EntryId);
 								}
 							
-								SPropValue name = SPropValue.GetArrayProp (prps, idx_name);
-								BinaryProperty eid = (BinaryProperty) SPropValue.GetArrayProp (prps, idx_eid);
+								PropertyValue name = PropertyValue.GetArrayProp (prps, idx_name);
+								BinaryProperty eid = (BinaryProperty) PropertyValue.GetArrayProp (prps, idx_eid);
 								if (name != null && ((UnicodeProperty) name).Value == match) {
 									folder = (IMapiFolder) OpenEntry (eid.Value.lpb, null, flags);
 									found = true;

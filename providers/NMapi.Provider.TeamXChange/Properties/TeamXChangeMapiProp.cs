@@ -85,13 +85,13 @@ namespace NMapi.Properties {
 				throw new MapiException (res.hr);
 		}
 
-		public SPropValue [] GetProps (SPropTagArray propTagArray, int flags)
+		public PropertyValue [] GetProps (PropertyTag[] propTagArray, int flags)
 		{
 			var arg = new MAPIProp_GetProps_arg();
 			MAPIProp_GetProps_res res;
 		
 			arg.obj = new HObject (new LongLong (obj));
-			arg.lpPropTagArray = new LPSPropTagArray (propTagArray);
+			arg.lpPropTagArray = new PropertyTagArrayPtrAdapter (propTagArray);
 			arg.ulFlags = flags;
 			try {
 				res = clnt.MAPIProp_GetProps_1(arg);
@@ -107,7 +107,7 @@ namespace NMapi.Properties {
 			return res.props;
 		}
 
-		public SPropTagArray GetPropList (int flags)
+		public PropertyTag[] GetPropList (int flags)
 		{
 			var arg = new MAPIProp_GetPropList_arg();
 			MAPIProp_GetPropList_res res;
@@ -158,7 +158,7 @@ namespace NMapi.Properties {
 			return session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace, propTag);
 		}
 
-		public SPropProblemArray SetProps (SPropValue[] propArray)
+		public PropertyProblem[] SetProps (PropertyValue[] propArray)
 		{
 			var arg = new MAPIProp_SetProps_arg ();
 			MAPIProp_SetProps_res res;
@@ -179,13 +179,13 @@ namespace NMapi.Properties {
 			return res.lpProblems.value;
 		}
 
-		public SPropProblemArray DeleteProps (SPropTagArray propTagArray)
+		public PropertyProblem[] DeleteProps (PropertyTag[] propTagArray)
 		{
 			var arg = new MAPIProp_DeleteProps_arg();
 			MAPIProp_DeleteProps_res res;
 		
 			arg.obj = new HObject (new LongLong (obj));
-			arg.lpPropTagArray = new LPSPropTagArray (propTagArray);
+			arg.lpPropTagArray = new PropertyTagArrayPtrAdapter (propTagArray);
 			try {
 				res = clnt.MAPIProp_DeleteProps_1(arg);
 			}
@@ -204,14 +204,14 @@ namespace NMapi.Properties {
 		// NOT IMPLEMENTED: CopyProps ()
 
 		public GetNamesFromIDsResult GetNamesFromIDs (
-			SPropTagArray propTags, NMapiGuid propSetGuid, int flags)
+			PropertyTag[] propTags, NMapiGuid propSetGuid, int flags)
 		{
 			var arg = new MAPIProp_GetNamesFromIDs_arg ();
 			MAPIProp_GetNamesFromIDs_res res;
 			GetNamesFromIDsResult ret = new GetNamesFromIDsResult ();
 		
 			arg.obj = new HObject (new LongLong (obj));
-			arg.lpPropTags = new LPSPropTagArray (propTags);
+			arg.lpPropTags = new PropertyTagArrayPtrAdapter (propTags);
 			arg.lpPropSetGuid = new LPGuid (propSetGuid);
 			arg.ulFlags = flags;
 			try {
@@ -233,7 +233,7 @@ namespace NMapi.Properties {
 			return ret;
 		}
 
-		public SPropTagArray GetIDsFromNames (MapiNameId [] propNames, int flags)
+		public PropertyTag[] GetIDsFromNames (MapiNameId [] propNames, int flags)
 		{
 			var arg = new MAPIProp_GetIDsFromNames_arg ();
 			MAPIProp_GetIDsFromNames_res res;
@@ -257,17 +257,17 @@ namespace NMapi.Properties {
 			return res.lpPropTags.Value;
 		}
 
-		public SPropValue HrGetOneProp (int tag)
+		public PropertyValue HrGetOneProp (int tag)
 		{
 			return helper.HrGetOneProp (tag);
 		}
 
-		public SPropValue HrGetOnePropNull (int tag)
+		public PropertyValue HrGetOnePropNull (int tag)
 		{
 			return helper.HrGetOnePropNull (tag);
 		}
 
-		public void HrSetOneProp (SPropValue prop)
+		public void HrSetOneProp (PropertyValue prop)
 		{
 			helper.HrSetOneProp (prop);
 		}
@@ -277,17 +277,17 @@ namespace NMapi.Properties {
 			helper.HrDeleteOneProp (propTag);
 		}
 
-		public SPropValue HrGetNamedProp (MapiNameId mnid)
+		public PropertyValue HrGetNamedProp (MapiNameId mnid)
 		{
 			return helper.HrGetNamedProp (mnid);
 		}
 
-		public SPropValue HrGetNamedProp (NMapiGuid guid, string name)
+		public PropertyValue HrGetNamedProp (NMapiGuid guid, string name)
 		{
 			return helper.HrGetNamedProp (guid, name);
 		}
 
-		public SPropValue HrGetNamedProp (NMapiGuid guid, int id)
+		public PropertyValue HrGetNamedProp (NMapiGuid guid, int id)
 		{
 			return helper.HrGetNamedProp (guid, id);
 		}

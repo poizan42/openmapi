@@ -168,15 +168,15 @@ namespace NMapi.Properties.Special {
 			prms.lpInterface = new LPGuid (interFace);
 			prms.ulFlags = flags;
 			if ((flags & Mapi.Unicode) != 0) {
-				prms.lpwszFolderNameW = new LPWStr (folderName);
-				prms.lpwszFolderCommentW = new LPWStr (folderComment);
-				prms.lpszFolderNameA = new LPStr ();
-				prms.lpszFolderCommentA = new LPStr ();
+				prms.lpwszFolderNameW = new UnicodeAdapter (folderName);
+				prms.lpwszFolderCommentW = new UnicodeAdapter (folderComment);
+				prms.lpszFolderNameA = new StringAdapter ();
+				prms.lpszFolderCommentA = new StringAdapter ();
 			} else {
-				prms.lpszFolderNameA = new LPStr (folderName);
-				prms.lpszFolderCommentA = new LPStr (folderComment);
-				prms.lpwszFolderNameW = new LPWStr ();
-				prms.lpwszFolderCommentW = new LPWStr ();
+				prms.lpszFolderNameA = new StringAdapter (folderName);
+				prms.lpszFolderCommentA = new StringAdapter (folderComment);
+				prms.lpwszFolderNameW = new UnicodeAdapter ();
+				prms.lpwszFolderCommentW = new UnicodeAdapter ();
 			}
 			var res = MakeCall<MAPIFolder_CreateFolder_res, 
 				MAPIFolder_CreateFolder_arg> (clnt.MAPIFolder_CreateFolder_1, prms);
@@ -202,11 +202,11 @@ namespace NMapi.Properties.Special {
 				prms.ulFlags = flags;
 				prms.pBar = new LPProgressBar();
 				if ((prms.ulFlags & Mapi.Unicode) != 0) {
-					prms.pszNewNameW = new LPWStr (newFolderName);
-					prms.pszNewNameA = new LPStr ();
+					prms.pszNewNameW = new UnicodeAdapter (newFolderName);
+					prms.pszNewNameA = new StringAdapter ();
 				} else {
-					prms.pszNewNameA = new LPStr (newFolderName);
-					prms.pszNewNameW = new LPWStr ();
+					prms.pszNewNameA = new StringAdapter (newFolderName);
+					prms.pszNewNameW = new UnicodeAdapter ();
 				}
 
 				var res = MakeCall<MAPIFolder_CopyFolder_res, 
@@ -266,7 +266,7 @@ namespace NMapi.Properties.Special {
 		{
 			var prms = new MAPIFolder_SaveContentsSort_arg ();
 			prms.obj = new HObject (obj);
-			prms.lpSort = new LPSSortOrderSet (sortOrder);
+			prms.lpSort = new SortOrderSetPtrAdapter (sortOrder);
 			prms.ulFlags = flags;
 			
 			var res = MakeCall<MAPIFolder_SaveContentsSort_res, 

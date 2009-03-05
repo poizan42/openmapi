@@ -129,8 +129,8 @@
 				<summary>Reads several properties of the object and returns an array of matching values.</summary>
 				<remarks>$$MSDN_528406.aspx</remarks>
 			</doc>
-			<returns>^S#Prop^Value []</returns>
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<returns>^Property^Value []</returns>
+			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Get^Prop^List">
@@ -138,7 +138,7 @@
 				<summary>Returns an Property-Tag array of all supported properties.</summary>
 				<remarks>$$MSDN_527424.aspx</remarks>
 			</doc>
-			<returns>^S#Prop^Tag^Array</returns>
+			<returns>^Property^Tag[]</returns>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Open^Property" rpcId="OpenProperty_4">
@@ -164,16 +164,16 @@
 				<summary>Sets the value of several properties.</summary>
 				<remarks>$$MSDN_527310.aspx</remarks>
 			</doc>
-			<returns>^S#Prop^Problem^Array</returns>
-			<param type="^S#Prop^Value[]">propArray</param>
+			<returns>^Property^Problem[]</returns>
+			<param type="^Property^Value[]">propArray</param>
 		</method>
 		<method id="^Delete^Props">
 			<doc>
 				<summary>Deletes several properties.</summary>
 				<remarks>$$MSDN_528863.aspx</remarks>
 			</doc>
-			<returns>^S#Prop^Problem^Array</returns>
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<returns>^Property^Problem[]</returns>
+			<param type="^Property^Tag[]">propTagArray</param>
 		</method>
 		<method id="^Get^Names^From^I#Ds">
 			<doc>
@@ -185,7 +185,7 @@
 				</remarks>
 			</doc>
 			<returns>^Get^Names^From^I#Ds^Result</returns>
-			<param type="^S#Prop^Tag^Array">propTags</param>
+			<param type="^Property^Tag[]">propTags</param>
 			<param type="^N#Mapi^Guid">propSetGuid</param>
 			<param type="int">flags</param>
 		</method>
@@ -194,7 +194,7 @@
 				<summary>Resolves the Property-Tags for several named properties.</summary>
 				<remarks>$$MSDN_529684.aspx</remarks>
 			</doc>
-			<returns>^S#Prop^Tag^Array</returns>
+			<returns>^Property^Tag[]</returns>
 			<param type="^Mapi^Name^Id[]">propNames</param>
 			<param type="int">flags</param>
 		</method>
@@ -261,7 +261,7 @@
 				<remarks>$$MSDN_528903.aspx</remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Restriction">restriction</param>
+			<param type="^Restriction">restriction</param>
 			<param type="^Entry^List">containerList</param>
 			<param type="int">searchFlags</param>
 		</method>
@@ -727,13 +727,13 @@
 			<doc>
 				<summary>Gets the current column set of the table.</summary>
 			</doc>
-			<returns>^S#Prop^Tag^Array</returns>
+			<returns>^Property^Tag[]</returns>
 		</method>
 		<method id="^Get^Rows">
 			<doc>
 				<summary>Retrieves the rows from the table.</summary>
 			</doc>
-			<returns>^S#Row^Set</returns>
+			<returns>^Row^Set</returns>
 			<param type="int">cRows</param>
 		</method>
 	</interface>
@@ -812,7 +812,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Query^Columns">
@@ -820,7 +820,7 @@
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>^S#Prop^Tag^Array</returns>
+			<returns>^Property^Tag[]</returns>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Get^Row^Count">
@@ -862,7 +862,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Restriction">restriction</param>
+			<param type="^Restriction">restriction</param>
 			<param type="int">numerator</param>
 			<param type="int">denominator</param>
 		</method>
@@ -872,7 +872,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Restriction">restriction</param>
+			<param type="^Restriction">restriction</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Create^Bookmark">
@@ -913,7 +913,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<returns>^S#Row^Set</returns>
+			<returns>^Row^Set</returns>
 			<param type="int">rowCount</param>
 			<param type="int">flags</param>
 		</method>
@@ -1056,7 +1056,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="int">flags</param>
 			<param type="^Adr^List">adrList</param>
 			<param type="int[]">flagList</param>
@@ -1153,7 +1153,7 @@
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>^S#Row^Set</returns>
+			<returns>^Row^Set</returns>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Prepare^Recips">
@@ -1163,7 +1163,7 @@
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="^Adr^List">adrList</param>
 		</method>			
 	</interface>
@@ -1255,7 +1255,7 @@
 			</doc>
 			<!-- VOID //-->
 			<param type="int">flags</param>
-			<param type="^S#Prop^Tag^Array">propTagArray</param>
+			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="^Adr^List">recipList</param>
 		</method>
 	</interface>

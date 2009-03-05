@@ -1,7 +1,8 @@
 //
-// openmapi.org - NMapi C# Mapi API - RowEntry.cs
+// openmapi.org - NMapi C# Mapi API - RowSetPtrAdapter.cs
 //
 // Copyright 2008 VipCom AG
+// Copyright 2009 Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -23,11 +24,11 @@
 //
 
 using System;
-using System.Runtime.Serialization;
 using System.IO;
 
 using System.Diagnostics;
 using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -35,38 +36,56 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi {
+namespace NMapi.Interop {
 
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class RowEntry : IXdrAble
+	/// <summary>
+	///  For internal use only.
+	/// </summary>
+	public sealed class RowSetPtrAdapter : IXdrAble
 	{
-		[DataMember (Name="RowFlags")]
-		public int ulRowFlags;
+		private RowSet _value;
 
-		[DataMember (Name="PropVals")]
-		public PropertyValue [] rgPropVals;
-	
-		private const int EMPTY = 5;
-
-		public RowEntry () {
-			ulRowFlags = EMPTY;
+		/// <summary>
+		///   
+		/// </summary>
+		public RowSet Value {
+			get { return _value; }
+			set { _value = value; }
 		}
 
-		public RowEntry (XdrDecodingStream xdr)
+		/// <summary>
+		///
+		/// </summary>
+		public RowSetPtrAdapter ()
 		{
-			XdrDecode(xdr);
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public RowSetPtrAdapter (RowSet value)
+		{
+			this._value = value;
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public RowSetPtrAdapter (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
 		}
 
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
-			xdr.XdrEncodeInt (ulRowFlags);
-			if (ulRowFlags != EMPTY) {
-				int i, len = rgPropVals.Length;
-				xdr.XdrEncodeInt(len);
-				for (i = 0; i < len; i++)
-					rgPropVals[i].XdrEncode(xdr);
+			if (_value == null)
+				xdr.XdrEncodeInt (~0);
+			else {
+				xdr.XdrEncodeInt (_value.ARow.Length);
+				for (int idx = 0; idx < _value.ARow.Length; idx++)
+					_value.ARow [idx].XdrEncode (xdr);
 			}
 		}
 
@@ -74,19 +93,16 @@ namespace NMapi {
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
-			ulRowFlags = xdr.XdrDecodeInt ();
-			if (ulRowFlags == EMPTY) 
-				rgPropVals = null;
+			int len = xdr.XdrDecodeInt ();
+			if (len == ~0)
+				_value = null;
 			else {
-				int i, len = xdr.XdrDecodeInt ();
-				if (len == ~0)
-					rgPropVals = null;
-				else {
-					rgPropVals = new PropertyValue [len];
-					for (i = 0; i < len; i++)
-						rgPropVals[i] = PropertyValue.Decode (xdr);
-				}
+				_value = new RowSet ();
+				_value.ARow = new Row [len];
+				for (int idx = 0; idx < len; idx++)
+					_value.ARow [idx] = new Row (xdr);
 			}
 		}
 	}
+
 }

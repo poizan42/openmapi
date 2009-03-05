@@ -1,7 +1,8 @@
 //
-// openmapi.org - NMapi C# Mapi API - RowEntry.cs
+// openmapi.org - NMapi C# Mapi API - SortOrderSetPtrAdapter.cs
 //
 // Copyright 2008 VipCom AG
+// Copyright 2009 Topalis AG
 //
 // Author (Javajumapi): VipCOM AG
 // Author (C# port):    Johannes Roith <johannes@jroith.de>
@@ -23,11 +24,11 @@
 //
 
 using System;
-using System.Runtime.Serialization;
 using System.IO;
 
 using System.Diagnostics;
 using CompactTeaSharp;
+
 
 using NMapi;
 using NMapi.Flags;
@@ -35,24 +36,39 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi {
+namespace NMapi.Interop {
 
-	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class RowEntry : IXdrAble
+	/// <summary>
+	///  For internal use only.
+	/// </summary>
+	public sealed class SortOrderSetPtrAdapter : IXdrAble
 	{
-		[DataMember (Name="RowFlags")]
-		public int ulRowFlags;
+		private SortOrderSet _value;
 
-		[DataMember (Name="PropVals")]
-		public PropertyValue [] rgPropVals;
-	
-		private const int EMPTY = 5;
-
-		public RowEntry () {
-			ulRowFlags = EMPTY;
+		/// <summary>
+		///   
+		/// </summary>
+		public SortOrderSet Value {
+			get { return _value; }
+			set { _value = value; }
 		}
 
-		public RowEntry (XdrDecodingStream xdr)
+		/// <summary>
+		///
+		/// </summary>
+		public SortOrderSetPtrAdapter ()
+		{
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		public SortOrderSetPtrAdapter (SortOrderSet value)
+		{
+			this._value = value;
+		}
+
+		public SortOrderSetPtrAdapter (XdrDecodingStream xdr)
 		{
 			XdrDecode(xdr);
 		}
@@ -61,12 +77,14 @@ namespace NMapi {
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
-			xdr.XdrEncodeInt (ulRowFlags);
-			if (ulRowFlags != EMPTY) {
-				int i, len = rgPropVals.Length;
-				xdr.XdrEncodeInt(len);
-				for (i = 0; i < len; i++)
-					rgPropVals[i].XdrEncode(xdr);
+			if (_value == null)
+				xdr.XdrEncodeInt(~0);
+			else {
+				xdr.XdrEncodeInt (_value.ASort.Length);
+				xdr.XdrEncodeInt (_value.CCategories);
+				xdr.XdrEncodeInt (_value.CExpanded);
+				for (int idx = 0; idx < _value.ASort.Length; idx++)
+					_value.ASort[idx].XdrEncode (xdr);
 			}
 		}
 
@@ -74,19 +92,18 @@ namespace NMapi {
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
-			ulRowFlags = xdr.XdrDecodeInt ();
-			if (ulRowFlags == EMPTY) 
-				rgPropVals = null;
+			int len = xdr.XdrDecodeInt();
+			if (len == ~0)
+				_value = null;
 			else {
-				int i, len = xdr.XdrDecodeInt ();
-				if (len == ~0)
-					rgPropVals = null;
-				else {
-					rgPropVals = new PropertyValue [len];
-					for (i = 0; i < len; i++)
-						rgPropVals[i] = PropertyValue.Decode (xdr);
-				}
+				_value = new SortOrderSet();
+				_value.CCategories = xdr.XdrDecodeInt();
+				_value.CExpanded = xdr.XdrDecodeInt();
+				_value.ASort = new SortOrder[len];
+				for (int idx = 0; idx < len; idx++)
+					_value.ASort[idx] = new SortOrder (xdr);
 			}
 		}
 	}
+
 }

@@ -36,11 +36,11 @@ namespace NMapi.Properties {
 	{
 		
 		/// <summary>
-		///  An SPropTagArray containing the PropTags that match 
+		///  An PropertyTag[] containing the PropTags that match 
 		///  the requested Property Names returned in "PropNames".
 		/// </summary>
 		[DataMember (Name="PropTags")]
-		public SPropTagArray PropTags { get; set; }
+		public PropertyTag[] PropTags { get; set; }
 
 		/// <summary>
 		///  The Property Names for the Properties listed in "PropTags".

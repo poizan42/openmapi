@@ -1,3 +1,7 @@
+2009-03-05  Johannes Roith <johannes@jroith.de>
+
+	* API improvements
+
 2009-03-04  Andreas Huegel <andreas.huegel@topalis.com>
 	adding
 	* gateways/imap/RTFWriter.cs

@@ -88,11 +88,11 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue [] IMapiProp_GetProps (IndigoMapiObjRef obj, SPropTagArray propTagArray, int flags);
+		PropertyValue [] IMapiProp_GetProps (IndigoMapiObjRef obj, PropertyTag[] propTagArray, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropTagArray IMapiProp_GetPropList (IndigoMapiObjRef obj, int flags);
+		PropertyTag[] IMapiProp_GetPropList (IndigoMapiObjRef obj, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -104,31 +104,31 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropProblemArray IMapiProp_SetProps (IndigoMapiObjRef obj, SPropValue[] propArray);
+		PropertyProblem [] IMapiProp_SetProps (IndigoMapiObjRef obj, PropertyValue[] propArray);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropProblemArray IMapiProp_DeleteProps (IndigoMapiObjRef obj, SPropTagArray propTagArray);
+		PropertyProblem [] IMapiProp_DeleteProps (IndigoMapiObjRef obj, PropertyTag[] propTagArray);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		GetNamesFromIDsResult IMapiProp_GetNamesFromIDs (IndigoMapiObjRef obj, SPropTagArray propTags, NMapiGuid propSetGuid, int flags);
+		GetNamesFromIDsResult IMapiProp_GetNamesFromIDs (IndigoMapiObjRef obj, PropertyTag[] propTags, NMapiGuid propSetGuid, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropTagArray IMapiProp_GetIDsFromNames (IndigoMapiObjRef obj, MapiNameId [] propNames, int flags);
+		PropertyTag[] IMapiProp_GetIDsFromNames (IndigoMapiObjRef obj, MapiNameId [] propNames, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue IMapiProp_HrGetOneProp (IndigoMapiObjRef obj, int tag);
+		PropertyValue IMapiProp_HrGetOneProp (IndigoMapiObjRef obj, int tag);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue IMapiProp_HrGetOnePropNull (IndigoMapiObjRef obj, int tag);
+		PropertyValue IMapiProp_HrGetOnePropNull (IndigoMapiObjRef obj, int tag);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiProp_HrSetOneProp (IndigoMapiObjRef obj, SPropValue tag);
+		void IMapiProp_HrSetOneProp (IndigoMapiObjRef obj, PropertyValue tag);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -136,15 +136,15 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue IMapiProp_HrGetNamedProp (IndigoMapiObjRef obj, MapiNameId mnid);
+		PropertyValue IMapiProp_HrGetNamedProp (IndigoMapiObjRef obj, MapiNameId mnid);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue IMapiProp_HrGetNamedProp_2_str (IndigoMapiObjRef obj, NMapiGuid guid, string name);
+		PropertyValue IMapiProp_HrGetNamedProp_2_str (IndigoMapiObjRef obj, NMapiGuid guid, string name);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropValue IMapiProp_HrGetNamedProp_2_int (IndigoMapiObjRef obj, NMapiGuid guid, int id);
+		PropertyValue IMapiProp_HrGetNamedProp_2_int (IndigoMapiObjRef obj, NMapiGuid guid, int id);
 
 
 		//
@@ -173,7 +173,7 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiContainer_SetSearchCriteria (IndigoMapiObjRef obj, SRestriction restriction, EntryList containerList, int searchFlags);
+		void IMapiContainer_SetSearchCriteria (IndigoMapiObjRef obj, Restriction restriction, EntryList containerList, int searchFlags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -359,11 +359,11 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropTagArray IMapiTableReader_GetTags (IndigoMapiObjRef obj);
+		PropertyTag[] IMapiTableReader_GetTags (IndigoMapiObjRef obj);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SRowSet IMapiTableReader_GetRows (IndigoMapiObjRef obj, int cRows);
+		RowSet IMapiTableReader_GetRows (IndigoMapiObjRef obj, int cRows);
 
 
 		//
@@ -392,11 +392,11 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiTable_SetColumns (IndigoMapiObjRef obj, SPropTagArray propTagArray, int flags);
+		void IMapiTable_SetColumns (IndigoMapiObjRef obj, PropertyTag[] propTagArray, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SPropTagArray IMapiTable_QueryColumns (IndigoMapiObjRef obj, int flags);
+		PropertyTag[] IMapiTable_QueryColumns (IndigoMapiObjRef obj, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -416,11 +416,11 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiTable_FindRow (IndigoMapiObjRef obj, SRestriction restriction, int origin, int flags);
+		void IMapiTable_FindRow (IndigoMapiObjRef obj, Restriction restriction, int origin, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		void IMapiTable_Restrict (IndigoMapiObjRef obj, SRestriction restriction, int flags);
+		void IMapiTable_Restrict (IndigoMapiObjRef obj, Restriction restriction, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
@@ -440,7 +440,7 @@ namespace NMapi {
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
-		SRowSet IMapiTable_QueryRows (IndigoMapiObjRef obj, int rowCount, int flags);
+		RowSet IMapiTable_QueryRows (IndigoMapiObjRef obj, int rowCount, int flags);
 
 		[OperationContract]
 		[FaultContract (typeof (MapiIndigoFault))]
