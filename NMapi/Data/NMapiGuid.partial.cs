@@ -56,6 +56,7 @@ namespace NMapi {
 			Data1 = BitConverter.ToInt32 (bytes, 0);
 			Data2 = BitConverter.ToInt16 (bytes, 4);
 			Data2 = BitConverter.ToInt16 (bytes, 6);
+			Data4 = new byte [8];
 			Array.Copy (bytes, 8, Data4, 0, 8);
 		}
 	}
