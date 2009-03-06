@@ -122,7 +122,12 @@ namespace NMapi.Server {
 			if (obj is TeamXChangeMsgStore)
 				result.eid = new SBinary ( ((TeamXChangeMsgStore) obj).OrigEID);
 			else {
-				result.eid = (SBinary) obj.GetProps (PropertyTag.ArrayFromIntegers (Property.EntryId), 0) [0];
+				PropertyTag[] tags = PropertyTag.ArrayFromIntegers (Property.EntryId);
+				PropertyValue[] props = obj.GetProps (tags, 0);
+				if (props.Length != 1)
+					throw new MapiException ("Property.EntryID " + 
+						"property not found on MessageStore object.");
+				result.eid = (SBinary) props [0];
 			}
 			
 			Trace.WriteLine (" ==> END CALL MsgStore_GetOrigEID");	

@@ -65,7 +65,7 @@ namespace NMapi {
 				AssemblyDefinition assembly = null;
 				try {
 					assembly = AssemblyFactory.GetAssembly (asmName);
-				} catch (System.BadImageFormatException) {
+				} catch (Mono.Cecil.Binary.ImageFormatException) {
 					// Ignore, because this is probably just a win32 dll.
 					continue;
 				}
