@@ -1,3 +1,7 @@
+2009-03-06  Johannes Roith <johannes@jroith.de>
+
+	* NMapi/Core/ProviderManager.cs: bugfix - skip win32 dlls.
+
 2009-03-06  Andreas Huegel <andreas.huegel@topalis.com>
 	adapted to API improvements.
 	handling Deleted-Flag in named property

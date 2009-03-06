@@ -66,7 +66,8 @@ namespace NMapi {
 				try {
 					assembly = AssemblyFactory.GetAssembly (asmName);
 				} catch (System.BadImageFormatException) {
-					throw new Exception ("File '" + asmName + "' is not a valid assembly.");
+					// Ignore, because this is probably just a win32 dll.
+					continue;
 				}
 
 				foreach (ModuleDefinition module in assembly.Modules)
