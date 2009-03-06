@@ -90,7 +90,7 @@ namespace NMapi.Server {
 				if (session.ReverseEventConnectionServer != null)
 					session.ReverseEventConnectionServer.Close ();
 				sessionManager.UnregisterSession (session);
-				sessions [key] = null;
+				sessions.Remove (key);
 				
 				Trace.WriteLine ("Session removed!!!");
 			}

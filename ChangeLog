@@ -1,5 +1,9 @@
 2009-03-06  Johannes Roith <johannes@jroith.de>
 
+	* server/Protocols/OncRpc/BaseOncRpcService.cs: Fix bug: session was not removed properly.
+	
+2009-03-06  Johannes Roith <johannes@jroith.de>
+
 	* server/WebServer.cs: fix for proxy WebServer on Windows.
 	* server/Protocols/OncRpc/BaseOncRpcService.cs: close event connection properly.
 	* server/Protocols/OncRpc/ReverseEventConnectionServer.cs: close event connection properly.
