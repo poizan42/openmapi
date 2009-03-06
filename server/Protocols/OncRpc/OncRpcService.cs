@@ -119,8 +119,11 @@ namespace NMapi.Server {
 			IMsgStore obj = session.ObjectStore.GetIMsgStore (arg1.obj.value.Value);
 			var result = new MsgStore_GetOrigEID_res ();
 			
-			// TODO: TXC-only!
-			result.eid = new SBinary ( ((TeamXChangeMsgStore) obj).OrigEID);
+			if (obj is TeamXChangeMsgStore)
+				result.eid = new SBinary ( ((TeamXChangeMsgStore) obj).OrigEID);
+			else {
+				result.eid = (SBinary) obj.GetProps (PropertyTag.ArrayFromIntegers (Property.EntryId), 0) [0];
+			}
 			
 			Trace.WriteLine (" ==> END CALL MsgStore_GetOrigEID");	
 			return result;
