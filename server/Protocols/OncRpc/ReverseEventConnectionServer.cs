@@ -137,6 +137,23 @@ namespace NMapi.Server {
 			Trace.WriteLine ("Pushing Progress!");
 			pseudoClient.PushData (ClientEvType.CLEV_PROGRESS, null, mapiProgress);
 		}
+		
+		public void Close ()
+		{
+			if (tcpClient != null) {
+				try {
+					try {
+						if (tcpClient.Client != null)
+							tcpClient.Client.Close ();
+					} catch (Exception) {
+						// ignore
+					}
+					tcpClient.Close ();
+				} catch (Exception) {
+					// ignore
+				}
+			}
+		}
 
 	}
 

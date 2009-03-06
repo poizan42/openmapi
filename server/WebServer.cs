@@ -87,8 +87,7 @@ namespace NMapi.Server {
 				}
 			}
 
-			string absPath = Path.GetFullPath (path);
-			appServer.AddApplicationsFromCommandLine (":" + port + ":/:" + absPath);
+			appServer.AddApplication (null, port, "/", Path.GetFullPath (path));
 			appServer.Start (true);
 			try {
 				var request = WebRequest.Create ("http://localhost:" + port + "/");

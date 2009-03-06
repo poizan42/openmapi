@@ -85,8 +85,13 @@ namespace NMapi.Server {
 			Trace.WriteLine ("Client closed connection!");
 			string key = GetSessionKey (ea.IPAddress.ToString (), ea.Port);
 			if (sessions.ContainsKey (key)) {
-				sessionManager.UnregisterSession (sessions [key]);
+				
+				var session = sessions [key];
+				if (session.ReverseEventConnectionServer != null)
+					session.ReverseEventConnectionServer.Close ();
+				sessionManager.UnregisterSession (session);
 				sessions [key] = null;
+				
 				Trace.WriteLine ("Session removed!!!");
 			}
 		}
