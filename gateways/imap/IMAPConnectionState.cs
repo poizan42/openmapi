@@ -275,7 +275,7 @@ Log ( "ProcessNotificationRespo05" + notificationHandler);
 				// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
 
 Log ( "ProcessNotificationRespo1");
-				int recent = serverConnection.RebuildSequenceNumberListPlusUIDFix ();
+				serverConnection.RebuildSequenceNumberListPlusUIDFix ();
 Log ( "ProcessNotificationRespo2");
 				
 				// restore Notificationsubscription as currentFolderTable has changed

@@ -97,7 +97,6 @@ namespace NMapi.Gateways.IMAP {
 
 			propertyHelper.Prop = ServerConnection.AdditionalFlagsPropTag;
 Console.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
-ObjectDumper.Write (propertyHelper,3);
 			additionalFlags = new List<string> ();
 			if (propertyHelper.Exists) {
 				try {
@@ -180,8 +179,6 @@ Console.WriteLine ("ProcessFlagChangesStoreCommand");
 		private void ProcessAdditionalFlag (string sign, string key, Command command)
 		{
 Console.WriteLine ("ProcessAdditionalFlag " + key + sign);			
-ObjectDumper.Write (additionalFlags,3);
-ObjectDumper.Write (command.Flag_list,3);
 			
 			if (sign == "+" && command.Flag_list.Contains (key) && !additionalFlags.Contains (key))
 				additionalFlags.Add (key);
@@ -193,7 +190,6 @@ ObjectDumper.Write (command.Flag_list,3);
 					additionalFlags.Add (key);
 			}
 Console.WriteLine ("ProcessAdditionalFlag -done");			
-ObjectDumper.Write (additionalFlags,3);
 		}
 			
 		public void SaveFlagsIntoIMessage (IMessage msg, ServerConnection serverConnection)
@@ -243,11 +239,9 @@ Console.WriteLine ("SaveFlagsIntoIMessage");
 				mph.HrSetOneProp (flagStatusProp);
 
 				// handle additionalFlags
-ObjectDumper.Write (additionalFlags,3);				
 				if (additionalFlags != null && additionalFlags.Count > 0) {
 					UnicodeArrayProperty additionalFlagsProp = (UnicodeArrayProperty) serverConnection.GetNamedProp (msg, IMAPGatewayNamedProperty.AdditionalFlags);
 					additionalFlagsProp.Value = additionalFlags.ToArray ();
-ObjectDumper.Write (additionalFlagsProp,3);				
 					mph.HrSetOneProp (additionalFlagsProp);
 				} else {
 					mph.HrDeleteOneProp (ServerConnection.AdditionalFlagsPropTag);
@@ -285,8 +279,6 @@ Console.WriteLine ("SaveFlagsIntoIMessage -doene");
 			var query = from toDel in snl
 			where (toDel.AdditionalFlags != null && toDel.AdditionalFlags.Contains ("\\deleted"))
 			select toDel.EntryId;
-ObjectDumper.Write (snl, 4);
-ObjectDumper.Write (query,3);			
 			return new EntryList (query.ToArray ());
 		}
 	}

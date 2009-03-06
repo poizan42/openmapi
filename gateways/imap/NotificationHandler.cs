@@ -36,7 +36,6 @@ namespace NMapi.Gateways.IMAP {
 	internal class NotificationHandler
 	{
 		private IMAPConnectionState imapConnectionState;
-		private SBinary subscribeId;
 		private IMapiTable mt;
 		
 		protected ServerConnection ServCon {

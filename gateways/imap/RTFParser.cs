@@ -339,7 +339,7 @@ namespace NMapi.Gateways.IMAP {
 							try {
 								ret.parameter = Convert.ToInt32(num);
 							}
-							catch (FormatException e) {
+							catch (FormatException) {
 								Console.Error.WriteLine("warning: malformed number ");
 								Console.Error.WriteLine(num);
 								Console.Error.WriteLine(" at tag ");

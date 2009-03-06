@@ -46,7 +46,6 @@ namespace NMapi.Gateways.IMAP
 		private LogDelegate logOutput;
 
 		private IMAPConnectionState state;
-		private Dictionary<string, string[]> providers;
 		private IMapiFactory factory;
 		private IMapiSession session;
 		private MapiContext mapiContext;
@@ -345,9 +344,6 @@ state.Log ("setrootdir 4");
 
 		internal string FullPath {
 			get {
-				string colon = ":";
-				if (currentPath == null || currentPath == string.Empty)
-					colon = "";
 				return currentPath;
 			}
 		}
@@ -582,7 +578,7 @@ state.Log ("changedir almost done");
 
 			
 			state.Log ("Select: Message loaded");
-			PropertyProblem [] sppa = ((IMapiProp) message).SetProps(lv.ToArray ());
+			((IMapiProp) message).SetProps(lv.ToArray ());
 
 			state.Log ("setUID");
 			
