@@ -710,8 +710,6 @@ Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 					{
 					}
 
-ObjectDumper.Write (snli.AdditionalFlags);
-						
 					state.Log ("Select8");
 					snl.Add (snli);
 				}

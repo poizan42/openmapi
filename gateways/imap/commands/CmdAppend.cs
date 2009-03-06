@@ -211,7 +211,6 @@ namespace NMapi.Gateways.IMAP {
 			
 			state.Log ("MimeToMapiRecipients 9");
 			if (lae.Count () > 0) {
-ObjectDumper.Write (lae, 3);
 				state.Log ("MimeToMapiRecipients 10");
 				AdrList al = new AdrList (lae.ToArray ());
 				state.Log ("MimeToMapiRecipients 11");
