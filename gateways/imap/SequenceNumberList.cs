@@ -37,6 +37,14 @@ namespace NMapi.Gateways.IMAP {
 			throw new ArgumentException ("IndexOfSNLI: snli must be provided");
 		}
 
+		internal int SequenceNumberOf (SequenceNumberListItem snli)
+		{
+			return FindIndex(delegate(SequenceNumberListItem snli1) {
+											return snli1.UID == snli.UID;
+										});
+		}
+
+
 		public new void Sort ()
 		{
 			List<SequenceNumberListItem> snl = this.OrderBy (n => n.UID).ToList ();
@@ -55,6 +63,7 @@ namespace NMapi.Gateways.IMAP {
 		private ulong messageFlags;
 		private ulong msgStatus;
 		private ulong flagStatus;
+		private List<string> additionalFlags;
 
 		public SBinary EntryId {
 			get { return entryId; }
@@ -95,6 +104,11 @@ namespace NMapi.Gateways.IMAP {
 		public ulong FlagStatus {
 			get { return flagStatus; }
 			set { flagStatus = value; }
+		}
+
+		public List<string> AdditionalFlags {
+			get { return additionalFlags; }
+			set { additionalFlags = value; }
 		}
 
 		public SequenceNumberListItem () 

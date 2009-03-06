@@ -36,7 +36,7 @@ namespace NMapi.Gateways.IMAP
 {
 
 	
-	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Path, UID_Creation_EntryId, UIDNEXT, UIDVALIDITY};
+	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Path, UID_Creation_EntryId, UIDNEXT, UIDVALIDITY, AdditionalFlags};
 	
 //	public delegate void LogDelegate(string message);
 	
@@ -64,6 +64,10 @@ namespace NMapi.Gateways.IMAP
 		private int uidValidityTag = 0;
 		private bool loggedOn;
 		private string user;
+		private static int uidPropTag = 0;
+		private static int uidPathPropTag = 0;
+		private static int uidEntryIdPropTag = 0;
+		private static int additionalFlagsPropTag = 0;
 		
 
 		/// <summary>
@@ -175,6 +179,9 @@ namespace NMapi.Gateways.IMAP
 			set { mapiContext = value; }
 		}
 
+		internal static int AdditionalFlagsPropTag {
+			get { return additionalFlagsPropTag; }
+		}
 
 		public ServerConnection (IMAPConnectionState state, string host, string user, string password )
 		{
@@ -297,7 +304,7 @@ state.Log ("setrootdir 4");
 					}
 				}
 				if (prevFolder != null) {
-					SPropValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
+					PropertyValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
 					rootDir = PathHelper.PathSeparator + ((UnicodeProperty) dir).Value;
 					inboxPath = PathHelper.Array2Path (inboxPathEls.Take (inboxPathEls.Count - 2).Reverse ().ToArray ());
 					return;
@@ -380,20 +387,20 @@ state.Log ("setrootdir 4");
 			}
 
 			while (true) {
-				SRowSet rows = tableReader.GetRows (10);
+				RowSet rows = tableReader.GetRows (10);
 				if (rows.Count == 0)
 					break;
 
 				int nameIndex = -1;
 				int entryIdIndex = -1;
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					if (nameIndex == -1) {
-						nameIndex = SPropValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-						entryIdIndex  = SPropValue.GetArrayIndex (row.Props, Property.EntryId);
+						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+						entryIdIndex  = PropertyValue.GetArrayIndex (row.Props, Property.EntryId);
 					}
 				
-					UnicodeProperty name = (UnicodeProperty) SPropValue.GetArrayProp (row.Props, nameIndex);
-					BinaryProperty eid  = (BinaryProperty) SPropValue.GetArrayProp (row.Props, entryIdIndex);
+					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
+					BinaryProperty eid  = (BinaryProperty) PropertyValue.GetArrayProp (row.Props, entryIdIndex);
 
 					if (name != null && name.Value == match)
 						return action (parent, eid.Value);
@@ -495,14 +502,14 @@ state.Log ("changedir almost done");
 				return new string [] {};
 			}
 			while (true) {
-				SRowSet rows = tableReader.GetRows (30);
+				RowSet rows = tableReader.GetRows (30);
 				if (rows.Count == 0)
 					break;
 				int nameIndex = -1;
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					if (nameIndex == -1)
-						nameIndex = SPropValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-					UnicodeProperty name = (UnicodeProperty) SPropValue.GetArrayProp (row.Props, nameIndex);
+						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
 					names.Add (name.Value);
 				}
 			}
@@ -560,7 +567,7 @@ state.Log ("changedir almost done");
 				throw;
 			}
 			
-			List<SPropValue> lv = new List<SPropValue> ();
+			List<PropertyValue> lv = new List<PropertyValue> ();
 			IntProperty longValue = (IntProperty) GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID);
 			longValue.Value = (int) snli.UID;
 			lv.Add (longValue);
@@ -573,10 +580,9 @@ state.Log ("changedir almost done");
 			binaryValue.Value = snli.CreationEntryId;
 			lv.Add (binaryValue);
 
-
 			
 			state.Log ("Select: Message loaded");
-			SPropProblemArray sppa = ((IMapiProp) message).SetProps(lv.ToArray ());
+			PropertyProblem [] sppa = ((IMapiProp) message).SetProps(lv.ToArray ());
 
 			state.Log ("setUID");
 			
@@ -592,7 +598,7 @@ state.Log ("changedir almost done");
 			long luidNext = uidNext;
 
 			// update uidnext value in the store
-			List<SPropValue> lv = new List<SPropValue> ();
+			List<PropertyValue> lv = new List<PropertyValue> ();
 			IntProperty longValue = new IntProperty();
 			longValue.PropTag = uidNextTag;
 			longValue.Value = (int) luidNext + 1;
@@ -646,57 +652,70 @@ state.Log ("changedir almost done");
 				return snl;
 			}
 
-			SPropValue uidProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID);
-			SPropValue uidPathProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Path);
-			SPropValue uidEntryIdProp = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
+			if (uidPropTag == 0 || uidPathPropTag == 0 || uidEntryIdPropTag == 0 || additionalFlagsPropTag == 0) {
+				uidPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.UID).PropTag;
+				uidPathPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Path).PropTag;
+				uidEntryIdPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
+				additionalFlagsPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
+			}
 			
 			currentTable.SetColumns( 
-				new SPropTagArray (
-					new int[] { Property.EntryId, Property.InstanceKey, Property.Subject, uidProp.PropTag, 
-								uidPathProp.PropTag, uidEntryIdProp.PropTag, Property.MsgStatus, Property.MessageFlags,
-								Outlook.Property_FLAG_STATUS
+				PropertyTag.ArrayFromIntegers (
+					new int[] { Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag, 
+								uidPathPropTag, uidEntryIdPropTag, Property.MsgStatus, Property.MessageFlags,
+								Outlook.Property_FLAG_STATUS, additionalFlagsPropTag
 							  }), 0);
 			
 			state.Log ("Select1");
 			while (true) {
 				state.Log ("Select3");
 				state.Log ("Select3b");
-				SRowSet rows = currentTable.QueryRows (10, Mapi.Unicode);
+				RowSet rows = currentTable.QueryRows (10, Mapi.Unicode);
 				state.Log ("Select4");
 				if (rows.Count == 0)
 					break;
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					state.Log ("Select5");
 					SequenceNumberListItem snli = new SequenceNumberListItem ();
-					BinaryProperty entryId = (BinaryProperty) SPropValue.GetArrayProp(row.Props, 0);
+					BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(row.Props, 0);
 						
 					state.Log ("Select5a");
 					if (entryId != null) 
 						snli.EntryId = entryId.Value;
 					state.Log ("Select5b");
 						
-					SPropValue val = SPropValue.GetArrayProp(row.Props, 1);
+					PropertyValue val = PropertyValue.GetArrayProp(row.Props, 1);
 					if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
 						
-					val = SPropValue.GetArrayProp(row.Props, 3);
+					val = PropertyValue.GetArrayProp(row.Props, 3);
 					if (val != null) snli.UID = ((IntProperty) val).Value;
 						
-					val = SPropValue.GetArrayProp(row.Props, 4);
+					val = PropertyValue.GetArrayProp(row.Props, 4);
 					if (val != null) snli.Path = ((UnicodeProperty) val).Value;
 						
-					val = SPropValue.GetArrayProp(row.Props, 5);
+					val = PropertyValue.GetArrayProp(row.Props, 5);
 					if (val != null) snli.CreationEntryId = ((BinaryProperty) val).Value;
 						
-					val = SPropValue.GetArrayProp(row.Props, 6);
+					val = PropertyValue.GetArrayProp(row.Props, 6);
 					if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
 Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 						
-					val = SPropValue.GetArrayProp(row.Props, 7);
+					val = PropertyValue.GetArrayProp(row.Props, 7);
 					if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
 
-					val = SPropValue.GetArrayProp(row.Props, 8);
+					val = PropertyValue.GetArrayProp(row.Props, 8);
 					if (val != null) snli.FlagStatus = (ulong) ((IntProperty) val).Value;
 
+					val = PropertyValue.GetArrayProp(row.Props, 9);
+					try {
+						if (val != null) 
+							snli.AdditionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) val).Value);
+					} catch (Exception)
+					{
+					}
+
+ObjectDumper.Write (snli.AdditionalFlags);
+						
 					state.Log ("Select8");
 					snl.Add (snli);
 				}
@@ -724,9 +743,7 @@ state.Log ("FixUIDsIn");
 
 		internal int SequenceNumberOf (SequenceNumberListItem snli)
 		{
-			return sequenceNumberList.FindIndex(delegate(SequenceNumberListItem snli1) {
-											return snli1.UID == snli.UID;
-										});
+			return sequenceNumberList.SequenceNumberOf (snli);
 		}
 
 
@@ -863,11 +880,11 @@ state.Log ("FixUIDsIn");
 			return true;
 		}
 
-		public SPropValue GetNamedProp(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
+		public PropertyValue GetNamedProp(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
 		{
 			state.Log ("GetNamedProp 1");
 			NMapiGuid guid;
-			SPropValue prop = null;
+			PropertyValue prop = null;
 			string name;
 			PropertyType type = PropertyType.Error;
 			switch (ignp) {
@@ -907,6 +924,12 @@ state.Log ("FixUIDsIn");
 				type= PropertyType.Long;
 				prop = new IntProperty ();
 				break;
+			case IMAPGatewayNamedProperty.AdditionalFlags:
+				guid = Guids.PS_PUBLIC_STRINGS;
+				name = "openmapi-message-AdditionalFlags";
+				type = PropertyType.MvUnicode;
+				prop = new UnicodeArrayProperty ();
+				break;
 			default:
 				throw new Exception ("Named Property not defined");
 			}
@@ -916,16 +939,16 @@ state.Log ("FixUIDsIn");
 			state.Log ("GetNamedProp 2. type=" + type);
 // This version has a problem, because r57 of NMapi.dll does return an Exception, if the property does not jet exist.
 /*			MapiPropHelper mph = new MapiPropHelper (mapiProperty);
-			SPropValue spv = mph.HrGetNamedProp (guid, name);
+			PropertyValue spv = mph.HrGetNamedProp (guid, name);
 			int tag = spv.PropTag;
 */
 			StringMapiNameId mnid = new StringMapiNameId (name);
 			mnid.Guid = guid;
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
-			SPropValue []  propsx = mapiProperty.GetProps (
+			PropertyValue []  propsx = mapiProperty.GetProps (
 					mapiProperty.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
 					Mapi.Unicode);			
-			SPropValue spv = propsx[0];
+			PropertyValue spv = propsx[0];
 
 				
 
@@ -939,8 +962,8 @@ state.Log ("FixUIDsIn");
 
 				
 			try {
-				SPropTagArray xx = new SPropTagArray (new int [] {tag});
-				SPropValue[] props = mapiProperty.GetProps (xx, Mapi.Unicode);
+				PropertyTag [] xx = PropertyTag.ArrayFromIntegers (new int [] {tag});
+				PropertyValue[] props = mapiProperty.GetProps (xx, Mapi.Unicode);
 				state.Log ("GetNamedProp 4");
 
 				if (props.Length == 0  || props[0] is ErrorProperty){

@@ -33,7 +33,8 @@ namespace NMapi.Gateways.IMAP {
  *
  */
 
-	public class RTFWriter {
+	public class RTFWriter 
+	{
 		
 		/**
 		 * Use this if you are writing a text-rtf.

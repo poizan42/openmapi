@@ -139,10 +139,10 @@ namespace NMapi.Gateways.IMAP {
 			IMessage msg = GetMessage();
 			IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode);
 //			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
-			SRowSet rs = mtr.GetRows (20);
+			RowSet rs = mtr.GetRows (20);
 			while (rs.Count () > 0) {
 				Trace.WriteLine ("doRecipients 1");				
-				foreach (SRow row in rs) {
+				foreach (Row row in rs) {
 					Trace.WriteLine ("doRecipients 2");
 					PropertyHelper props = new PropertyHelper (row.Props);
 					PropertyHelper props2 = new PropertyHelper (row.Props);
@@ -235,9 +235,9 @@ namespace NMapi.Gateways.IMAP {
 				DoXPriority ();
 				return true;
 		}
-		private string MapiReturnPropFileTime (SPropValue[] props, int prop)
+		private string MapiReturnPropFileTime (PropertyValue[] props, int prop)
 		{
-			int index = SPropValue.GetArrayIndex (props, prop);
+			int index = PropertyValue.GetArrayIndex (props, prop);
 			if (index != -1) {
 				FileTimeProperty val = (FileTimeProperty) props[index];
 				if (val != null && val.Value != null){

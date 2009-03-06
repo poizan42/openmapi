@@ -161,14 +161,14 @@ namespace NMapi.Gateways.IMAP {
 			}
 			
 			while (true) {
-				SRowSet rows = tableReader.GetRows (30);
+				RowSet rows = tableReader.GetRows (30);
 				if (rows.Count == 0)
 					break;
 				int nameIndex = -1;
-				foreach (SRow row in rows) {
+				foreach (Row row in rows) {
 					if (nameIndex == -1)
-						nameIndex = SPropValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-					UnicodeProperty name = (UnicodeProperty) SPropValue.GetArrayProp (row.Props, nameIndex);
+						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
 
 					if (filter == null ||
 					    name.Value.StartsWith (filter))

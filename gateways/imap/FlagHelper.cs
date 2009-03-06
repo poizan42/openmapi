@@ -1,0 +1,293 @@
+// FlagHelper.cs created with MonoDevelop
+// User: root at 11:58 AM 3/5/2009
+//
+// To change standard headers go to Edit->Preferences->Coding->Standard Headers
+//
+
+using System;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+using NMapi;
+using NMapi.Flags;
+using NMapi.Table;
+using NMapi.Linq;
+using NMapi.Properties;
+using NMapi.Properties.Special;
+using NMapi.Format.Mime;
+using NMapi.Gateways.IMAP;
+using NMapi.Utility;
+
+namespace NMapi.Gateways.IMAP {
+	
+	
+	public class FlagHelper
+	{
+		//PR_MessageFlags
+		ulong flags = 0;
+		//PR_MSGSTATUS
+		ulong status = 0;
+		//PR_FLAG_STATUS
+		ulong flagStatus = 0;
+		//Additional Flags
+		List<string> additionalFlags = null;
+
+		public ulong MessageFlags {
+			get { return flags; }
+			set { flags = value; }
+		}
+		
+		public ulong MsgStatus {
+			get { return status; }
+			set { status = value; }
+		}
+
+		public ulong FlagStatus {
+			get { return flagStatus; }
+			set { flagStatus = value; }
+		}
+
+		public List<string> AdditionalFlags {
+			get { return additionalFlags; }
+			set { additionalFlags = value; }
+		}
+
+		public FlagHelper()
+		{
+			additionalFlags = new List<string> ();
+		}
+
+		public FlagHelper (SequenceNumberListItem snli)
+		{
+			//PR_MessageFlags
+			flags = snli.MessageFlags;
+			//PR_MSGSTATUS
+			status =  snli.MsgStatus;
+			//PR_FLAG_STATUS
+			flagStatus = snli.FlagStatus;
+			//Additional Flags
+			additionalFlags = (snli.AdditionalFlags != null) ? snli.AdditionalFlags : new List<string> ();
+		}
+
+
+		public FlagHelper (PropertyHelper propertyHelper)
+		{
+			flags = 0;
+			status = 0;
+			flagStatus = 0;
+			additionalFlags = new List<string> ();
+			
+			propertyHelper.Prop = Property.MessageFlags;
+			if (propertyHelper.Exists) {
+				flags = (ulong) propertyHelper.LongNum;
+			}
+
+			// !!!!!!!!!! use getMessageStatus for msgstatus. Reading the Flag as a property doesn't seem to return anything but 0
+			propertyHelper.Prop = Property.MsgStatus;
+			if (propertyHelper.Exists) {
+				status = (ulong) propertyHelper.LongNum;
+			}
+							
+			propertyHelper.Prop = Outlook.Property_FLAG_STATUS;
+			if (propertyHelper.Exists) {
+				flagStatus = (ulong) propertyHelper.LongNum;
+			}
+
+			propertyHelper.Prop = ServerConnection.AdditionalFlagsPropTag;
+Console.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
+ObjectDumper.Write (propertyHelper,3);
+			additionalFlags = new List<string> ();
+			if (propertyHelper.Exists) {
+				try {
+					additionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) propertyHelper.PropertyValue).Value);
+				} catch (Exception e) {
+				}
+			}
+		}
+
+		public void FillFlagsIntoSNLI (SequenceNumberListItem snli)
+		{
+				snli.MessageFlags = flags;
+				snli.MsgStatus = status;
+				snli.FlagStatus = flagStatus;
+				snli.AdditionalFlags = additionalFlags;
+		}
+
+		public ResponseItemList ResponseItemListFromFlags ()
+		{
+			ResponseItemList ril = new ResponseItemList ();
+
+			if ((flags & 0x00000001) != 0)   //#define MSGFLAG_READ       0x00000001
+				ril.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom);
+			if ((flags & 0x00000008) != 0) //MESSAGE_FLAG_UNSENT
+				ril.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom);
+
+			if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
+				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
+			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
+				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
+//			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
+//				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);+
+			
+			if (flagStatus > 0)  //PR_FLAG_STATUS
+				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
+
+			foreach (string flag in additionalFlags) {
+				ril.AddResponseItem (flag, ResponseItemMode.ForceAtom);
+			}
+			
+			return ril;
+		}
+
+		public void ProcessFlagChangesStoreCommand (Command command)
+		{
+Console.WriteLine ("ProcessFlagChangesStoreCommand");			
+			//PR_MessageFlags
+			flags = ProcessBit (flags, 0x00000001 /*MSGFLAG_READ*/, command.Flag_sign, "\\seen", command);
+			flags = ProcessBit (flags, 0x00000008 /*MESSAGE_FLAG_UNSENT*/, command.Flag_sign, "\\draft", command);
+
+			//PR_MSGSTATUS
+			status = ProcessBit (status, NMAPI.MSGSTATUS_DELMARKED, command.Flag_sign, "\\deleted", command);
+			status = ProcessBit (status, 0x00000200 /*MSGSTATUS_ANSWERED*/, command.Flag_sign, "\\answered", command);
+//				status = ProcessBit (status, 0x00000002/*MSGSTATUS_TAGGED*/, command.Flag_sign, "\\flagged", command);
+
+			//PR_FLAG_STATUS
+			flagStatus = (ulong) ((flagStatus > 0) ? 2 : 0);
+			flagStatus = ProcessBit (flagStatus, 2, command.Flag_sign, "\\flagged", command);
+			// update the sequence number list
+
+			// AdditionalFlags
+			ProcessAdditionalFlag (command.Flag_sign, "\\deleted", command);
+		}
+
+		
+		private ulong ProcessBit (ulong flags, ulong mask, string sign, string key, Command command)
+		{
+			if (sign == "+" && command.Flag_list.Contains (key))
+				flags = flags | mask;
+			else if (sign == "-" && command.Flag_list.Contains (key))
+				flags = flags & ~mask;
+			else if (sign == null) {
+				flags = flags & ~mask;
+				if (command.Flag_list.Contains (key))
+					flags = flags | mask;
+			}
+			return flags;
+		}
+
+		private void ProcessAdditionalFlag (string sign, string key, Command command)
+		{
+Console.WriteLine ("ProcessAdditionalFlag " + key + sign);			
+ObjectDumper.Write (additionalFlags,3);
+ObjectDumper.Write (command.Flag_list,3);
+			
+			if (sign == "+" && command.Flag_list.Contains (key) && !additionalFlags.Contains (key))
+				additionalFlags.Add (key);
+			else if (sign == "-" && command.Flag_list.Contains (key))
+				additionalFlags.Remove (key);
+			else if (sign == null) {
+				additionalFlags.Remove (key);
+				if (command.Flag_list.Contains (key))
+					additionalFlags.Add (key);
+			}
+Console.WriteLine ("ProcessAdditionalFlag -done");			
+ObjectDumper.Write (additionalFlags,3);
+		}
+			
+		public void SaveFlagsIntoIMessage (IMessage msg, ServerConnection serverConnection)
+		{
+Console.WriteLine ("SaveFlagsIntoIMessage");			
+			if (msg != null) {
+				MapiPropHelper mph = new MapiPropHelper (msg);
+
+				// special handling read-Flag
+				if ((flags & 0x00000001 /*MSGFLAG_READ*/) == 0)
+					msg.SetReadFlag (NMAPI.CLEAR_READ_FLAG);
+				else
+					msg.SetReadFlag (0);
+				
+				// rest of flags in regular Propertyhandling
+				IntProperty flagsProp = new IntProperty ();
+				flagsProp.PropTag = Property.MessageFlags;
+				flagsProp.Value = (int) flags;
+//					msg.HrSetOneProp (flagsProp);    // can't be done, Store answeres MAPE_E_COMPUTED
+//					msg.SaveChanges (NMAPI.FORCE_SAVE);
+				                 
+				//status changes
+				// TODO: setMessageStatus does not work for TeamXchange currently.
+				// TODO: determine a solution somewhen
+				
+				//SPropValue eid = ServCon.CurrentFolder.HrGetOneProp (Property.EntryId);
+				//IMapiFolder fldr = (IMapiFolder) ServCon.Store.OpenEntry (eid.Value.Binary.ByteArray, null, Mapi.Modify).Unk;
+				//fldr.SetMessageStatus (
+				//	snli.EntryId.Value.Binary.ByteArray, 
+				//	(int) status,
+				//	NMAPI.MSGSTATUS_DELMARKED | 0x00000200 /*MSGSTATUS_ANSWERED*/ | 0x00000002/*MSGSTATUS_TAGGED*/);
+				//fldr.SaveChanges (NMAPI.FORCE_SAVE);
+				//
+				// Writing the property directly doesn't work either
+				//
+				/*IntProperty statusProp = new IntProperty ();
+				statusProp.PropTag = Property.MsgStatus;
+				statusProp.Value = (int) status;
+				MapiPropHelper mphStatus = new MapiPropHelper (msg);
+				mphStatus.HrSetOneProp (statusProp);
+				*/
+
+				// handle PR_FLAG_STATUS   (\\FLAGGED Flag in IMAP)
+				IntProperty flagStatusProp = new IntProperty ();
+				flagStatusProp.PropTag = Outlook.Property_FLAG_STATUS;
+				flagStatusProp.Value = (int) flagStatus;
+				mph.HrSetOneProp (flagStatusProp);
+
+				// handle additionalFlags
+ObjectDumper.Write (additionalFlags,3);				
+				if (additionalFlags != null && additionalFlags.Count > 0) {
+					UnicodeArrayProperty additionalFlagsProp = (UnicodeArrayProperty) serverConnection.GetNamedProp (msg, IMAPGatewayNamedProperty.AdditionalFlags);
+					additionalFlagsProp.Value = additionalFlags.ToArray ();
+ObjectDumper.Write (additionalFlagsProp,3);				
+					mph.HrSetOneProp (additionalFlagsProp);
+				} else {
+					mph.HrDeleteOneProp (ServerConnection.AdditionalFlagsPropTag);
+				}
+				msg.SaveChanges (NMAPI.FORCE_SAVE);
+Console.WriteLine ("SaveFlagsIntoIMessage -doene");			
+			}
+		}
+
+
+		public static int GetUnseenIDFromSNL (SequenceNumberList snl)
+		{
+			// get unseen items
+			var query = from x in snl
+						where (x.MessageFlags & 1) != 0 /* MSGFLAG_READ */
+						orderby x.UID
+						select x;
+			
+			// get first unseen items sequence number
+			foreach (SequenceNumberListItem snli in query) {
+				return snl.SequenceNumberOf(snli);
+			}
+			return 0;
+		}
+
+		public static bool FlagsEqual (SequenceNumberListItem snli1, SequenceNumberListItem snli2)
+		{
+			return snli1.MessageFlags == snli2.MessageFlags &&
+				snli1.MsgStatus == snli2.MsgStatus &&
+			    snli1.FlagStatus == snli2.FlagStatus;
+		}
+
+		public static EntryList DeletableMessages (SequenceNumberList snl)
+		{
+			var query = from toDel in snl
+			where (toDel.AdditionalFlags != null && toDel.AdditionalFlags.Contains ("\\deleted"))
+			select toDel.EntryId;
+ObjectDumper.Write (snl, 4);
+ObjectDumper.Write (query,3);			
+			return new EntryList (query.ToArray ());
+		}
+	}
+}

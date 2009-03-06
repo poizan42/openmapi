@@ -238,7 +238,7 @@ sample:
 gateways: NMapi.dll gateway_imap
 
 gateway_imap:
-	$(MCS) $(DEBUG) /out:bin/NMapi.Gateways.IMAP.exe /doc:bin/NMapi.Gateways.xmldoc /nowarn:$(NO_WARN) /target:exe \
+	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Gateways.IMAP.exe /doc:bin/NMapi.Gateways.xmldoc /nowarn:$(NO_WARN) /target:exe \
 	/r:nunit.framework.dll \
 	/r:System.Data.dll \
 	/r:System.Configuration.dll \

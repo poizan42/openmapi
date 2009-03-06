@@ -58,7 +58,7 @@ namespace NMapi.Gateways.IMAP {
 				MimeMessage mm = new MimeMessage (new MemoryStream (Encoding.ASCII.GetBytes (command.Append_literal)));
 	
 				IMessage im = appendFolder.CreateMessage (null, 0);
-				List<SPropValue> props = new List<SPropValue> ();
+				List<PropertyValue> props = new List<PropertyValue> ();
 				UnicodeProperty uprop = null;
 				
 				uprop = new UnicodeProperty ();
@@ -117,11 +117,11 @@ namespace NMapi.Gateways.IMAP {
 
 				MimeToMapiTransportHeaders (mm, im, props, command);
 
-				SPropProblemArray sppa = im.SetProps (props.ToArray ());
-				for (int i = 0; i < sppa.AProblem.Length; i++) 
-					if (sppa.AProblem[i].SCode != Error.Computed) {
-						state.Log ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
-						throw new MapiException (sppa.AProblem [i].SCode);
+				PropertyProblem [] sppa = im.SetProps (props.ToArray ());
+				for (int i = 0; i < sppa.Length; i++) 
+					if (sppa [i].SCode != Error.Computed) {
+						state.Log ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
+						throw new MapiException (sppa [i].SCode);
 				}
 				im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 
@@ -135,7 +135,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 		}
 
-		private void MimeToMapiTransportHeaders (MimeMessage mm, IMessage im, List<SPropValue> props, Command command)
+		private void MimeToMapiTransportHeaders (MimeMessage mm, IMessage im, List<PropertyValue> props, Command command)
 		{
 			InternetHeaders ih = mm.Headers;
 
@@ -161,7 +161,7 @@ namespace NMapi.Gateways.IMAP {
 		}
 		
 		
-		private void MimeToMapiRecipients (MimeMessage mm, IMessage im, List<SPropValue> props, Command command) 
+		private void MimeToMapiRecipients (MimeMessage mm, IMessage im, List<PropertyValue> props, Command command) 
 		{
 			state.Log ("MimeToMapiRecipients 1");
 			List<AdrEntry> lae = new List<AdrEntry> ();
@@ -169,7 +169,7 @@ namespace NMapi.Gateways.IMAP {
 				state.Log ("MimeToMapiRecipients 2");
 				foreach (InternetAddress ia in mm.GetRecipients (rt)) {
 					state.Log ("MimeToMapiRecipients 3");
-					List<SPropValue> lpv= new List<SPropValue> ();
+					List<PropertyValue> lpv= new List<PropertyValue> ();
 					
 					IntProperty lprop = new IntProperty ();
 					lprop.PropTag = Property.RecipientType;
@@ -195,12 +195,12 @@ namespace NMapi.Gateways.IMAP {
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.EmailAddress;
-					uprop.Value = ia.Email==null?"":ia.Email;
+					uprop.Value = (ia.Email == null) ? "":ia.Email;
 					lpv.Add (uprop);
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.DisplayName;
-					uprop.Value = ia.Personal==null?ia.Email:ia.Personal;
+					uprop.Value = (ia.Personal == null) ? ia.Email:ia.Personal;
 					lpv.Add (uprop);
 					
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
@@ -211,6 +211,7 @@ namespace NMapi.Gateways.IMAP {
 			
 			state.Log ("MimeToMapiRecipients 9");
 			if (lae.Count () > 0) {
+ObjectDumper.Write (lae, 3);
 				state.Log ("MimeToMapiRecipients 10");
 				AdrList al = new AdrList (lae.ToArray ());
 				state.Log ("MimeToMapiRecipients 11");
@@ -222,7 +223,7 @@ namespace NMapi.Gateways.IMAP {
 			state.Log ("recipients end");
 		}
 		
-		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<SPropValue> props, Command command) 
+		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<PropertyValue> props, Command command) 
 		{
 			UnicodeProperty uprop = null;
 			string charset = null;
@@ -320,7 +321,7 @@ Console.WriteLine (Encoding.ASCII.GetString (msHtml.GetBuffer ()));
 							iss.PutData (ms);
 							ms.Close ();
 
-							List<SPropValue> aprops = new List<SPropValue> ();
+							List<PropertyValue> aprops = new List<PropertyValue> ();
 							
 							IntProperty lprop = new IntProperty ();
 							lprop.PropTag = Property.AttachMethod;
@@ -380,11 +381,11 @@ Console.WriteLine (Encoding.ASCII.GetString (msHtml.GetBuffer ()));
 							}
 							
 							try {
-								SPropProblemArray sppa = ia.SetProps (aprops.ToArray ());
-								for (int i = 0; i < sppa.AProblem.Length; i++)
-									if (sppa.AProblem[i].SCode != Error.Computed) {
-										state.Log ("Property error in position: "+i+" Tag: " + sppa.AProblem[i].PropTag + " value: "+sppa.AProblem[i].SCode);
-										throw new MapiException (sppa.AProblem [i].SCode);
+								PropertyProblem [] sppa = ia.SetProps (aprops.ToArray ());
+								for (int i = 0; i < sppa.Length; i++)
+									if (sppa [i].SCode != Error.Computed) {
+										state.Log ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
+										throw new MapiException (sppa [i].SCode);
 								}
 								ia.SaveChanges (NMAPI.FORCE_SAVE);
 							} catch (Exception e) {

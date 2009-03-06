@@ -28,25 +28,25 @@ using System.IO;
 
 namespace NMapi.Gateways.IMAP {
 
-		internal enum Destination { NONE, TEXT, HTML, BOTH };
+	internal enum Destination { NONE, TEXT, HTML, BOTH };
 
-		internal class RTFState 
+	internal class RTFState 
+	{
+		public RTFState()
 		{
-			public RTFState()
-			{
-				dst = Destination.BOTH;
-				uc  = 1;
-			}
-			
-			public RTFState(RTFState other)
-			{
-				dst = other.dst;
-				uc  = other.uc;
-			}
-	
-			public Destination dst;
-			public int         uc;
+			dst = Destination.BOTH;
+			uc  = 1;
 		}
+		
+		public RTFState(RTFState other)
+		{
+			dst = other.dst;
+			uc  = other.uc;
+		}
+
+		public Destination dst;
+		public int         uc;
+	}
 
 	
 	public class RTFParser 

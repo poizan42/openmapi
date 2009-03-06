@@ -64,11 +64,7 @@ namespace NMapi.Gateways.IMAP {
 
 		public static void DoExpunge (IMAPConnectionState state, ServerConnection servCon, Command command) {
 			
-			var query = from toDel in servCon.SequenceNumberList
-			where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
-			select toDel.EntryId;
-
-			EntryList el = new EntryList (query.ToArray ());
+			EntryList el = FlagHelper.DeletableMessages (servCon.SequenceNumberList);
 			servCon.CurrentFolder.DeleteMessages (el, null, 0);
 			servCon.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 			

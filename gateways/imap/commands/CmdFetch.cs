@@ -39,7 +39,7 @@ namespace NMapi.Gateways.IMAP {
 	{
 
 		
-		private SPropTagArray currentPropTagArray = null;
+		private PropertyTag [] currentPropTagArray = null;
 		private IMessage currentMessage = null;
 		private SequenceNumberListItem currentSNLI = null;
 
@@ -86,13 +86,13 @@ namespace NMapi.Gateways.IMAP {
 			}
 
 			// set the properties to fetch
-			currentPropTagArray = new SPropTagArray (PropertyListFromCommand (command));
+			currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));
 			contentsTable.SetColumns(currentPropTagArray, 0);
 
 			// Loop the items in Sequence-Set
 			for (int msgno = 0; msgno < slq.Count; msgno += querySize) {
 				// build restriction list
-				List<SRestriction> entryRestrictions = new List<SRestriction> ();
+				List<Restriction> entryRestrictions = new List<Restriction> ();
 				int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
 				for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
 					PropertyRestriction entryPropRestr = new PropertyRestriction ();
@@ -108,11 +108,11 @@ namespace NMapi.Gateways.IMAP {
 				OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
 				contentsTable.Restrict (orRestr, 0);
 				// get rows
-				SRowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
+				RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
 				if (rows.Count == 0)
 					break;
-				foreach (SRow row in rows) {
-					uint uid = (uint) ((IntProperty) SPropValue.GetArrayProp(row.Props, 1)).Value;
+				foreach (Row row in rows) {
+					uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 1)).Value;
 					if (uid != 0) {
 						SequenceNumberListItem snli;
 						snli = slq.Find ((a) => uid == a.UID);
@@ -125,7 +125,7 @@ namespace NMapi.Gateways.IMAP {
 
 
 				
-		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, SRow rowProperties) 
+		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, Row rowProperties) 
 		{
 			currentMessage = null; //reset currentMessage
 			currentSNLI = snli;
@@ -348,50 +348,7 @@ namespace NMapi.Gateways.IMAP {
 		
 		public ResponseItemList Flags (PropertyHelper propertyHelper)
 		{
-			ResponseItemList ril = new ResponseItemList ();
-			ulong flags = 0;
-			ulong status = 0;
-			ulong flagStatus = 0;
-			
-			propertyHelper.Prop = Property.MessageFlags;
-			if (propertyHelper.Exists) {
-				flags = (ulong) propertyHelper.LongNum;
-			}
-
-			// !!!!!!!!!! use getMessageStatus for msgstatus. Reading the Flag as a property doesn't seem to return anything but 0
-			propertyHelper.Prop = Property.MsgStatus;
-			if (propertyHelper.Exists) {
-				status = (ulong) propertyHelper.LongNum;
-			}
-							
-			propertyHelper.Prop = Outlook.Property_FLAG_STATUS;
-			if (propertyHelper.Exists) {
-				flagStatus = (ulong) propertyHelper.LongNum;
-			}
-							
-			return Flags (flags, status, flagStatus);
-		}
-
-		public static ResponseItemList Flags (ulong flags, ulong status, ulong flagStatus)
-		{
-			ResponseItemList ril = new ResponseItemList ();
-
-			if ((flags & 0x00000001) != 0)   //#define MSGFLAG_READ       0x00000001
-				ril.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom);
-			if ((flags & 0x00000008) != 0) //MESSAGE_FLAG_UNSENT
-				ril.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom);
-
-			if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
-				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
-			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
-				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
-//			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
-//				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
-			if (flagStatus > 0)  //PR_FLAG_STATUS
-				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);
-
-			
-			return ril;
+			return new FlagHelper (propertyHelper).ResponseItemListFromFlags ();
 		}
 		
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, SequenceNumberListItem snli, InternetHeaders ih) 
@@ -427,7 +384,7 @@ ms.Seek (0, SeekOrigin.Begin);
 			}
 
 			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
-			SRowSet rs = tr.GetRows (1);
+			RowSet rs = tr.GetRows (1);
 			string charset = mm.CharacterSet; // save charset
 			
 			if (rs.Count > 0) {
@@ -510,11 +467,11 @@ ms.Seek (0, SeekOrigin.Begin);
 		{
 			int attachCnt = 0;
 			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
-			SRowSet rs = tr.GetRows (1);
+			RowSet rs = tr.GetRows (1);
 			relatedAttachments = false;
 			
 			while (rs.Count > 0) {
-				foreach (SRow row in rs) {
+				foreach (Row row in rs) {
 					state.Log ("next Attachment");
 					// handle content-type and content-transport-encoding headers
 					PropertyHelper aProps = new PropertyHelper (row.Props);
@@ -526,7 +483,7 @@ ms.Seek (0, SeekOrigin.Begin);
 						IAttach ia1 = im.OpenAttach (attachCnt, null, 0);
 						IMessage embeddedIMsg = (IMessage) ia1.OpenProperty (Property.AttachDataObj);
 
-						SPropValue[] props = embeddedIMsg.GetProps (new SPropTagArray (propsAllProperties), Mapi.Unicode);
+						PropertyValue[] props = embeddedIMsg.GetProps (PropertyTag.ArrayFromIntegers (propsAllProperties), Mapi.Unicode);
 						PropertyHelper embeddedPH = new PropertyHelper (props);
 
 						embeddedPH.Prop = Property.MessageClass;
@@ -643,6 +600,7 @@ ms.Seek (0, SeekOrigin.Begin);
 			Property.MsgStatus,
 			Property.MessageFlags,
 			Outlook.Property_FLAG_STATUS,
+			ServerConnection.AdditionalFlagsPropTag,
 			Property.Importance,
 			Property.Priority,
 			Property.MessageSize,
@@ -668,6 +626,7 @@ ms.Seek (0, SeekOrigin.Begin);
 					propList.Add (Property.MsgStatus);
 					propList.Add (Property.MessageFlags);
 					propList.Add (Outlook.Property_FLAG_STATUS);
+					propList.Add (ServerConnection.AdditionalFlagsPropTag);
 				}
 				if ("ENVELOPE ALL FULL".Contains (Fetch_att_key)) {
 				}

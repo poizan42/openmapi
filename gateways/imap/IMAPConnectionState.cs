@@ -312,16 +312,14 @@ Log ( "ProcessNotificationRespo4");
 						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
 						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
 						Log ("FlagStatus: " + snliNew.FlagStatus + ":" + snliOld.FlagStatus);								
-						if (snliNew.MessageFlags != snliOld.MessageFlags ||
-							snliNew.MsgStatus != snliOld.MsgStatus ||
-						    snliNew.FlagStatus != snliOld.FlagStatus) {
+						if (!FlagHelper.FlagsEqual (snliNew, snliOld)) {
 							r = new Response (ResponseState.NONE, "FETCH");
 							r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
 							r.AddResponseItem (new ResponseItemList ()
 							    .AddResponseItem ("UID")
 							    .AddResponseItem (snliNew.UID.ToString ())
 								.AddResponseItem ("FLAGS")
-								.AddResponseItem (CmdFetch.Flags (snliNew.MessageFlags, snliNew.MsgStatus, snliNew.FlagStatus)));
+								.AddResponseItem (new FlagHelper (snliNew).ResponseItemListFromFlags ()));
 							l.Add (r);
 						}
 					}

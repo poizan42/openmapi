@@ -82,18 +82,8 @@ namespace NMapi.Gateways.IMAP {
 					// connect notification handler. Need to wait until SequenceNumberList is finally prepared
 					new NotificationHandler (state);
 					
-					// get unseen items
-					var query = from x in ServCon.SequenceNumberList
-								where (x.MessageFlags & 1) != 0 /* MSGFLAG_READ */
-								orderby x.UID
-								select x;
-					
-					// get first unseen items sequence number
-					int unseen = 0;
-					foreach (SequenceNumberListItem snli in query) {
-						unseen = ServCon.SequenceNumberOf(snli);
-						break;
-					}
+					int unseen = FlagHelper.GetUnseenIDFromSNL (ServCon.SequenceNumberList);
+
 	
 					// write Responses
 					Response r;
@@ -129,14 +119,6 @@ namespace NMapi.Gateways.IMAP {
 					r = new Response (ResponseState.OK, Name, command.Tag);
 					r.Val= new ResponseItemText((examine) ? "READ-ONLY" : "READ-WRITE");
 					state.ResponseManager.AddResponse (r);
-	/*						sendText ("* 0 RECENT\r\n");
-							sendText ("* OK [UNSEEN 3] Message 3 is first unseen\r\n");
-							sendText ("* OK [UIDVALIDITY 1] UIDs valid\r\n");
-							sendText ("* OK [UIDNEXT 6] Predicted next UID\r\n");
-							sendText ("* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)\r\n");
-							sendText ("* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited\r\n");
-							sendText (cmd.Tag + " OK [READ-WRITE] SELECT completed\r\n");
-	*/
 					return true;
 				} catch (Exception e) {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));

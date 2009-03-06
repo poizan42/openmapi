@@ -57,18 +57,7 @@ namespace NMapi.Gateways.IMAP {
 
 					int recent = snl.Count ((x) => x.UID == null);
 						
-					// get unseen items
-					var query = from x in snl
-								where (x.MessageFlags & 1) != 0 /* MSGFLAG_READ */
-								orderby x.UID
-								select x;
-					
-					// get first unseen items sequence number
-					uint unseen = 0;
-					foreach (SequenceNumberListItem snli in query) {
-						unseen = snl.IndexOfSNLI(snli);
-						break;
-					}
+					int unseen = FlagHelper.GetUnseenIDFromSNL (snl);
 
 					MyStringComparer mycomp = new MyStringComparer ();
 					// write Responses

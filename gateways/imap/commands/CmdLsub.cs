@@ -49,7 +49,7 @@ namespace NMapi.Gateways.IMAP {
 				if (folder == null)
 					throw new Exception ("internal error");
 
-				SPropValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
+				PropertyValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
 				state.Log ("lsub 1");
 				string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
 				if (subsArray == null)
