@@ -172,7 +172,6 @@ namespace NMapi.Format.Mime
 			lock (lockContentStream) {
 				// headers
 				long position = inS.Position;
-Console.WriteLine ("position: " + position );
 				headers = new InternetHeaders (inS);
 
 				// Stop, if only reading of headers is required
@@ -189,13 +188,7 @@ Console.WriteLine ("position: " + position );
 					int len = 1024;
 					{
 						len = (int)inS.Length - (int)inS.Position;
-						content = new BinaryReader (inS).ReadBytes (len);
-Console.WriteLine (this.ContentType);
-if (content.Length > 200)						
-Console.WriteLine (Encoding.ASCII.GetString (content).Substring (0,200));
-else
-Console.WriteLine (Encoding.ASCII.GetString (content));
-						
+  						content = new BinaryReader (inS).ReadBytes (len);
 						try {
 							inS.Seek (position, SeekOrigin.Begin);
 						}
@@ -334,7 +327,7 @@ Console.WriteLine (Encoding.ASCII.GetString (content));
 					  			// BinaryReader doesn't work with the Base64 and QP Streams 
 						  		// The length calculation would force to analyse the whole content first
 							  	MemoryStream ms = new MemoryStream ();
-								  try {
+								try {
 	  								for (int b = s.ReadByte (); b != -1; b = s.ReadByte ()) {
 		  								ms.WriteByte ((byte)b);
 			  						}

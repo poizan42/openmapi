@@ -179,7 +179,7 @@ namespace NMapi.Properties.Special {
 						props = new PropertyValue [mods.AEntries[i].PropVals.Length];
 						Array.Copy (mods.AEntries[i].PropVals, 0, props, 0, 
 								     	 mods.AEntries[i].PropVals.Length);
-						rowid = (IntProperty) props [props.Length-1];
+						rowid = new IntProperty (); //(IntProperty) props [props.Length-1];
 					}
 					rowid.PropTag = Property.RowId;
 					rowid.Value = res.ulRowid;

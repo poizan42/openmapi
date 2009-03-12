@@ -1,3 +1,15 @@
+2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
+	Mime2Mapi & Mapi2Mime Classes
+
+	* NMapi/Utility/HeaderGenerator.cs
+	* NMapi/Utility/Mapi2Mime.cs
+	* NMapi/Utility/Mime2Mapi.cs
+	* NMapi/Utility/PropertyHelper.cs
+	* NMapi/Utility/RTFWriter.cs
+	* NMapi/Utility/RTFParser.cs
+	* NMapi/Format/Mime/MimePart.cs
+	* providers/NMapi.Provider.TeamXChange/Properties/Special/TeamXChangeMessage.cs
+
 2009-03-06  Johannes Roith <johannes@jroith.de>
 
 	* server/Protocols/OncRpc/BaseOncRpcService.cs: Fix bug: session was not removed properly.

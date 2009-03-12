@@ -117,7 +117,7 @@ namespace NMapi.Utility {
 				if (Index != -1) {
 					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
 					if (val != null && val is String8Property && ((String8Property) val).Value != null)
-						return ((String8Property) val).Value;
+						return Trim0Terminator (((String8Property) val).Value);
 				}
 				return "";
 			}
@@ -134,6 +134,14 @@ namespace NMapi.Utility {
 			}
 		}
 
-
+		
+		public static string Trim0Terminator (string str)
+		{
+			if (str != null) {
+				char [] chars = new char [] {'\0'};
+				return str.TrimEnd (chars);
+			}
+			return null;
+		}
 	}
 }
