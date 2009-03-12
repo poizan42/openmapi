@@ -28,6 +28,7 @@ namespace NMapi.Gateways.IMAP {
 
 	public class SequenceNumberList:List<SequenceNumberListItem>
 	{
+
 		public SequenceNumberList(): base() { }
 
 		public uint IndexOfSNLI (SequenceNumberListItem snli)

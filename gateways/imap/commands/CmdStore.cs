@@ -60,15 +60,15 @@ Console.WriteLine ("Store command loop");
 				// store the changes
 			
 				try {
+					// try block, to ignore if an email cannot be found
 					state.Log ("Store uid: " + snli.UID);
 					msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Modify);
-					fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
 				
 				} catch (Exception e) {
-					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+					state.Log ("CmdStore " + e.Message);
 					state.Log (e.StackTrace);
-					return;
 				}
+				fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
 				
 			}
 

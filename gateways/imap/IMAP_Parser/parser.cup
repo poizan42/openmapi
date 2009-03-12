@@ -114,6 +114,7 @@ using TUVienna.CS_CUP.Runtime;
 using System.Collections;
 using System;
 using System.IO;
+using System.Text;
 
 /*----------------------------------------------------------------*/ 
 
@@ -121,6 +122,12 @@ using System.IO;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 action code {:
+	private byte[] literalByteParkingSpace;
+	public byte[] LiteralByteParkingSpace {
+		get { return literalByteParkingSpace; }
+		set { literalByteParkingSpace = value; }
+	}
+
 	private CommandAnalyserParserInterface ParseInt {
 		get { return my_parser.ParseInt; }
 	}
@@ -139,7 +146,7 @@ parser code {:
   public CommandAnalyserParserInterface ParseInt {
   	get { return parseInt; }
   }
-  
+
   public void SetNewInput(StreamReader sr)
   {
   		((Yylex) getScanner()).newReader(sr);
@@ -405,7 +412,7 @@ cmd_append ::=
 	opt_flag_list
 	opt_date_time
 	literal:l
-	{: ParseInt.command.Append_literal=l; :}
+	{: ParseInt.command.Append_literal=LiteralByteParkingSpace; :}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
@@ -698,7 +705,7 @@ string ::=
 	{: RESULT = q; :}
 	|
 	literal:l
-	{: RESULT = l; :}
+	{: RESULT = Encoding.ASCII.GetString(LiteralByteParkingSpace); :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
@@ -717,9 +724,9 @@ literal ::=
 	{:
 	      int count = System.Convert.ToInt32(l.Substring(1,l.Length-2));
 	      System.Console.WriteLine("before literal reading, count: " + count);
-		  string ll = ParseInt.ReadLiteral(count);
-	      System.Console.WriteLine("after literal reading: \"" + ll + "\"");
-		  RESULT = ll;
+		  LiteralByteParkingSpace = ParseInt.ReadLiteral(count);
+//	      System.Console.WriteLine("after literal reading: \"" + ll + "\"");
+		  RESULT = "dummy";
 	:}
 	CRLF
 	;
@@ -866,12 +873,5 @@ status_list ::=
 
 
 /*----------------------------------------------------------------*/ 
-
-
-
-
-
-
-
 
 

@@ -34,6 +34,18 @@ namespace NMapi.Gateways.IMAP {
 		//Additional Flags
 		List<string> additionalFlags = null;
 
+		private static int[] propsFlagProperties = new int[] 
+		{
+			Property.MsgStatus,
+			Property.MessageFlags,
+			Outlook.Property_FLAG_STATUS,
+			ServerConnection.AdditionalFlagsPropTag
+		};
+
+		public static int[] PropsFlagProperties {
+			get { return propsFlagProperties; }
+		}
+		
 		public ulong MessageFlags {
 			get { return flags; }
 			set { flags = value; }
@@ -158,7 +170,7 @@ Console.WriteLine ("ProcessFlagChangesStoreCommand");
 			// update the sequence number list
 
 			// AdditionalFlags
-			ProcessAdditionalFlag (command.Flag_sign, "\\deleted", command);
+			ProcessAdditionalFlag (command.Flag_sign, "\\Deleted", command);
 		}
 
 		
@@ -178,15 +190,16 @@ Console.WriteLine ("ProcessFlagChangesStoreCommand");
 
 		private void ProcessAdditionalFlag (string sign, string key, Command command)
 		{
-Console.WriteLine ("ProcessAdditionalFlag " + key + sign);			
+Console.WriteLine ("ProcessAdditionalFlag " + key + sign);
+			string keyLow = key.ToLower ();
 			
-			if (sign == "+" && command.Flag_list.Contains (key) && !additionalFlags.Contains (key))
+			if (sign == "+" && command.Flag_list.Contains (keyLow) && !additionalFlags.Contains (key))
 				additionalFlags.Add (key);
-			else if (sign == "-" && command.Flag_list.Contains (key))
+			else if (sign == "-" && command.Flag_list.Contains (keyLow))
 				additionalFlags.Remove (key);
 			else if (sign == null) {
 				additionalFlags.Remove (key);
-				if (command.Flag_list.Contains (key))
+				if (command.Flag_list.Contains (keyLow))
 					additionalFlags.Add (key);
 			}
 Console.WriteLine ("ProcessAdditionalFlag -done");			
@@ -274,10 +287,15 @@ Console.WriteLine ("SaveFlagsIntoIMessage -doene");
 			    snli1.FlagStatus == snli2.FlagStatus;
 		}
 
+		public static bool IsDeleteMarked (SequenceNumberListItem snli) {
+			return snli.AdditionalFlags != null && 
+				       (snli.AdditionalFlags.Contains ("\\Deleted", new MyStringComparer ()));
+		}
+		
 		public static EntryList DeletableMessages (SequenceNumberList snl)
 		{
 			var query = from toDel in snl
-			where (toDel.AdditionalFlags != null && toDel.AdditionalFlags.Contains ("\\deleted"))
+			where (IsDeleteMarked (toDel))
 			select toDel.EntryId;
 			return new EntryList (query.ToArray ());
 		}

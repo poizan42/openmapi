@@ -654,13 +654,15 @@ state.Log ("changedir almost done");
 				uidEntryIdPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
 				additionalFlagsPropTag = GetNamedProp (folder, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
 			}
+
+			int [] propTags = new int[] 
+			{ 
+				Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag,
+				uidPathPropTag, uidEntryIdPropTag
+			}
+			.Union (FlagHelper.PropsFlagProperties).ToArray ();
 			
-			currentTable.SetColumns( 
-				PropertyTag.ArrayFromIntegers (
-					new int[] { Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag, 
-								uidPathPropTag, uidEntryIdPropTag, Property.MsgStatus, Property.MessageFlags,
-								Outlook.Property_FLAG_STATUS, additionalFlagsPropTag
-							  }), 0);
+			currentTable.SetColumns (PropertyTag.ArrayFromIntegers (propTags), 0);
 			
 			state.Log ("Select1");
 			while (true) {

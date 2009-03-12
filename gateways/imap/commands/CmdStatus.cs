@@ -103,14 +103,5 @@ namespace NMapi.Gateways.IMAP {
 			return;
 		}
 
-		internal class MyStringComparer : IEqualityComparer<string> {
-		    public bool Equals(string x, string y) {
-		        return (x.ToUpper () == y.ToUpper ());
-		    }
-		
-		    public int GetHashCode(string obj) {
-		        return obj.GetHashCode();
-		    }
-		}
 	}
 }

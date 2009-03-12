@@ -1,5 +1,30 @@
 2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
 	Mime2Mapi & Mapi2Mime Classes
+	Fixes
+	
+	* gateways/imap/CommandAnalyserParserInterface.cs
+	* gateways/imap/SequenceNumberList.cs
+	* gateways/imap/Command.cs
+	* gateways/imap/ConversionHelper.cs
+	* gateways/imap/ServerConnection.cs
+	* gateways/imap/RTFWriter.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* gateways/imap/commands/CmdStore.cs
+	* gateways/imap/commands/CmdAppend.cs
+	* gateways/imap/commands/CmdExpunge.cs
+	* gateways/imap/commands/CmdSelect.cs
+	* gateways/imap/commands/CmdStatus.cs
+	* gateways/imap/ClientConnection.cs
+	* gateways/imap/IMAP_Parser/parser.cs
+	* gateways/imap/IMAP_Parser/parser.cup
+	* gateways/imap/IMAP_Parser/sym.cs
+	* gateways/imap/HeaderGenerator.cs
+	* gateways/imap/RTFParser.cs
+	* gateways/imap/FlagHelper.cs
+
+
+2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
+	Mime2Mapi & Mapi2Mime Classes
 
 	* NMapi/Utility/HeaderGenerator.cs
 	* NMapi/Utility/Mapi2Mime.cs

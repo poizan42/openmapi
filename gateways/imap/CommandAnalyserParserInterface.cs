@@ -96,9 +96,9 @@ namespace NMapi.Gateways.IMAP
 			_command = new Command();
 		}
 	
-		public string ReadLiteral (int count)
+		public byte[] ReadLiteral (int count)
 		{
-			string s = null;
+			byte [] s = null;
 			Trace.WriteLine("readLiteral: "+count);
 
 			// only read a literal, if no formal or state error has been

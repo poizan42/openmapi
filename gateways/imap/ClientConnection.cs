@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP
 
 		public abstract string ReadLine ();
 	
-		public abstract string ReadBlock (int count);
+		public abstract byte[] ReadBlock (int count);
 }
 
 	
@@ -56,7 +56,7 @@ namespace NMapi.Gateways.IMAP
 	{
 		TcpClient tcpClient;
 		Stream inOut;
-		StreamReader inReader;
+//		StreamReader inReader;
 		LogDelegate logInput;
 		LogDelegate logOutput;
 		static X509Certificate serverCertificate;
@@ -67,7 +67,7 @@ namespace NMapi.Gateways.IMAP
 			this.inOut = tcpClient.GetStream ();
 //			SslStream sslStream = new SslStream(tcpClient.GetStream (),false);
 //			inReader = new StreamReader (sslStream);
-			inReader = new StreamReader (tcpClient.GetStream ());
+//			inReader = new StreamReader (tcpClient.GetStream ());
 
 //			serverCertificate = X509Certificate.CreateFromCertFile("/home/ahuegel/subversion/openmapi/trunk/nmapi/openmapiIMAPGateway.csr");
 //			sslStream.AuthenticateAsServer(serverCertificate, 
@@ -77,7 +77,7 @@ namespace NMapi.Gateways.IMAP
 
 		public override void Close ()
 		{
-			inReader.Close ();
+			//inReader.Close ();
 			inOut.Close ();
 			tcpClient.Close ();
 		}
@@ -95,8 +95,8 @@ namespace NMapi.Gateways.IMAP
 		{
 			// needs to ask the client interface later.
 			// now we simply check this:
-			if (inReader.Peek () > 0)
-				return true;
+//			if (inReader.Peek () > 0)
+//				return true;
 			
 			if (inOut.GetType() == typeof(NetworkStream))
 				return ((NetworkStream) inOut).DataAvailable;
@@ -125,8 +125,21 @@ namespace NMapi.Gateways.IMAP
 		public override string ReadLine ()
 		{
 			string s = null;
+			MemoryStream ms = new MemoryStream ();
 			try {
-				s = inReader.ReadLine ();
+				int c1 = -1;
+				int c2 = -1;
+				int c3 = -1;
+				while (c1 != 10 || c2 != 13) {
+Console.Write (Convert.ToString ((byte) c1));
+					c3 = c2;
+					c2 = c1;
+					c1 = inOut.ReadByte ();
+					if (c3 != -1)
+						ms.WriteByte ((byte) c3);
+				}
+				s = Encoding.ASCII.GetString (ms.ToArray ());
+//				s = inReader.ReadLine ();
 			} catch (SocketException) {
 			}
 			
@@ -136,17 +149,26 @@ namespace NMapi.Gateways.IMAP
 			return s;
 		}
 		
-		public override string ReadBlock (int count)
+		public override byte[] ReadBlock (int count)
 		{
-			char[] ba = new char[count];
+			byte[] ba = new byte[count];
 			try {
-				inReader.ReadBlock (ba, 0, count);
-				Trace.WriteLine( new String(ba));
+				//inReader.ReadBlock (ba, 0, count);
+				int read = 0;
+				int count2 = count;
+				int offset = 0;
+				while (count2 > 0) {
+Console.WriteLine (read + " X " + count2 + " x " + offset);
+					read = inOut.Read (ba, offset, count2);
+					count2 = count2 - read;
+					offset = offset + read;
+				}
+				Trace.WriteLine( Encoding.ASCII.GetString (ba));
 			} catch (SocketException) {
 			} catch (Exception e) {
 				Trace.WriteLine(e.ToString());
 			}
-			return new string(ba);
+			return ba;
 		}
 		
 

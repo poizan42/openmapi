@@ -103,18 +103,18 @@ namespace NMapi.Gateways.IMAP {
 					r.Val = new ResponseItemText(ServCon.UIDNEXT.ToString ());
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.NONE, "FLAGS");
-					r.AddResponseItem(new ResponseItemList ().AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom) //MSGSTATUS_ANSWERED
-															.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom) //MSGSTATUS_TAGGED
-															.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom) //MSGSTATUS_DELMARKED
-															.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom) //MSGFLAG_READ
-															.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom)); //MSGSTATUS_DRAFT
+					r.AddResponseItem(new ResponseItemList ().AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom) 
+															.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom) 
+															.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom) 
+															.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom) 
+															.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom)); 
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.OK, "PERMANENTFLAGS");
-					r.Val= new ResponseItemList().AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom) //MSGSTATUS_ANSWERED //use setMessageStatus
-												.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom) //MSGSTATUS_TAGGED //use setMessageStatus
-												.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom) //MSGSTATUS_DELMARKED //use setMessageStatus
-												.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom) //MSGFLAG_READ //use setReadFlag
-												.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom); //MSGSTATUS_DRAFT //use setMessageStatus
+					r.Val= new ResponseItemList().AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom)
+												.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom) 
+												.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom) 
+												.AddResponseItem ("\\Seen", ResponseItemMode.ForceAtom) 
+												.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom); 
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.OK, Name, command.Tag);
 					r.Val= new ResponseItemText((examine) ? "READ-ONLY" : "READ-WRITE");

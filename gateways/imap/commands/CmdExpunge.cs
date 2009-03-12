@@ -70,7 +70,7 @@ namespace NMapi.Gateways.IMAP {
 			
 			// handle Expunge responses and manage SequenceNumberList
 			var query2 = from toDel in servCon.SequenceNumberList
-						where (toDel.MsgStatus & NMAPI.MSGSTATUS_DELMARKED) != 0
+						where (FlagHelper.IsDeleteMarked (toDel))
 						select toDel;
 			foreach (SequenceNumberListItem snli in query2) {
 				state.AddExpungeRequest (snli);

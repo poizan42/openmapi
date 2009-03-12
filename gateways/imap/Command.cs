@@ -32,7 +32,7 @@ namespace NMapi.Gateways.IMAP
 		private string mailbox2;
 		private string userid;
 		private string password;
-		private string append_literal;
+		private byte[] append_literal;
 		private string auth_type;
 		private string list_mailbox;
 		private string charset;
@@ -85,7 +85,7 @@ namespace NMapi.Gateways.IMAP
 			set { password = value; }
 		}
 		
-		public string Append_literal {
+		public byte[] Append_literal {
 			get { return append_literal; }
 			set { append_literal = value; }
 		}
