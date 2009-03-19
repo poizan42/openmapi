@@ -38,20 +38,29 @@ namespace NMapi.Utility {
 	public class Mime2Mapi
 	{
 		IMsgStore store;
+		bool prBodyFilled;
+		bool prRtfFilled;
 
 
 		public void StoreMimeMessage (MimeMessage mm, IMapiFolder folder)
 		{
+			prBodyFilled = false;
+			prRtfFilled = false;
+	
 			IMessage im = folder.CreateMessage (null, 0);
 			List<PropertyValue> props = new List<PropertyValue> ();
 			UnicodeProperty uprop = null;
 			
 			uprop = new UnicodeProperty ();
+			uprop.PropTag = Property.MessageClassW;
+			uprop.Value = "IPM.Note";
+			props.Add (uprop);
+	
+			uprop = new UnicodeProperty ();
 			uprop.PropTag = Property.Subject;
 			uprop.Value = MimeUtility.DecodeText (string.Empty + mm.GetHeader ("Subject", ";") );
 			props.Add (uprop);
-	
-			
+
 			int prioVal = 1;
 			try {
 				switch (mm.GetHeader ("X-Priority", ";")[0])
@@ -83,14 +92,22 @@ namespace NMapi.Utility {
 				uprop.Value = "SMTP";
 				props.Add (uprop);
 	
+				String8Property sprop = new String8Property ();
+				sprop.PropTag = Property.SenderEmailAddressA;
+				sprop.Value = (ia.Email == null) ? "":ia.Email;
+				props.Add (sprop);
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SenderEmailAddressW;
+				uprop.Value = (ia.Email == null) ? "":ia.Email;
+				props.Add (uprop);
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.SenderEmailAddress;
-				uprop.Value = string.Empty + ia.Email;
+				uprop.Value = (ia.Email == null) ? "":ia.Email;
 				props.Add (uprop);
-	
+
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.SenderName;
-				uprop.Value = string.Empty + ia.Personal;
+				uprop.Value = (ia.Personal == null) ? ia.Email:ia.Personal;
 				props.Add (uprop);
 	
 				break;
@@ -170,16 +187,24 @@ namespace NMapi.Utility {
 					uprop.Value = "SMTP";
 					lpv.Add (uprop);
 
+					String8Property sprop = new String8Property ();
+					sprop.PropTag = Property.EmailAddressA;
+					sprop.Value = (ia.Email == null) ? "":ia.Email;
+					lpv.Add (sprop);
 					uprop = new UnicodeProperty ();
-					uprop.PropTag = Property.EmailAddress;
+					uprop.PropTag = Property.EmailAddressW;
 					uprop.Value = (ia.Email == null) ? "":ia.Email;
-					lpv.Add (uprop);
+//					lpv.Add (uprop);
+
+					Trace.WriteLine ("MimeToMapiRecipients " + ia.Email);
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.DisplayName;
 					uprop.Value = (ia.Personal == null) ? ia.Email:ia.Personal;
 					lpv.Add (uprop);
 					
+					Trace.WriteLine ("MimeToMapiRecipients " + ia.Personal);
+
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
 					Trace.WriteLine ("MimeToMapiRecipients 8");
@@ -202,15 +227,18 @@ namespace NMapi.Utility {
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<PropertyValue> props) 
 		{
 			UnicodeProperty uprop = null;
+			String8Property sprop = null;
 			string charset = null;
-			
-			Trace.WriteLine ("MimeToMapiAttachments 1");			
+			Trace.WriteLine ("MimeToMapiAttachments ct = " + mm.ContentType);		
+
 			if (mm.ContentType == null)	{
 				Trace.WriteLine ("MimeToMapiAttachments Prop Body");			
 				uprop = new UnicodeProperty ();
-				uprop.PropTag = Property.Body;
+				uprop.PropTag = Property.BodyW;
 				uprop.Value = String.Empty + Encoding.ASCII.GetString (mm.RawContent);
 				props.Add (uprop);
+				prBodyFilled = true;
+
 			} else if (mm.ContentType.ToLower () == "text/plain") {
 				Trace.WriteLine ("MimeToMapiAttachments text/plain");
 				charset = mm.ContentTypeHeader.GetParam ("charset");
@@ -222,11 +250,17 @@ namespace NMapi.Utility {
 				}
 
 				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.BodyW;
+				uprop.Value = String.Empty + mm.Text;
+				props.Add (uprop);
+				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.Body;
 				uprop.Value = String.Empty + mm.Text;
 				props.Add (uprop);
-				
+				prBodyFilled = true;
+
 			} else if (mm.ContentType.ToLower () == "text/html") {
+				Trace.WriteLine ("MimeToMapiAttachments text/html");
 				PropertyHelper ph = new PropertyHelper (props.ToArray ());
 				ph.Prop = Outlook.Property_INTERNET_CPID;
 				if (!ph.Exists) {
@@ -239,7 +273,7 @@ namespace NMapi.Utility {
 						IntProperty lprop = new IntProperty ();
 						lprop.PropTag = Outlook.Property_INTERNET_CPID;
 						lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
-//						props.Add (lprop);
+						props.Add (lprop);
 					}
 				}
 					
@@ -254,14 +288,22 @@ namespace NMapi.Utility {
 				msHtml = new MemoryStream (msHtml.GetBuffer ());
 				issHtml.PutData (msHtml);
 				msHtml.Close ();
+				prRtfFilled = true;
+
 			} else if (mm.ContentType.ToLower () == ("multipart/alternative") &&
 			           mm.Content != null && 
 			           mm.Content.GetType () == typeof (MimeMultipart)) {
 				Trace.WriteLine ("MimeToMapiAttachments mutlipart/alternative");			
+				// allow multiple items to be a main text item.
+				// will allow 
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				foreach (MimeBodyPart mp in mmp) {
-					MimeToMapiAttachments (mp, im, props);
+					if (	(mp.ContentType.ToLower () == "text/plain" && !prBodyFilled)||
+						(mp.ContentType.ToLower () == "text/html" && !prRtfFilled)) {
+						MimeToMapiAttachments (mp, im, props);
+					}
 				}
+
 			} else if (mm.ContentType.StartsWith ("multipart") &&
 			           mm.Content != null && 
 			           mm.Content.GetType () == typeof (MimeMultipart)) {
@@ -272,15 +314,35 @@ namespace NMapi.Utility {
 					Trace.WriteLine (mp.Content.GetType ().ToString ());
 					Trace.WriteLine (mp.ContentType);
 
-					// identify main body content if there are multiple attachments
-					// (use first multipart/alternative or text/plain)
 					if (mp.GetType () == typeof (MimeBodyPart)) {
+						// identify main body content if there are multiple attachments
+						// (use first multipart/alternative or text/plain) to fill the main text fields of the message
 						if (mpCount == 0 &&
-						    (mp.ContentType.ToLower () == "multipart/alternative" ||
-						     mp.ContentType.ToLower () == "text/plain" ||
-						     mp.ContentType.ToLower () == "text/html")) {
-							Trace.WriteLine ("MimeToMapiAttachments multipart/alternative or text/plain or text/html");
+							(mp.ContentType.ToLower () == "text/plain" && !prBodyFilled)||
+							(mp.ContentType.ToLower () == "text/html") && !prRtfFilled) {
+							Trace.WriteLine ("MimeToMapiAttachments multipart, first text/plain or first text/html");
 							MimeToMapiAttachments (mp, im, props);
+
+						// if multipart/alternative appears as first item in the mutlipart
+						// use these items to fill the main text fields
+						} else if (mpCount == 0 && !prBodyFilled && !prRtfFilled &&
+							mp.ContentType.ToLower ().StartsWith ("multipart/alternative")) {
+							if (mp.Content != null && mp.Content.GetType () == typeof (MimeMultipart)) {
+								Trace.WriteLine ("MimeToMapiAttachments multipart/alternative");
+								MimeToMapiAttachments (mp, im, props);
+							}
+
+						// if the BodyPart is another multipart handle its items like just some more
+						// attachments.
+						} else if (mp.ContentType.ToLower ().StartsWith ("multipart")) {
+							if (mp.Content != null && mp.Content.GetType () == typeof (MimeMultipart)) {
+								Trace.WriteLine ("MimeToMapiAttachments multipart/...");
+								MimeToMapiAttachments (mp, im, props);
+							}
+
+						} else if (mp.ContentType.ToLower ().StartsWith ("message")) {
+								Trace.WriteLine ("MimeToMapiAttachments message/...");
+								// TODO
 						} else {
 
 
@@ -370,8 +432,6 @@ namespace NMapi.Utility {
 								
 
 						}
-					} else if (mp.GetType() == typeof (MimeMessage)) {
-						// TODO
 					}
 					mpCount++;
 				}

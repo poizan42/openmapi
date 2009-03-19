@@ -1,4 +1,8 @@
 2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
+	* NMapi/Utility/Mapi2Mime.cs
+	* NMapi/Utility/Mime2Mapi.cs
+
+2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
 	Mime2Mapi & Mapi2Mime Classes
 	Fixes
 	

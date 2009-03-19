@@ -185,7 +185,7 @@ ms.Seek (0, SeekOrigin.Begin);
 		{
 
 			PropertyHelper propsBody = new PropertyHelper (props.Props);
-			propsBody.Prop = Property.Body;
+			propsBody.Prop = Property.BodyW;
 			
 			if (rtfParser != null && rtfParser.IsHTML () && propsBody.Exists) {
 				// do html body
