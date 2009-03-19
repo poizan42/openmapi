@@ -173,6 +173,18 @@ namespace NMapi.Gateways.IMAP {
 					}
 				}
 				if (Fetch_att_key == "BODYSTRUCTURE") {
+						fetchItems.AddResponseItem ("BODYSTRUCTURE");
+						fetchItems.AddResponseItem (new ResponseItemList ()
+							.AddResponseItem ("TEXT", ResponseItemMode.QuotedOrLiteral)
+							.AddResponseItem ("PLAIN", ResponseItemMode.QuotedOrLiteral)
+							.AddResponseItem (new ResponseItemList ()
+								.AddResponseItem ("CHARSET", ResponseItemMode.QuotedOrLiteral)
+								.AddResponseItem ("US-ASCII", ResponseItemMode.QuotedOrLiteral))
+							.AddResponseItem ("NIL")
+							.AddResponseItem ("NIL")
+							.AddResponseItem ("7BIT", ResponseItemMode.QuotedOrLiteral)
+							.AddResponseItem ("2279")
+							.AddResponseItem ("48",  ResponseItemMode.QuotedOrLiteral));
 				}
 				if ("BODY.PEEK BODY FULL".Contains(Fetch_att_key)) {
 					StringBuilder bodyPeekResult = new StringBuilder ();

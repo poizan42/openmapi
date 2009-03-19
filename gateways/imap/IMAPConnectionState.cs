@@ -234,8 +234,10 @@ Log ( "ProcessNotificationRespo01");
 			// start to create missing uids for messages.
 			lock (expungeRequests) {
 				localExpungeRequests = expungeRequests;				
-				if (localExpungeRequests.Count > 0) ResetExistsRequests ();
+				if (localExpungeRequests.Count > 0) ResetExpungeRequests ();
 			}
+
+
 			
 Log ( "ProcessNotificationRespo02");
 			lock (existsRequests) {
@@ -243,12 +245,9 @@ Log ( "ProcessNotificationRespo02");
 				if (bExistsRequests) ResetExistsRequests ();
 			}
 
-			
-/*					
-			foreach (SequenceNumberListItem snli in expungeRequests) {
-				// instead of doing anything provoke a handling of existsRequests
-				AddExistsRequest (new SequenceNumberListItem ());
-				break;
+			// instead of doing anything simulate the existance of an existsRequests
+			if (localExpungeRequests.Count > 0) bExistsRequests = true;
+/*			foreach (SequenceNumberListItem snli in localExpungeRequests) {
 				ulong sqn = (long) serverConnection.SequenceNumberList.IndexOfSNLI(snli);
 				if (sqn > 0) {
 					r = new Response (ResponseState.NONE, "EXPUNGE");
@@ -258,8 +257,9 @@ Log ( "ProcessNotificationRespo02");
 				}
 			}
 */			
-					
-Log ( "ProcessNotificationRespo03");
+
+
+Log ( "ProcessNotificationRespo03 " + bExistsRequests);
 			if (bExistsRequests && serverConnection != null) {
 Log ( "ProcessNotificationRespo04");
 
@@ -327,7 +327,7 @@ Log ( "ProcessNotificationRespo4");
 				}
 Log ( "ProcessNotificationRespo5");
 
-				if (snlOldLength < serverConnection.SequenceNumberList.Count) {
+				if (bExistsRequests) {
 					// EXISTS Responses
 					r = new Response (ResponseState.NONE, "EXISTS");
 					r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());

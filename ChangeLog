@@ -1,4 +1,9 @@
-2009-03-12  Andreas Huegel <andreas.huegel@topalis.com>
+2009-03-19  Andreas Huegel <andreas.huegel@topalis.com>
+	* gateways/imap/ResponseManager.cs
+	* gateways/imap/commands/CmdFetch.cs
+	* gateways/imap/IMAPConnectionState.cs
+
+2009-03-19  Andreas Huegel <andreas.huegel@topalis.com>
 	* NMapi/Utility/Mapi2Mime.cs
 	* NMapi/Utility/Mime2Mapi.cs
 
