@@ -15,7 +15,7 @@ TRACE= -d:TRACE
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
 
 NDESK_OPTIONS=lib/NDesk.Options.cs
-MONO_GETLINE=lib/getline/getline.cs
+MONO_GETLINE=$(shell pkg-config --variable=Sources mono-lineeditor)
 GOLDPARSER_SOURCES=$(shell find lib/GoldParser -name "*.cs")
 REMOTETEA_SOURCES=$(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES=$(shell find mapimetal -name "*.cs")
@@ -27,9 +27,13 @@ IMAP_SOURCES=$(shell find gateways/imap -name "*.cs")
 
 all: code docs
 
-code: mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample gateways test
+code: bindir mapi.xml GoldParser.dll Mono.Cecil.dll mlog RemoteTeaSharp.dll NMapi.dll allproviders mmetal alltools mapiserver sample gateways test
+
+bindir:
+	mkdir -p bin
 
 mapi.xml:
+	mkdir -p xml/generated
 	$(MCS) $(DEBUG) /r:System.Core.dll /r:System.Xml.Linq.dll /out:bin/preproc.exe xml/preproc.cs
 	$(PREPROC) strip  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.stripped.generated.xml
 	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml xml/generated/mapi.cs.generated.xml
@@ -85,6 +89,7 @@ NMapi.Provider.Indigo:
 	`find providers/NMapi.Provider.Indigo -name "*.cs"`
 
 NMapi.Provider.TeamXChange:
+	mkdir -p providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated
 	$(MLOG) -o providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml \
 	-visitor dataxml -x providers/NMapi.Provider.TeamXChange/MAPIRPC.x \
 	-typemap providers/NMapi.Provider.TeamXChange/NMapiMap.xml \
@@ -135,6 +140,7 @@ mapiserver:
 	/r:bin/NMapi.Tools.Shell.dll \
 	/target:library `find server/ICalls -name "*.cs"`
 
+	mkdir -p server/aspx/Bin
 	cp bin/NMapi.Server.ICalls.dll server/aspx/Bin/NMapi.Server.ICalls.dll
 	cp bin/NMapi.dll server/aspx/Bin/NMapi.dll
 	cp bin/RemoteTeaSharp.dll server/aspx/Bin/RemoteTeaSharp.dll
