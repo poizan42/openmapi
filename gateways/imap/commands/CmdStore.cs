@@ -50,7 +50,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 			var slq = ServCon.BuildSequenceSetQuery(command);
 			foreach (SequenceNumberListItem snli in slq) {
-Console.WriteLine ("Store command loop");			
+				Trace.WriteLine ("Store command loop");			
 
 				FlagHelper fh = new FlagHelper (snli);
 				fh.ProcessFlagChangesStoreCommand (command);

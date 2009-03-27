@@ -108,7 +108,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 
 			propertyHelper.Prop = ServerConnection.AdditionalFlagsPropTag;
-Console.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
+			Trace.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
 			additionalFlags = new List<string> ();
 			if (propertyHelper.Exists) {
 				try {
@@ -154,7 +154,7 @@ Console.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
 
 		public void ProcessFlagChangesStoreCommand (Command command)
 		{
-Console.WriteLine ("ProcessFlagChangesStoreCommand");			
+			Trace.WriteLine ("ProcessFlagChangesStoreCommand");			
 			//PR_MessageFlags
 			flags = ProcessBit (flags, 0x00000001 /*MSGFLAG_READ*/, command.Flag_sign, "\\seen", command);
 			flags = ProcessBit (flags, 0x00000008 /*MESSAGE_FLAG_UNSENT*/, command.Flag_sign, "\\draft", command);
@@ -190,7 +190,7 @@ Console.WriteLine ("ProcessFlagChangesStoreCommand");
 
 		private void ProcessAdditionalFlag (string sign, string key, Command command)
 		{
-Console.WriteLine ("ProcessAdditionalFlag " + key + sign);
+			Trace.WriteLine ("ProcessAdditionalFlag " + key + sign);
 			string keyLow = key.ToLower ();
 			
 			if (sign == "+" && command.Flag_list.Contains (keyLow) && !additionalFlags.Contains (key))
@@ -202,12 +202,12 @@ Console.WriteLine ("ProcessAdditionalFlag " + key + sign);
 				if (command.Flag_list.Contains (keyLow))
 					additionalFlags.Add (key);
 			}
-Console.WriteLine ("ProcessAdditionalFlag -done");			
+			Trace.WriteLine ("ProcessAdditionalFlag -done");			
 		}
 			
 		public void SaveFlagsIntoIMessage (IMessage msg, ServerConnection serverConnection)
 		{
-Console.WriteLine ("SaveFlagsIntoIMessage");			
+			Trace.WriteLine ("SaveFlagsIntoIMessage");			
 			if (msg != null) {
 				MapiPropHelper mph = new MapiPropHelper (msg);
 
@@ -260,7 +260,7 @@ Console.WriteLine ("SaveFlagsIntoIMessage");
 					mph.HrDeleteOneProp (ServerConnection.AdditionalFlagsPropTag);
 				}
 				msg.SaveChanges (NMAPI.FORCE_SAVE);
-Console.WriteLine ("SaveFlagsIntoIMessage -doene");			
+				Trace.WriteLine ("SaveFlagsIntoIMessage -doene");			
 			}
 		}
 

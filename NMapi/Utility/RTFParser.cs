@@ -21,6 +21,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 /**
  * Parses a outlook-rtf data. 
@@ -462,9 +463,9 @@ namespace NMapi.Utility {
 				//unknown tokens
 				else
 				{
-					Console.WriteLine("(unknown:");
-					Console.WriteLine(chunk.value);
-					Console.WriteLine(")");
+					Trace.WriteLine("(unknown:");
+					Trace.WriteLine(chunk.value);
+					Trace.WriteLine(")");
 				}
 			}
 			else

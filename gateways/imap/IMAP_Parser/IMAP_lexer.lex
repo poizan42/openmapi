@@ -21,6 +21,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Diagnostics;
 using TUVienna.CS_CUP.Runtime;
 using TUVienna;
 using NMapi.Gateways.IMAP;
@@ -47,7 +48,7 @@ namespace NMapi.Gateways.IMAP
 			Yylex yy = new Yylex(f);
 			Symbol t;
 			while ((t = yy.next_token()) != null)
-				Console.WriteLine(t);
+				System.Diagnostics.Trace.WriteLine(t);
 		}
 
 		public void init(String filePathName)
@@ -103,7 +104,7 @@ class Utility {
     int code
     )
     {
-    Console.WriteLine(errorMsg[code]);
+    System.Diagnostics.Trace.WriteLine(errorMsg[code]);
     }
   }
 

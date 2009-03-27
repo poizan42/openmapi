@@ -146,7 +146,7 @@ namespace NMapi.Utility {
 
 				ms = new MemoryStream (Encoding.ASCII.GetBytes (RTFParser.UncompressRTF( ms.ToArray ())));
 string debug =  new StreamReader (ms).ReadToEnd ();
-Console.WriteLine (debug);
+Trace.WriteLine (debug);
 ms.Seek (0, SeekOrigin.Begin);
 				rtfParser = new RTFParser (ms);
 			}

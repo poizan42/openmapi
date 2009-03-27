@@ -131,7 +131,7 @@ namespace NMapi.Gateways.IMAP
 				int c2 = -1;
 				int c3 = -1;
 				while (c1 != 10 || c2 != 13) {
-Console.Write (Convert.ToString ((byte) c1));
+//Console.Write (Convert.ToString ((byte) c1));
 					c3 = c2;
 					c2 = c1;
 					c1 = inOut.ReadByte ();
@@ -158,7 +158,7 @@ Console.Write (Convert.ToString ((byte) c1));
 				int count2 = count;
 				int offset = 0;
 				while (count2 > 0) {
-Console.WriteLine (read + " X " + count2 + " x " + offset);
+//Console.WriteLine (read + " X " + count2 + " x " + offset);
 					read = inOut.Read (ba, offset, count2);
 					count2 = count2 - read;
 					offset = offset + read;

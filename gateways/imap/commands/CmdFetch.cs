@@ -226,7 +226,7 @@ namespace NMapi.Gateways.IMAP {
 						if (mm != null)
 						try {
 							bodyPeekResult.Append (Encoding.ASCII.GetString (mm.RawContent));
-						} catch (ArgumentNullException) {
+						} catch (ArgumentNullException e) {
 							// had unexplainable ArgumentNullExceptions when calling GetString while doing stress testing.
 						}
 					}
