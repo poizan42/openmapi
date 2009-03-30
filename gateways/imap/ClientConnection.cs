@@ -135,12 +135,14 @@ namespace NMapi.Gateways.IMAP
 					c3 = c2;
 					c2 = c1;
 					c1 = inOut.ReadByte ();
+					if (c1 == -1) return null;
 					if (c3 != -1)
 						ms.WriteByte ((byte) c3);
 				}
 				s = Encoding.ASCII.GetString (ms.ToArray ());
 //				s = inReader.ReadLine ();
 			} catch (SocketException) {
+				return null;
 			}
 			
 			if (logInput != null)
@@ -160,11 +162,13 @@ namespace NMapi.Gateways.IMAP
 				while (count2 > 0) {
 //Console.WriteLine (read + " X " + count2 + " x " + offset);
 					read = inOut.Read (ba, offset, count2);
+					if(read < 0) return null;
 					count2 = count2 - read;
 					offset = offset + read;
 				}
 				Trace.WriteLine( Encoding.ASCII.GetString (ba));
 			} catch (SocketException) {
+				return null;
 			} catch (Exception e) {
 				Trace.WriteLine(e.ToString());
 			}
