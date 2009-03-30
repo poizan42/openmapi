@@ -3,6 +3,7 @@
 // Copyright 2008 Topalis AG
 //
 // Author: Andreas Huegel <andreas.huegel@topalis.com>
+//         Michael Kukat <michael.kukat@to.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -160,9 +161,25 @@ namespace NMapi.Gateways.IMAP {
 				if (Fetch_att_key == "RFC822.HEADER") {
 				}
 				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
-					props.Prop = Property.MessageSize;
+					StringBuilder tmpMsg = new StringBuilder();
+
+					// XXX get full message to calculate MIME size
+					IMessage im = GetMessage (snli);
+					Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
+					HeaderGenerator headerGenerator = ma2mi.GetHeaderGenerator (im, props);
+					MimeMessage mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+					MemoryStream ms = new MemoryStream();
+					mm.WriteTo (ms);
+					tmpMsg.Append (Encoding.ASCII.GetString (ms.ToArray ()));
+
+					// This doesn't work here due to the MIME conversion
+					// props.Prop = Property.MessageSize;
+
+					// Get converted message and use string length of it instead
+					// XXX include this feature in Mapi2Mime
 					fetchItems.AddResponseItem ("RFC822.SIZE");
-					fetchItems.AddResponseItem (props.LongNIL);
+					// fetchItems.AddResponseItem (props.LongNIL);
+					fetchItems.AddResponseItem (tmpMsg.ToString ().Length.ToString());
 				}
 				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
 					props.Prop = Property.CreationTime;
@@ -188,6 +205,8 @@ namespace NMapi.Gateways.IMAP {
 				}
 				if ("BODY.PEEK BODY FULL".Contains(Fetch_att_key)) {
 					StringBuilder bodyPeekResult = new StringBuilder ();
+					string Section_number1 = cfi.Section_number1;
+					string Section_number2 = cfi.Section_number2;
 					ResponseItemList bodyItems = null;
 					bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
 					MimeMessage mm = null;
@@ -331,7 +350,31 @@ namespace NMapi.Gateways.IMAP {
 
 					}
 					fetchItems.AddResponseItem (bodyItems);
-					fetchItems.AddResponseItem (bodyPeekResult.ToString (), ResponseItemMode.Literal);
+
+					// check if only a partial response is requested
+					Int32 start = -1;
+					Int32 len = -1;
+
+					try {
+						if(Section_number1.Length > 0) start = Int32.Parse(Section_number1);
+					} catch(Exception) {
+						start = -1;
+					}
+					try {
+						if(Section_number2.Length > 0) len = Int32.Parse(Section_number2);
+					} catch(Exception) {
+						len = -1;
+					}
+
+					if(start >= 0) {
+						String bodyPartial = bodyPeekResult.ToString ().Substring(start);
+						if(len >= 0) {
+							if(len > bodyPartial.Length)
+								fetchItems.AddResponseItem (bodyPartial, ResponseItemMode.Literal);
+							else
+								fetchItems.AddResponseItem (bodyPartial.Substring(0, len), ResponseItemMode.Literal);
+						}
+					} else fetchItems.AddResponseItem (bodyPeekResult.ToString (), ResponseItemMode.Literal);
 				}
 				if ("BODY FULL".Contains(Fetch_att_key)) {
 					//TODO: Set the read-flag of the message
@@ -401,7 +444,14 @@ namespace NMapi.Gateways.IMAP {
 					propList.AddRange (propsAllHeaderProperties);
 				}
 				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
-					propList.Add (Property.MessageSize);
+					// This doesn't work here due to the MIME conversion
+					// propList.Add (Property.MessageSize);
+					// XXX need to use full message instead
+					propList.AddRange (propsAllHeaderProperties);
+					propList.Add (Property.Body);
+					propList.Add (Property.RtfCompressed);
+					propList.Add (Outlook.Property_HTML);
+					propList.Add (Outlook.Property_INTERNET_CPID);
 				}
 				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
 					propList.Add (Property.CreationTime);

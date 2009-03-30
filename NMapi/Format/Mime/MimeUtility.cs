@@ -5,6 +5,7 @@
 //
 // Author Java: <a href="mailto:dog@gnu.org">Chris Burdess</a>
 // Author C#: Andreas Huegel, Topalis AG
+//            Michael Kukat, Thinking Objects GmbH
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -558,13 +559,14 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public static String GetUniqueBoundaryValue ()
 		{
+			// A constant length boundary is needed, so use PadLeft() in some places
 			StringBuilder buffer = new StringBuilder ();
 			buffer.Append ("----=_Part_");
-			buffer.Append (part++);
+			buffer.Append ((part++).ToString().PadLeft(4, '0'));
 			buffer.Append ("_");
-			buffer.Append (Math.Abs (buffer.GetHashCode ()));
+			buffer.Append (Math.Abs (buffer.GetHashCode ()).ToString().PadLeft(16, '0'));
 			buffer.Append ('.');
-			buffer.Append (new DateTime ().Millisecond);
+			buffer.Append (new DateTime ().Millisecond.ToString().PadLeft(16, '0'));
 			return buffer.ToString ();
 		}
 
