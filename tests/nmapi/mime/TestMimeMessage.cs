@@ -58,25 +58,6 @@ namespace NMapi.Format.Mime
 		}
 			
 		/// <summary>
-		/// Test MimeMessage.Boundary
-		/// </summary>
-		[Test]
-		public void MimeMessage_Boundary2 ()
-		{
-			MimeMessage mm = new MimeMessage();
-			
-			mm.Boundary = "";
-			String erg = mm.Boundary; 
-			mm.Boundary = "";
-			String erg2 = mm.Boundary; 
-
-			// must return a unique id every time
-			Assert.IsFalse (erg == erg2);
-			Assert.IsTrue (erg.Length > 15);
-			Assert.IsTrue (erg2.Length > 15);
-		}
-
-		/// <summary>
 		/// General test on MimeMessage.Content functionality
 		/// </summary>
 		[Test]

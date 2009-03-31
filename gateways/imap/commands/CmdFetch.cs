@@ -220,7 +220,7 @@ namespace NMapi.Gateways.IMAP {
 						headerGenerator = ma2mi.GetHeaderGenerator (im, props);
 
 						// fill message
-						if (section_text == null || section_text == "TEXT") {
+						if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
 							state.Log ("memory test1");
 							mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
 						}
@@ -234,19 +234,21 @@ namespace NMapi.Gateways.IMAP {
 						}
 					}
 					if (section_text == "HEADER") {
-						if (headerGenerator != null && headerGenerator.InternetHeaders != null) {
+						if (mm != null) {
+							// generate result string
 							bodyItems.AddResponseItem ("HEADER");
-							MemoryStream headers_ms = new MemoryStream ();
-							headerGenerator.InternetHeaders.WriteTo (headers_ms);
-							bodyPeekResult.Append (Encoding.ASCII.GetString (headers_ms.ToArray ()));
+							MemoryStream ms = new MemoryStream();
+							mm.WriteHeadersTo (ms);
+							bodyPeekResult.Append (Encoding.ASCII.GetString (ms.ToArray ()));
 						}
 					}
 					if (section_text == "TEXT") {
-						if (mm != null)
-						try {
-							bodyPeekResult.Append (Encoding.ASCII.GetString (mm.RawContent));
-						} catch (ArgumentNullException e) {
-							// had unexplainable ArgumentNullExceptions when calling GetString while doing stress testing.
+						if (mm != null) {
+							// generate result string
+							bodyItems.AddResponseItem ("TEXT");
+							MemoryStream ms = new MemoryStream();
+							mm.WriteBodyTo (ms);
+							bodyPeekResult.Append (Encoding.ASCII.GetString (ms.ToArray ()));
 						}
 					}
 					if (section_text == "MIME") {
@@ -471,6 +473,8 @@ namespace NMapi.Gateways.IMAP {
 				if (Fetch_att_key == "BODY.PEEK") {
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
 						propList.AddRange (propsAllHeaderProperties);
+						propList.Add (Property.Body);
+						propList.Add (Property.RtfCompressed);
 					}
 					if (section_text == null) {
 						propList.Add (Property.Body);

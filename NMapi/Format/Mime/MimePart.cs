@@ -278,7 +278,6 @@ namespace NMapi.Format.Mime
 
 		/// <summary>
 		/// get or set the boundary value of the Content-Type Mime header
-		/// !!! Set will not use the input value but generate one !!!
 		/// </summary>
 		public String Boundary {
 			get {
@@ -290,7 +289,7 @@ namespace NMapi.Format.Mime
 			}
 			set {
 				InternetHeader h = GetInternetHeader (MimePart.CONTENT_TYPE_NAME, "");
-				h.SetParam ("boundary", MimeUtility.GetUniqueBoundaryValue ());
+				h.SetParam ("boundary", value);
 				headers.SetHeader (h.Name, h.Value);
 			}
 		}
@@ -445,10 +444,16 @@ namespace NMapi.Format.Mime
 		/// <summary>
 		/// Output the message as an RFC 822 format stream.
 		/// </summary>
-		public virtual void WriteTo (Stream os)
+		public virtual void WriteHeadersTo (Stream os)
 		{
 			headers.WriteTo (os);
+		}
 
+		/// <summary>
+		/// Output the message body as an RFC 822 format stream.
+		/// </summary>
+		public virtual void WriteBodyTo (Stream os)
+		{
 			String ct = ContentType;
 			if (ct != null && ct.StartsWith ("message")) {
 				((MimeMessage)Content).WriteTo (os);
@@ -459,6 +464,15 @@ namespace NMapi.Format.Mime
 				if (rc != null)
 					os.Write (rc, 0, rc.Length);
 			}
+		}
+
+		/// <summary>
+		/// Output the message as an RFC 822 format stream.
+		/// </summary>
+		public virtual void WriteTo (Stream os)
+		{
+			WriteHeadersTo(os);
+			WriteBodyTo(os);
 		}
 
 		public void Dispose ()

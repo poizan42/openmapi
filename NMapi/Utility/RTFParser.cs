@@ -61,7 +61,7 @@ namespace NMapi.Utility {
 		
 		private Stream osHTML = null;
 		private Stream osTEXT = null;
-		private string       dstCharset;
+		private string dstCharset = null;
 		
 		
 		class RTFChunk 
@@ -484,20 +484,22 @@ namespace NMapi.Utility {
 		{
 			if (state.dst != Destination.NONE)
 			{
-				byte [] bytes = Encoding.GetEncoding (dstCharset).GetBytes(str);
-				
-				switch(state.dst)
-				{
-				case Destination.TEXT:
-					Output(osTEXT, bytes);
-					break;
-				case Destination.HTML:
-					Output(osHTML, bytes);
-					break;
-				case Destination.BOTH:
-					Output(osTEXT, bytes);
-					Output(osHTML, bytes);
-					break;
+				if(dstCharset != null) {
+					byte [] bytes = Encoding.GetEncoding (dstCharset).GetBytes(str);
+					
+					switch(state.dst)
+					{
+					case Destination.TEXT:
+						Output(osTEXT, bytes);
+						break;
+					case Destination.HTML:
+						Output(osHTML, bytes);
+						break;
+					case Destination.BOTH:
+						Output(osTEXT, bytes);
+						Output(osHTML, bytes);
+						break;
+					}
 				}
 			}
 		}

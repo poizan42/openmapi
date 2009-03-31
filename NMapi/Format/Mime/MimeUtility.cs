@@ -548,30 +548,6 @@ namespace NMapi.Format.Mime
 			return text;
 		}
 
-		// -- Calculating multipart boundaries --
-
-		private static int part = 0;
-
-
-		/// <summary>
-		/// Returns a suitably unique boundary value.
-		/// </summary>
-		/// <returns></returns>
-		public static String GetUniqueBoundaryValue ()
-		{
-			// A constant length boundary is needed, so use PadLeft() in some places
-			StringBuilder buffer = new StringBuilder ();
-			buffer.Append ("----=_Part_");
-			buffer.Append ((part++).ToString().PadLeft(4, '0'));
-			buffer.Append ("_");
-			buffer.Append (Math.Abs (buffer.GetHashCode ()).ToString().PadLeft(16, '0'));
-			buffer.Append ('.');
-			buffer.Append (new DateTime ().Millisecond.ToString().PadLeft(16, '0'));
-			return buffer.ToString ();
-		}
-
-
-
 		private static Dictionary<string, string> extToMime = new Dictionary<string, string>()
         {
 
