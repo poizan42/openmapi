@@ -370,6 +370,7 @@ namespace NMapi.Gateways.IMAP {
 
 					if(start >= 0) {
 						String bodyPartial = bodyPeekResult.ToString ().Substring(start);
+						bodyItems.SetSigns ("BODY[", "]<" + start + ">");
 						if(len >= 0) {
 							if(len > bodyPartial.Length)
 								fetchItems.AddResponseItem (bodyPartial, ResponseItemMode.Literal);
