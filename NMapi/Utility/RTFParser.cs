@@ -111,7 +111,7 @@ namespace NMapi.Utility {
 						throw new IOException("rtf header: expecting {");
 					}
 					ProcessChunk(chunk);
-					if (chunk.isToken && chunk.value.Equals("\\ansicpg", StringComparison.OrdinalIgnoreCase))
+					if (chunk.isToken && chunk.value.StartsWith("\\ansicpg", StringComparison.OrdinalIgnoreCase))
 					{
 						chunk = GetChunk();
 						if (chunk == null)
