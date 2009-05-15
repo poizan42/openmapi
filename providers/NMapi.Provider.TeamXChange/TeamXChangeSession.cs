@@ -96,8 +96,8 @@ namespace NMapi {
 				IPAddress[] ipList = Dns.GetHostAddresses (host); // TODO: Ensure that call doesn't wait forever!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if (ipList.Length < 1)
 					throw new Exception ("Can't determine ip adress of local host.");
-					
-				client = new MAPIRPCClient (ipList [0], this.port, OncRpcProtocols.Tcp);
+				
+				client = new MAPIRPCClient (ipList [0], this.port, OncRpcProtocols.SslTcp);
 				client.Client.SetTimeout (5 * 60 * 1000);
 				
 				CheckVersion ();

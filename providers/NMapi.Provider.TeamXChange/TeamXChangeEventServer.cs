@@ -28,6 +28,10 @@ namespace NMapi {
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Net;
+	using System.Net.Security;
+	using System.Security.Authentication;
+	using System.Security.Cryptography.X509Certificates;
+	using System.Security.Cryptography;
 	using System.Net.Sockets;
 	using CompactTeaSharp;
 	using CompactTeaSharp.Server;
@@ -52,6 +56,58 @@ namespace NMapi {
 		private OncRpcTcpConnectionServerTransport eventServ; 
 		private Dictionary<int, TeamXChangeEventSubscription> eventSubMap;
 
+
+		class TxcEventSslStream : SslStream
+		{
+			private bool handshakeDone;
+			
+			public TxcEventSslStream (Stream stream) : base (stream, false, 
+				new RemoteCertificateValidationCallback (ValidateServerCertificate))
+			{
+			}
+			
+			public void EnsureHandshake ()
+			{
+				lock (this) {
+					if (handshakeDone)
+						return;
+					handshakeDone = true;
+				}
+				AuthenticateAsClient ("IGNORE");
+			}
+			
+			public override void Write (byte[] buffer, int offset, int count)
+			{
+				EnsureHandshake ();
+				base.Write (buffer, offset, count);
+			}
+			
+			public override void WriteByte (byte data)
+			{
+				EnsureHandshake ();
+				base.WriteByte (data);
+			}
+			
+			public override int ReadByte ()
+			{
+				EnsureHandshake ();
+				return base.ReadByte ();
+			}
+			
+			public override int Read (byte[] buffer, int offset, int count)
+			{
+				EnsureHandshake ();
+				return base.Read (buffer, offset, count);
+			}	
+				
+			private static bool ValidateServerCertificate (object sender, 
+				X509Certificate certificate, X509Chain chain, 
+				SslPolicyErrors sslPolicyErrors)
+			{
+				return true; // insecure
+			}
+		}
+
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public TeamXChangeEventServer (MAPIRPCClient client, string host, int port, byte[] objb) 
 		{
@@ -63,10 +119,13 @@ namespace NMapi {
 				evuid = 0;
 				eventSubMap = new Dictionary<int, TeamXChangeEventSubscription> ();
 				eventSock = new TcpClient (this.host, this.port);
+
+				TxcEventSslStream wrappedStream = new TxcEventSslStream (eventSock.GetStream ());
 				eventServ = new OncRpcTcpConnectionServerTransport (
-					this, eventSock, 8192, null, 10);
+					this, eventSock, 8192, null, 10, wrappedStream);
 				eventServ.Listen ();
-				eventSock.GetStream ().Write (objb, 0, objb.Length);
+
+				wrappedStream.Write (objb, 0, objb.Length);
 			}
 			catch (SocketException e) {
 				throw new MapiException ("unknown host="+host, e);
@@ -78,6 +137,7 @@ namespace NMapi {
 			catch (OncRpcException e) {
 				throw new MapiException ("host="+host, e);
 			}
+			
 		}
 
 		/// <summary>

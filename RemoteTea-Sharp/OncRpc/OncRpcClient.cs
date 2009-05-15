@@ -189,7 +189,9 @@ namespace CompactTeaSharp
 			int program, int version, int port, OncRpcProtocols protocol)
 		{
 			if (protocol == OncRpcProtocols.Tcp)
-				return new OncRpcTcpClient (host, program, version, port);
+				return new OncRpcTcpClient (host, program, version, port, false);
+			if (protocol == OncRpcProtocols.SslTcp)
+				return new OncRpcTcpClient (host, program, version, port, true);
 			throw new OncRpcException (OncRpcException.UNKNOWN_PROTO);
 		}
 

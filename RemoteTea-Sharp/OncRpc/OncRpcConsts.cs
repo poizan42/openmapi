@@ -208,6 +208,7 @@ namespace CompactTeaSharp
 	{
 		Udp = 17,
 		Tcp = 6,
+		SslTcp = 100, // OpenMapi-specific
 
 		/// <summary>
 		///  Use the HTTP application protocol for tunneling ONC calls.

@@ -50,14 +50,18 @@ namespace CompactTeaSharp
 		private int fragmentLength; // Remaining number of bytes in this fragment -- and still to read.
 		private bool lastFragment; // Flag indicating that we've read the last fragment and thus reached the end of the record.
 
-		public XdrTcpDecodingStream (TcpClient client, int bufferSize)
+		public XdrTcpDecodingStream (TcpClient client, int bufferSize) : this (client, client.GetStream (), bufferSize)
+		{
+		}
+		
+		public XdrTcpDecodingStream (TcpClient client, Stream stream, int bufferSize)
 		{
 			// If the given buffer size is too small, start with a more sensible
 			// size. Next, if bufferSize is not a multiple of four, round it up to
 			// the next multiple of four.
 			//
 			this.client = client;
-			stream = client.GetStream ();
+			this.stream = stream;
 
 			if (bufferSize < 1024)
 				bufferSize = 1024;

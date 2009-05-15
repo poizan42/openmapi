@@ -31,8 +31,14 @@
 
 using System;
 using System.Net;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography;
 using System.Net.Sockets;
 using System.IO;
+
+
 
 namespace CompactTeaSharp
 {
@@ -100,8 +106,8 @@ namespace CompactTeaSharp
 		/// <param name="program">Program number of the ONC/RPC server to call.</param>
 		/// <param name="version">Program version number.</param>
 		// OncRpcException, IOException
-		public OncRpcTcpClient (IPAddress host, int program, int version):
-			this (host, program, version, 0, 0)
+		public OncRpcTcpClient (IPAddress host, int program, int version, bool useSsl):
+			this (host, program, version, 0, 0, useSsl)
 		{
 
 		}
@@ -118,8 +124,8 @@ namespace CompactTeaSharp
  		///   If 0, then the OncRpcUdpClient object will ask the portmapper at 
 		///   host for the port number.</param>
 		// OncRpcException, IOException
-		public OncRpcTcpClient (IPAddress host, int program, int version, int port):
-			this (host, program, version, port, 0)
+		public OncRpcTcpClient (IPAddress host, int program, int version, int port, bool useSsl):
+			this (host, program, version, port, 0, useSsl)
 		{
 
 		}
@@ -144,7 +150,7 @@ namespace CompactTeaSharp
 		///   8192 bytes).</param>
 		// OncRpcException, IOException
 		public OncRpcTcpClient (IPAddress host, int program, int version, 
-			int port, int bufferSize) : this (host, program, version, port, bufferSize, -1)
+			int port, int bufferSize, bool useSsl) : this (host, program, version, port, bufferSize, -1, useSsl)
 		{
 
 		}
@@ -173,13 +179,13 @@ namespace CompactTeaSharp
 		/// to the connection phase, but <b>not</b> to later communication.</i></param>
 		// OncRpcException, IOException
 		public OncRpcTcpClient (IPAddress host, int program, int version, 
-			int port, int bufferSize, int timeout) : this (host, program, 
-				version, port, bufferSize, timeout, null)
+			int port, int bufferSize, int timeout, bool useSsl) : this (host, program, 
+				version, port, bufferSize, timeout, null, useSsl)
 		{
 		}
 
 		public OncRpcTcpClient (IPAddress host, int program, int version, int port, 
-			int bufferSize, int timeout, TcpClient tcpClient) : base (host, program, version, port, OncRpcProtocols.Tcp)
+			int bufferSize, int timeout, TcpClient tcpClient, bool useSsl) : base (host, program, version, port, OncRpcProtocols.Tcp)
 		{
 			//
 			// Construct the inherited part of our object. This will also try to
@@ -223,10 +229,28 @@ namespace CompactTeaSharp
 			// Create the necessary encoding and decoding streams, so we can
 			// communicate at all.
 			//
-			sendingXdr = new XdrTcpEncodingStream (client, bufferSize);
-			receivingXdr = new XdrTcpDecodingStream (client, bufferSize);
+			
+			Stream stream = client.GetStream ();
+			if (useSsl) {
+				var sslStream = new SslStream (stream, false, 
+					new RemoteCertificateValidationCallback (ValidateServerCertificate));
+				sslStream.AuthenticateAsClient ("ignored"); // insecure
+				stream = sslStream;
+			}
+			
+			sendingXdr = new XdrTcpEncodingStream (client, stream, bufferSize);
+			receivingXdr = new XdrTcpDecodingStream (client, stream, bufferSize);
 		}
-
+		
+		public static bool ValidateServerCertificate (
+		      object sender,
+		      X509Certificate certificate,
+		      X509Chain chain,
+		      SslPolicyErrors sslPolicyErrors)
+		{
+			return true; // insecure
+		}
+		
 		/// <summary>
 		///  Close the connection to an ONC/RPC server and free all 
 		///  network-related resources.

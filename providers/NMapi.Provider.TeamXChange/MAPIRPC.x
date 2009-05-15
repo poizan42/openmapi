@@ -1,9 +1,4 @@
-
-
-
-
-
-enum RpcVersionInf { MAPIRPCVERSION = 9 };
+enum RpcVersionInf { MAPIRPCVERSION = 10 };
 
 
 
@@ -206,6 +201,32 @@ struct Session_ABGetUserList_arg { HOBJECT obj; u_long ulFlags; };
 
 
 struct Session_ABGetUserList_res { u_long hr; struct ABUSERLIST *pList; };
+
+
+
+
+struct Session_RegClientCert_arg { LPSTR pszPassword; int usage; };
+
+
+
+
+struct Session_RegClientCert_res { u_long hr; };
+
+
+
+struct Session_RegisterSyncClientID_arg { HOBJECT obj; SBinary id; };
+
+
+
+
+struct Session_RegisterSyncClientID_res { u_long hr; };
+
+
+
+
+
+
+
 struct Base_Close_arg { HOBJECT obj; };
 
 
@@ -1485,8 +1506,309 @@ struct ModifyTable_ModifyRow_arg { HOBJECT obj; LPROWENTRY pRowEntry; };
 
 
 struct ModifyTable_ModifyRow_res { u_long hr; LARGE_INTEGER liRuleId; };
+struct MSGSYNCITEM
+{
+    u_long action;
+    SBinary messagekey;
+    u_long ulFlags;
+    u_long ulObjType;
+    HOBJECT obj;
+    SBinary folderkey;
+    LONGLONG llChangeKey;
+    u_long ulReadState;
+};
+
+struct FLDSYNCITEM
+{
+    u_long action;
+    SBinary folderkey;
+    u_long ulObjType;
+    HOBJECT obj;
+    LPWSTR pwszName;
+    SBinary oldparentkey;
+    SBinary newparentkey;
+    u_long ulFolderType;
+};
 
 
+
+
+
+struct MsgSync_Configure_arg { HOBJECT obj; SBinary synckey; u_long ulFlags; };
+
+
+
+
+
+struct MsgSync_Configure_res { u_long hr; };
+
+
+
+struct MsgSync_BeginExport_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_BeginExport_res { u_long hr; };
+
+
+
+struct MsgSync_ExportNextMessage_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_ExportNextMessage_res { u_long hr; MSGSYNCITEM item; };
+
+
+
+
+struct MsgSync_ConfirmLastExport_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_ConfirmLastExport_res { u_long hr; };
+
+
+
+struct MsgSync_EndExport_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_EndExport_res { u_long hr; SBinary synckey; };
+
+
+
+
+struct MsgSync_BeginImport_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_BeginImport_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct MsgSync_EndImport_arg { HOBJECT obj; };
+
+
+
+struct MsgSync_EndImport_res { u_long hr; };
+
+
+
+struct MsgSync_OpenMessage_arg { HOBJECT obj; SBinary key; u_long ulFlags; };
+
+
+
+
+
+struct MsgSync_OpenMessage_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct MsgSync_ConfirmLastStep_arg { HOBJECT obj; u_long hrStep; };
+
+
+
+
+struct MsgSync_ConfirmLastStep_res { u_long hr; };
+
+
+
+
+
+
+
+struct FldSync_Configure_arg { HOBJECT obj; SBinary synckey; u_long ulFlags; };
+
+
+
+
+
+struct FldSync_Configure_res { u_long hr; };
+
+
+
+struct FldSync_BeginExport_arg { HOBJECT obj; };
+
+
+
+struct FldSync_BeginExport_res { u_long hr; };
+
+
+
+struct FldSync_ExportNextFolder_arg { HOBJECT obj; };
+
+
+
+struct FldSync_ExportNextFolder_res { u_long hr; FLDSYNCITEM item; };
+
+
+
+
+struct FldSync_ConfirmLastExport_arg { HOBJECT obj; };
+
+
+
+struct FldSync_ConfirmLastExport_res { u_long hr; };
+
+
+
+struct FldSync_EndExport_arg { HOBJECT obj; };
+
+
+
+struct FldSync_EndExport_res { u_long hr; SBinary synckey; };
+
+
+
+
+struct FldSync_BeginImport_arg { HOBJECT obj; };
+
+
+
+struct FldSync_BeginImport_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct FldSync_EndImport_arg { HOBJECT obj; };
+
+
+
+struct FldSync_EndImport_res { u_long hr; };
+
+
+
+struct FldSync_OpenFolder_arg { HOBJECT obj; SBinary key; u_long ulFlags; };
+
+
+
+
+
+struct FldSync_OpenFolder_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct FldSync_ConfirmLastStep_arg { HOBJECT obj; u_long hrStep; };
+
+
+
+
+struct FldSync_ConfirmLastStep_res { u_long hr; };
+
+
+
+
+
+
+
+struct MsgImp_MessageCreated_arg { HOBJECT obj; SBinary key; u_long ulFlags; };
+
+
+
+
+
+struct MsgImp_MessageCreated_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct MsgImp_MessageChanged_arg { HOBJECT obj; SBinary key; u_long ulFlags; };
+
+
+
+
+
+struct MsgImp_MessageChanged_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct MsgImp_ReadStateChanged_arg { HOBJECT obj; SBinary key; u_long ulReadState; };
+
+
+
+
+
+struct MsgImp_ReadStateChanged_res { u_long hr; };
+
+
+
+struct MsgImp_MessageDeleted_arg { HOBJECT obj; SBinary key; };
+
+
+
+
+struct MsgImp_MessageDeleted_res { u_long hr; };
+
+
+
+struct MsgImp_MessageMovedFrom_arg { HOBJECT obj; SBinary key; LONGLONG llChangeKey; u_long ulReadState; };
+
+
+
+
+
+
+struct MsgImp_MessageMovedFrom_res { u_long hr; };
+
+
+
+struct MsgImp_MessageMovedTo_arg { HOBJECT obj; SBinary key; SBinary parentkey; };
+
+
+
+
+
+struct MsgImp_MessageMovedTo_res { u_long hr; };
+
+
+
+
+
+
+
+struct FldImp_FolderCreated_arg { HOBJECT obj; SBinary key; SBinary parentkey; LPWSTR pwszName; u_long ulFolderType; };
+
+
+
+
+
+
+
+struct FldImp_FolderCreated_res { u_long hr; u_long ulObjType; HOBJECT obj; };
+
+
+
+
+
+struct FldImp_FolderDeleted_arg { HOBJECT obj; SBinary key; SBinary parentkey; };
+
+
+
+
+
+struct FldImp_FolderDeleted_res { u_long hr; };
+
+
+
+struct FldImp_FolderChanged_arg { HOBJECT obj; SBinary key; LPWSTR pwszName; SBinary oldparentkey; SBinary newparentkey; };
+
+
+
+
+
+
+
+struct FldImp_FolderChanged_res { u_long hr; };
 
 
 
@@ -1505,6 +1827,7 @@ program ASERV_PROGRAM
                 Session_GetVersion_res Session_GetVersion(Session_GetVersion_arg) = 106;
 
 
+
                 Session_InitSession_res Session_InitSession(Session_InitSession_arg) = 107;
                 Session_AdmLogon_res Session_AdmLogon(Session_AdmLogon_arg) = 108;
                 Session_GetConfig_res Session_GetConfig(Session_GetConfig_arg) = 109;
@@ -1517,6 +1840,8 @@ program ASERV_PROGRAM
                 Session_ABGetUserDataByInternalAddress_res Session_ABGetUserDataByInternalAddress(Session_ABGetUserDataByInternalAddress_arg) = 116;
                 Session_ABGetChangeTime_res Session_ABGetChangeTime(Session_ABGetChangeTime_arg) = 117;
                 Session_ABGetUserList_res Session_ABGetUserList(Session_ABGetUserList_arg) = 118;
+                Session_RegClientCert_res Session_RegClientCert(Session_RegClientCert_arg) = 119;
+                Session_RegisterSyncClientID_res Session_RegisterSyncClientID(Session_RegisterSyncClientID_arg) = 120;
 
 
 
@@ -1680,6 +2005,43 @@ program ASERV_PROGRAM
                 ModifyTable_GetLastError_res ModifyTable_GetLastError(ModifyTable_GetLastError_arg) = 2000;
                 ModifyTable_GetTable_res ModifyTable_GetTable(ModifyTable_GetTable_arg) = 2001;
                 ModifyTable_ModifyRow_res ModifyTable_ModifyRow(ModifyTable_ModifyRow_arg) = 2002;
+
+
+
+                MsgSync_Configure_res MsgSync_Configure(MsgSync_Configure_arg) = 2100;
+                MsgSync_BeginExport_res MsgSync_BeginExport(MsgSync_BeginExport_arg) = 2101;
+                MsgSync_ExportNextMessage_res MsgSync_ExportNextMessage(MsgSync_ExportNextMessage_arg) = 2102;
+                MsgSync_ConfirmLastExport_res MsgSync_ConfirmLastExport(MsgSync_ConfirmLastExport_arg) = 2103;
+                MsgSync_EndExport_res MsgSync_EndExport(MsgSync_EndExport_arg) = 2104;
+                MsgSync_BeginImport_res MsgSync_BeginImport(MsgSync_BeginImport_arg) = 2105;
+                MsgSync_EndImport_res MsgSync_EndImport(MsgSync_EndImport_arg) = 2106;
+                MsgSync_OpenMessage_res MsgSync_OpenMessage(MsgSync_OpenMessage_arg) = 2107;
+
+
+
+                FldSync_Configure_res FldSync_Configure(FldSync_Configure_arg) = 2200;
+                FldSync_BeginExport_res FldSync_BeginExport(FldSync_BeginExport_arg) = 2201;
+                FldSync_ExportNextFolder_res FldSync_ExportNextFolder(FldSync_ExportNextFolder_arg) = 2202;
+                FldSync_ConfirmLastExport_res FldSync_ConfirmLastExport(FldSync_ConfirmLastExport_arg) = 2203;
+                FldSync_EndExport_res FldSync_EndExport(FldSync_EndExport_arg) = 2204;
+                FldSync_BeginImport_res FldSync_BeginImport(FldSync_BeginImport_arg) = 2205;
+                FldSync_EndImport_res FldSync_EndImport(FldSync_EndImport_arg) = 2206;
+                FldSync_OpenFolder_res FldSync_OpenFolder(FldSync_OpenFolder_arg) = 2207;
+
+
+
+                MsgImp_MessageCreated_res MsgImp_MessageCreated(MsgImp_MessageCreated_arg) = 2300;
+                MsgImp_MessageChanged_res MsgImp_MessageChanged(MsgImp_MessageChanged_arg) = 2301;
+                MsgImp_ReadStateChanged_res MsgImp_ReadStateChanged(MsgImp_ReadStateChanged_arg) = 2302;
+                MsgImp_MessageDeleted_res MsgImp_MessageDeleted(MsgImp_MessageDeleted_arg) = 2303;
+                MsgImp_MessageMovedFrom_res MsgImp_MessageMovedFrom(MsgImp_MessageMovedFrom_arg) = 2304;
+                MsgImp_MessageMovedTo_res MsgImp_MessageMovedTo(MsgImp_MessageMovedTo_arg) = 2305;
+
+
+
+                FldImp_FolderCreated_res FldImp_FolderCreated(FldImp_FolderCreated_arg) = 2400;
+                FldImp_FolderDeleted_res FldImp_FolderDeleted(FldImp_FolderDeleted_arg) = 2401;
+                FldImp_FolderChanged_res FldImp_FolderChanged(FldImp_FolderChanged_arg) = 2402;
         } = 1;
 
 } = 1;

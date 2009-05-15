@@ -124,7 +124,14 @@ namespace CompactTeaSharp.Server
 		// throws OncRpcException, IOException 
 		public OncRpcTcpConnectionServerTransport (IOncRpcDispatchable dispatcher,
 			TcpClient tcpClient, int bufferSize, OncRpcTcpServerTransport parent,
-			int transmissionTimeout) : base (dispatcher, 0)
+			int transmissionTimeout)
+			: this (dispatcher, tcpClient, bufferSize, parent, transmissionTimeout, tcpClient.GetStream ())
+		{
+		}
+		
+		public OncRpcTcpConnectionServerTransport (IOncRpcDispatchable dispatcher,
+			TcpClient tcpClient, int bufferSize, OncRpcTcpServerTransport parent,
+			int transmissionTimeout, Stream stream) : base (dispatcher, 0)
 		{
 			this.parent = parent;
 			this.transmissionTimeout = transmissionTimeout;
@@ -146,8 +153,8 @@ namespace CompactTeaSharp.Server
 			// Create the necessary encoding and decoding streams, so we can
 			// communicate at all.
 			//
-			sendingXdr = new XdrTcpEncodingStream (tcpClient, bufferSize);
-			receivingXdr = new XdrTcpDecodingStream (tcpClient, bufferSize);
+			sendingXdr = new XdrTcpEncodingStream (tcpClient, stream, bufferSize);
+			receivingXdr = new XdrTcpDecodingStream (tcpClient, stream, bufferSize);
 			//
 			// Inherit the character encoding setting from the listening
 			// transport (parent transport).

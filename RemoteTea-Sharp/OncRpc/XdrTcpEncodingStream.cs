@@ -50,6 +50,12 @@ namespace CompactTeaSharp
 		private Int32 bufferFragmentHeaderIndex; // Index of fragment header within buffer.
 		private static byte [] paddingZeros = { 0, 0, 0, 0 }; // Some zeros, only needed for padding.
 
+
+		public XdrTcpEncodingStream (TcpClient client, int bufferSize) 
+			: this (client, client.GetStream (), bufferSize)
+		{
+		}
+		
 		/// <summary>
 		///  Construct a new <code>XdrTcpEncodingStream</code> object and associate
 		///  it with the given <code>streamingSocket</code> for TCP/IP-based
@@ -57,10 +63,12 @@ namespace CompactTeaSharp
 		/// </summary>
 		/// <param name="streamingSocket">Socket to which XDR data is sent.</param>
 		/// <param name="bufferSize">Size of packet buffer for temporarily storing outgoing XDR data.</param>
-		public XdrTcpEncodingStream (TcpClient client, int bufferSize)
+		public XdrTcpEncodingStream (TcpClient client, Stream stream, int bufferSize)
 		{
 			this.client = client;
-			stream = client.GetStream ();
+			this.stream = stream;
+					
+					
 
 			// If the given buffer size is too small, start with a more sensible
 			// size. Next, if bufferSize is not a multiple of four, round it up to
