@@ -5,6 +5,7 @@
 //
 // Author Java: <a href="mailto:dog@gnu.org">Chris Burdess</a>
 // Author C#: Andreas Huegel, Topalis AG
+//            Michael Kukat, Thinking Objects GmbH
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -546,29 +547,6 @@ namespace NMapi.Format.Mime
 			}
 			return text;
 		}
-
-		// -- Calculating multipart boundaries --
-
-		private static int part = 0;
-
-
-		/// <summary>
-		/// Returns a suitably unique boundary value.
-		/// </summary>
-		/// <returns></returns>
-		public static String GetUniqueBoundaryValue ()
-		{
-			StringBuilder buffer = new StringBuilder ();
-			buffer.Append ("----=_Part_");
-			buffer.Append (part++);
-			buffer.Append ("_");
-			buffer.Append (Math.Abs (buffer.GetHashCode ()));
-			buffer.Append ('.');
-			buffer.Append (new DateTime ().Millisecond);
-			return buffer.ToString ();
-		}
-
-
 
 		private static Dictionary<string, string> extToMime = new Dictionary<string, string>()
         {

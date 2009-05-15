@@ -249,24 +249,6 @@ namespace NMapi.Format.Mime
 		}
 
 		/// <summary>
-		/// Test MimeUtility_GetUniqueBoundaryValue
-		/// </summary>
-		[Test]
-		public void MimeUtility_GetUniqueBoundaryValue ()
-		{
-			String erg = 
-				NMapi.Format.Mime.MimeUtility.GetUniqueBoundaryValue();
-			String erg2 = 
-				NMapi.Format.Mime.MimeUtility.GetUniqueBoundaryValue();
-
-			// must return a unique id every time
-			Assert.IsFalse (erg == erg2);
-			Assert.IsTrue (erg.Length > 15);
-			Assert.IsTrue (erg2.Length > 15);
-		}
-
-		
-		/// <summary>
 		/// InternetHeader creation via InternetHeader (String line): basic
 		/// </summary>
 		[Test]
@@ -992,6 +974,18 @@ AP///wCAAAAAQAAAAAA=
 		}
 
 		/// <summary>
+		/// creating a Multipart message without setting boundary should be raise an exception
+		/// </summary>	
+		[Test]
+		[ExpectedException( typeof( MessagingException ), ExpectedMessage="Missing boundary parameter" )]
+		public void MimeMultipart_New_Message_Without_Boundary()
+		{
+			MimeMessage mm = new MimeMessage();
+			mm.SetHeader ("Content-Type", "multipart/related");
+			MimeMultipart mp = new MimeMultipart(mm);
+		}
+
+		/// <summary>
 		/// create new Multipart message in several stages and test each stage
 		/// </summary>	
 		[Test]
@@ -999,11 +993,10 @@ AP///wCAAAAAQAAAAAA=
 		{
 			MimeMessage mm = new MimeMessage();
 			mm.SetHeader ("Content-Type", "multipart/related");
+
+			mm.Boundary = "--_testboundary__";
 			MimeMultipart mp = new MimeMultipart(mm);
 			
-			// has boundary been created
-			Assert.IsFalse ("" == mm.Boundary);
-
 			// append MimeBodyPart
 			MimeBodyPart mb = new MimeBodyPart();
 			mb.AddHeader ("Content-Type", "text/plain; charset=iso-8859-1");

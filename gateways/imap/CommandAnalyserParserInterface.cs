@@ -53,6 +53,7 @@ namespace NMapi.Gateways.IMAP
 				Trace.WriteLine("pi_1");
 				NewCommand();
 				SetupStreamReader();
+				if(_inSR == null) return null;
 				Trace.WriteLine("pi_2_streamreader done");
 				if (yy == null) {
 					yy = new Yylex (_inSR);
@@ -114,6 +115,7 @@ namespace NMapi.Gateways.IMAP
 	
 				/* read the rest of the command and set the parser up with the new stream reader*/
 				SetupStreamReader();
+				if(_inSR == null) return null;
 				parser_obj.SetNewInput(_inSR);
 			}
 				
@@ -123,7 +125,9 @@ namespace NMapi.Gateways.IMAP
 		public void SetupStreamReader ()
 		{
 			string s = clientConnection.ReadLine();
-			_inSR = new StreamReader( new MemoryStream( Encoding.ASCII.GetBytes(s+"\r\n")));
+			if(s != null)
+				_inSR = new StreamReader( new MemoryStream( Encoding.ASCII.GetBytes(s+"\r\n")));
+			else _inSR = null;
 		}
 
 		public bool StateNotAuthenticated () {

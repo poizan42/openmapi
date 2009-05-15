@@ -164,15 +164,18 @@ namespace NMapi.Gateways.IMAP {
 
 		public void RunLoop()
 		{
-			if (clientConnection.DataAvailable () && !loopEnd) {
+			if (!loopEnd && clientConnection.DataAvailable ()) {
 				ResetTimeout ();
 				Log ("sldkfj");
 				commandAnalyser.CheckCommand ();
-				Queue q = commandAnalyser.CommandQueue;
-				while (q.Count > 0) {
-					Command cmd = (Command) q.Dequeue();
-					Log ("command processing: \""+cmd.Command_name+"\"");						
-					commandProcessor.ProcessCommand(cmd);
+				if(commandAnalyser == null) loopEnd = true;
+				else {
+					Queue q = commandAnalyser.CommandQueue;
+					while (q.Count > 0) {
+						Command cmd = (Command) q.Dequeue();
+						Log ("command processing: \""+cmd.Command_name+"\"");						
+						commandProcessor.ProcessCommand(cmd);
+					}
 				}
 			}
 			ProcessTimeout ();

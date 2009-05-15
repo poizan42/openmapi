@@ -22,6 +22,7 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 using NMapi;
 using NMapi.Flags;
@@ -146,7 +147,7 @@ namespace NMapi.Utility {
 
 				ms = new MemoryStream (Encoding.ASCII.GetBytes (RTFParser.UncompressRTF( ms.ToArray ())));
 string debug =  new StreamReader (ms).ReadToEnd ();
-Console.WriteLine (debug);
+Trace.WriteLine (debug);
 ms.Seek (0, SeekOrigin.Begin);
 				rtfParser = new RTFParser (ms);
 			}
@@ -156,7 +157,21 @@ ms.Seek (0, SeekOrigin.Begin);
 			string charset = mm.CharacterSet; // save charset
 			
 			if (rs.Count > 0) {
+				/* set multipart header */
 				mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
+
+				/* generate boundary */
+				MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+				props.Prop = Property.EntryId;
+				if(props.Exists) {
+					string boundary = "----_bnd_";
+					byte[] hash = md5.ComputeHash(props.Binary.ByteArray);
+					foreach (byte b in hash) {
+						boundary += b.ToString("x2").ToLower();
+					}
+					mm.Boundary = boundary;
+				}
+
 				mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
 				MimeMultipart mmp = new MimeMultipart (mm);
 
@@ -190,6 +205,18 @@ ms.Seek (0, SeekOrigin.Begin);
 			if (rtfParser != null && rtfParser.IsHTML () && propsBody.Exists) {
 				// do html body
 				targetMP.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
+
+				/* generate boundary */
+				MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+				props.Prop = Property.EntryId;
+				if(props.Exists) {
+					string boundary = "----_bnd_alt_";
+					byte[] hash = md5.ComputeHash(props.Binary.ByteArray);
+					foreach (byte b in hash) {
+						boundary += b.ToString("x2").ToLower();
+					}
+					targetMP.Boundary = boundary;
+				}
 				MimeMultipart mmpHtml = new MimeMultipart (targetMP);
 
 				// Text/plain alternative

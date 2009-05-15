@@ -21,6 +21,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 /**
  * Parses a outlook-rtf data. 
@@ -60,7 +61,7 @@ namespace NMapi.Utility {
 		
 		private Stream osHTML = null;
 		private Stream osTEXT = null;
-		private string       dstCharset;
+		private string dstCharset = null;
 		
 		
 		class RTFChunk 
@@ -110,7 +111,7 @@ namespace NMapi.Utility {
 						throw new IOException("rtf header: expecting {");
 					}
 					ProcessChunk(chunk);
-					if (chunk.isToken && chunk.value.Equals("\\ansicpg", StringComparison.OrdinalIgnoreCase))
+					if (chunk.isToken && chunk.value.StartsWith("\\ansicpg", StringComparison.OrdinalIgnoreCase))
 					{
 						chunk = GetChunk();
 						if (chunk == null)
@@ -462,9 +463,9 @@ namespace NMapi.Utility {
 				//unknown tokens
 				else
 				{
-					Console.WriteLine("(unknown:");
-					Console.WriteLine(chunk.value);
-					Console.WriteLine(")");
+					Trace.WriteLine("(unknown:");
+					Trace.WriteLine(chunk.value);
+					Trace.WriteLine(")");
 				}
 			}
 			else
@@ -483,20 +484,22 @@ namespace NMapi.Utility {
 		{
 			if (state.dst != Destination.NONE)
 			{
-				byte [] bytes = Encoding.GetEncoding (dstCharset).GetBytes(str);
-				
-				switch(state.dst)
-				{
-				case Destination.TEXT:
-					Output(osTEXT, bytes);
-					break;
-				case Destination.HTML:
-					Output(osHTML, bytes);
-					break;
-				case Destination.BOTH:
-					Output(osTEXT, bytes);
-					Output(osHTML, bytes);
-					break;
+				if(dstCharset != null) {
+					byte [] bytes = Encoding.GetEncoding (dstCharset).GetBytes(str);
+					
+					switch(state.dst)
+					{
+					case Destination.TEXT:
+						Output(osTEXT, bytes);
+						break;
+					case Destination.HTML:
+						Output(osHTML, bytes);
+						break;
+					case Destination.BOTH:
+						Output(osTEXT, bytes);
+						Output(osHTML, bytes);
+						break;
+					}
 				}
 			}
 		}
