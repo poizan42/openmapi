@@ -125,10 +125,8 @@ namespace NMapi {
 
 		public const int UmapiSpecialMin = 0x6780;
 
-		// was: PT_...
 		public static class CommonProperty {
-			
-			// for IMAP4			
+			// for IMAP4
 			[MapiPropDef] public const int Imap4Uid =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x00)  << 16);
 			// for ACL
 			[MapiPropDef] public const int AclSecToken =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x01)  << 16);
@@ -144,7 +142,10 @@ namespace NMapi {
 			[MapiPropDef] public const int MungeDate =		((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x09)  << 16);
 			// store information
 			[MapiPropDef] public const int PrivateStore =	((int) PropertyType.Boolean) | ( ( UmapiSpecialMin + 0x0a)  << 16);
-			[MapiPropDef] public const int LIC2 =			((int) PropertyType.String8) | ( ( UmapiSpecialMin + 0x0b)  << 16);			
+			[MapiPropDef] public const int LIC2 =			((int) PropertyType.String8) | ( ( UmapiSpecialMin + 0x0b)  << 16);
+			// sync interface
+			[MapiPropDef] public const int MessageSynchronizer = ((int) PropertyType.Object) | ( (UmapiSpecialMin + 0x0c)  << 16);
+			[MapiPropDef] public const int FolderSynchronizer  = ((int) PropertyType.Object) | ( (UmapiSpecialMin + 0x0d)  << 16);	
 		}
 
 		/// <summary>
@@ -171,6 +172,29 @@ namespace NMapi {
 			public const int ChangePermissions   = (1<<12);
 		}
 
+		
+		
+		/// <summary>
+		///  Synchronizer constants "Messages"
+		/// </summary>
+		public static class MessageSyncAction {
+			public const int Create    = 1;
+			public const int Delete    = 2;
+			public const int Modify    = 3;
+			public const int MoveFrom  = 4;
+			public const int MoveTo    = 5;
+			public const int ReadState = 6;
+		}
+		
+		/// <summary>
+		///  Synchronizer constants "Folders"
+		/// </summary>
+		public static class FolderSyncAction {
+			public const int Create = 1;
+			public const int Delete = 2;
+			public const int Modify = 3;
+		}
+
 		/// <summary>
 		///  Admin-Interface error codes (admerr.h)
 		/// </summary>
@@ -189,7 +213,25 @@ namespace NMapi {
 			public const int LicenseLimit  = 11;
 			public const int Access        = 12;
 		}
-
+		
+		
+		[Flags]
+		public enum FolderSynchronizer
+		{
+			IpmOnly      = 0x001,	// only export ipm root
+			SearchFolder = 0x010,	// also export searchfolder
+			ClientWins   = 0x100	// client wins on conflict
+		}
+		
+		[Flags]
+		public enum MessageSynchronizer
+		{
+			NoMoves    = 0x001,  // moves will be mapped to create/delete
+			Associated = 0x010,  // also export associated ("hidden") messages
+			ClientWins = 0x100  // client wins on conflict
+		}
+		
+		
 		/// <summary>Assures all needed properties are set.</summary>
 		/// <exception>The host or root-path is not set.</exception>
 		public static void VerifyEnvironment ()

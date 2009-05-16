@@ -231,7 +231,15 @@ namespace NMapi {
 			return session.ResolveSmtpAddress (smtpaddress, displayname);
 		}
 		
-		
+		/// <summary>
+		///  Register a unique client id for synchronization.
+		///  Also puts store into cached mode
+		/// </summary>
+		/// <param  name="id">A unique client id, preferable a uuid</param>
+		public void RegisterSyncClientID (byte[] id)
+		{
+			session.RegisterSyncClientID (id);
+		}
 		
 		
 		

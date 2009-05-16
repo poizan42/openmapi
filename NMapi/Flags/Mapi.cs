@@ -79,13 +79,21 @@ namespace NMapi.Flags {
 		public const int Status   = 0x0000000A;
 		public const int Session  = 0x0000000B;
 		public const int FormInfo = 0x0000000C;
-
+		
+		//
+		// Internal
+		//
+		
 		public const int Tbldata      = 0x00000100;
 		public const int TableReader  = Tbldata;
 		public const int Evsub        = 0x00000101;
 		public const int SimpleStream = 0x00000103;
 		public const int Table	      = 0x00000104;
-
+		public const int ModifyTable  = 0x0000010d;
+		public const int MsgSync      = 0x0000010e;
+		public const int FldSync      = 0x0000010f;
+		public const int MsgImp       = 0x00000110;
+		public const int FldImp       = 0x00000111;
 
 	}
 

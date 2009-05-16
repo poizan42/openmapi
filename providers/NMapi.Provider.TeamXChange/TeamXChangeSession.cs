@@ -38,6 +38,7 @@ namespace NMapi {
 	using NMapi.Properties;
 	using NMapi.Properties.Special;
 	using NMapi.Table;
+	using NMapi.Synchronization;
 
 	/// <summary>
 	///  Internal representation of the Session.
@@ -185,6 +186,16 @@ namespace NMapi {
 					return new TeamXChangeMapiTable (obj, (TeamXChangeMapiFolder) parent);
 				case Mapi.TableReader:
 					return new TeamXChangeMapiTableReader (obj, (TeamXChangeBase) parent);
+//				case Mapi.ModifyTable:																		// TODO!!!!!
+//					return new IModifyTable (obj, (IMapiFolder) parent);
+				case Mapi.MsgSync:
+					return new TeamXChangeMessageSynchronizer (obj, (TeamXChangeMapiFolder) parent);
+				case Mapi.FldSync:
+					return new TeamXChangeFolderSynchronizer (obj, (TeamXChangeMsgStore) parent);
+				case Mapi.MsgImp:
+					return new TeamXChangeMessageImporter2 (obj, (TeamXChangeMessageSynchronizer) parent);
+				case Mapi.FldImp:
+					return new TeamXChangeFolderImporter2 (obj, (TeamXChangeFolderSynchronizer) parent);
 				default:
 					Console.Write ("unknown type ");
 					Console.Write (objType);
@@ -192,8 +203,7 @@ namespace NMapi {
 					throw new MapiException (Error.BadValue);
 			}
 		}
-
-
+		
 		/// <summary>
 		///
 		/// </summary>
@@ -203,6 +213,27 @@ namespace NMapi {
 			return CreateObject (parent, obj, objType, interFace, Property.Null);
 		}
 
+		public void RegClientCert (string password)
+		{
+			var prms = new Session_RegClientCert_arg ();
+			// TXC TODO: We need an obj field here for the OpenMapi.org server.
+			prms.pszPassword = new StringAdapter (password);
+			prms.usage = 0;
+			
+			var res = TeamXChangeBase.MakeCall<Session_RegClientCert_res, Session_RegClientCert_arg> (
+				client.Session_RegClientCert_1, prms);
+		}
+
+		public void RegisterSyncClientID (byte [] id)
+		{
+			var prms = new Session_RegisterSyncClientID_arg ();
+			// TXC TODO: We need an obj field here for the OpenMapi.org server.
+			prms.id = new SBinary (id);
+			
+			var res = TeamXChangeBase.MakeCall<Session_RegisterSyncClientID_res, Session_RegisterSyncClientID_arg> (
+				client.Session_RegisterSyncClientID_1, prms);
+		}
+		
 		/// <summary>
 		///
 		/// </summary>

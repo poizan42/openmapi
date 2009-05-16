@@ -972,6 +972,11 @@ namespace NMapi.Flags {
 		[MapiPropDef] public const int Initialdetailspane                       =  ((int) PropertyType.Long)    | (0x3F08 << 16);
 
 		[MapiPropDef] public const int Null                                     =  ((int) PropertyType.Null)    | (PropertyTypeHelper.PROP_ID_NULL << 16);
+		
+		// Sync
+		
+		[MapiPropDef] public const int MessageSynchronizer                      =  0x678c000d;
+		[MapiPropDef] public const int FolderSynchronizer                       =  0x678d000d;
 	}
 
 }
