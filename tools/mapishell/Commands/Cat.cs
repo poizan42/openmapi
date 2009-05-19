@@ -123,9 +123,13 @@ namespace NMapi.Tools.Shell {
 					}
 					throw;
 				}
-				PropertyType type = PropertyTypeHelper.PROP_TYPE (val.PropTag);
-				object data = val.GetValueObj ();
-				driver.WriteLine (data);
+				
+				if (val is BinaryProperty)
+					driver.WriteLine (((BinaryProperty) val).Value.ToHexString ());
+				else {
+					object data = val.GetValueObj ();
+					driver.WriteLine (data);
+				}
 			}
 		}
 

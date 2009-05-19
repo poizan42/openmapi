@@ -256,18 +256,22 @@ namespace NMapi.Tools.Shell {
 					prefix = "mapi" + StatusString;
 				return ReadLine (prefix + "> ");
 			};
+			
+			try {
+			
+				ExecResource ("default.mss");
 
-			ExecResource ("default.mss");
+				RunRcScript ();
 
-			RunRcScript ();
+				if (loadScript != null)
+					Exec ("load " + loadScript, false, getNext);
 
-			if (loadScript != null)
-				Exec ("load " + loadScript, false, getNext);
-
-			string line;
-			while ((line = getNext (null)) != null)
-				Exec (line, false, getNext); // GETTING next ... TODO!
-
+				string line;
+				while ((line = getNext (null)) != null)
+					Exec (line, false, getNext); // GETTING next ... TODO!
+			} finally {
+				state.CloseSession ();
+			}
 		}
 
 		internal void Exec (string line, bool echo, 
