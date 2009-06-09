@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - IMapiFactory.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -26,6 +26,7 @@ using NMapi.Events;
 using NMapi.Table;
 using NMapi.Properties;
 using NMapi.Properties.Special;
+using NMapi.Admin;
 
 namespace NMapi {
 
@@ -37,19 +38,8 @@ namespace NMapi {
 		// experimental
 		bool SupportsNotifications { get; }
 
-		IMapiTable CreateIMapiTable ();
-		IMapiTableReader CreateIMapiTableReader ();
-		IMapiProp CreateIMapiProp ();
-		IMapiContainer CreateIMapiContainer ();
-		IMapiFolder CreateIMapiFolder ();
-		IMessage CreateIMessage ();
-		IAttach CreateIAttach ();
-		IBase CreateIBase ();
-		IMapiProgress CreateIMapiProgress ();
-		IStream CreateIStream ();
 		IMapiSession CreateMapiSession ();
-		IEventSubscription CreateEventSubscription ();
-
+		IMapiAdmin CreateMapiAdmin (string host);
 	}
 
 }

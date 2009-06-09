@@ -70,6 +70,7 @@ namespace NMapi.Server {
 			}
 		}
 
+		private Configuration cfg = new Configuration ();
 		private SessionManager sessionMan;
 		private ProxyInformation pinfo;
 
@@ -146,6 +147,9 @@ namespace NMapi.Server {
 			get { return pinfo; }
 		}
 
+		public Configuration Configuration {
+			get { return cfg; }
+		}
 		public List<IServerModule> Modules {
 			get { return modules; }
 		}
@@ -165,32 +169,41 @@ namespace NMapi.Server {
 
 		public void Run ()
 		{
-			Console.Write ("Loading 'web <-> proxy remoting' ... ");
+			try {	
+				Console.Write ("Loading 'web <-> proxy remoting' ... ");
 
-			InternalCallServer.Driver = this;
+				InternalCallServer.Driver = this;
 
-			InternalCallServer icall = new InternalCallServer ();
-			icall.Run ();
-			Console.WriteLine ("done.");
+				InternalCallServer icall = new InternalCallServer ();
+				icall.Run ();
+				Console.WriteLine ("done.");
 
-			Console.Write ("Loading 'http server' ... ");
-			WebServer svr = new WebServer ();
-			svr.Run ();
-			Console.WriteLine ("done.");
+				Console.Write ("Loading 'http server' ... ");
+				WebServer svr = new WebServer ();
+				svr.Run ();
+				Console.WriteLine ("done.");
 
-			DetectModules ();
-			CommonRpcService decoratedRpc = GenerateAssembly ();
+				DetectModules ();
+				CommonRpcService decoratedRpc = GenerateAssembly ();
 
-			Console.Write ("Loading 'onc server' ... ");
+				Console.Write ("Loading 'onc server' ... ");
+			
+				OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, 
+											cfg.ListenAddress, cfg.ListenPort,
+											cfg.X509CertificateCertFile, cfg.X509CertificateKeyFile);
+				Thread oncThread = new Thread (new ThreadStart (oncService.Run));
+				oncThread.Start ();
 
-			OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, IPAddress.Any, 8000);
-			Thread oncThread = new Thread (new ThreadStart (oncService.Run));
-			oncThread.Start ();
+				Console.WriteLine ("done.");
 
-			Console.WriteLine ("done.");
-
-			Console.WriteLine ("Press ENTER to stop server.");
-			Console.ReadLine ();
+				Console.WriteLine ("Press ENTER to stop server.");
+				Console.ReadLine ();
+			
+			} finally {
+				
+				// cleanup if required ....
+				
+			}
 			Environment.Exit (1);
 		}
 
@@ -199,7 +212,7 @@ namespace NMapi.Server {
 		private CommonRpcService GenerateAssembly ()
 		{
 			object[] args = new object [1];
-			args [0] = this.modules;
+			args [0] = this;
 
 			Type baseType = typeof (CommonRpcService);
 
@@ -216,7 +229,7 @@ namespace NMapi.Server {
 						"DecoratedCommonRpcService", 
 						attributes, baseType);
 
-			AddSingleParamConstructor (baseType, typeBuilder, typeof (List<IServerModule>) );
+			AddSingleParamConstructor (baseType, typeBuilder, typeof (Driver) );
 
 			// inject calls ...
 

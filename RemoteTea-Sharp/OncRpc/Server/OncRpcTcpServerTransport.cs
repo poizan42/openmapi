@@ -30,11 +30,12 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.Security;
 using CompactTeaSharp;
 
 namespace CompactTeaSharp.Server
@@ -65,6 +66,10 @@ namespace CompactTeaSharp.Server
 	/// see OncRpcTcpConnectionServerTransport
 	public sealed class OncRpcTcpServerTransport : OncRpcServerTransport
 	{
+		private bool useSsl;
+		private string certFile;
+		private string keyFile;
+		
 		private TcpListener socket; // TCP socket used for stream-based communication with ONC/RPC clients.
 		private int bufferSize;  // Size of send/receive buffers to use when encoding/decoding XDR data.
 		private LinkedList<OncRpcTcpConnectionServerTransport> openTransports;
@@ -161,10 +166,21 @@ namespace CompactTeaSharp.Server
 		/// <param bufferSize Size of buffer used when receiving and sending
 		///     chunks of XDR fragments over TCP/IP. The fragments built up to
 		///     form ONC/RPC call and reply messages.</param>
-		// throws OncRpcException, IOException		
+		// throws OncRpcException, IOException
 		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
-			IPAddress bindAddr, int port, int bufferSize) : base (dispatcher, port)
+			IPAddress bindAddr, int port, int bufferSize) : this (dispatcher,
+				bindAddr, port, bufferSize, false, null, null)
 		{
+		}
+		
+		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
+			IPAddress bindAddr, int port, int bufferSize, bool useSsl, 
+			string certFile, string keyFile) : base (dispatcher, port)
+		{
+			this.useSsl = useSsl;
+			this.certFile = certFile;
+			this.keyFile = keyFile;
+			
 			 openTransports = new LinkedList<OncRpcTcpConnectionServerTransport> ();
 				
 			//
@@ -178,7 +194,7 @@ namespace CompactTeaSharp.Server
 
 			socket.Start (); // TODO: remove!
 
-			if ( port == 0 )
+			if (port == 0)
 				this.port = ((IPEndPoint) socket.LocalEndpoint).Port;
 		}
 
@@ -320,8 +336,13 @@ namespace CompactTeaSharp.Server
 						return;
 
 					TcpClient newSocket = myServerSocket.AcceptTcpClient ();
+						
+					Stream stream = newSocket.GetStream ();
+					if (useSsl)
+						stream = OncNetworkUtility.GetSslStream (stream, certFile, keyFile);
+					
 					var transport = new OncRpcTcpConnectionServerTransport (
-						dispatcher, newSocket, bufferSize, this, transmissionTimeout);
+						dispatcher, newSocket, bufferSize, this, transmissionTimeout, stream);
 					lock (openTransports) {
 						openTransports.AddFirst (transport);
 					}
@@ -331,14 +352,16 @@ namespace CompactTeaSharp.Server
 					// thread for handling.
 					//
 					transport.Listen ();
-					
+
 				} catch (OncRpcException) {
 					// Do nothing
-				} catch (IOException) {
+				} catch (IOException e) {
 					//
 					// We ignore most of the IOExceptions as that might be thrown, 
 					// for instance, if a client attempts a connection and resets 
 					// it before it is pulled off by accept ().
+
+					Console.WriteLine (e); // DEBUG
 
 					// If the socket has been gone away after an IOException 
 					// this means that the transport has been closed, so we end this thread

@@ -30,6 +30,7 @@ using NMapi.Events;
 using NMapi.Table;
 using NMapi.Properties;
 using NMapi.Properties.Special;
+using NMapi.Admin;
 
 namespace NMapi {
 
@@ -63,64 +64,14 @@ namespace NMapi {
 			get { return factory.SupportsNotifications; }
 		}
 
-		public IMapiTable CreateIMapiTable ()
-		{
-			return factory.CreateIMapiTable ();
-		}
-
-		public IMapiTableReader CreateIMapiTableReader ()
-		{
-			return factory.CreateIMapiTableReader ();
-		}
-
-		public IMapiProp CreateIMapiProp ()
-		{
-			return factory.CreateIMapiProp ();
-		}
-
-		public IMapiContainer CreateIMapiContainer ()
-		{
-			return factory.CreateIMapiContainer ();
-		}
-
-		public IMapiFolder CreateIMapiFolder ()
-		{
-			return factory.CreateIMapiFolder ();
-		}
-
-		public IMessage CreateIMessage ()
-		{
-			return factory.CreateIMessage ();
-		}
-
-		public IAttach CreateIAttach ()
-		{
-			return factory.CreateIAttach ();
-		}
-
-		public IBase CreateIBase ()
-		{
-			return factory.CreateIBase ();
-		}
-
-		public IMapiProgress CreateIMapiProgress ()
-		{
-			return factory.CreateIMapiProgress ();
-		}
-
-		public IStream CreateIStream ()
-		{
-			return factory.CreateIStream ();
-		}
-
 		public IMapiSession CreateMapiSession ()
 		{
 			return factory.CreateMapiSession ();
 		}
 
-		public IEventSubscription CreateEventSubscription ()
+		public IMapiAdmin CreateMapiAdmin (string host)
 		{
-			return factory.CreateEventSubscription ();
+			return factory.CreateMapiAdmin (host);
 		}
 	}
 

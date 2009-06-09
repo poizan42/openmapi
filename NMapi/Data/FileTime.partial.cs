@@ -40,7 +40,7 @@ namespace NMapi {
 	{
 		private const long TICKSPERSEC = 10000000L;
 		private const long SECSPERDAY = 86400;
-		/* 1601 to 1970 is 369 years plus 89 leap days */
+		// 1601 to 1970 is 369 years plus 89 leap days
 		private const long SECS_1601_TO_1970 = ((369 * 365 + 89) * SECSPERDAY);
 		private const long TICKS_1601_TO_1970 = (SECS_1601_TO_1970 * TICKSPERSEC);
 		private const long l32 = 0x100000000L;
@@ -57,8 +57,8 @@ namespace NMapi {
 
 			long l = timestamp * TICKSPERSEC + TICKS_1601_TO_1970;
 
-			dwHighDateTime = (int)(l >> 32);
-			dwLowDateTime  = (int)(l & 0xffffffffL);
+			dwHighDateTime = (int) (l >> 32);
+			dwLowDateTime  = (int) (l & 0xffffffffL);
 		}
 
 		/// <summary>

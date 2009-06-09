@@ -58,9 +58,21 @@ namespace NMapi.Events {
 		protected Notification ()
 		{
 		}
-
+		
 		[Obsolete]
-		public virtual void XdrEncode (XdrEncodingStream xdr)
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+		
+		[Obsolete]
+		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			// This must be called by derived classes overriding 
 			//  this method with base.XdrEncode (xdr) ...
@@ -68,7 +80,7 @@ namespace NMapi.Events {
 		}
 		
 		[Obsolete]
-		public virtual void XdrDecode (XdrDecodingStream xdr)
+		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 

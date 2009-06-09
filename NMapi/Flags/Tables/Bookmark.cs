@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - Ab.cs
+// openmapi.org - NMapi C# Mapi API - Bookmark.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -33,16 +33,13 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public struct Ab
+	/// <summary>
+	///  
+	/// </summary>
+	public static class Bookmark
 	{
-		// Container flags
-
-		public const int Recipients    = 0x00000001;
-		public const int SubContainers = 0x00000002;
-		public const int Modifiable    = 0x00000004;
-		public const int Unmodifiable  = 0x00000008;
-		public const int FindOnOpen    = 0x00000010;
-		public const int NotDefault    = 0x00000020;
+		public const int Beginning = 0;
+		public const int Current = 1;
+		public const int End = 2;
 	}
-
 }

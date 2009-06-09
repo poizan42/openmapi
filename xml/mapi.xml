@@ -666,12 +666,6 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<!-- TODO! ==> PLUGIN! //-->
-			<proxyCodeVoid>
-				Console.WriteLine ("CODEPAGE: " + codePage);
-				request.ProxySession.LoginName = user;
-				obj.Logon ("127.0.0.1:7000", sessionFlags, user, password, codePage);
-			</proxyCodeVoid>
 			<param type="string">host</param>
 			<param type="int">sessionFlags</param>
 			<param type="string">user</param>
@@ -716,7 +710,34 @@
 			<param type="int">flags</param>
 		</method>
 	</interface>
-	
+
+	<interface id="^I#Modify^Table" implements="^I#Base">
+		<doc>
+			<summary></summary>
+		</doc>
+		<method id="^Get^Last^Error">
+			<doc>
+				<summary></summary>
+			</doc>
+			<returns>^MAPI^ERROR[]</returns>
+			<param type="int">hr</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Get^Table">
+			<doc>
+				<summary></summary>
+			</doc>
+			<returns>^I#MAPI^Table^Reader</returns>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Modify^Row">
+			<doc>
+				<summary></summary>
+			</doc>
+			<returns>long</returns>
+			<param type="^ROW^ENTRY">pEntry</param>
+		</method>
+	</interface>
 	
 	<interface id="^I#MAPI^Table^Reader" implements="^I#Base">
 		<doc>

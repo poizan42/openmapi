@@ -52,6 +52,8 @@ namespace CompactTeaSharp.Server
 	   	///  clients.
 	   	/// </summary>
 		private TcpClient tcpClient;
+		private IPAddress remoteIpAddress;
+		private int remotePort;
 
 	   	/// <summary>
 	   	///  XDR encoding stream used for sending replies via TCP/IP back to an
@@ -141,7 +143,14 @@ namespace CompactTeaSharp.Server
 			//
 			if ( bufferSize < 1024 )
 				bufferSize = 1024;
-			this.tcpClient = tcpClient;
+			this.tcpClient = tcpClient;	
+			
+			// we need to copy this in order to send the information later on _after_ 
+			// the socket has (potentially) been closed.
+			IPEndPoint endpoint = (IPEndPoint) tcpClient.Client.RemoteEndPoint;
+			this.remoteIpAddress = new IPAddress (endpoint.Address.GetAddressBytes ());
+			this.remotePort = endpoint.Port;
+			
 			this.port = ((IPEndPoint) tcpClient.Client.LocalEndPoint).Port;
 			if ( tcpClient.SendBufferSize < bufferSize ) {
 				tcpClient.SendBufferSize = bufferSize;
@@ -178,18 +187,7 @@ namespace CompactTeaSharp.Server
 		///  it tries to sent back replies.
 	   	/// </summary>
 		public override void Close ()
-		{
-			IPAddress ip = null;
-			int port = -1;
-			try {
-				if (receivingXdr != null && tcpClient != null) {
-					ip = receivingXdr.GetSenderAddress ();
-					port = receivingXdr.GetSenderPort ();
-				}
-			} catch (Exception) {
-				// Do nothing
-			}
-			
+		{			
 			if (tcpClient != null) {
 				//
 				// Since there is a non-zero chance of getting race conditions,
@@ -232,7 +230,7 @@ namespace CompactTeaSharp.Server
 			}
 			if ( parent != null ) {
 				parent.RemoveTransport (this);
-				parent.SendClosed (ip, port);
+				parent.SendClosed (remoteIpAddress, remotePort);
 				parent = null;
 			}
 		}

@@ -942,7 +942,7 @@ state.Log ("FixUIDsIn");
 			mnid.Guid = guid;
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
 			PropertyValue []  propsx = mapiProperty.GetProps (
-					mapiProperty.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
+					mapiProperty.GetIDsFromNames (mnids, Mapi.Create),
 					Mapi.Unicode);			
 			PropertyValue spv = propsx[0];
 
@@ -963,7 +963,7 @@ state.Log ("FixUIDsIn");
 				state.Log ("GetNamedProp 4");
 
 				if (props.Length == 0  || props[0] is ErrorProperty){
-					tag = PropertyTypeHelper.CHANGE_PROP_TYPE (tag, type).value__;
+					tag = PropertyTypeHelper.CHANGE_PROP_TYPE (tag, type);
 					prop.PropTag = tag;
 					state.Log ("GetNamedProp 5");
 				} else {

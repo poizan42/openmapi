@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - TableNotificationType.cs
+// openmapi.org - NMapi C# Mapi API - DisplayType_AbContentsTable.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,21 +33,17 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	// was: TABLE ...
+	// PR_DISPLAY_TYPEs
 
-	public enum TableNotificationType
+	public enum DisplayType_AbContentsTable
 	{
-		// TABLE_NOTIFICATION event types passed in TableEvent
-
-		Changed = 1,
-		Error,
-		RowAdded,
-		RowDeleted,
-		RowModified,
-		SortDone,
-		RestrictDone,
-		SetColDone,
-		Reload
+		MailUser = 0,
+		DistList,
+		Forum,
+		Agent,
+		Organization,
+		PrivateDistList,
+		RemoteMailUser
 	}
 
 }

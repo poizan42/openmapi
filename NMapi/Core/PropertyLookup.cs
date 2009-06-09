@@ -44,7 +44,7 @@ namespace NMapi {
 		{
 			TypeDefinition typeDef = resolver.ResolveDefinition (typeName);
 			if (typeDef == null)
-				throw CantResolve (typeName);
+				throw CantResolveType (typeName);
 
 			foreach (FieldDefinition field in typeDef.Fields)
 				if (IsValidPropertyField (field) && !map.ContainsKey ((int) field.Constant))
@@ -68,18 +68,25 @@ namespace NMapi {
 			return null;
 		}
 
-		private Exception CantResolve (string typeName)
+		private Exception CantResolveType (string typeName)
 		{
 			return new ArgumentException ("Can't resolve type '" + typeName + "'.");
 		}
 
+		private Exception CantResolveField (string typeName, string fieldName)
+		{
+			return new ArgumentException ("Type '" + typeName + "' does not contain a field '" + fieldName + "'.");
+		}
+		
 		public int GetValue (string typeName, string fieldName)
 		{
 			int propTag = -1;
 			TypeDefinition typeDef = resolver.ResolveDefinition (typeName);
 			if (typeDef == null)
-				throw CantResolve (typeName);
+				throw CantResolveType (typeName);
 			FieldDefinition field = typeDef.Fields.GetField (fieldName);
+			if (field == null)
+				throw CantResolveField (typeName, fieldName);
 			if (IsValidPropertyField (field))
 				propTag = (int) field.Constant;
 			return propTag;

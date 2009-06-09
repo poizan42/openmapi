@@ -109,7 +109,7 @@ namespace NMapi.Properties {
 		{
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
 			PropertyValue []  props = imapiProp.GetProps (
-					imapiProp.GetIDsFromNames (mnids, NMAPI.MAPI_CREATE),
+					imapiProp.GetIDsFromNames (mnids, Mapi.Create),
 					Mapi.Unicode);			
 			ErrorProperty errProp = props [0] as ErrorProperty;
 			if (errProp != null)

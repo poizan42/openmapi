@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - TableStatus.cs
+// openmapi.org - NMapi C# Mapi API - PropertyType.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
@@ -33,19 +32,32 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	// was: TBL_STAT
+	public class PropertyTypeHelper
+	{
+		private const int PROP_TYPE_MASK  = 0x0000FFFF;
+		public const int PROP_ID_NULL    = 0;
+		private const int PROP_ID_INVALID = 0xFFFF;
 
-	public enum TableStatus
-	{	
-		// Table status
+		public static PropertyType PROP_TYPE (int propTag)
+		{
+			return (PropertyType) (propTag & PROP_TYPE_MASK);
+		}
 
-		Complete        = 0,
-		QChanged        = 7,
-		Sorting         = 9,
-		SortError       = 10,
-		SettingCols     = 11,
-		SetColError     = 13,
-		Restricting     = 14,
-		RestrictError   = 15
+		public static int PROP_TAG (PropertyType propType, int propID)
+		{
+			return (propID << 16) | ((int) propType);
+		}	
+
+		public static int PROP_ID (int propTag)
+		{
+			return propTag >> 16;
+		}
+
+		public static int CHANGE_PROP_TYPE (int propTag, PropertyType propType)
+		{
+			return PROP_TAG (propType, PROP_ID (propTag));
+		}
+
 	}
+
 }

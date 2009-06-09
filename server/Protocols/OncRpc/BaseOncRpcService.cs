@@ -24,6 +24,7 @@ using System.Diagnostics;
 
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using NMapi.Interop;
 using NMapi.Interop.MapiRPC;
 using CompactTeaSharp;
@@ -37,13 +38,19 @@ namespace NMapi.Server {
 		protected SessionManager sessionManager;
 		protected Dictionary <string, OncProxySession> sessions;
 		protected int eventPort;
-
+		
+		private string certFile;
+		private string keyFile;
+		
 		public BaseOncRpcService (CommonRpcService service, 
-			SessionManager sman, IPAddress ip, int port) : base (ip, port)
+			SessionManager sman, IPAddress ip, int port, 
+			string certFile, string keyFile) : base (ip, port, true, certFile, keyFile)
 		{
 			this.sessionManager = sman;
 			this.commonRpcService = service;
-				
+			this.certFile = certFile;
+			this.keyFile = keyFile;
+			
 			var transport = transports [0] as OncRpcTcpServerTransport;
 			if (transport == null)
 				throw new Exception ("Transport is null!");
@@ -74,7 +81,7 @@ namespace NMapi.Server {
 				if (tcpClient.SendBufferSize < bufferSize)
 					tcpClient.SendBufferSize = bufferSize;
 				
-				var evServer = new ReverseEventConnectionServer (this, tcpClient);
+				var evServer = new ReverseEventConnectionServer (this, tcpClient, certFile, keyFile);
 				var eventHandlerThread = new Thread (new ThreadStart (evServer.Handle));
 				eventHandlerThread.Start ();
 			}
@@ -85,14 +92,17 @@ namespace NMapi.Server {
 			Trace.WriteLine ("Client closed connection!");
 			string key = GetSessionKey (ea.IPAddress.ToString (), ea.Port);
 			if (sessions.ContainsKey (key)) {
-				
 				var session = sessions [key];
-				if (session.ReverseEventConnectionServer != null)
-					session.ReverseEventConnectionServer.Close ();
-				sessionManager.UnregisterSession (session);
-				sessions.Remove (key);
-				
-				Trace.WriteLine ("Session removed!!!");
+				// attempt to close all backend objects
+				try {
+					session.ObjectStore.CloseAll ();
+				} finally {
+					if (session.ReverseEventConnectionServer != null)
+						session.ReverseEventConnectionServer.Close ();
+					sessionManager.UnregisterSession (session);
+					sessions.Remove (key);			
+					Trace.WriteLine ("Session removed!!!");
+				}
 			}
 		}
 		

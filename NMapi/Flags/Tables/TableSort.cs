@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - PropertyType.cs
+// openmapi.org - NMapi C# Mapi API - TableSort.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -21,6 +21,7 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
+using System;
 using System.IO;
 
 
@@ -32,32 +33,13 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public class PropertyTypeHelper
+	/// <summary>
+	///  Bit 0: set if descending, 1 if ascending
+	/// </summary>
+	public enum TableSort
 	{
-		public const int PROP_TYPE_MASK  = 0x0000FFFF;
-		public const int PROP_ID_NULL    = 0;
-		public const int PROP_ID_INVALID = 0xFFFF;
-
-		public static PropertyType PROP_TYPE (int propTag)
-		{
-			return (PropertyType) (propTag & PROP_TYPE_MASK);
-		}
-
-		public static int PROP_TAG (PropertyType propType, int propID)
-		{
-			return (propID << 16) | ((int) propType);
-		}	
-
-		public static int PROP_ID (int propTag)
-		{
-			return propTag >> 16;
-		}
-
-		public static PropertyType CHANGE_PROP_TYPE (int propTag, PropertyType propType)
-		{
-			return (PropertyType) ((0xFFFF0000 & propTag) | (int) propType);
-		}
-
+		Ascend  = 0,
+		Descend,
+		Combine
 	}
-
 }

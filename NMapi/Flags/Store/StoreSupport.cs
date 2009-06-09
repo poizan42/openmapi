@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - DisplayType.cs
+// openmapi.org - NMapi C# Mapi API - StoreSupport.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -33,31 +33,27 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public sealed class DisplayType
-	{ 
-		// PR_DISPLAY_TYPEs
+	[Flags]
+	public enum StoreSupport
+	{
+		// Bits for PR_STORE_SUPPORT_MASK 
 
-		// AB Contents Tables
-		public const int MailUser         = 0x00000000;
-		public const int DistList         = 0x00000001;
-		public const int Forum            = 0x00000002;
-		public const int Agent            = 0x00000003;
-		public const int Organization     = 0x00000004;
-		public const int PrivateDistlist  = 0x00000005;
-		public const int RemoteMailuser   = 0x00000006;
-
-		// AB Hierarchy tables
-		public const int Modifiable       = 0x00010000;
-		public const int Global           = 0x00020000;
-		public const int Local            = 0x00030000;
-		public const int Wan              = 0x00040000;
-		public const int NotSpecific      = 0x00050000;
-
-		//  Folder Fierarchy Tables
-		public const int Folder           = 0x01000000;
-		public const int FolderLink       = 0x02000000;
-		public const int FolderSpecial    = 0x04000000;
-
+		EntryidUnique    = 0x00000001,
+		ReadOnly         = 0x00000002,
+		SearchOk         = 0x00000004,
+		ModifyOk         = 0x00000008,
+		CreateOk         = 0x00000010,
+		AttachOk         = 0x00000020,
+		OleOk            = 0x00000040,
+		SubmitOk         = 0x00000080,
+		NotifyOk         = 0x00000100,
+		MvPropsOk        = 0x00000200,
+		CategorizeOk     = 0x00000400,
+		RtfOk            = 0x00000800,
+		RestrictionOk    = 0x00001000,
+		SortOk           = 0x00002000,
+		PublicFolders    = 0x00004000,
+		UncompressedRtf  = 0x00008000
 
 	}
 

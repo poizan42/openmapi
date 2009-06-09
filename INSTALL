@@ -1,1 +1,7 @@
 
+
+The server can be run using something like:
+
+OPENMAPI_TARGET_HOST=127.0.0.1:7000 OPENMAPI_CERT_FILE=ca.cer OPENMAPI_KEY_FILE=ca.key mono --debug bin/nmapisvr.exe
+
+SSL-certificates are required.

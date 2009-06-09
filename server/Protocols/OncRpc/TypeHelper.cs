@@ -29,61 +29,31 @@ namespace NMapi.Server {
 
 	public static class TypeHelper
 	{
+
 		public static int GetMapiType (object queriedObject)
 		{
-			int MAPI_STORE = 0x00000001;    // Message Store 
-			//#define MAPI_ADDRBOOK   ((ULONG) 0x00000002)    // Address Book 
-			int MAPI_FOLDER = 0x00000003;    // Folder 
-			//#define MAPI_ABCONT     ((ULONG) 0x00000004)    // Address Book Container 
-			int MAPI_MESSAGE = 0x00000005;    // Message 
-			//#define MAPI_MAILUSER   ((ULONG) 0x00000006)    // Individual Recipient 
-			int MAPI_ATTACH = 0x00000007;    // Attachment 
-			//#define MAPI_DISTLIST   ((ULONG) 0x00000008)    // Distribution List Recipient 
-			//#define MAPI_PROFSECT   ((ULONG) 0x00000009)    // Profile Section 
-			//#define MAPI_STATUS     ((ULONG) 0x0000000A)    // Status Object 
-			//#define MAPI_SESSION    ((ULONG) 0x0000000B)    // Session 
-			//#define MAPI_FORMINFO   ((ULONG) 0x0000000C)    // Form Information 
-			
-
-			// umapi types
-
-			int MAPI_TBLDATA			= 0x00000100; // exported
-			int MAPI_EVSUB				= 0x00000101; // exported
-			int MAPI_EVDATA				= 0x00000102; // server
-			int MAPI_SIMPLESTREAM		= 0x00000103; // exported
-			int MAPI_TABLE				= 0x00000104; // exported
-			int MAPI_ADMIN              = 0x00000105; // admin interface
-			int MAPI_RECIP              = 0x00000106; // server
-			int MAPI_FOLDERHELPER       = 0x00000107; // server
-			// int MAPI_MVPHELPER       =    0x00000108; // server
-			int MAPI_SORTHELPER         = 0x00000109; // server
-			int MAPI_SEARCHSTORE        = 0x0000010a; // server
-			int MAPI_SEARCHFOLDER       = 0x0000010b; // server
-			int MAPI_STREAMDATA         = 0x0000010c; // server
-			int MAPI_MODIFYTABLE        = 0x0000010d; // exported
-
 			Trace.WriteLine ("GetType: " + queriedObject);			
 
 			int typeID = -1;
 
 			if (queriedObject is IMsgStore)
-				typeID = MAPI_STORE;
+				typeID = MapiObjectType.Store;
 			else if (queriedObject is IMapiFolder)
-				typeID = MAPI_FOLDER;
+				typeID = MapiObjectType.Folder;
 			else if (queriedObject is IMessage)
-				typeID = MAPI_MESSAGE;
+				typeID = MapiObjectType.Message;
 			else if (queriedObject is IAttach)
-				typeID = MAPI_ATTACH;
+				typeID = MapiObjectType.Attach;
 			else if (queriedObject is IMapiTableReader)
-				typeID = MAPI_TBLDATA;		/// TXC thingie ...
+				typeID = MapiObjectType.Tbldata;		/// TXC thingie ...
 //			else if (queriedObject is )
 //				typeID = MAPI_EVSUB;
 //			else if (queriedObject is )
 //				typeID = MAPI_EVDATA;
 			else if (queriedObject is IStream)
-				typeID = MAPI_SIMPLESTREAM;
+				typeID = MapiObjectType.SimpleStream;
 			else if (queriedObject is IMapiTable)
-				typeID = MAPI_TABLE;
+				typeID = MapiObjectType.Table;
 //			else if (queriedObject is )
 //				typeID = MAPI_ADMIN;
 //			else if (queriedObject is )
@@ -98,8 +68,8 @@ namespace NMapi.Server {
 //				typeID = MAPI_SEARCHFOLDER;
 //			else if (queriedObject is )
 //				typeID = MAPI_STREAMDATA;
-//			else if (queriedObject is )
-//				typeID = MAPI_MODIFYTABLE;
+			else if (queriedObject is IModifyTable)
+				typeID = MapiObjectType.ModifyTable;
 
 			return typeID;
 		}

@@ -68,25 +68,6 @@ namespace NMapi.Properties {
 				return MnId.Id;
 			}
 		}
-		
-/*
-
-		/// <summary>
-		///   Allocates a MapiNameId array. All MapiNameId 
-		///   elements are initialized.
-		/// </summary>
-		/// <param name="count">The size of the array</param>
-		/// <returns>MapiNameId</returns>
-
-		public static MapiNameId [] HrAllocMapiNameIdArray (int count)
-		{
-			MapiNameId [] ret = new MapiNameId [count];
-			for (int i = 0; i < count; i++)
-				ret[i] = new MapiNameId ();
-			return ret;
-		}
-
-*/
 
 		public MapiNameId ()
 		{
@@ -97,7 +78,13 @@ namespace NMapi.Properties {
 		{
 			XdrDecode (xdr);
 		}
-
+		
+		[Obsolete]
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
 		[Obsolete]
 		public static MapiNameId Decode (XdrDecodingStream xdr)
 		{
@@ -115,15 +102,16 @@ namespace NMapi.Properties {
 		}
 		
 		[Obsolete]
-		public virtual void XdrEncode (XdrEncodingStream xdr)
+		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: MapiNameId");
 			// must be called by derived classes!
-			new LPGuid (lpguid).XdrEncode (xdr);
+			((IXdrEncodeable) new LPGuid (lpguid)).XdrEncode (xdr);
 			xdr.XdrEncodeInt ((int) UlKind);
 		}
 		
-		[Obsolete] public virtual void XdrDecode (XdrDecodingStream xdr)
+		[Obsolete]
+		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 	}

@@ -109,17 +109,29 @@ namespace NMapi.Table {
 		}
 
 		[Obsolete]
-		public void XdrEncode (XdrEncodingStream xdr)
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+
+		[Obsolete]
+		private void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			int size = lpProps.Length;
 			xdr.XdrEncodeInt (size);
 			for (int i = 0; i < size; i++)
-				lpProps [i].XdrEncode (xdr);
+				((IXdrEncodeable) lpProps [i]).XdrEncode (xdr);
 		}
 
 		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr)
+		private void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int size = xdr.XdrDecodeInt ();

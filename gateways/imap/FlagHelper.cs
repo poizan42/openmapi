@@ -38,7 +38,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Property.MsgStatus,
 			Property.MessageFlags,
-			Outlook.Property_FLAG_STATUS,
+			Outlook.Property.FLAG_STATUS,
 			ServerConnection.AdditionalFlagsPropTag
 		};
 
@@ -102,7 +102,7 @@ namespace NMapi.Gateways.IMAP {
 				status = (ulong) propertyHelper.LongNum;
 			}
 							
-			propertyHelper.Prop = Outlook.Property_FLAG_STATUS;
+			propertyHelper.Prop = Outlook.Property.FLAG_STATUS;
 			if (propertyHelper.Exists) {
 				flagStatus = (ulong) propertyHelper.LongNum;
 			}
@@ -247,7 +247,7 @@ namespace NMapi.Gateways.IMAP {
 
 				// handle PR_FLAG_STATUS   (\\FLAGGED Flag in IMAP)
 				IntProperty flagStatusProp = new IntProperty ();
-				flagStatusProp.PropTag = Outlook.Property_FLAG_STATUS;
+				flagStatusProp.PropTag = Outlook.Property.FLAG_STATUS;
 				flagStatusProp.Value = (int) flagStatus;
 				mph.HrSetOneProp (flagStatusProp);
 

@@ -54,7 +54,6 @@ namespace NMapi.Flags {
 		public const int KEEP_OPEN_READWRITE = 0x00000002;
 		public const int FORCE_SAVE          = 0x00000004;
 	
-		public const int MAPI_CREATE   = 0x00000002;
 		public const int STREAM_APPEND = 0x00000004;
 	
 		public const int MAPI_MOVE        = 0x00000001;

@@ -59,7 +59,7 @@ namespace NMapi.Meta {
 				return MatchLevel.NoMatch;
 
 			if (someProps.ContainsKey (Property.MessageClass) && 
-				((string) someProps [Property.MessageClass]).StartsWith ("IPM.Note"))
+				((string) someProps [Property.MessageClass]).StartsWith (MessageClasses.Ipm.Note))
 					return MatchLevel.Match;
 
 			return MatchLevel.NoMatch;

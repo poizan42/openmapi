@@ -452,7 +452,7 @@ namespace NMapi.Tools.Shell {
 				int nameIndex = -1;
 				foreach (Row row in rows) {
 					if (nameIndex == -1)
-						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+					nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
 					PropertyValue name = PropertyValue.GetArrayProp (row.Props, nameIndex);
 					names.Add (((UnicodeProperty) name).Value);
 				}

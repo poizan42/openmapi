@@ -97,9 +97,20 @@ namespace NMapi.Tools.Shell {
 
 		public void Write (string str)
 		{
-			outputWriter.Write (str);
+			Write (str, null, null);
 		}
-
+		
+		public void Write (string str, ConsoleColor? fgColor, ConsoleColor? bgColor)
+		{
+			if (fgColor != null)
+				Console.ForegroundColor = (ConsoleColor) fgColor;
+			if (bgColor != null)
+				Console.BackgroundColor = (ConsoleColor) bgColor;
+			outputWriter.Write (str);
+			if (fgColor != null || bgColor != null)
+				Console.ResetColor ();
+		}
+		
 		public void WriteLine ()
 		{
 			outputWriter.WriteLine ();
@@ -107,7 +118,18 @@ namespace NMapi.Tools.Shell {
 
 		public void WriteLine (string str)
 		{
+			WriteLine (str, null, null);
+		}
+
+		public void WriteLine (string str, ConsoleColor? fgColor, ConsoleColor? bgColor)
+		{
+			if (fgColor != null)
+				Console.ForegroundColor = (ConsoleColor) fgColor;
+			if (bgColor != null)
+				Console.BackgroundColor = (ConsoleColor) bgColor;
 			outputWriter.WriteLine (str);
+			if (fgColor != null || bgColor != null)
+				Console.ResetColor ();
 		}
 
 		public void WriteLine (object o)

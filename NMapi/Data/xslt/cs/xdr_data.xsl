@@ -96,17 +96,30 @@
 <xsl:template match="both|encode" mode="encode">
 	<xsl:variable name="override"><xsl:if test="parent::node()/@inherits != ''"> override </xsl:if></xsl:variable>
 		[Obsolete ("XdrEncode MUST only be used by NMapi components and may be removed!", false)]
-		public <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete ("XdrEncode MUST only be used by NMapi components and may be removed!", false)]
+		protected internal <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrEncode (xdr);</xsl:if><!-- a little hack-ish //-->
 			<xsl:apply-templates mode="encode" />
 		}
+		
 </xsl:template>	
 <xsl:template match="both|decode" mode="decode">
 	<xsl:variable name="override"><xsl:if test="parent::node()/@inherits != ''"> override </xsl:if></xsl:variable>
 		[Obsolete ("XdrDecode MUST only be used by NMapi components and may be removed!", false)]
-		public <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+	
+		[Obsolete ("XdrDecode MUST only be used by NMapi components and may be removed!", false)]
+		protected internal <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrDecode (xdr);</xsl:if><!-- a little hack-ish //-->
@@ -170,7 +183,7 @@
 
 <xsl:template match="complex" mode="encode">
 	#pragma warning disable 0618
-	<xsl:value-of select="text()" />.XdrEncode (xdr); <!-- HACK: ignore static //-->
+	((IXdrEncodeable) <xsl:value-of select="text()" />).XdrEncode (xdr); <!-- HACK: ignore static //-->
 	#pragma warning restore 0618
 </xsl:template>
 
@@ -188,7 +201,7 @@
 
 <xsl:template match="wrapped" mode="encode">
 	#pragma warning disable 0618
-	new <xsl:value-of select="@in" /> (<xsl:value-of select="text()" />).XdrEncode (xdr);
+	((IXdrEncodeable) new <xsl:value-of select="@in" /> (<xsl:value-of select="text()" />)).XdrEncode (xdr);
 	#pragma warning restore 0618
 </xsl:template>
 

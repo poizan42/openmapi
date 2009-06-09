@@ -1,5 +1,5 @@
 //
-// RemoteTea - IXdrAble.cs
+// openmapi.org - CompactTeaSharp - IXdrAble.cs
 //
 // Copyright 2008 by Topalis AG
 //

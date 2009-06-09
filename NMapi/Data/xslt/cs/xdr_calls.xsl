@@ -90,10 +90,11 @@
 	{
 		public <xsl:value-of select="$serverName" /> () : this (0) { }
 		public <xsl:value-of select="$serverName" /> (int port) : this (null, port) { }
-		public <xsl:value-of select="$serverName" /> (IPAddress bindAddr, int port)
+		public <xsl:value-of select="$serverName" /> (IPAddress bindAddr, int port) : this (null, port, false, null, null) { }
+		public <xsl:value-of select="$serverName" /> (IPAddress bindAddr, int port, bool useSsl, string certFile, string keyFile)
 		{
 			transports = new OncRpcServerTransport [] {
-				new OncRpcTcpServerTransport (this, bindAddr, port, 32768)
+				new OncRpcTcpServerTransport (this, bindAddr, port, 32768, useSsl, certFile, keyFile)
 			};
 		}
 

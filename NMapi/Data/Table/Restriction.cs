@@ -67,8 +67,27 @@ namespace NMapi.Table {
 			throw new Exception ("Shouldn't get here!");
 		}
 
-		[Obsolete] public virtual void XdrEncode (XdrEncodingStream xdr) { }
-		[Obsolete] public virtual void XdrDecode (XdrDecodingStream xdr) { }
+		[Obsolete]
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+
+		[Obsolete]
+		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		{
+		}
+
+		[Obsolete]
+		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		{
+		}
 		
 	}
 

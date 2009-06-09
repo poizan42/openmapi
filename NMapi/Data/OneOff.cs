@@ -35,22 +35,26 @@ using NMapi.Table;
 namespace NMapi {
 
 	/// <summary>
-	///  MAPI OneOff entryids.
+	///   MAPI OneOff EntryIds.
 	/// </summary> 
 	public sealed class OneOff
 	{
-		static readonly byte[] ONE_OFF_UID = { 0x81, 0x2b, 0x1f, 0xa4, 0xbe, 
+		private static readonly byte[] ONE_OFF_UID = { 0x81, 0x2b, 0x1f, 0xa4, 0xbe, 
 			0xa3, 0x10, 0x19, 0x9d, 0x6e, 0x00, 0xdd, 0x01, 0x0f, 0x54, 0x02 };
 
-		const int ONE_OFF_UNICODE = 0x8000;
-		const int ONE_OFF_NO_RICH_INFO = 0x0001;
-		const int OFFSET_NAME = 24;
-		const string wc16charset = "UnicodeLittleUnmarked";
+		private const int ONE_OFF_UNICODE = 0x8000;
+		private const int ONE_OFF_NO_RICH_INFO = 0x0001;
+		private const int OFFSET_NAME = 24;
+		private const string wc16charset = "UnicodeLittleUnmarked";
 
 		private byte [] bytes;
 		private string charset;
 		private int charsize;
+		
 
+		/// <summary>
+		///  
+		/// </summary>
 		public static bool IsOneOffEntryID (byte [] bytes)
 		{
 			if (bytes.Length < ONE_OFF_UID.Length + 4)
@@ -61,6 +65,42 @@ namespace NMapi {
 			}
 			return true;
 		}
+
+
+		/// <summary>
+		///  Get the entryid representing this OneOff.
+		/// </summary>
+		public byte [] EntryID {
+			get { return bytes; }
+		}
+
+		/// <summary>
+		///  Get display name (PR_DISPLAY_NAME)
+		/// </summary>
+		public string DisplayName {
+			get {
+				return GetString (DisplayNameOffset, DisplayNameLen);
+			}
+		}
+
+		/// <summary>
+		///  Get the address type (PR_ADDRTYPE)
+		/// </summary>
+		public string AddressType {
+			get {
+				return GetString (AddressTypeOffset, AddressTypeLen);
+			}
+		}
+
+		/// <summary>
+		///  Get the email address (PR_EMAIL_ADDRESS)
+		/// </summary>
+		public string EmailAddress {
+			get {
+				return GetString (EmailAddressOffset, EmailAddressLen);
+			}
+		}
+
 
 
 		/// <summary>
@@ -178,42 +218,14 @@ namespace NMapi {
 			Array.Copy (bytesMail, 0, bytes, pos, len);
 		}
 	
-		bool IsUnicode {
+		private bool IsUnicode {
 			get {
 				return (bytes[23] & 0x80) != 0;
 			}
 		}
 	
-		//
-		// Get the entryid representing this OneOff.
-		//
-		public byte [] EntryID {
-			get { return bytes; }
-		}
-	
-		int GetStrLen (int pos)
-		{
-			int len = 0;
-		
-			if (IsUnicode) {
-				while (!(bytes[pos+0] == 0 && bytes[pos+1] == 0)) {
-					pos += 2;
-					len += 2;
-				}
-				len += 2;
-			} else {
-				while (bytes[pos] != 0) {
-					pos += 1;
-					len += 1;
-				}
-				len += 1;
-			}
-			return len;
-		}
-	
 		private int DisplayNameOffset {
-			get {
-				return OFFSET_NAME;
+			get {				return OFFSET_NAME;
 			}
 		}
 	
@@ -261,33 +273,26 @@ namespace NMapi {
 			}
 		}
 	
-	
-		//
-		// Get display name (PR_DISPLAY_NAME)
-		//
-		public string DisplayName {
-			get {
-				return GetString (DisplayNameOffset, DisplayNameLen);
+		private int GetStrLen (int pos)
+		{
+			int len = 0;
+
+			if (IsUnicode) {
+				while (!(bytes[pos+0] == 0 && bytes[pos+1] == 0)) {
+					pos += 2;
+					len += 2;
+				}
+				len += 2;
+			} else {
+				while (bytes[pos] != 0) {
+					pos += 1;
+					len += 1;
+				}
+				len += 1;
 			}
-		}
-	
-		//
-		// Get the address type (PR_ADDRTYPE)
-		//
-		public string AddressType {
-			get {
-				return GetString (AddressTypeOffset, AddressTypeLen);
-			}
+			return len;
 		}
 
-		//
-		// Get the email address (PR_EMAIL_ADDRESS)
-		//
-		public string EmailAddress {
-			get {
-				return GetString (EmailAddressOffset, EmailAddressLen);
-			}
-		}
 	
 	}
 

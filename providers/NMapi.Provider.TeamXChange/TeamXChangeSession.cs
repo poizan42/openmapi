@@ -172,29 +172,29 @@ namespace NMapi {
 		public IBase CreateObject (IBase parent, long obj, int objType, NMapiGuid interFace, int propTag)
 		{
 			switch (objType) {
-				case Mapi.Folder:
+				case MapiObjectType.Folder:
 					if (parent is IMsgStore)
 						return new TeamXChangeMapiFolder (obj, (TeamXChangeMsgStore) parent);
 					return new TeamXChangeMapiFolder (obj, ((TeamXChangeMapiFolder) parent).Store);
-				case Mapi.Message:
+				case MapiObjectType.Message:
 					return new TeamXChangeMessage (obj, (TeamXChangeBase) parent);
-				case Mapi.Attach:
+				case MapiObjectType.Attach:
 					return new TeamXChangeAttach (obj, (TeamXChangeMessage)parent);
-				case Mapi.SimpleStream:
+				case MapiObjectType.SimpleStream:
 					return new TeamXChangeStream (obj, (TeamXChangeBase) parent, propTag);
-				case Mapi.Table:
+				case MapiObjectType.Table:
 					return new TeamXChangeMapiTable (obj, (TeamXChangeMapiFolder) parent);
-				case Mapi.TableReader:
+				case MapiObjectType.TableReader:
 					return new TeamXChangeMapiTableReader (obj, (TeamXChangeBase) parent);
-//				case Mapi.ModifyTable:																		// TODO!!!!!
+//				case MapiObjectType.ModifyTable:																		// TODO!!!!!!
 //					return new IModifyTable (obj, (IMapiFolder) parent);
-				case Mapi.MsgSync:
+				case MapiObjectType.MsgSync:
 					return new TeamXChangeMessageSynchronizer (obj, (TeamXChangeMapiFolder) parent);
-				case Mapi.FldSync:
+				case MapiObjectType.FldSync:
 					return new TeamXChangeFolderSynchronizer (obj, (TeamXChangeMsgStore) parent);
-				case Mapi.MsgImp:
+				case MapiObjectType.MsgImp:
 					return new TeamXChangeMessageImporter2 (obj, (TeamXChangeMessageSynchronizer) parent);
-				case Mapi.FldImp:
+				case MapiObjectType.FldImp:
 					return new TeamXChangeFolderImporter2 (obj, (TeamXChangeFolderSynchronizer) parent);
 				default:
 					Console.Write ("unknown type ");
@@ -227,7 +227,7 @@ namespace NMapi {
 		public void RegisterSyncClientID (byte [] id)
 		{
 			var prms = new Session_RegisterSyncClientID_arg ();
-			// TXC TODO: We need an obj field here for the OpenMapi.org server.
+			prms.obj = new HObject (0);
 			prms.id = new SBinary (id);
 			
 			var res = TeamXChangeBase.MakeCall<Session_RegisterSyncClientID_res, Session_RegisterSyncClientID_arg> (

@@ -1,5 +1,5 @@
 //
-// RemoteTea - OnRpcCallMessage.cs
+// openmapi.org - CompactTeaSharp - OnRpcCallMessage.cs
 //
 // C# port Copyright 2008 by Topalis AG
 //

@@ -6,13 +6,18 @@ MLOG = mono bin/mlog.exe
 XSLTPROC = xsltproc
 MONODOCER = monodocer
 MONODOCS2HTML = monodocs2html
-PREPROC = $(MONO) bin/preproc.exe 
+PREPROC = $(MONO) bin/preproc.exe
+MAPIMAP = $(MONO) --debug bin/mapimap.exe
 
 #0612,0618
 NO_WARN=1591
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
+
+# Note: Mono won't be able to resolve the private key, using the normal .NET API 
+#       so this kind of thing is required.
+WITH_MONO_SECURITY= /D:USE_MONO_SECURITY /r:Mono.Security.dll
 
 NDESK_OPTIONS=lib/NDesk.Options.cs
 MONO_GETLINE=$(shell pkg-config --variable=Sources mono-lineeditor)
@@ -46,6 +51,7 @@ GoldParser.dll:
 
 RemoteTeaSharp.dll: 
 	$(MCS) $(DEBUG) $(TRACE) /target:library \
+	$(WITH_MONO_SECURITY) \
 	/out:bin/RemoteTeaSharp.dll $(REMOTETEA_SOURCES)
 
 NMapi.dll:
@@ -76,6 +82,7 @@ NMapi.dll:
 #
 
 #NMapi.Provider.Indigo 
+#NMapi.Provider.Mox
 allproviders: NMapi.Provider.TeamXChange
 
 NMapi.Provider.Indigo:
@@ -87,6 +94,31 @@ NMapi.Provider.Indigo:
 	/r:bin/NMapi.dll \
 	/r:System.ServiceModel.dll \
 	`find providers/NMapi.Provider.Indigo -name "*.cs"`
+
+#
+# MOX VIRTUAL PROVIDER
+#
+
+
+MOX_SPECIAL_PATH = providers/NMapi.Provider.Mox/Properties/Special
+MOX_GENERATED_PATH = providers/NMapi.Provider.Mox/Properties/generated
+
+NMapi.Provider.Mox:
+	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/VirtualFolder.mapimap -o $(MOX_GENERATED_PATH)/VirtualFolderPropHandler.generated.cs
+	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/MsgStore.mapimap -o $(MOX_GENERATED_PATH)/MsgStorePropHandler.generated.cs
+	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/MsgPublicStore.mapimap -o $(MOX_GENERATED_PATH)/MsgPublicStorePropHandler.generated.cs
+
+	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.Mox.dll \
+	/nowarn:$(NO_WARN) /target:library \
+	/r:System.Configuration.dll \
+	/r:System.Web.Services.dll \
+	/r:System.Xml.Linq.dll \
+	/r:bin/NMapi.dll \
+	/r:System.Runtime.Serialization.dll \
+	/r:System.ServiceModel.dll \
+	/r:bin/NMapi.OX.Http.dll \
+	`find providers/NMapi.Provider.Mox -name "*.cs"`
+
 
 NMapi.Provider.TeamXChange:
 	mkdir -p providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated
@@ -178,6 +210,7 @@ mmetal:
 #
 
 alltools: mapishell mapiwait mapitool
+#mapimap
 
 cup:
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
@@ -203,6 +236,21 @@ mapiwait:
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
 	/out:bin/mapiwait.exe  \
 	/r:bin/NMapi.dll $(NDESK_OPTIONS) $(MONO_GETLINE) $(MAPIWAIT_SOURCES)
+
+
+mapimap:
+	$(MCS) $(DEBUG) $(TRACE) /out:bin/mapimap.exe /nowarn:$(NO_WARN) \
+	/r:bin/GoldParser.dll \
+	/r:System.Core.dll \
+	/r:System.Xml.dll \
+	/r:System.Xml.Linq.dll \
+	/r:bin/NMapi.dll \
+	/resource:tools/mapimap/mapimap.cgt,mapimap.cgt \
+	/target:exe tools/mapimap/*.cs \
+	tools/mapimap/ast/*.cs \
+	tools/mapimap/generators/*.cs \
+	tools/mapimap/Utility/*.cs \
+	$(NDESK_OPTIONS)
 
 
 mapitool:

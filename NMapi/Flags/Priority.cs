@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - Bookmark.cs
+// openmapi.org - NMapi C# Mapi API - Priority.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,10 +33,13 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public struct Bookmark
+	public enum Priority
 	{
-		public const int Beginning = 0;
-		public const int Current   = 1;
-		public const int End       = 2;
+		// PR_PRIORITY values
+
+		Urgent    =  1,
+		Normal    =  0,
+		NonUrgent = -1
 	}
+
 }

@@ -73,28 +73,7 @@ namespace NMapi.Properties {
 		{
 			this.ulPropTag = ulPropTag;
 		}
-
-
-/*
-
-		/// <summary>
-		///  Allocates a PropertyValue array. All PropertyValue elements are initialized
-		///  and set to PR_NULL.
-		/// </summary>
-		/// <param name="count">The size of the array</param>
-		/// <returns>The property array</returns>
-		public static PropertyValue [] HrAllocPropArray (int count)
-		{
-			PropertyValue [] ret = new PropertyValue[count];
-			for (int i = 0; i < count; i++) {
-				ret[i] = new PropertyValue ();
-				ret[i].ulPropTag = Property.Null;
-			}
-			return ret;
-		}
-
-*/
-	
+		
 		/// <summary>
 		///   Get the index of a property tag in a property array, or -1 if not found
 		/// </summary>
@@ -140,8 +119,14 @@ namespace NMapi.Properties {
 		}
 
 		[Obsolete]
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+
+		[Obsolete]
 		// throws OncRpcException, IOException 
-		public virtual void XdrEncode (XdrEncodingStream xdr)
+		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			// This must be called by derived classes overriding 
 			//  this method with base.XdrEncode (xdr) ...
@@ -149,8 +134,9 @@ namespace NMapi.Properties {
 		}
 		
 		[Obsolete]
-		// throws OncRpcException, IOException 
-		public virtual void XdrDecode (XdrDecodingStream xdr) {}
+		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		{
+		}
 		
 		[Obsolete]
 		// throws OncRpcException, IOException 
@@ -433,8 +419,13 @@ namespace NMapi.Properties {
 		
 		public static PropertyValue Make (PropertyType ptype, object data)
 		{
+			return Make ((int) ptype, data);
+		}
+		
+		public static PropertyValue Make (int propTag, object data)
+		{
 			PropertyValue val = null;
-			
+			PropertyType ptype = PropertyTypeHelper.PROP_TYPE (propTag);
 			switch (ptype) {
 				case PropertyType.Null: val = new NullProperty (); break;
 				case PropertyType.I2: val = new ShortProperty ((short) data); break;
@@ -467,7 +458,7 @@ namespace NMapi.Properties {
 				default: val = new XProperty ((int) data); break;
 			}
 			
-			val.ulPropTag = (int) ptype;
+			val.ulPropTag = propTag;
 			return val;
 		}
 

@@ -69,8 +69,11 @@ namespace NMapi.Tools.Shell {
 				return;
 
 			string[] dirNames = state.GetSubDirNames (state.CurrentFolder);
+			
+			//		- sort mapping?
+			
 			foreach (string name in dirNames)
-				driver.WriteLine ("D  " + name);
+				driver.WriteLine ("D  " + name, ConsoleColor.Magenta, null);
 
 			bool asL, asA = false;
 			string msgClass = null;

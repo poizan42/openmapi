@@ -65,7 +65,7 @@ namespace NMapi.Interop {
 		/// </summary>
 		public MapiErrorUnicodeAdapter (MapiError value) 
 		{
-			this.Value = value;
+			this.value = value;
 		}
 
 		public MapiErrorUnicodeAdapter (XdrDecodingStream xdr)

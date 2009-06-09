@@ -441,7 +441,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 				if (Fetch_att_key == "RFC822.TEXT") {
 					propList.Add (Property.Body);
-					propList.Add (Outlook.Property_INTERNET_CPID); 
+					propList.Add (Outlook.Property.INTERNET_CPID); 
 				}
 				if (Fetch_att_key == "RFC822.HEADER") {
 					propList.AddRange (propsAllHeaderProperties);
@@ -453,8 +453,8 @@ namespace NMapi.Gateways.IMAP {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
 					propList.Add (Property.RtfCompressed);
-					propList.Add (Outlook.Property_HTML);
-					propList.Add (Outlook.Property_INTERNET_CPID);
+					propList.Add (Outlook.Property.HTML);
+					propList.Add (Outlook.Property.INTERNET_CPID);
 				}
 				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
 					propList.Add (Property.CreationTime);
@@ -462,14 +462,14 @@ namespace NMapi.Gateways.IMAP {
 				if (Fetch_att_key == "BODYSTRUCTURE") {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
-					propList.Add (Outlook.Property_INTERNET_CPID);
+					propList.Add (Outlook.Property.INTERNET_CPID);
 				}
 				if ("BODY FULL".Contains(Fetch_att_key)) {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
 					propList.Add (Property.RtfCompressed);
-					propList.Add (((int) PropertyType.String8)  | (0x1013 << 16)); //Outlook.Property_HTML);
-					propList.Add (Outlook.Property_INTERNET_CPID);
+					propList.Add (((int) PropertyType.String8)  | (0x1013 << 16)); //Outlook.Property.HTML);
+					propList.Add (Outlook.Property.INTERNET_CPID);
 				}
 				if (Fetch_att_key == "BODY.PEEK") {
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
@@ -480,16 +480,16 @@ namespace NMapi.Gateways.IMAP {
 					if (section_text == null) {
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
-						propList.Add (Outlook.Property_HTML);
-						propList.Add (Outlook.Property_INTERNET_CPID);
+						propList.Add (Outlook.Property.HTML);
+						propList.Add (Outlook.Property.INTERNET_CPID);
 					}
 					if (section_text == "HEADER") {
 					}
 					if (section_text == "TEXT") {
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
-						propList.Add (Outlook.Property_HTML);
-						propList.Add (Outlook.Property_INTERNET_CPID);
+						propList.Add (Outlook.Property.HTML);
+						propList.Add (Outlook.Property.INTERNET_CPID);
 					}
 					if (section_text == "MIME") {
 //									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations

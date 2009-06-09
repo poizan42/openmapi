@@ -71,7 +71,7 @@ namespace NMapi.Table {
 		}
 
 		public MapiError GetLastError (int hresult, int flags)
-		{			
+		{
 			var prms = new MAPITable_GetLastError_arg ();
 			prms.obj = new HObject (obj);
 			prms.hResult = hresult;

@@ -41,26 +41,33 @@ namespace NMapi.Flags {
 	{
 		public const int STORE_UNICODE_OK = 0x00040000; 
 
-		[MapiPropDef] public const int Property_IPM_APPOINTMENT_ENTRYID = ((int) PropertyType.Binary)  | (0x36D0 << 16);
-		[MapiPropDef] public const int Property_IPM_CONTACT_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D1 << 16);
-		[MapiPropDef] public const int Property_IPM_DRAFTS_ENTRYID      = ((int) PropertyType.Binary)  | (0x36D7 << 16);
-		[MapiPropDef] public const int Property_IPM_JOURNAL_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D2 << 16);
-		[MapiPropDef] public const int Property_IPM_NOTE_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D3 << 16);
-		[MapiPropDef] public const int Property_IPM_TASK_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D4 << 16);
-		[MapiPropDef] public const int Property_INTERNET_CPID           = ((int) PropertyType.Long)    | (0x3FDE << 16);
-		[MapiPropDef] public const int Property_MESSAGE_CODEPAGE        = ((int) PropertyType.Long)    | (0x3FFD << 16);
-		[MapiPropDef] public const int Property_INTERNET_MESSAGE_ID_A   = ((int) PropertyType.String8) | (0x1035 << 16);
-		[MapiPropDef] public const int Property_INTERNET_MESSAGE_ID_W   = ((int) PropertyType.Unicode) | (0x1035 << 16);
-		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
-		[MapiPropDef] public const int Property_IN_REPLY_TO_ID_W        = ((int) PropertyType.Unicode) | (0x1042 << 16);
-		[MapiPropDef] public const int Property_HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
-		[MapiPropDef] public const int Property_BODY_HTML_A             = ((int) PropertyType.String8) | (0x1013 << 16);
-		[MapiPropDef] public const int Property_BODY_HTML_W             = ((int) PropertyType.Unicode) | (0x1013 << 16);
-		[MapiPropDef] public const int Property_ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
-		[MapiPropDef] public const int Property_FLAG_STATUS             = ((int) PropertyType.Long)    | (0x1090 << 16);
-		[MapiPropDef] public const int Property_RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
-		[MapiPropDef] public const int Property_RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
-
+		/// <summary>
+		///   
+		/// </summary>
+		public static class Property
+		{
+			[MapiPropDef] public const int IPM_APPOINTMENT_ENTRYID = ((int) PropertyType.Binary)  | (0x36D0 << 16);
+			[MapiPropDef] public const int IPM_CONTACT_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D1 << 16);
+			[MapiPropDef] public const int IPM_DRAFTS_ENTRYID      = ((int) PropertyType.Binary)  | (0x36D7 << 16);
+			[MapiPropDef] public const int IPM_JOURNAL_ENTRYID     = ((int) PropertyType.Binary)  | (0x36D2 << 16);
+			[MapiPropDef] public const int IPM_NOTE_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D3 << 16);
+			[MapiPropDef] public const int IPM_TASK_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D4 << 16);
+		
+			[MapiPropDef] public const int INTERNET_CPID           = ((int) PropertyType.Long)    | (0x3FDE << 16);
+			[MapiPropDef] public const int MESSAGE_CODEPAGE        = ((int) PropertyType.Long)    | (0x3FFD << 16);
+			[MapiPropDef] public const int INTERNET_MESSAGE_ID_A   = ((int) PropertyType.String8) | (0x1035 << 16);
+			[MapiPropDef] public const int INTERNET_MESSAGE_ID_W   = ((int) PropertyType.Unicode) | (0x1035 << 16);
+			[MapiPropDef] public const int IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
+			[MapiPropDef] public const int IN_REPLY_TO_ID_W        = ((int) PropertyType.Unicode) | (0x1042 << 16);
+			[MapiPropDef] public const int HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
+			[MapiPropDef] public const int BODY_HTML_A             = ((int) PropertyType.String8) | (0x1013 << 16);
+			[MapiPropDef] public const int BODY_HTML_W             = ((int) PropertyType.Unicode) | (0x1013 << 16);
+			[MapiPropDef] public const int ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
+			[MapiPropDef] public const int FLAG_STATUS             = ((int) PropertyType.Long)    | (0x1090 << 16);
+			[MapiPropDef] public const int RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
+			[MapiPropDef] public const int RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
+		}
+		
 		//
 		// also NAMED PROP ReponseStatus
 		//
@@ -242,6 +249,7 @@ namespace NMapi.Flags {
 		public static readonly NMapiGuid PSETID_Outlook = Guids.DefineGuid ( 0x6ED8DA90, 
 			(short) 0x450B, (short) 0x101B, (byte) 0x98, (byte) 0xDA, (byte) 0x00, 
 			(byte) 0xAA, (byte) 0x00, (byte) 0x3F, (byte) 0x13, (byte) 0x05);
+			
 		// Preview
 		public const int DispIdLocation2      = 0x2;
 		// Unique in Calendar

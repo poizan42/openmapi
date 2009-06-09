@@ -84,7 +84,7 @@ namespace NMapi.Interop {
 				xdr.XdrEncodeInt (_value.CCategories);
 				xdr.XdrEncodeInt (_value.CExpanded);
 				for (int idx = 0; idx < _value.ASort.Length; idx++)
-					_value.ASort[idx].XdrEncode (xdr);
+					((IXdrEncodeable) _value.ASort[idx]).XdrEncode (xdr);
 			}
 		}
 

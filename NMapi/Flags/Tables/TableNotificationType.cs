@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - TableSort.cs
+// openmapi.org - NMapi C# Mapi API - TableNotificationType.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,13 +33,21 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  Bit 0: set if descending, 1 if ascending
-	/// </summary>
-	public enum TableSort
+	// was: TABLE ...
+
+	public enum TableNotificationType
 	{
-		Ascend  = 0,
-		Descend,
-		Combine
+		// TABLE_NOTIFICATION event types passed in TableEvent
+
+		Changed = 1,
+		Error,
+		RowAdded,
+		RowDeleted,
+		RowModified,
+		SortDone,
+		RestrictDone,
+		SetColDone,
+		Reload
 	}
+
 }

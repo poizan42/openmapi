@@ -98,7 +98,7 @@ namespace NMapi.Interop {
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
-			if (!xdr.XdrDecodeBoolean())
+			if (!xdr.XdrDecodeBoolean ())
 				value = null;
 			else {
 				value = new MapiError ();

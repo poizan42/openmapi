@@ -105,6 +105,7 @@ namespace NMapi.Server {
 			get { return reverseEventConnectionServer; }
 			set { reverseEventConnectionServer = value; }
 		}
+		
 
 		#endregion
 

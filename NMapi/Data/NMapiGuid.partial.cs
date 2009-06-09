@@ -36,11 +36,13 @@ using NMapi.Table;
 
 namespace NMapi {
 		
-	public partial class NMapiGuid 
+	public partial class NMapiGuid
 	{
+		public const int LENGTH = 16;
+		
 		public byte[] ToByteArray ()
 		{
-			byte[] result = new byte [16];
+			byte[] result = new byte [LENGTH];
 			byte[] part1 = BitConverter.GetBytes (Data1);
 			Array.Copy (part1, 0, result, 0, 4);
 			byte[] part2 = BitConverter.GetBytes (Data2);
@@ -59,6 +61,66 @@ namespace NMapi {
 			Data4 = new byte [8];
 			Array.Copy (bytes, 8, Data4, 0, 8);
 		}
+		
+		public static NMapiGuid MakeNew ()
+		{
+			return new NMapiGuid (Guid.NewGuid ());
+		}
+		
+		public NMapiGuid (Guid guid) : this (guid.ToByteArray ()) 
+		{
+		}
+		
+		/* Implements kind-of Value-Equality! */
+		
+		public bool Equals (NMapiGuid guid2)
+		{
+			if (guid2 == null)
+				return false;
+
+			if (Data1 != guid2.Data1 || Data2 != guid2.Data2 || Data3 != guid2.Data3)
+				return false;
+			
+			if (Data4 == null && guid2.Data4 == null) // both null
+				return true;
+			
+			if (Data4 != null && guid2.Data4 != null) { // both NOT null
+				if (Data4.Length != guid2.Data4.Length)
+					return false;
+				for (int i=0;i < Data4.Length;i++)
+					if (Data4 [i] != guid2.Data4 [i])
+						return false;
+				return true;
+			}
+			return false; // one is NOT null!
+		}
+		
+		public override bool Equals (object o)
+		{
+			if (o == this)
+				return true;
+			NMapiGuid guid2 = o as NMapiGuid;
+			if (guid2 == null)
+				return false;
+			return this.Equals (guid2);
+		}
+
+		public string ToHexString ()
+		{
+			return new SBinary (ToByteArray ()).ToHexString ();
+		}
+
+		public override int GetHashCode ()
+		{
+			byte[] flat = ToByteArray (); // TODO: This is VERY slow !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -> Maybe we should save the byte[] instead of numbers and/or use the native MS Guid type.
+			int hash = 0;
+			if (flat != null) {
+				for (int i = 0; i < flat.Length; i++)
+					hash = 31 * hash + flat [i];
+			}
+			return hash;
+		}
+		
 	}
 
 }

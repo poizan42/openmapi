@@ -121,27 +121,40 @@ namespace NMapi.Interop.MapiRPC {
 		{
 		}
 		
-		public ClientEvent(XdrDecodingStream xdr)
+		public ClientEvent (XdrDecodingStream xdr)
 		{
 			XdrDecode(xdr);
 		}
-		public void XdrEncode (XdrEncodingStream xdr)
+		
+		[Obsolete]
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+
+		protected internal void XdrEncode (XdrEncodingStream xdr)
 		{
 			System.Diagnostics.Trace.TraceInformation ("XdrEncode called: ClientEvent");
 			xdr.XdrEncodeInt ((int) type);
 			switch (type) {
-				case ClientEvType.CLEV_MAPI: mapi.XdrEncode (xdr); break;
-				case ClientEvType.CLEV_PROGRESS: progress.XdrEncode(xdr); break;
+				case ClientEvType.CLEV_MAPI: ((IXdrEncodeable) mapi).XdrEncode (xdr); break;
+				case ClientEvType.CLEV_PROGRESS: ((IXdrEncodeable) progress).XdrEncode (xdr); break;
 			}
 		}
 
-		public void XdrDecode(XdrDecodingStream xdr)
+		protected internal void XdrDecode (XdrDecodingStream xdr)
 		{
 			System.Diagnostics.Trace.TraceInformation ("XdrDecode called: ClientEvent");
 			type = (ClientEvType) xdr.XdrDecodeInt ();
 			switch (type) {
 				case ClientEvType.CLEV_MAPI: mapi = new ClEvMapi (xdr); break;
-				case ClientEvType.CLEV_PROGRESS: progress = new ClEvProgress(xdr); break;
+				case ClientEvType.CLEV_PROGRESS: progress = new ClEvProgress (xdr); break;
 			}
 		}
 

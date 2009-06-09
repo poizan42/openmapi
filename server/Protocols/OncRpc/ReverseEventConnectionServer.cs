@@ -17,12 +17,14 @@
 //
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 using System.Net;
 using System.Net.Sockets;
+
 using NMapi.Interop.MapiRPC;
 using CompactTeaSharp;
 using CompactTeaSharp.Server;
@@ -32,25 +34,31 @@ namespace NMapi.Server {
 	public sealed class ReverseEventConnectionServer
 	{
 		private TcpClient tcpClient;
+		private Stream stream;
 		private PseudoClient pseudoClient;
 		private BaseOncRpcService service;
-		
+
 		public ReverseEventConnectionServer (
-			BaseOncRpcService service, TcpClient tcpClient)
+			BaseOncRpcService service, TcpClient tcpClient, 
+			string certFile, string keyFile)
 		{
 			this.service = service;
 			this.tcpClient = tcpClient;
+			this.stream = OncNetworkUtility.GetSslStream (tcpClient.GetStream (), 
+								certFile, keyFile);
 		}
 			
 		internal class PseudoClient
 		{
 			private Queue<ClientEvent> queue;
 			private TcpClient tcpClient;
+			private Stream stream;
 			
-			internal PseudoClient (TcpClient tcpClient)
+			internal PseudoClient (TcpClient tcpClient, Stream stream)
 			{
 				this.queue = new Queue<ClientEvent> ();
 				this.tcpClient = tcpClient;
+				this.stream = stream;
 			}
 		
 			internal void PushData (ClientEvType type, ClEvMapi realEvent, 
@@ -80,17 +88,18 @@ namespace NMapi.Server {
 					int program = 1;
 					int version = 1;
 
-					var sendingXdr = new XdrTcpEncodingStream (tcpClient, 8192);
+					bool useSsl = true;
+					var sendingXdr = new XdrTcpEncodingStream (tcpClient, stream, 8192);
 					var callHeader = new OncRpcClientCallMessage (++xid, 
 							program, version, 1, OncRpcClientAuthNone.AUTH_NONE);
 					tcpClient.SendTimeout = 10;
 					sendingXdr.BeginEncoding (null, 0);
-					callHeader.XdrEncode (sendingXdr);
-					ev.XdrEncode (sendingXdr);
+					((IXdrEncodeable) callHeader).XdrEncode (sendingXdr);
+					((IXdrEncodeable) ev).XdrEncode (sendingXdr);
 					sendingXdr.EndEncoding ();
 
 					if (ev.Mapi != null)
-						Trace.WriteLine ("EVENT for connection '" + 
+						Console.WriteLine ("EVENT for connection '" + 
 							ev.Mapi.ulConn + "' DELIVERED!");
 				}
 			}
@@ -100,7 +109,7 @@ namespace NMapi.Server {
 		private long RetrieveSessionHandle ()
 		{
 			byte[] sessionIdBigEndian = new byte [8];
-			tcpClient.GetStream ().Read (sessionIdBigEndian, 0, 8);
+			stream.Read (sessionIdBigEndian, 0, 8);
 			Array.Reverse (sessionIdBigEndian);
 			return BitConverter.ToInt64 (sessionIdBigEndian, 0);
 		}
@@ -110,7 +119,7 @@ namespace NMapi.Server {
 			Trace.WriteLine ("Client connected on event channel!");
 			long sessionId = RetrieveSessionHandle ();
 			var proxySession = service.GetProxySessionBySessionId (sessionId);
-			this.pseudoClient = new PseudoClient (tcpClient);
+			this.pseudoClient = new PseudoClient (tcpClient, stream);
 			
 			// TODO: SYNCRONIZATION!
 			proxySession.ReverseEventConnectionServer = this;

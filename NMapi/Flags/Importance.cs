@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Importance.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -23,7 +23,6 @@
 
 using System;
 using System.IO;
-
 
 using NMapi;
 using NMapi.Flags;

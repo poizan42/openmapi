@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Guids.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -23,7 +23,6 @@
 
 using System;
 using System.IO;
-
 
 using NMapi;
 using NMapi.Flags;
@@ -64,14 +63,23 @@ namespace NMapi.Flags {
 				(byte) 0, (byte) 0, (byte) 0, (byte) 0x46);
 		}
 
-		public static readonly NMapiGuid IID_IMessage = DefineOleGuid (0x00020307, 0, 0);
-		public static readonly NMapiGuid IID_IStream  = DefineOleGuid (0x0000000c, 0, 0);
 
-		//  Name Property (?): The name of MAPI's property set
+
+		//  NamedProperty Set: The name of MAPI's property set
 		public static readonly NMapiGuid PS_MAPI = DefineOleGuid (0x00020328, 0, 0);
 
-		//  Name Property (?): TThe name of the set of public strings
+		//  NamedProperty Set: TThe name of the set of public strings
 		public static readonly NMapiGuid PS_PUBLIC_STRINGS = DefineOleGuid (0x00020329, 0, 0);
+
+		public static readonly NMapiGuid PS_ROUTING_EMAIL_ADDRESSES = DefineOleGuid (0x00020380, 0, 0);
+		public static readonly NMapiGuid PS_ROUTING_ADDRTYPE = DefineOleGuid (0x00020381, 0, 0);
+		public static readonly NMapiGuid PS_ROUTING_DISPLAY_NAME = DefineOleGuid (0x00020382, 0, 0);
+		public static readonly NMapiGuid PS_ROUTING_ENTRYID = DefineOleGuid (0x00020383, 0, 0);
+		public static readonly NMapiGuid PS_ROUTING_SEARCH_KEY = DefineOleGuid (0x00020384, 0, 0);
+		
+		public static readonly NMapiGuid MUID_PROFILE_INSTANCE = DefineOleGuid (0x00020385, 0, 0);
+
+
 
 	}
 

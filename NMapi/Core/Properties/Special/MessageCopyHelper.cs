@@ -46,9 +46,9 @@ namespace NMapi.Properties.Special {
 			try { 
 				fileName = Path.GetTempFileName ();
 				streamsrc = (IStream) source.OpenProperty (propTag.Tag,
-					Guids.IID_IStream, 0, 0);
+					InterfaceIdentifiers.IStream, 0, 0);
 				streamdst = (IStream) dest.OpenProperty (propTag.Tag,
-					Guids.IID_IStream, 0, NMAPI.MAPI_CREATE|Mapi.Modify);
+					InterfaceIdentifiers.IStream, 0, Mapi.Create | Mapi.Modify);
 				Stream fs = File.OpenWrite (fileName);
 				streamsrc.GetData (fs);
 				fs.Close ();
@@ -108,9 +108,9 @@ namespace NMapi.Properties.Special {
 				IntProperty propVal = new MapiPropHelper (attachSource).HrGetOneProp (Property.AttachMethod) as IntProperty;
 				if (propVal.Value == ((int) Attach.EmbeddedMsg)) {
 					msgsrc = (IMessage) attachSource.OpenProperty (Property.AttachDataObj, 
-						Guids.IID_IMessage, 0, 0);
+						InterfaceIdentifiers.IMessage, 0, 0);
 					msgdst = (IMessage) attachDest.OpenProperty (Property.AttachDataObj,
-							Guids.IID_IMessage, 0, NMAPI.MAPI_CREATE|Mapi.Modify);
+							InterfaceIdentifiers.IMessage, 0, Mapi.Create | Mapi.Modify);
 					MyCopyMessage (msgsrc, msgdst);
 				}
 				attachDest.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);

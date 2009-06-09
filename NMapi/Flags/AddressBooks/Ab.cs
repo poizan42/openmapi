@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - Store.cs
+// openmapi.org - NMapi C# Mapi API - Ab.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -33,30 +33,17 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public struct Store
+	[Flags]
+	public enum Ab
 	{
-		// Bits for PR_STORE_SUPPORT_MASK 
-	
-		public const int EntryidUnique    = 0x00000001;
-		public const int ReadOnly         = 0x00000002;
-		public const int SearchOk         = 0x00000004;
-		public const int ModifyOk         = 0x00000008;
-		public const int CreateOk         = 0x00000010;
-		public const int AttachOk         = 0x00000020;
-		public const int OleOk            = 0x00000040;
-		public const int SubmitOk         = 0x00000080;
-		public const int NotifyOk         = 0x00000100;
-		public const int MvPropsOk        = 0x00000200;
-		public const int CategorizeOk     = 0x00000400;
-		public const int RtfOk            = 0x00000800;
-		public const int RestrictionOk    = 0x00001000;
-		public const int SortOk           = 0x00002000;
-		public const int PublicFolders    = 0x00004000;
-		public const int UncompressedRtf  = 0x00008000;
+		// Container flags
 
-		// Bits for PR_STORE_STATE
-
-		public const int HasSearches     = 0x01000000;
+		Recipients    = 0x00000001,
+		SubContainers = 0x00000002,
+		Modifiable    = 0x00000004,
+		Unmodifiable  = 0x00000008,
+		FindOnOpen    = 0x00000010,
+		NotDefault    = 0x00000020
 	}
 
 }

@@ -58,20 +58,32 @@ namespace NMapi {
 		}
 
 		[Obsolete]
-		public void XdrEncode (XdrEncodingStream xdr)
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+
+		[Obsolete]
+		protected internal void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			xdr.XdrEncodeInt (ulRowFlags);
 			if (ulRowFlags != EMPTY) {
 				int i, len = rgPropVals.Length;
-				xdr.XdrEncodeInt(len);
+				xdr.XdrEncodeInt (len);
 				for (i = 0; i < len; i++)
-					rgPropVals[i].XdrEncode(xdr);
+					((IXdrEncodeable) rgPropVals[i]).XdrEncode(xdr);
 			}
 		}
 
 		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr)
+		protected internal void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			ulRowFlags = xdr.XdrDecodeInt ();

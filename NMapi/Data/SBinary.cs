@@ -136,7 +136,19 @@ namespace NMapi {
 		}
 
 		[Obsolete]
-		public void XdrEncode(XdrEncodingStream xdr)
+		void IXdrEncodeable.XdrEncode (XdrEncodingStream xdr)
+		{
+			XdrEncode (xdr);
+		}
+		
+		[Obsolete]
+		void IXdrDecodeable.XdrDecode (XdrDecodingStream xdr)
+		{
+			XdrDecode (xdr);
+		}
+
+		[Obsolete]
+		protected internal void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (lpb == null)
@@ -146,7 +158,7 @@ namespace NMapi {
 		}
 
 		[Obsolete]
-		public void XdrDecode (XdrDecodingStream xdr)
+		protected internal void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			lpb = xdr.XdrDecodeDynamicOpaque ();

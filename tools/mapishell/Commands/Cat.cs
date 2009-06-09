@@ -77,10 +77,14 @@ namespace NMapi.Tools.Shell {
 				}
 				int propTag = -1;
 				try {
-					string[] tmp = TypeResolver.SplitTypeNameAndProperty (propName);
-					string typeName = tmp [0];
-					string fieldName = tmp [1];
-					propTag = state.PropertyLookup.GetValue (typeName, fieldName);
+					if (propName.StartsWith ("@")) {
+						propTag = state.PropertyLookup.GetValue ("NMapi.Flags.Property", propName.Substring (1));
+					} else {
+						string[] tmp = TypeResolver.SplitTypeNameAndProperty (propName);
+						string typeName = tmp [0];
+						string fieldName = tmp [1];
+						propTag = state.PropertyLookup.GetValue (typeName, fieldName);
+					}
 				} catch (Exception e) {
 					driver.WriteLine ("Invalid/unregistered Property!");
 					return;

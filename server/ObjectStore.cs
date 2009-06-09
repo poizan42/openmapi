@@ -62,6 +62,21 @@ namespace NMapi.Server {
 		{
 			objectMap.Remove (obj);
 		}
+		
+		public void CloseAll ()
+		{
+			foreach (var pair in objectMap) {
+				object mapiObj = pair.Value.MapiObject;
+				if (mapiObj != null && mapiObj is IDisposable) {
+					try {
+						((IDisposable) mapiObj).Dispose ();
+					} catch (Exception e) {
+						Trace.WriteLine (e);
+						// ignore exception
+					}
+				}
+			}
+		}
 
 		public object GetObject (object obj)
 		{
@@ -119,14 +134,20 @@ namespace NMapi.Server {
 
 		public IMapiSession GetIMapiSession (object obj)
 		{
-			return (IMapiSession) GetObject (obj);
+			return (IMapiSession) GetObject ((long) 2L); // TODO: !!!!!!!! HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK HACK
+//			return (IMapiSession) GetObject (obj);
 		}
 
 		public IMapiTableReader GetIMapiTableReader (object obj)
 		{
 			return (IMapiTableReader) GetObject (obj);
 		}
+		
 
+		public IModifyTable GetIModifyTable (object obj)
+		{
+			return (IModifyTable) GetObject (obj);
+		}
 	}
 
 }

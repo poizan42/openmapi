@@ -34,11 +34,10 @@ using NMapi.Table;
 namespace NMapi.Flags {
 
 	/// <summary>
-	///  The Property Types.
+	///  List of the MAPI property types.
 	/// </summary>
 	/// <remarks>
-	///   0 and ffff are not real property ids and
-	///   can be used for other purposes!
+	///   0 and ffff are not real property types and may be used for other purposes!
 	/// </remarks>
 	public enum PropertyType
 	{	
@@ -83,9 +82,9 @@ namespace NMapi.Flags {
 		R8       = Double,
 		LongLong = I8,
 	
-		MvSHORT    = MvI2,
+		MvShort    = MvI2,
 		MvI4       = MvLong,
-		MvFLOAT    = MvR4,
+		MvFloat    = MvR4,
 		MvR8       = MvDouble,
 		MvLongLong = MvI8
 

@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - Prio.cs
+// openmapi.org - NMapi C# Mapi API - DisplayType_AbHierarchyTable.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,13 +33,15 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public enum Prio
+	// PR_DISPLAY_TYPEs
+	
+	public enum DisplayType_AbHierarchyTable
 	{
-		// PR_PRIORITY values
-
-		Urgent    =  1,
-		Normal    =  0,
-		NonUrgent = -1
+		Modifiable       = 0x00010000,
+		Global           = 0x00020000,
+		Local            = 0x00030000,
+		Wan              = 0x00040000,
+		NotSpecific      = 0x00050000
 	}
 
 }

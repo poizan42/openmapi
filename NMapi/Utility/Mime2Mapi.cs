@@ -244,7 +244,7 @@ namespace NMapi.Utility {
 				charset = mm.ContentTypeHeader.GetParam ("charset");
 				if (charset != null) {
 					IntProperty lprop = new IntProperty ();
-					lprop.PropTag = Outlook.Property_INTERNET_CPID;
+					lprop.PropTag = Outlook.Property.INTERNET_CPID;
 					lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
 					props.Add (lprop);
 				}
@@ -262,7 +262,7 @@ namespace NMapi.Utility {
 			} else if (mm.ContentType.ToLower () == "text/html") {
 				Trace.WriteLine ("MimeToMapiAttachments text/html");
 				PropertyHelper ph = new PropertyHelper (props.ToArray ());
-				ph.Prop = Outlook.Property_INTERNET_CPID;
+				ph.Prop = Outlook.Property.INTERNET_CPID;
 				if (!ph.Exists) {
 					// set charset only, if it hasn't been set so far.
 					// otherwise we override the charset of text/plain elements
@@ -271,7 +271,7 @@ namespace NMapi.Utility {
 					charset = mm.ContentTypeHeader.GetParam ("charset");
 					if (charset != null) {
 						IntProperty lprop = new IntProperty ();
-						lprop.PropTag = Outlook.Property_INTERNET_CPID;
+						lprop.PropTag = Outlook.Property.INTERNET_CPID;
 						lprop.Value = (int) Encoding.GetEncoding(charset).CodePage;
 						props.Add (lprop);
 					}
@@ -283,7 +283,7 @@ namespace NMapi.Utility {
 				rtfWriter.Write ((string) mm.Content);
 				rtfWriter.EndHMTL ();
 				rtfWriter.Close ();
-				IStream issHtml = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, Mapi.Modify|NMAPI.MAPI_CREATE);
+				IStream issHtml = (IStream) im.OpenProperty (Property.RtfCompressed, InterfaceIdentifiers.IStream, 0, Mapi.Modify | Mapi.Create);
 
 				msHtml = new MemoryStream (msHtml.GetBuffer ());
 				issHtml.PutData (msHtml);
@@ -349,7 +349,7 @@ namespace NMapi.Utility {
 							CreateAttachResult car = im.CreateAttach(null, 0);
 							IAttach ia = car.Attach;
 
-							IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin, Guids.IID_IStream, 0, Mapi.Modify|NMAPI.MAPI_CREATE);
+							IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin, InterfaceIdentifiers.IStream, 0, Mapi.Modify | Mapi.Create);
 
 							MemoryStream ms = null;
 							if (mp.Content.GetType () == typeof (string))

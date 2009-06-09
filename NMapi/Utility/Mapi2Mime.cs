@@ -57,7 +57,7 @@ namespace NMapi.Utility {
 			Property.MessageClass,
 			Property.Body,
 			Property.RtfCompressed,
-			Outlook.Property_HTML
+			Outlook.Property.HTML
 		};
 
 		public int [] PropsAllProperties {
@@ -118,7 +118,7 @@ namespace NMapi.Utility {
 			headerGenerator.DoAll ();
 			
 			// set content headers
-			props.Prop = Outlook.Property_INTERNET_CPID;
+			props.Prop = Outlook.Property.INTERNET_CPID;
 			Encoding encoding = (props.Exists && props.Long != "") ? Encoding.GetEncoding(Convert.ToInt32 (props.Long)) : Encoding.UTF8;
 			InternetHeader ih = new InternetHeader(MimePart.CONTENT_TYPE_NAME, "text/plain");
 			ih.SetParam ("charset", encoding.WebName);
@@ -141,7 +141,7 @@ namespace NMapi.Utility {
 			
 			RTFParser rtfParser = null;
 			if (propsRTFCompressed.Exists) {
-				IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, Guids.IID_IStream, 0, 0);
+				IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, InterfaceIdentifiers.IStream, 0, 0);
 				MemoryStream ms = new MemoryStream ();
 				x.GetData (ms);
 

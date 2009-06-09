@@ -31,6 +31,8 @@ using NMapi.Table;
 
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
+
 using NMapi.Interop;
 using NMapi.Interop.MapiRPC;
 using CompactTeaSharp;
@@ -41,7 +43,8 @@ namespace NMapi.Server {
 	public sealed partial class OncRpcService : BaseOncRpcService
 	{
 		public OncRpcService (CommonRpcService service, 
-			SessionManager sman, IPAddress ip, int port) : base (service, sman, ip, port)
+			SessionManager sman, IPAddress ip, int port, string certFile, string keyFile) 
+				: base (service, sman, ip, port, certFile, keyFile)
 		{
 		}
 		
