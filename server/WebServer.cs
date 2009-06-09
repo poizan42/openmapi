@@ -55,7 +55,7 @@ namespace NMapi.Server {
 			} while (Directory.Exists (path));
 			Directory.CreateDirectory (path);
 
-			XSPWebSource websource = new XSPWebSource (IPAddress.Any, port);
+			XSPWebSource websource = new XSPWebSource (IPAddress.Any, port, true);
 			appServer = new ApplicationServer (websource);
 
 			Assembly asm = Assembly.GetExecutingAssembly();
