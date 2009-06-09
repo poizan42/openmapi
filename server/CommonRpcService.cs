@@ -41,6 +41,15 @@ namespace NMapi.Server {
 
 		private bool sessionOpen;
 		protected List<IServerModule> modules; // TODO: bad...
+		protected Configuration cfg;
+		
+		public string TargetHost {
+			get { return cfg.TargetHost; }
+		}
+		
+		public int TargetPort {
+			get { return cfg.TargetPort; }
+		}
 		
 		public string Name {
 			get {
@@ -80,12 +89,13 @@ namespace NMapi.Server {
 			Trace.WriteLine ("<--\n");
 		}
 		
-		public CommonRpcService (List<IServerModule> modules)
+		public CommonRpcService (Driver drv)
 		{
 			this.preModules = new Dictionary<string, List<IServerModule>> ();
 			this.postModules = new Dictionary<string, List<IServerModule>> ();
 				
-			this.modules = modules;
+			this.modules = drv.Modules;
+			this.cfg = drv.Configuration;
 			Console.WriteLine (Name);
 		}
 
