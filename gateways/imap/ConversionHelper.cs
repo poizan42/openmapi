@@ -42,7 +42,8 @@ namespace NMapi.Gateways.IMAP {
 		// utf-7 is a modifed form of base64, based from the utf16 character
 		// I'll use the iconv convertor for this, per character .. sigh
 		
-		public static string MailboxUnicodeToIMAP(string unicode) {
+		public static string MailboxUnicodeToIMAP(string unicode) 
+		{
 			string imap = string.Empty;
 			int i;
 
@@ -74,7 +75,8 @@ namespace NMapi.Gateways.IMAP {
 			return imap;
 		}
 
-		public static string MailboxIMAPToUnicode(string imap) {
+		public static string MailboxIMAPToUnicode(string imap) 
+		{
 			string unicode = string.Empty;
 			int i;
 		
@@ -122,11 +124,21 @@ namespace NMapi.Gateways.IMAP {
 
 
 
-		public static string GetIMAPInternaldate (DateTime dt) {
+		public static string GetIMAPInternaldate (DateTime dt) 
+		{
 			return dt.ToString ("dd-MMM-yyyy HH:mm:ss ") +
 					dt.ToString ("zzz").Replace (":", "");
 		}
-	
+
+		public static DateTime DecodeIMAPInternaldate (string imapDate) 
+		{
+			try {
+				return DateTime.Parse (imapDate);
+			} catch {
+			}
+			return new DateTime ();
+		}
+		
 	}
 
 

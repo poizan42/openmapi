@@ -47,7 +47,7 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			try {
-				IMapiFolder folder = ServCon.OpenFolder (string.Empty + PathHelper.PathSeparator);
+				IMapiFolder folder = ServCon.FolderHelper.OpenFolder (string.Empty + PathHelper.PathSeparator);
 				MapiPropHelper mph = new MapiPropHelper (folder);
 				
 				if (folder == null)

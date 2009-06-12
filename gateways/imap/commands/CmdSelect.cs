@@ -60,7 +60,7 @@ namespace NMapi.Gateways.IMAP {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 					state.Log ("Select: path = " + path);					
-					if (!ServCon.ChangeDir (path)) {
+					if (!ServCon.FolderHelper.ChangeDir (path)) {
 						state.ResponseManager.AddResponse (
 							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
 						return false;
@@ -73,22 +73,22 @@ namespace NMapi.Gateways.IMAP {
 					state.ResetExistsRequests ();
 					
 					// if UIDNEXT/UIDVALIDITY is not set, go fix that and UIDVALIDITY
-					if (ServCon.UIDNEXT == 0 || ServCon.UIDVALIDITY == 0)
-						ServCon.UpdateNextUid ();
+					if (ServCon.FolderHelper.UIDNEXT == 0 || ServCon.FolderHelper.UIDVALIDITY == 0)
+						ServCon.FolderHelper.UpdateNextUid ();
 
 					// build sequence number list
-					int recent = ServCon.RebuildSequenceNumberListPlusUIDFix ();
+					int recent = ServCon.FolderHelper.RebuildSequenceNumberListPlusUIDFix ();
 					
 					// connect notification handler. Need to wait until SequenceNumberList is finally prepared
 					new NotificationHandler (state);
 					
-					int unseen = FlagHelper.GetUnseenIDFromSNL (ServCon.SequenceNumberList);
+					int unseen = FlagHelper.GetUnseenIDFromSNL (ServCon.FolderHelper.SequenceNumberList);
 
 	
 					// write Responses
 					Response r;
 					r = new Response (ResponseState.NONE, "EXISTS");
-					r.Val = new ResponseItemText(ServCon.SequenceNumberList.Count.ToString ());
+					r.Val = new ResponseItemText(ServCon.FolderHelper.SequenceNumberList.Count.ToString ());
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.NONE, "RECENT");   //TODO: need to make sure, the messages return the recent flag in search/fetch
 					r.Val = new ResponseItemText(recent.ToString ());
@@ -97,10 +97,10 @@ namespace NMapi.Gateways.IMAP {
 					r.Val = new ResponseItemText(unseen.ToString ());
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.OK, "UIDVALIDITY");
-					r.Val = new ResponseItemText(ServCon.UIDVALIDITY.ToString ());
+					r.Val = new ResponseItemText(ServCon.FolderHelper.UIDVALIDITY.ToString ());
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.OK, "UIDNEXT");
-					r.Val = new ResponseItemText(ServCon.UIDNEXT.ToString ());
+					r.Val = new ResponseItemText(ServCon.FolderHelper.UIDNEXT.ToString ());
 					state.ResponseManager.AddResponse (r);
 					r = new Response (ResponseState.NONE, "FLAGS");
 					r.AddResponseItem(new ResponseItemList ().AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom) 

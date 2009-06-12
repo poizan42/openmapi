@@ -72,10 +72,10 @@ namespace NMapi.Gateways.IMAP {
 
 				// try to open folders
 				IMapiFolder destFolder = null;
-				destFolder = ServCon.OpenFolder (destParentPath);
+				destFolder = ServCon.FolderHelper.OpenFolder (destParentPath);
 
 				IMapiFolder parent = null;
-				parent = ServCon.OpenFolder (srcPath);
+				parent = ServCon.FolderHelper.OpenFolder (srcPath);
 
 				SBinary entryId = null;
 
@@ -87,7 +87,7 @@ namespace NMapi.Gateways.IMAP {
 
 					// close parent (which in fact was source) and open source parent
 					parent.Close ();
-					parent = ServCon.OpenFolder (srcParentPath);
+					parent = ServCon.FolderHelper.OpenFolder (srcParentPath);
 
 					// move folder to destination, use unicode-flag to make sure the name doesn't get garbled
 					parent.CopyFolder (entryId.ByteArray, null, destFolder, destFolderName, null, NMAPI.FOLDER_MOVE | Mapi.Unicode);

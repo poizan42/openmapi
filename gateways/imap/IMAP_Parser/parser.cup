@@ -796,8 +796,11 @@ date_time ::=
 	DATE_TIME:dt
 	{: 
 	  System.Diagnostics.Trace.WriteLine("Datetimestring:" + dt);
-	  /*ParseInt.command.DateTimex=DateTime.Parse(dt);*/
-	  /*TBD*/
+	  try {
+	  	ParseInt.command.DateTimex = DateTime.Parse(dt.Substring(1,dt.Length-2));
+	  } catch {
+	  	ParseInt.command.DateTimex = new DateTime ();
+	  }
 	:}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 

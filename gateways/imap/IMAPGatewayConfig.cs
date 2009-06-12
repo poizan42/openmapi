@@ -42,6 +42,9 @@ namespace NMapi.Gateways.IMAP
 
 		private string imapconnectiontimeout = "x";
 
+		private bool computeRFC822_SIZE = false;
+		private string mailCacheSize = "10";
+
 		private List<Pair> folderMappings = new List<Pair> ();
 
 		[XmlElement ("mapiproviderfactorytype")]
@@ -84,6 +87,18 @@ namespace NMapi.Gateways.IMAP
 		public string Imapconnectiontimeout {
 			get { return imapconnectiontimeout; }
 			set { imapconnectiontimeout = value; }
+		}
+
+		[XmlElement ("computeRFC822_SIZE")]
+		public bool ComputeRFC822_SIZE {
+			get { return computeRFC822_SIZE; }
+			set { computeRFC822_SIZE = value; }
+		}
+
+		[XmlElement ("mailCacheSize")]
+		public string MailCacheSize {
+			get { return mailCacheSize; }
+			set { mailCacheSize = value; }
 		}
 
 		[XmlElement ("foldermappings")]

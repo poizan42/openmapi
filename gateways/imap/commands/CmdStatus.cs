@@ -50,10 +50,10 @@ namespace NMapi.Gateways.IMAP {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 					state.Log ("Select: path = " + path);
-					IMapiFolder folder = ServCon.OpenFolder (path);
+					IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path);
 
 					// build sequence number list
-					SequenceNumberList snl = ServCon._BuildSequenceNumberList (folder);
+					SequenceNumberList snl = ServCon.FolderHelper._BuildSequenceNumberList (folder);
 
 					int recent = snl.Count ((x) => x.UID == null);
 						
@@ -79,7 +79,7 @@ namespace NMapi.Gateways.IMAP {
 					}
 					if (command.Status_list.Contains ("UIDVALIDITY", mycomp) || command.Status_list.Contains ("UIDNEXT")) {
 						long uidnext, uidvalidity;
-						ServCon._GetFolderProps (out uidvalidity, out uidnext, folder);
+						ServCon.FolderHelper._GetFolderProps (out uidvalidity, out uidnext, folder);
 						if (command.Status_list.Contains ("UIDVALIDITY", mycomp)) {
 							ril.AddResponseItem ("UIDVALIDITY");
 							ril.AddResponseItem (uidvalidity.ToString ());

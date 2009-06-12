@@ -131,7 +131,7 @@ namespace NMapi.Gateways.IMAP {
 			try {
 			SBinary instanceKey = ((BinaryProperty) n.PropIndex).Value;
 
-			SequenceNumberListItem snli = ServCon.SequenceNumberList.Find ((x)=> ServCon.CompareEntryIDs(x.InstanceKey.ByteArray, instanceKey.ByteArray));
+			SequenceNumberListItem snli = ServCon.FolderHelper.SequenceNumberList.Find ((x)=> ServCon.CompareEntryIDs(x.InstanceKey.ByteArray, instanceKey.ByteArray));
 			imapConnectionState.AddExpungeRequest (snli);
 			} catch (Exception e) {
 				imapConnectionState.Log ("NotificationHandler.RowDeleted, Exception: " + e.Message);
@@ -165,7 +165,7 @@ namespace NMapi.Gateways.IMAP {
 			
 		private void Subscribe ()
 		{
-			mt = ServCon.CurrentFolderTable;
+			mt = ServCon.FolderHelper.CurrentFolderTable;
 			mt.Events.TableModified += TableModifiedHandler;
 
 /*			

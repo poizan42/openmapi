@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP {
 
 		public override void Run (Command command)
 		{
-			var slq = ServCon.BuildSequenceSetQuery(command);
+			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			foreach (SequenceNumberListItem snli in slq) {
 				Trace.WriteLine ("Store command loop");			
 
