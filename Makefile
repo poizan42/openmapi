@@ -269,7 +269,7 @@ test:
 	/r:bin/NMapi.Provider.TeamXChange.dll `find tests -name "*.cs"` $(TEST_SOURCES)
 
 runtests: test
-	nunit-console2 bin/NMapi.Test.dll
+	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml
 
 #
 # Sample
