@@ -233,6 +233,13 @@ namespace NMapi.Utility {
 					
 					Trace.WriteLine ("MimeToMapiRecipients " + ia.Personal);
 
+					OneOff oneOff = new OneOff (recName, "SMTP", recAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
+					BinaryProperty bprop = new BinaryProperty ();
+					bprop.PropTag = Property.EntryId;
+					bprop.Value = new SBinary (oneOff.EntryID);
+					lpv.Add (bprop);
+
+
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
 					Trace.WriteLine ("MimeToMapiRecipients 8");
