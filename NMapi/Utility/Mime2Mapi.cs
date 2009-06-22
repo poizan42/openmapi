@@ -214,24 +214,35 @@ namespace NMapi.Utility {
 					uprop.PropTag = Property.AddrType;
 					uprop.Value = "SMTP";
 					lpv.Add (uprop);
+	
+					string recName = (ia.Personal == null) ? ia.Email:ia.Personal;
+					string recAdress = (ia.Email == null) ? "":ia.Email;
+
 
 					String8Property sprop = new String8Property ();
 					sprop.PropTag = Property.EmailAddressA;
-					sprop.Value = (ia.Email == null) ? "":ia.Email;
+					sprop.Value = recAdress;
 					lpv.Add (sprop);
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.EmailAddressW;
-					uprop.Value = (ia.Email == null) ? "":ia.Email;
+					uprop.Value = recAdress;
 //					lpv.Add (uprop);
 
-					Trace.WriteLine ("MimeToMapiRecipients " + ia.Email);
+					Trace.WriteLine ("MimeToMapiRecipients " + recAdress);
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.DisplayName;
-					uprop.Value = (ia.Personal == null) ? ia.Email:ia.Personal;
+					uprop.Value = recName;
 					lpv.Add (uprop);
 					
-					Trace.WriteLine ("MimeToMapiRecipients " + ia.Personal);
+					Trace.WriteLine ("MimeToMapiRecipients " + recName);
+
+					OneOff oneOff = new OneOff (recName, "SMTP", recAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
+					BinaryProperty bprop = new BinaryProperty ();
+					bprop.PropTag = Property.EntryId;
+					bprop.Value = new SBinary (oneOff.EntryID);
+					lpv.Add (bprop);
+
 
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
