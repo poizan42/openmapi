@@ -215,16 +215,17 @@ namespace CompactTeaSharp
 			if (tcpClient == null) {
 				client = new TcpClient ();
 				client.Connect (host, this.port);
-				client.SendTimeout = timeout;
-				client.ReceiveTimeout = timeout;
-				client.NoDelay = true;
-				if (client.ReceiveBufferSize < bufferSize)
-					client.ReceiveBufferSize = bufferSize;
-				if (client.SendBufferSize < bufferSize)
-					client.SendBufferSize = bufferSize;
 			} else {
 				client = tcpClient;
 			}
+
+			client.SendTimeout = timeout;
+			client.ReceiveTimeout = timeout;
+			client.NoDelay = true;
+			if (client.ReceiveBufferSize < bufferSize)
+				client.ReceiveBufferSize = bufferSize;
+			if (client.SendBufferSize < bufferSize)
+				client.SendBufferSize = bufferSize;
 			//
 			// Create the necessary encoding and decoding streams, so we can
 			// communicate at all.

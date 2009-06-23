@@ -43,10 +43,6 @@ namespace NMapi.Gateways.IMAP {
 		private PropertyTag [] currentPropTagArray = null;
 		private IMessage currentMessage = null;
 		private SequenceNumberListItem currentSNLI = null;
-		// chache a MimeMessage for shared use with RFC822.SIZE and BODY/BODY.PEEK
-		// currently helps, if Size and Body are requested in the same Fetch call
-		// !!!! use for that purpos only !!!!
-		private MimeMessage cachedMM;
 
 		public override string Name {
 			get {
@@ -173,11 +169,15 @@ namespace NMapi.Gateways.IMAP {
 	
 						// XXX get full message to calculate MIME size
 						IMessage im = GetMessage (snli);
-						Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
-						HeaderGenerator headerGenerator = ma2mi.GetHeaderGenerator (im, props);
-						if (cachedMM == null)
-							cachedMM = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
-						MimeMessage mm = cachedMM;
+						// use cache to save retrieving cost when whole email requires multiple
+						// accesses by the client
+						MimeMessage mm = state.GetCache (snli.EntryId);
+						if (mm == null) {
+							Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
+							HeaderGenerator headerGenerator = ma2mi.GetHeaderGenerator (im, props);
+							mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+							state.SetCache (snli.EntryId, mm);
+						}
 						MemoryStream ms = new MemoryStream();
 						mm.WriteTo (ms);
 						tmpMsg.Append (Encoding.ASCII.GetString (ms.ToArray ()));
@@ -241,17 +241,21 @@ namespace NMapi.Gateways.IMAP {
 					// preparation for HEADER/TEXT/MIME
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
 						IMessage im = GetMessage (snli);
-						Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
+						// use cache to save retrieving cost when whole email requires multiple
+						// accesses by the client
+						mm = state.GetCache (snli.EntryId);
+						if (mm == null) {
+							Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
 
-						// set headers
-						headerGenerator = ma2mi.GetHeaderGenerator (im, props);
+							// set headers
+							headerGenerator = ma2mi.GetHeaderGenerator (im, props);
 
-						// fill message
-						if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
-							state.Log ("memory test1");
-							if (cachedMM == null)
-								cachedMM = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
-							mm = cachedMM;
+							// fill message
+							if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
+								state.Log ("memory test1");
+								mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+								state.SetCache (snli.EntryId, mm);
+							}
 						}
 					}
 					if (section_text == null) {
@@ -281,7 +285,7 @@ namespace NMapi.Gateways.IMAP {
 						}
 					}
 					if (section_text == "MIME") {
-									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
+						// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
 					}
 					if (section_text == "HEADER.FIELDS.NOT") {
 					}

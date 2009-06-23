@@ -23,6 +23,7 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
+using NMapi.Format.Mime;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -46,6 +47,7 @@ namespace NMapi.Gateways.IMAP {
 		private string timeout;
 		private int id;
 		private IMAPGatewayConfig config;
+		private MimeCacheObject cacheObject;
 		
 		private static int idLast;
 		private static Object lockObject = new Object ();
@@ -394,7 +396,7 @@ Log ( "ProcessNotificationRespo6");
 		public void Log (string text, string tag)
 		{
 			DateTime now = DateTime.Now;
-			Trace.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
+			Console.Out.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
 			                 now.Month.ToString ().PadLeft (2,'0') + 
 			                 now.Day.ToString ().PadLeft (2,'0') + 
 			                 "-" + 
@@ -407,6 +409,41 @@ Log ( "ProcessNotificationRespo6");
 			                 "||" + ((serverConnection != null) ? serverConnection.User : "" ).ToString ().PadLeft (3) +
 			                 "||" + text);
 		}
+
+		// Cache handling, use for handling of full messages only!!!
+		public void SetCache (SBinary entryId, MimeMessage message) {
+			if (entryId != null && message != null)
+				cacheObject = new MimeCacheObject (entryId, message);
+		}
+
+		public MimeMessage GetCache (SBinary entryId) {
+			if (cacheObject != null && serverConnection.CompareEntryIDs (entryId.ByteArray, cacheObject.EntryId.ByteArray)) {
+				return cacheObject.Message;
+			}
+			return null;
+		}
 		
 	}
+
+	public class MimeCacheObject
+	{
+		private SBinary entryId;
+		private MimeMessage message;
+
+		public SBinary EntryId{ 
+			get { return entryId; } 
+			set { entryId = value; } 
+		}
+
+		public MimeMessage Message{
+			get { return message; }
+			set { message = value; }
+		}
+
+		public MimeCacheObject (SBinary entryId, MimeMessage message) {
+			this.entryId = entryId;
+			this.message = message;
+		}
+	}
+
 }
