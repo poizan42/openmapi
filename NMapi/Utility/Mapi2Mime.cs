@@ -202,7 +202,8 @@ namespace NMapi.Utility {
 			PropertyHelper propsBody = new PropertyHelper (props.Props);
 			propsBody.Prop = Property.BodyW;
 			
-			if (rtfParser != null && rtfParser.IsHTML () && propsBody.Exists) {
+			if (rtfParser != null && rtfParser.IsHTML () && propsBody.Exists 
+				&& propsBody.Unicode != Mime2Mapi.MimeMapi_Constant_HTML_only_Text_content) {
 				// do html body
 				targetMP.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/alternative");
 
