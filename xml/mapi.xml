@@ -907,8 +907,8 @@
 			</doc>
 			<!-- VOID //-->
 			<param type="^Restriction">restriction</param>
-			<param type="int">numerator</param>
-			<param type="int">denominator</param>
+			<param type="int">bookmarkOrigin</param>
+			<param type="int">flags</param>
 		</method>
 		<method id="^Restrict">
 			<doc>
