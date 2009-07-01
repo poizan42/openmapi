@@ -48,9 +48,9 @@ namespace NMapi.Gateways.IMAP {
 					// send response first, as it requires access to the Mapi Store for exists/expunges ..
 					state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
 					// ... then disconnect
-					if (ServCon.CurrentFolder != null) {
+					if (ServCon.FolderHelper.CurrentFolder != null) {
 						state.NotificationHandler = null;
-						ServCon.CurrentFolder.Dispose ();
+						ServCon.FolderHelper.CurrentFolder.Dispose ();
 					}
 					state.CurrentState = IMAPConnectionStates.AUTHENTICATED;
 				} else {

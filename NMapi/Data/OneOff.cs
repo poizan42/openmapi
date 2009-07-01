@@ -45,7 +45,7 @@ namespace NMapi {
 		private const int ONE_OFF_UNICODE = 0x8000;
 		private const int ONE_OFF_NO_RICH_INFO = 0x0001;
 		private const int OFFSET_NAME = 24;
-		private const string wc16charset = "UnicodeLittleUnmarked";
+		private const string wc16charset = "utf-16";
 
 		private byte [] bytes;
 		private string charset;

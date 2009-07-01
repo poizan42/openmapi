@@ -39,7 +39,7 @@ namespace NMapi.Gateways.IMAP {
 			Property.MsgStatus,
 			Property.MessageFlags,
 			Outlook.Property.FLAG_STATUS,
-			ServerConnection.AdditionalFlagsPropTag
+			FolderHelper.AdditionalFlagsPropTag
 		};
 
 		public static int[] PropsFlagProperties {
@@ -107,8 +107,8 @@ namespace NMapi.Gateways.IMAP {
 				flagStatus = (ulong) propertyHelper.LongNum;
 			}
 
-			propertyHelper.Prop = ServerConnection.AdditionalFlagsPropTag;
-			Trace.WriteLine ("Flagprop: " + ServerConnection.AdditionalFlagsPropTag);
+			propertyHelper.Prop = FolderHelper.AdditionalFlagsPropTag;
+			Trace.WriteLine ("Flagprop: " + FolderHelper.AdditionalFlagsPropTag);
 			additionalFlags = new List<string> ();
 			if (propertyHelper.Exists) {
 				try {
@@ -257,7 +257,7 @@ namespace NMapi.Gateways.IMAP {
 					additionalFlagsProp.Value = additionalFlags.ToArray ();
 					mph.HrSetOneProp (additionalFlagsProp);
 				} else {
-					mph.HrDeleteOneProp (ServerConnection.AdditionalFlagsPropTag);
+					mph.HrDeleteOneProp (FolderHelper.AdditionalFlagsPropTag);
 				}
 				msg.SaveChanges (NMAPI.FORCE_SAVE);
 				Trace.WriteLine ("SaveFlagsIntoIMessage -doene");			

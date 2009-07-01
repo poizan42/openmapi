@@ -102,7 +102,7 @@ namespace NMapi.Gateways.IMAP {
 						depth = 99;
 					}
 
-					folder = ServCon.OpenFolder (path);
+					folder = ServCon.FolderHelper.OpenFolder (path);
 					if (folder == null) {
 						state.ResponseManager.AddResponse (
 							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
@@ -177,7 +177,7 @@ namespace NMapi.Gateways.IMAP {
 						List<Response> childNameList = new List<Response> ();
 						
 						if (depth > -1) {
-							IMapiContainer childFolder = ServCon.GetSubDir(parent, name.Value);
+							IMapiContainer childFolder = ServCon.FolderHelper.GetSubDir(parent, name.Value);
 							childNameList = FindSubDirs(childFolder, pathWork + name.Value + "/", depth - 1, null);
 						}
 

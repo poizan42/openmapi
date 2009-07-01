@@ -23,6 +23,7 @@ using System.Net.Sockets;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
+using NMapi.Format.Mime;
 
 namespace NMapi.Gateways.IMAP {
 
@@ -45,7 +46,9 @@ namespace NMapi.Gateways.IMAP {
 		private DateTime timeoutStamp;
 		private string timeout;
 		private int id;
-
+		private IMAPGatewayConfig config;
+		private MimeCacheObject cacheObject;
+		
 		private static int idLast;
 		private static Object lockObject = new Object ();
 
@@ -82,6 +85,10 @@ namespace NMapi.Gateways.IMAP {
 			get { return folderMappingAgent; }
 		}
 
+		public IMAPGatewayConfig Config {
+			get { return config; }
+		}
+
 		internal NotificationHandler NotificationHandler {
 			get { return notificationHandler; }
 			set {
@@ -95,20 +102,22 @@ namespace NMapi.Gateways.IMAP {
 		{
 			id = idLast++;
 			currentState = IMAPConnectionStates.NOT_AUTHENTICATED;
-			clientConnection = new ClientConnection (tcpClient);
-			clientConnection.LogInput = this.Log;
-			clientConnection.LogOutput = this.Log;
-			commandAnalyser = new CommandAnalyser (clientConnection);
-			commandAnalyser.StateNotAuthenticated = this.StateNotAuthenticated;
-			commandAnalyser.StateAuthenticated = this.StateAuthenticated;
-			commandAnalyser.StateSelected = this.StateSelected;
-			commandAnalyser.StateLogout = this.StateLogout;
-			commandProcessor = new CommandProcessor (this);
-			responseManager = new ResponseManager(this);
+			if (tcpClient != null) {
+				clientConnection = new ClientConnection (tcpClient);
+				clientConnection.LogInput = this.Log;
+				clientConnection.LogOutput = this.Log;
+				commandAnalyser = new CommandAnalyser (clientConnection);
+				commandAnalyser.StateNotAuthenticated = this.StateNotAuthenticated;
+				commandAnalyser.StateAuthenticated = this.StateAuthenticated;
+				commandAnalyser.StateSelected = this.StateSelected;
+				commandAnalyser.StateLogout = this.StateLogout;
+				commandProcessor = new CommandProcessor (this);
+				responseManager = new ResponseManager(this);
+			}
 			folderMappingAgent = new FolderMappingAgent (this);
 			ResetExpungeRequests ();
 			ResetExistsRequests ();
-			IMAPGatewayConfig config = IMAPGatewayConfig.read ();
+			config = IMAPGatewayConfig.read ();
 			timeout = config.Imapconnectiontimeout;
 			ResetTimeout ();
 		}
@@ -267,7 +276,7 @@ Log ( "ProcessNotificationRespo03 " + bExistsRequests);
 Log ( "ProcessNotificationRespo04");
 
 				// save old SequenceNumberList
-				SequenceNumberList snlOld = serverConnection.SequenceNumberList;
+				SequenceNumberList snlOld = serverConnection.FolderHelper.SequenceNumberList;
 				// save size of old list;
 				int snlOldLength = snlOld.Count;
 
@@ -278,7 +287,7 @@ Log ( "ProcessNotificationRespo05" + notificationHandler);
 				// TODO: only append the missing lines from existsRequests + getting Additional Info from MAPI
 
 Log ( "ProcessNotificationRespo1");
-				serverConnection.RebuildSequenceNumberListPlusUIDFix ();
+				serverConnection.FolderHelper.RebuildSequenceNumberListPlusUIDFix ();
 Log ( "ProcessNotificationRespo2");
 				
 				// restore Notificationsubscription as currentFolderTable has changed
@@ -293,7 +302,7 @@ Log ( "ProcessNotificationRespo3");
 				Log ("do Expunge handling");
 				SequenceNumberListItem snliNew = null;
 				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
-					snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+					snliNew = serverConnection.FolderHelper.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
 					if (snliNew == null) {
 						long sqn = snlOld.IndexOfSNLI (snliOld);
 						if (sqn > 0) {
@@ -310,7 +319,7 @@ Log ( "ProcessNotificationRespo4");
 				// do Flag changes
 				Log ("do Flag changes");
 				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
-					snliNew = serverConnection.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
+					snliNew = serverConnection.FolderHelper.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
 					if (snliNew != null) {
 						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
 						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
@@ -333,7 +342,7 @@ Log ( "ProcessNotificationRespo5");
 				if (bExistsRequests) {
 					// EXISTS Responses
 					r = new Response (ResponseState.NONE, "EXISTS");
-					r.Val = new ResponseItemText(serverConnection.SequenceNumberList.Count.ToString ());
+					r.Val = new ResponseItemText(serverConnection.FolderHelper.SequenceNumberList.Count.ToString ());
 					l.Add (r);
 				}
 			}				
@@ -344,7 +353,7 @@ Log ( "ProcessNotificationRespo6");
 		public void DoWork () 
 		{
 			while (!loopEnd) {
-				Thread.Sleep(50);
+				Thread.Sleep(5);
 				
 				// lock execution against the execution of a notification request (see NotificationHandler)
 //				lock (this){
@@ -387,7 +396,7 @@ Log ( "ProcessNotificationRespo6");
 		public void Log (string text, string tag)
 		{
 			DateTime now = DateTime.Now;
-			Trace.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
+			Console.Out.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
 			                 now.Month.ToString ().PadLeft (2,'0') + 
 			                 now.Day.ToString ().PadLeft (2,'0') + 
 			                 "-" + 
@@ -400,6 +409,41 @@ Log ( "ProcessNotificationRespo6");
 			                 "||" + ((serverConnection != null) ? serverConnection.User : "" ).ToString ().PadLeft (3) +
 			                 "||" + text);
 		}
+
+		// Cache handling, use for handling of full messages only!!!
+		public void SetCache (SBinary entryId, MimeMessage message) {
+			if (entryId != null && message != null)
+				cacheObject = new MimeCacheObject (entryId, message);
+		}
+
+		public MimeMessage GetCache (SBinary entryId) {
+			if (cacheObject != null && serverConnection.CompareEntryIDs (entryId.ByteArray, cacheObject.EntryId.ByteArray)) {
+				return cacheObject.Message;
+			}
+			return null;
+		}
 		
 	}
+
+	public class MimeCacheObject
+	{
+		private SBinary entryId;
+		private MimeMessage message;
+
+		public SBinary EntryId{ 
+			get { return entryId; } 
+			set { entryId = value; } 
+		}
+
+		public MimeMessage Message{
+			get { return message; }
+			set { message = value; }
+		}
+
+		public MimeCacheObject (SBinary entryId, MimeMessage message) {
+			this.entryId = entryId;
+			this.message = message;
+		}
+	}
+
 }

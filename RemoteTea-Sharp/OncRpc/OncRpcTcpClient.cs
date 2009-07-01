@@ -218,7 +218,7 @@ namespace CompactTeaSharp
 			} else {
 				client = tcpClient;
 			}
-			
+
 			client.SendTimeout = timeout;
 			client.ReceiveTimeout = timeout;
 			client.NoDelay = true;

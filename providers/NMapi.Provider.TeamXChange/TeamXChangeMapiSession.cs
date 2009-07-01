@@ -130,7 +130,7 @@ namespace NMapi {
 				int colonPos = host.IndexOf (':');
 				if (colonPos >= 0) {
 					int parsed;
-					if (Int32.Parse (host.Substring (colonPos+1), out parsed))
+					if (Int32.TryParse (host.Substring (colonPos+1), out parsed))
 						port = parsed;
 					host = host.Substring (0, colonPos);
 				}

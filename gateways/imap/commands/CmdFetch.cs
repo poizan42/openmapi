@@ -56,6 +56,8 @@ namespace NMapi.Gateways.IMAP {
 
 		public override void Run (Command command)
 		{
+			init ();
+			
 			Response r;
 
 			try {
@@ -76,10 +78,10 @@ namespace NMapi.Gateways.IMAP {
 		public void DoFetchLoop (Command command) 
 		{
 			int querySize = 3; //so many rows are requested for the contentsTable in each acces to MAPI
-			var slq = ServCon.BuildSequenceSetQuery(command);
+			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			IMapiTable contentsTable = null;
 			try {
-				contentsTable = ServCon.CurrentFolder.GetContentsTable (Mapi.Unicode);
+				contentsTable = ServCon.FolderHelper.CurrentFolder.GetContentsTable (Mapi.Unicode);
 			} catch (MapiException e) {
 				if (e.HResult != Error.NoSupport)
 					throw;
@@ -133,7 +135,7 @@ namespace NMapi.Gateways.IMAP {
 			Response r = null;
 			bool uidSupplied = false;
 			r = new Response (ResponseState.NONE, Name);
-			r.Val = new ResponseItemText (ServCon.SequenceNumberList.IndexOfSNLI(snli).ToString ());
+			r.Val = new ResponseItemText (ServCon.FolderHelper.SequenceNumberList.IndexOfSNLI(snli).ToString ());
 			ResponseItemList fetchItems = new ResponseItemList ();
 			PropertyHelper props = new PropertyHelper (rowProperties.Props);
 			
@@ -161,35 +163,68 @@ namespace NMapi.Gateways.IMAP {
 				if (Fetch_att_key == "RFC822.HEADER") {
 				}
 				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
-					StringBuilder tmpMsg = new StringBuilder();
 
-					// XXX get full message to calculate MIME size
-					IMessage im = GetMessage (snli);
-					Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
-					HeaderGenerator headerGenerator = ma2mi.GetHeaderGenerator (im, props);
-					MimeMessage mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
-					MemoryStream ms = new MemoryStream();
-					mm.WriteTo (ms);
-					tmpMsg.Append (Encoding.ASCII.GetString (ms.ToArray ()));
-
-					// This doesn't work here due to the MIME conversion
-					// props.Prop = Property.MessageSize;
-
-					// Get converted message and use string length of it instead
-					// XXX include this feature in Mapi2Mime
-					fetchItems.AddResponseItem ("RFC822.SIZE");
-					// fetchItems.AddResponseItem (props.LongNIL);
-					fetchItems.AddResponseItem (tmpMsg.ToString ().Length.ToString());
+					// calculate exact size, if configured mandatory or if body will be retrieved with the same fetch command
+					// otherwise return rough value provided by store.
+					// This is a trick to save some time, when imap clients scan new emails in a mailbox.
+					// Works for thunderbird 2.0.0.21. Result is fast retrieval when body is not requested.
+					// !!! Works only, because Thunderbird requests RFC822.SIZE along with BODY when actually
+					// opening the email. Also it adjusts itself to the size provided in that situation. Thus,
+					// Thunderbird will read the whole content in sections (trace the use of Section_number1/
+					// Section_number2), if the real size is greater than the rough value provided in the first scan.
+					if (config.ComputeRFC822_SIZE || (ScanForBodyRequest (command))) {
+						StringBuilder tmpMsg = new StringBuilder();
+	
+						// XXX get full message to calculate MIME size
+						IMessage im = GetMessage (snli);
+						// use cache to save retrieving cost when whole email requires multiple
+						// accesses by the client
+						MimeMessage mm = state.GetCache (snli.EntryId);
+						if (mm == null) {
+							Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
+							HeaderGenerator headerGenerator = ma2mi.GetHeaderGenerator (im, props);
+							mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+							state.SetCache (snli.EntryId, mm);
+						}
+						MemoryStream ms = new MemoryStream();
+						mm.WriteTo (ms);
+						tmpMsg.Append (Encoding.ASCII.GetString (ms.ToArray ()));
+	
+						// This doesn't work here due to the MIME conversion
+						// props.Prop = Property.MessageSize;
+	
+						// Get converted message and use string length of it instead
+						// XXX include this feature in Mapi2Mime
+						fetchItems.AddResponseItem ("RFC822.SIZE");
+						// fetchItems.AddResponseItem (props.LongNIL);
+						fetchItems.AddResponseItem (tmpMsg.ToString ().Length.ToString());
+					} else {
+						props.Prop = Property.MessageSize;
+						fetchItems.AddResponseItem ("RFC822.SIZE");
+						fetchItems.AddResponseItem (props.LongNIL);
+					}					
 				}
 				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
-					props.Prop = Property.CreationTime;
+
+					fetchItems.AddResponseItem ("INTERNALDATE");
+
+					props.Prop = Property.MessageDeliveryTime;
 					if (props.Exists) {
-						fetchItems.AddResponseItem ("INTERNALDATE");
 						FileTimeProperty ftp = (FileTimeProperty) props.PropertyValue;
 						fetchItems.AddResponseItem (ConversionHelper.GetIMAPInternaldate (ftp.Value.DateTime), ResponseItemMode.QuotedOrLiteral);
+					} else {
+						props.Prop = Property.ClientSubmitTime;
+						if (props.Exists) {
+							FileTimeProperty ftp = (FileTimeProperty) props.PropertyValue;
+							fetchItems.AddResponseItem (ConversionHelper.GetIMAPInternaldate (ftp.Value.DateTime), ResponseItemMode.QuotedOrLiteral);
+						} else {
+							fetchItems.AddResponseItem ("NIL");
+						}
 					}
+						
 				}
 				if (Fetch_att_key == "BODYSTRUCTURE") {
+						// TODO: this ist only a face....
 						fetchItems.AddResponseItem ("BODYSTRUCTURE");
 						fetchItems.AddResponseItem (new ResponseItemList ()
 							.AddResponseItem ("TEXT", ResponseItemMode.QuotedOrLiteral)
@@ -214,15 +249,21 @@ namespace NMapi.Gateways.IMAP {
 					// preparation for HEADER/TEXT/MIME
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
 						IMessage im = GetMessage (snli);
-						Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
+						// use cache to save retrieving cost when whole email requires multiple
+						// accesses by the client
+						mm = state.GetCache (snli.EntryId);
+						if (mm == null) {
+							Mapi2Mime ma2mi = new Mapi2Mime (state.ServerConnection.Store);
 
-						// set headers
-						headerGenerator = ma2mi.GetHeaderGenerator (im, props);
+							// set headers
+							headerGenerator = ma2mi.GetHeaderGenerator (im, props);
 
-						// fill message
-						if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
-							state.Log ("memory test1");
-							mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+							// fill message
+							if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
+								state.Log ("memory test1");
+								mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
+								state.SetCache (snli.EntryId, mm);
+							}
 						}
 					}
 					if (section_text == null) {
@@ -252,7 +293,7 @@ namespace NMapi.Gateways.IMAP {
 						}
 					}
 					if (section_text == "MIME") {
-									// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
+						// headers of MimeBodyPart in case of Attachments. is only retrieved with section info. needs further investigations
 					}
 					if (section_text == "HEADER.FIELDS.NOT") {
 					}
@@ -414,7 +455,7 @@ namespace NMapi.Gateways.IMAP {
 			Property.SenderName,
 			Property.SenderEmailAddress,
 			Property.DisplayTo,
-			Property.CreationTime, 
+			Property.ClientSubmitTime, 
 			Property.TransportMessageHeaders
 		};
 
@@ -423,7 +464,7 @@ namespace NMapi.Gateways.IMAP {
 			List<int> propList = new List<int> ();
 
 			propList.Add (Property.EntryId);
-			propList.Add (ServCon.GetNamedProp(ServCon.CurrentFolder, IMAPGatewayNamedProperty.UID).PropTag); // TODO: Replace for named property for UID
+			propList.Add (ServCon.GetNamedProp(ServCon.FolderHelper.CurrentFolder, IMAPGatewayNamedProperty.UID).PropTag); // TODO: Replace for named property for UID
 			//propList.Add (Property.ReportName); // TODO: Replace for named property for folder path
 					
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
@@ -448,16 +489,20 @@ namespace NMapi.Gateways.IMAP {
 				}
 				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
 					// This doesn't work here due to the MIME conversion
-					// propList.Add (Property.MessageSize);
 					// XXX need to use full message instead
-					propList.AddRange (propsAllHeaderProperties);
-					propList.Add (Property.Body);
-					propList.Add (Property.RtfCompressed);
-					propList.Add (Outlook.Property.HTML);
-					propList.Add (Outlook.Property.INTERNET_CPID);
+					if (config.ComputeRFC822_SIZE) {
+						propList.AddRange (propsAllHeaderProperties);
+						propList.Add (Property.Body);
+						propList.Add (Property.RtfCompressed);
+						propList.Add (Outlook.Property.HTML);
+						propList.Add (Outlook.Property.INTERNET_CPID);
+					} else {
+						propList.Add (Property.MessageSize);
+					}
 				}
 				if ("INTERNALDATE ALL FAST FULL".Contains(Fetch_att_key)) {
-					propList.Add (Property.CreationTime);
+					propList.Add (Property.MessageDeliveryTime);
+					propList.Add (Property.ClientSubmitTime);
 				}
 				if (Fetch_att_key == "BODYSTRUCTURE") {
 					propList.AddRange (propsAllHeaderProperties);
@@ -502,7 +547,7 @@ namespace NMapi.Gateways.IMAP {
 							propList.Add (Property.TransportMessageHeaders);
 							
 							if (headerItem == "DATE") {
-								propList.Add (Property.CreationTime);
+								propList.Add (Property.ClientSubmitTime);
 							}
 							if (headerItem == "FROM") {
 								propList.Add (Property.SenderName);
@@ -561,6 +606,43 @@ namespace NMapi.Gateways.IMAP {
 			return propList.Distinct ().ToArray ();
 		}
 
+		// scans all fetch items to see if the mail body will need to be retrieved (via Mapi2Mime) in the course of this request
+		static private bool ScanForBodyRequest (Command cmd)
+		{
+			if (cmd == null)
+				return false;
+
+			foreach (CommandFetchItem cfi in cmd.Fetch_item_list) {
+				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
+				string section_text = (cfi.Section_text != null) ? cfi.Section_text.ToUpper () : null;
+
+				if ("BODY FULL".Contains(Fetch_att_key)) {
+					return true;
+				}
+				if (Fetch_att_key == "BODY.PEEK") {
+					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
+						return true;
+					}
+					if (section_text == null) {
+						return true;
+					}
+					if (section_text == "HEADER") {
+						return true;
+					}
+					if (section_text == "TEXT") {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		static private IMAPGatewayConfig config;
+		static private void init ()
+		{
+			if (config == null)
+				config = IMAPGatewayConfig.read ();
+		}
 				
 	}
 }

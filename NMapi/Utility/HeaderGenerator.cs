@@ -86,9 +86,9 @@ namespace NMapi.Utility {
 
 		public bool DoDate ()
 		{
-			props.Prop = Property.CreationTime;
+			props.Prop = Property.ClientSubmitTime;
 			if (props.Exists) {
-				ih.SetHeader ("Date", MapiReturnPropFileTime(props.Props, Property.CreationTime));
+				ih.SetHeader ("Date", MapiReturnPropFileTime(props.Props, Property.ClientSubmitTime));
 				return true;
 			}
 			return false;

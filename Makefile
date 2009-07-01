@@ -274,7 +274,7 @@ test:
 # /r:bin/NMapi.Provider.WabiSabi.dll
 
 runtests: test
-	nunit-console2 bin/NMapi.Test.dll
+	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml
 
 #
 # Sample

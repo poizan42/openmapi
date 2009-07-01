@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 
 			try {
-				var slq = ServCon.BuildSequenceSetQuery (command);
+				var slq = ServCon.FolderHelper.BuildSequenceSetQuery (command);
 				var entry_ids = from eId in slq
 								select eId.EntryId;
 				state.Log ("e_ids");
@@ -56,11 +56,11 @@ namespace NMapi.Gateways.IMAP {
 				state.Log ("el");
 	
 				string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-				IMapiFolder dest = ServCon.OpenFolder (path);
+				IMapiFolder dest = ServCon.FolderHelper.OpenFolder (path);
 				state.Log ("dest");
 
 				IMapiProgress imp = null;
-				ServCon.CurrentFolder.CopyMessages (el, null, dest, imp, 0);
+				ServCon.FolderHelper.CurrentFolder.CopyMessages (el, null, dest, imp, 0);
 				state.Log ("progress");
 
 				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));

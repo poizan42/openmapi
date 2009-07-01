@@ -170,7 +170,18 @@ namespace NMapi.Format.Mime
 		public DateTime GetSentDate ()
 		{
 			String date = GetHeader ("Date", "");
-			return DateTime.Parse (date);
+			DateTime dt;
+			int count = 0;
+			
+			while (count < date.Length) {
+				try {
+					dt = DateTime.Parse (date.Substring (0, date.Length - count) );
+					return dt;
+				} catch {
+				}
+				count ++;
+			}
+			throw new Exception ("Wrong date format: " + date);
 		}
 
 		public void SetVersion ()

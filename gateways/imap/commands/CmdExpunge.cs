@@ -64,12 +64,12 @@ namespace NMapi.Gateways.IMAP {
 
 		public static void DoExpunge (IMAPConnectionState state, ServerConnection servCon, Command command) {
 			
-			EntryList el = FlagHelper.DeletableMessages (servCon.SequenceNumberList);
-			servCon.CurrentFolder.DeleteMessages (el, null, 0);
-			servCon.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+			EntryList el = FlagHelper.DeletableMessages (servCon.FolderHelper.SequenceNumberList);
+			servCon.FolderHelper.CurrentFolder.DeleteMessages (el, null, 0);
+			servCon.FolderHelper.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 			
 			// handle Expunge responses and manage SequenceNumberList
-			var query2 = from toDel in servCon.SequenceNumberList
+			var query2 = from toDel in servCon.FolderHelper.SequenceNumberList
 						where (FlagHelper.IsDeleteMarked (toDel))
 						select toDel;
 			foreach (SequenceNumberListItem snli in query2) {

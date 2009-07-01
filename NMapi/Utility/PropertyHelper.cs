@@ -53,7 +53,12 @@ namespace NMapi.Utility {
 		}
 
 		public bool Exists {
-			get { return Index > -1 & PropertyValue != null; }
+			get { 
+				if (prop == Property.RtfCompressed)   // dont evaluate PropertyValue in case of RtfCompressed, might return out of Memory error
+					return Index > -1;
+				else
+					return Index > -1 && PropertyValue != null;
+			}
 		}
 		
 		public int Index { 

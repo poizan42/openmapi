@@ -26,6 +26,9 @@ using TUVienna;
 using NMapi.Gateways.IMAP;
 /*
 */
+#pragma warning disable 0169
+#pragma warning disable 0414
+#pragma warning disable 0649
 namespace NMapi.Gateways.IMAP
 {
 	public class Sample
@@ -120,6 +123,9 @@ public class Yytoken : ICloneable  {
     }
   }
 }
+#pragma warning restore 0169
+#pragma warning restore 0414
+#pragma warning restore 0649
 
 
 class Yylex : TUVienna.CS_CUP.Runtime.Scanner {

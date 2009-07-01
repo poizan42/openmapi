@@ -54,7 +54,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 
 				string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-				IMapiFolder folder = ServCon.OpenFolder (path);
+				IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path);
 				if (folder == null) {
 					state.ResponseManager.AddResponse (
 						new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));

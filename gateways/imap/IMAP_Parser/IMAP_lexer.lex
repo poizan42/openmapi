@@ -173,7 +173,7 @@ public class Yytoken : ICloneable  {
 		yy_reader = yy_reader1;
 	}
 
-%} 
+%}
 %eofval{
   return new Symbol(sym.EOF);
 %eofval}

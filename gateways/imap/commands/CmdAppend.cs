@@ -53,12 +53,20 @@ namespace NMapi.Gateways.IMAP {
 		{
 			try {
 				string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-				IMapiFolder appendFolder = ServCon.OpenFolder(path);
+				IMapiFolder appendFolder = ServCon.FolderHelper.OpenFolder(path);
 	
 				MimeMessage mm = new MimeMessage (new MemoryStream (command.Append_literal));
 
+				List<PropertyValue> props = new List<PropertyValue> ();
+				FileTimeProperty ftprop = null;
+	
+				ftprop = new FileTimeProperty ();
+				ftprop.PropTag = Property.MessageDeliveryTime;
+				ftprop.Value = new FileTime (command.DateTimex);
+				props.Add (ftprop);
+				
 				Mime2Mapi mi2ma = new Mime2Mapi ();
-				mi2ma.StoreMimeMessage (mm, appendFolder);
+				mi2ma.StoreMimeMessage (mm, props, appendFolder);
 
 				state.AddExistsRequestDummy ();
 				
@@ -72,3 +80,5 @@ namespace NMapi.Gateways.IMAP {
 
 	}
 }
+
+
