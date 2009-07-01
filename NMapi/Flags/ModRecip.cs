@@ -33,10 +33,11 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  Flags for the ModifyRecipients () method.
+	/// </summary>
 	public static class ModRecip
 	{
-		// ModifyRecipients ()
-		
 		public const int Add    = 0x00000002;
 		public const int Modify = 0x00000004;
 		public const int Remove = 0x00000008;

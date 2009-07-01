@@ -36,7 +36,10 @@ using NMapi.Table;
 
 namespace NMapi {
 
-	public partial class FileTime
+	/// <summary>
+	///  
+	/// </summary>
+	public partial class FileTime : IComparable
 	{
 		private const long TICKSPERSEC = 10000000L;
 		private const long SECSPERDAY = 86400;
@@ -75,6 +78,19 @@ namespace NMapi {
 				return origin.AddSeconds (l);
 			}
 		}
+		
+		
+		/// <summary>
+		///  Implementation of the IComparable interface.
+		/// </summary>
+		public int CompareTo (object obj)
+		{
+			if (!(obj is FileTime))
+				throw new ArgumentException ("Not a FileTime object.");
+			return DateTime.CompareTo (((FileTime) obj).DateTime);
+		}
+		
+		
 	}
 
 }

@@ -33,10 +33,11 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  PR_SECURITY values
+	/// </summary>
 	public enum Security
 	{
-		// PR_SECURITY values
-
 		Signed = 1,
 		Encrypted
 	}

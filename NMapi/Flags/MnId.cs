@@ -33,7 +33,11 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	//  Union discriminator
+	// TODO: rename.
+
+	/// <summary>
+	///  Indicates the type of the named property (id or string).
+	/// </summary>
 	public enum MnId 
 	{
 		Id = 0,

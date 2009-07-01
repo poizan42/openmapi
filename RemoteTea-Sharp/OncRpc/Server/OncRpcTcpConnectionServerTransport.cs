@@ -141,9 +141,12 @@ namespace CompactTeaSharp.Server
 			// Make sure the buffer is large enough and resize system buffers
 			// accordingly, if possible.
 			//
-			if ( bufferSize < 1024 )
+			if (bufferSize < 1024)
 				bufferSize = 1024;
-			this.tcpClient = tcpClient;	
+			this.tcpClient = tcpClient;
+			
+			tcpClient.LingerState = new LingerOption (true, 10);
+			tcpClient.NoDelay = true; // TODO: DEBUGGING -- might be inefficient
 			
 			// we need to copy this in order to send the information later on _after_ 
 			// the socket has (potentially) been closed.
@@ -152,12 +155,14 @@ namespace CompactTeaSharp.Server
 			this.remotePort = endpoint.Port;
 			
 			this.port = ((IPEndPoint) tcpClient.Client.LocalEndPoint).Port;
-			if ( tcpClient.SendBufferSize < bufferSize ) {
+			
+			
+			if (tcpClient.SendBufferSize < bufferSize)
 				tcpClient.SendBufferSize = bufferSize;
-			}
-			if ( tcpClient.ReceiveBufferSize < bufferSize ) {
+
+			if (tcpClient.ReceiveBufferSize < bufferSize)
 				tcpClient.ReceiveBufferSize = bufferSize;
-			}
+				
 			//
 			// Create the necessary encoding and decoding streams, so we can
 			// communicate at all.
@@ -210,7 +215,7 @@ namespace CompactTeaSharp.Server
 				XdrEncodingStream deadXdrStream = sendingXdr;
 				sendingXdr = null;
 				try {
-					deadXdrStream.Close();
+					deadXdrStream.Close ();
 				} catch ( IOException) {
 					// Do nothing
 				} catch ( OncRpcException) {

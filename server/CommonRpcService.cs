@@ -112,7 +112,7 @@ namespace NMapi.Server {
 				string providerStr = connStr.TargetProvider;
 
 				if (providerStr == null || providerStr == String.Empty)
-					providerStr = "org.openmapi.txc";
+					providerStr = cfg.NMapiProvider;
 
 				IMapiFactory factory = null;
 				var providers = ProviderManager.FindProviders ();

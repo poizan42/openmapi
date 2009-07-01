@@ -51,7 +51,7 @@ namespace NMapi {
 		private string charset;
 		private int charsize;
 		
-
+		
 		/// <summary>
 		///  
 		/// </summary>

@@ -71,7 +71,7 @@ namespace NMapi.Server {
 			while (true) {
 				var tcpClient = listener.AcceptTcpClient ();
 
-			//	tcpClient.ReceiveTimeout = timeout;
+//				tcpClient.ReceiveTimeout = timeout;
 				tcpClient.NoDelay = true;
 				
 				int bufferSize = 8192; // TODO: OAOO !!

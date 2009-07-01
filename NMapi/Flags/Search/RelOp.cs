@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - RelOp.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
@@ -38,19 +37,12 @@ namespace NMapi.Flags {
 	/// </summary>
 	public enum RelOp
 	{
-		/// <summary> Less-Than ( &lt; ) </summary>
-		Lt = 0,
-		/// <summary> Less-Than-Or-Equal ( &lt;= ) </summary>
-		Le,
-		/// <summary> Greater-Than ( &gt; ) </summary>
-		Gt,
-		/// <summary> Greater-Than-Or-Equal ( &gt;= ) </summary>
-		Ge,
-		/// <summary> Equal ( == ) </summary>
-		Eq,
-		/// <summary> Not-Equal ( != ) </summary>
-		Ne,
-		/// <summary> LIKE (Regular expression) </summary>
-		Re
+		LessThan = 0,
+		LessThanOrEqual,
+		GreaterThan,
+		GreaterThanOrEqual,
+		Equal,
+		NotEqual,
+		RegEx
 	}
 }

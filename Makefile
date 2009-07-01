@@ -64,6 +64,9 @@ NMapi.dll:
 	$(XSLTPROC) -o NMapi/Data/Data_Generated.cs \
 	NMapi/Data/xslt/cs/xdrgen.xsl NMapi/Data/Defs.xml
 
+	$(XSLTPROC) -o NMapi/Data/Data_Props_Generated.cs \
+	NMapi/Data/xslt/cs/props.xsl NMapi/Data/Props.xml
+	
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.dll \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
 	/r:nunit.framework.dll \

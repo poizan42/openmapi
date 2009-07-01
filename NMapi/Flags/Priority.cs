@@ -33,10 +33,11 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  PR_PRIORITY values
+	/// </summary>
 	public enum Priority
 	{
-		// PR_PRIORITY values
-
 		Urgent    =  1,
 		Normal    =  0,
 		NonUrgent = -1

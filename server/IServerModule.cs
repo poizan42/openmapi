@@ -31,21 +31,24 @@ using NMapi.Table;
 
 namespace NMapi.Server {
 
+	/// <summary>
+	///  Interface that must be implemented by all server modules.
+	/// </summary>
 	public interface IServerModule
 	{
 
 		/// <summary>
-		///
+		///  The (long) name of the module.
 		/// </summary>
 		string Name { get; }
 
 		/// <summary>
-		///
+		///  A short name of the module.
 		/// </summary>
 		string ShortName { get; }
 
 		/// <summary>
-		///
+		///  The current version of the module.
 		/// </summary>
 		Version Version { get; }
 

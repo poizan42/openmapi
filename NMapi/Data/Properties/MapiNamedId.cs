@@ -44,12 +44,14 @@ namespace NMapi.Properties {
 	/// <remarks>
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms526422.aspx
 	/// </remarks>
-
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public abstract class MapiNameId : IXdrEncodeable
+	public abstract class MapiNameId : IXdrEncodeable, ICloneable
 	{
 		private NMapiGuid lpguid;
-
+		
+		/// <summary>
+		///
+		/// </summary>
 		[DataMember (Name="Guid")]
 		public NMapiGuid  Guid {
 			get { return lpguid; }
@@ -114,6 +116,12 @@ namespace NMapi.Properties {
 		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
+		
+		/// <summary>
+		///
+		/// </summary>
+		public abstract object Clone ();
+		
 	}
 
 }

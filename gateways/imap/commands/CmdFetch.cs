@@ -102,7 +102,7 @@ namespace NMapi.Gateways.IMAP {
 					eId.Value = slq[msgno2].EntryId;
 					entryPropRestr.Prop = eId;
 					entryPropRestr.PropTag = Property.EntryId;
-					entryPropRestr.RelOp = RelOp.Eq;
+					entryPropRestr.RelOp = RelOp.Equal;
 					entryRestrictions.Add (entryPropRestr);
 				}
 				// create head restriction, append the single restrictions and add head restriction to contentsTable

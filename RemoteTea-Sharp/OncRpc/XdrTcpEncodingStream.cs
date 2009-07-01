@@ -79,8 +79,9 @@ namespace CompactTeaSharp
 
 			if ((bufferSize & 3) != 0)
 				bufferSize = (bufferSize + 4) & ~3;
+
 			//
-			// Set up the buffer and the buffer pointers (no, this is still Java).
+			// Set up the buffer
 			//
 			buffer = new byte [bufferSize];
 			bufferFragmentHeaderIndex = 0;
@@ -195,8 +196,8 @@ namespace CompactTeaSharp
 				// the buffer for the fragment header and at least a single
 				// int.
 				//
-				stream.Write(buffer, 0, bufferIndex);
-				stream.Flush();
+				stream.Write (buffer, 0, bufferIndex);
+				stream.Flush ();
 				//
 				// Reset write pointer after the fragment header int within
 				// buffer, so the next bunch of data can be encoded.

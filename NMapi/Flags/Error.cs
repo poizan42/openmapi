@@ -34,6 +34,9 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  
+	/// </summary>
 	public static class Error
 	{
 

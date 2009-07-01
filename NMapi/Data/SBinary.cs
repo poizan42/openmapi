@@ -44,9 +44,8 @@ namespace NMapi {
 	/// <remarks>
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms528837.aspx
 	/// </remarks>
-	
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public sealed class SBinary : IXdrAble
+	public sealed class SBinary : IXdrAble, ICloneable, IComparable
 	{
 		private string hexString = null;
 		private byte[] _lpb; // Do NOT access directly!
@@ -59,7 +58,10 @@ namespace NMapi {
 				hexString = null;
 			}
 		}
-
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public byte[] ByteArray {
 			get { return lpb; }
 			set { lpb = value; }
@@ -75,7 +77,10 @@ namespace NMapi {
 		{
 			lpb = value;
 		}
-
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public bool Equals (SBinary bin2)
 		{
 			if (bin2 == null)
@@ -93,7 +98,10 @@ namespace NMapi {
 			}
 			return false; // one is NOT null!
 		}
-
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public override bool Equals (object o)
 		{
 			if (o == this)
@@ -103,7 +111,10 @@ namespace NMapi {
 				return false;
 			return this.Equals (bin2);
 		}
-
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public string ToHexString ()
 		{
 			if (hexString != null)
@@ -151,6 +162,8 @@ namespace NMapi {
 		protected internal void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			Trace.WriteLine ("XdrEncode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
+			
 			if (lpb == null)
 				xdr.XdrEncodeDynamicOpaque (new byte[0]);
 			else
@@ -164,6 +177,48 @@ namespace NMapi {
 			lpb = xdr.XdrDecodeDynamicOpaque ();
 			if (lpb.Length == 0)
 				lpb = null;
+			Trace.WriteLine ("XdrDecode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
+		}
+		
+		/// <summary>
+		///  Implementation of the IComparable interface.
+		/// </summary>
+		public int CompareTo (object obj)
+		{
+			if (!(obj is SBinary))
+				throw new ArgumentException ("Not an SBinary object.");
+
+			byte[] b1 = ByteArray;
+			byte[] b2 = ((SBinary) obj).ByteArray;
+			if (b1 == null && b2 == null)
+				return 0;
+			if (b1 == null && b2 != null)
+				return -1;
+			if (b1 != null && b2 == null)
+				return 1;
+
+			// Neither one is NULL => we now check each byte.
+			// If two bytes in the iteration are different, we are done.
+			// If one array is shorter and there is still no difference, the length is compared.
+			int shorterLength = Math.Min (b1.Length, b2.Length);
+			
+			for (int i=0; i < shorterLength; i++)
+				if (!b1 [i].Equals (b2 [i]))
+					return b1 [i].CompareTo (b2 [i]);
+			return b1.Length.CompareTo (b2.Length);
+		}
+		
+		/// <summary>
+		///  Implementation of the ICloneable interface.
+		/// </summary>
+		public object Clone ()
+		{
+			byte[] lpbCopy = null;
+			if (lpb != null) {
+				lpbCopy = new byte [lpb.Length];
+				Array.Copy (lpb, 0, lpbCopy, 0, lpb.Length);
+			}
+			return new SBinary (lpbCopy);
 		}
 	
 	}

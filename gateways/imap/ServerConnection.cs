@@ -893,7 +893,7 @@ state.Log ("FixUIDsIn");
 			case IMAPGatewayNamedProperty.UID:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-message-UID";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UID_Path:
@@ -911,13 +911,13 @@ state.Log ("FixUIDsIn");
 			case IMAPGatewayNamedProperty.UIDNEXT:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder-UIDNEXT";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDVALIDITY:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder_UIDVALIDITY";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.AdditionalFlags:

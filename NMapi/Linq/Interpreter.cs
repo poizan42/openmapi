@@ -442,14 +442,14 @@ namespace NMapi.Linq {
 
 		private void ConstructRelationOpRestriction (BinaryExpression binaryExpr)
 		{
-			RelOp relOp = RelOp.Eq;
+			RelOp relOp = RelOp.Equal;
 			switch (binaryExpr.NodeType) {
-				case ExpressionType.Equal: relOp = RelOp.Eq; break;
-				case ExpressionType.NotEqual: relOp = RelOp.Ne; break;
-				case ExpressionType.LessThan: relOp = RelOp.Lt; break;
-				case ExpressionType.LessThanOrEqual: relOp = RelOp.Le; break;
-				case ExpressionType.GreaterThan: relOp = RelOp.Gt; break;
-				case ExpressionType.GreaterThanOrEqual: relOp = RelOp.Ge; break;
+				case ExpressionType.Equal: relOp = RelOp.Equal; break;
+				case ExpressionType.NotEqual: relOp = RelOp.NotEqual; break;
+				case ExpressionType.LessThan: relOp = RelOp.LessThan; break;
+				case ExpressionType.LessThanOrEqual: relOp = RelOp.LessThanOrEqual; break;
+				case ExpressionType.GreaterThan: relOp = RelOp.GreaterThan; break;
+				case ExpressionType.GreaterThanOrEqual: relOp = RelOp.GreaterThanOrEqual; break;
 				default:
 					throw new NotSupportedException ("The operator '"
 						+ binaryExpr.NodeType + "' is not supported!");
