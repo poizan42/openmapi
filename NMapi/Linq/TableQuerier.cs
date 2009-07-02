@@ -481,7 +481,7 @@ namespace NMapi.Linq {
 			restriction.Prop = bprop;
 			
 			restriction.PropTag = Property.EntryId;
-			restriction.RelOp = RelOp.Eq;
+			restriction.RelOp = RelOp.Equal;
 
 			table.FindRow (restriction, Bookmark.Beginning, 0);
 			int index = ReverseIndexIfRequired (table.QueryPosition ().Row); // TODO: Only TXC, probably ...

@@ -28,8 +28,7 @@
 	<!-- TODO //-->
 	<dummy name="Session_ABGetUserDataBySmtpAddress" />
 	<dummy name="Session_ABGetUserDataByInternalAddress" />
-	<dummy name="Session_ABGetChangeTime" />
-	<dummy name="Session_ABGetUserList" />	
+
 	<dummy name="MsgStore_SetLockState" />
 	<dummy name="MsgStore_FinishedMsg" />
 	<dummy name="MsgStore_NotifyNewMail" />
@@ -37,9 +36,7 @@
 	<dummy name="TblData_SetTags" /><!-- not mapi! //-->
 	<dummy name="MAPIFolder_CopyFolder" />
 	<dummy name="MAPIFolder_CopyMessages" />
-	<dummy name="MsgStore_GetReceiveFolderTable" />
-	
-	<dummy name="MsgStore_GetOutgoingQueue" />
+
 	
 	<!-- txc sync dummies //-->
 	<dummy name="Session_RegClientCert" />
@@ -118,7 +115,7 @@
 	<!--
 		DUMMIES
 	//-->
-	<dummy name="MsgStore_SetWrappedEID" />
+	<!-- dummy name="MsgStore_SetWrappedEID" //-->
 	<dummy name="SimpleStream_BeginWrite" />
 	<dummy name="SimpleStream_BeginRead" />
 	<dummy name="SimpleStream_EndRead" />
@@ -201,7 +198,15 @@
 				_response.lpszExplicitClassA = new StringAdapter ("");
 				_response.lpszExplicitClassW = new UnicodeAdapter ("");
 				
-				string messageClass = msgClassW; // TODO !!
+				
+				
+				
+				
+				/// HACK TO FIX WabiSabi BUG. (TODO?)
+				
+				string messageClass = msgClassA;
+				if (messageClass == null)
+					messageClass = msgClassW;
 			]]>
 		</pre>
 		<valuedcall params="messageClass, flags" />
@@ -218,6 +223,18 @@
 		<extract left="flags" right="ulFlags" />
 		<voidcall params="eid, flags" />
 	</call>
+	<call name="MsgStore_GetReceiveFolderTable" targetClass="IMsgStore" targetMethod="GetReceiveFolderTable">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+	<call name="MsgStore_GetOutgoingQueue" targetClass="IMsgStore" targetMethod="GetOutgoingQueue">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<putmap result="obj" />
+	</call>
+
+
 
 	<!--	
 		IMapiContainer
@@ -281,16 +298,26 @@
 		<voidcall params="msgList, null, flags" /><!-- TODO: NULL = Progress //-->
 	</call>
 	<call name="MAPIFolder_CreateFolder" targetClass="IMapiFolder" targetMethod="CreateFolder">
-		
-		<!--
-			lpszFolderCommentA	 NMapi.Interop.LPStr . Documentation for this section has not yet been entered.
-			lpszFolderNameA	 NMapi.Interop.LPStr . Documentation for this section has not yet been entered.
-		//-->
 		<extract left="folderType" right="ulFolderType" />
-		<extract left="folderName" right="lpwszFolderNameW.Value" />
-		<extract left="folderComment" right="lpwszFolderCommentW.Value" />
+		<extract left="folderNameA" right="lpszFolderNameA.Value" />
+		<extract left="folderNameW" right="lpwszFolderNameW.Value" />
+		<extract left="folderCommentA" right="lpszFolderCommentA.Value" />
+		<extract left="folderCommentW" right="lpwszFolderCommentW.Value" />
 		<extract left="interFace" right="lpInterface.Value" />
 		<extract left="flags" right="ulFlags" />
+		<pre>
+			<![CDATA[
+				/// HACK TO FIX WabiSabi BUG. (TODO?)
+				
+				string folderComment = folderCommentA;
+				if (folderComment == null)
+					folderComment = folderCommentW;
+				
+				string folderName = folderNameA;
+				if (folderName == null)
+					folderName = folderNameW;
+			]]>
+		</pre>
 		<valuedcall params="(Folder) folderType, folderName, folderComment, interFace, flags" /> <!-- CAST!  //-->
 		<putmap result="obj" />
 	</call>

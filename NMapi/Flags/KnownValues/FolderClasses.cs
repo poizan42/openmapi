@@ -43,14 +43,24 @@ namespace NMapi.Flags {
 		public static class Ipf
 		{
 			/// <summary>
-			///  
+			///  Indicates that the folder contains appointments.
+			///  Outlook will display this folder in the "Appointment" category.
 			/// </summary>
 			public const string Appointment		  				= "IPF.Appointment";
 
 			/// <summary>
-			///  
+			///  Indicates that the folder contains appointments.
+			///  Outlook will display this folder in the "Tasks" category.
+			/// </summary>
+			public const string Task			  				= "IPF.Task";
+
+
+			/// <summary>
+			///  Indicates that the folder contains appointments.
+			///  Outlook will display this folder in the "Contacts" category.
 			/// </summary>
 			public const string Contact			  				= "IPF.Contact";
+
 
 			/// <summary>
 			///  
@@ -58,7 +68,8 @@ namespace NMapi.Flags {
 			public const string Journal			  				= "IPF.Journal";			
 
 			/// <summary>
-			///  
+			///  Indicates that the folder contains mails.
+			///  Outlook will display this folder in the default Mail view.
 			/// </summary>
 			public const string Note			  				= "IPF.Note";
 

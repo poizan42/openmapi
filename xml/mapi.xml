@@ -505,6 +505,13 @@
 			<summary>Represents a MessageStore, the entry point to access any stored data.</summary>
 			<remarks>$$MSDN_531692.aspx</remarks>
 		</doc>
+		<property id="^Orig^E#I#D">
+			<doc>
+				<summary></summary>
+			</doc>
+			<returns>byte[]</returns>
+			<get />
+		</property>
 		<method id="^Advise">
 			<doc>
 				<summary></summary>
@@ -622,6 +629,22 @@
 			</doc>
 			<returns map="true">^I#MAPI^Folder</returns>
 			<param type="string">path</param>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Get^Receive^Folder^Table" rpcId="GetReceiveFolderTable">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns map="true">^I#MAPI^Table^Reader</returns>
+			<param type="int">flags</param>
+		</method>		
+		<method id="^Get^Outgoing^Queue" rpcId="GetOutgoingQueue">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns map="true">^I#MAPI^Table^Reader</returns>
 			<param type="int">flags</param>
 		</method>
 	</interface>
@@ -884,8 +907,8 @@
 			</doc>
 			<!-- VOID //-->
 			<param type="^Restriction">restriction</param>
-			<param type="int">numerator</param>
-			<param type="int">denominator</param>
+			<param type="int">bookmarkOrigin</param>
+			<param type="int">flags</param>
 		</method>
 		<method id="^Restrict">
 			<doc>

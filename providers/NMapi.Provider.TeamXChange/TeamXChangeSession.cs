@@ -374,7 +374,7 @@ namespace NMapi {
 			catch (MapiException e) {
 				if (e.HResult == Error.NotFound)
 					return null;
-				throw e;
+				throw;
 			}
 		}
 		

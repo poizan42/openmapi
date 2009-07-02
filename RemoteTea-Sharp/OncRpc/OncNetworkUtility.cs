@@ -35,23 +35,30 @@ using System.Security.Cryptography.X509Certificates;
 namespace CompactTeaSharp
 {
 	/// <summary>
-	///  
+	///  Helper class to wrap a (network) stream in an SSL stream; The class 
+	///  also works properly with Mono which is not the case when simply 
+	///  using SslStream directly.
 	/// </summary>
 	public static class OncNetworkUtility
 	{
+		
+		/// <summary>
+		///  Wraps a stream in an SSL stream.
+		/// </summary>
 		public static Stream GetSslStream (Stream stream, string certFile, string keyFile)
 		{			
 			if (!File.Exists (certFile) || !File.Exists (keyFile))
 				throw new IOException ("Certificate or key file not found!");
-				
+			
 			X509Certificate cert = X509Certificate2.CreateFromCertFile (certFile);
 			
 			#if USE_MONO_SECURITY
 			
 				// This whole thing is required, because Mono doesn't seems to be 
 				// able to deal with the standard way of opening the key file.
-			
-				var sslStream = new Mono.Security.Protocol.Tls.SslServerStream (stream, cert, false, false);
+
+				bool ownStream = true;
+				var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
 				sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
 					Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
 				sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
@@ -64,6 +71,58 @@ namespace CompactTeaSharp
 			#endif
 			
 			return sslStream;
+		}
+		
+		/// <summary>
+		///  
+		/// </summary>
+		public class AutoFlushSslStream : Mono.Security.Protocol.Tls.SslServerStream
+		{
+			private Stream underlyingStream;
+
+			public AutoFlushSslStream (Stream stream, X509Certificate cert, bool x, bool ownStream) : base (stream, cert, x, ownStream)
+			{
+				this.underlyingStream = stream;
+			}
+			
+			
+			public override void Write (byte[] buffer, int offset, int count)
+			{
+				// TODO: this is not a proper fix. It's a hack.
+				int currentPieceLimit = count;
+				while (offset < count-1) {
+					int nextPieceLength = Math.Min (currentPieceLimit, 8000);
+					base.Write (buffer, offset, nextPieceLength);
+					offset += nextPieceLength;
+					currentPieceLimit -= nextPieceLength;
+				}
+				
+			}
+			
+			public override void WriteByte (byte data)
+			{
+				Console.WriteLine ("WriteByte ()");
+				base.WriteByte (data);
+			}
+			
+			public override int ReadByte ()
+			{
+				Console.WriteLine ("ReadByte ()");
+				return base.ReadByte ();
+			}
+			
+			public override int Read (byte[] buffer, int offset, int count)
+			{
+				Console.WriteLine ("Read ()");
+				return base.Read (buffer, offset, count);
+			}	
+			
+			public override void Flush ()
+			{
+				base.Flush ();
+				underlyingStream.Flush ();
+			}
+
 		}
 		
 	}

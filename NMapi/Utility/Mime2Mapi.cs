@@ -15,6 +15,8 @@
 // GNU Affero General Public License for more details.
 //
 
+
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -32,11 +34,17 @@ using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Utility;
 
-
 namespace NMapi.Utility {
+
 
 	public class Mime2Mapi
 	{
+		// if an incoming email provides only a text/html-representation and no according text/plain component we need to 
+		// create some dummy content in Property.Body.
+		// when reconstructing the email in Mapi2Mime, we need to detect the situation and NOT create a text/plain component.
+		public const string MimeMapi_Constant_HTML_only_Text_content = 
+			"OpenMAPI IMAPGateway, default Text when Mime representation didn't provide any text/plain component but only text/html. This is to make sure this text will not be detected by accident: e82948746629f0589bba8bd8bdec93f2e781d9423";
+
 		IMsgStore store;
 		bool prBodyFilled;
 		bool prRtfFilled;
@@ -336,6 +344,16 @@ namespace NMapi.Utility {
 				issHtml.PutData (msHtml);
 				msHtml.Close ();
 				prRtfFilled = true;
+
+				// If plain text body has not been filled so far, fill it with a dummy.
+				// otherwise Outlook will not show the html text either
+				// If a real text body appears later, it will overwrite what we fill in here.
+				if (!prBodyFilled) {
+					uprop = new UnicodeProperty ();
+					uprop.PropTag = Property.BodyW;
+					uprop.Value = String.Empty + MimeMapi_Constant_HTML_only_Text_content;
+					props.Add (uprop);
+				}
 
 			} else if (mm.ContentType.ToLower () == ("multipart/alternative") &&
 			           mm.Content != null && 

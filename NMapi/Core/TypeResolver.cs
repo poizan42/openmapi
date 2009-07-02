@@ -44,6 +44,10 @@ using NMapi.Properties.Special;
 
 namespace NMapi {
 
+	/// <summary>
+	///  A helper method used to resolve C# types from assemblies 
+	///  (without loading the assemblies into the current application domain.)
+	/// </summary>
 	public sealed class TypeResolver
 	{
 		private IAssemblyResolver resolver;
@@ -55,13 +59,19 @@ namespace NMapi {
 			deferredResolution = new Queue<AssemblyNameReference> ();
 			map = new Dictionary<string,AssemblyDefinition> ();
 			resolver = new DefaultAssemblyResolver ();
-
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public void AddAssembly (string name, string version)
 		{
 			AddAssembly (name, new Version (version));
 		}
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public void AddAssembly (string name, Version version)
 		{
 			AssemblyNameReference asm = new AssemblyNameReference ();
@@ -70,11 +80,17 @@ namespace NMapi {
 			AddAssembly (asm);
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public void AddAssembly (AssemblyNameReference asmRef)
 		{
 			deferredResolution.Enqueue (asmRef);
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public void ProcessQueue ()
 		{
 			while (deferredResolution.Count > 0) {
@@ -93,6 +109,9 @@ namespace NMapi {
 			}
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public static string[] SplitTypeNameAndProperty (string name)
 		{
 			int index = name.LastIndexOf ('.');
@@ -104,7 +123,9 @@ namespace NMapi {
 			return result;
 		}
 
-
+		/// <summary>
+		///  
+		/// </summary>
 		public TypeDefinition ResolveDefinition (string typeName)
 		{
 			ProcessQueue ();
@@ -118,6 +139,9 @@ namespace NMapi {
 			return null;
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
 		public TypeDefinition ResolveDefinition (TypeReference typeRef)
 		{
 			Console.WriteLine (typeRef.FullName);

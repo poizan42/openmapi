@@ -127,6 +127,13 @@ namespace NMapi {
 		private void Logon2 (string host, int port, int sessionFlags, string user, string password, int codePage, int localeId)
 		{
 			try {
+				int colonPos = host.IndexOf (':');
+				if (colonPos >= 0) {
+					int parsed;
+					if (Int32.TryParse (host.Substring (colonPos+1), out parsed))
+						port = parsed;
+					host = host.Substring (0, colonPos);
+				}
 				if (port != -1)
 					session = new TeamXChangeSession (host, port);
 				else

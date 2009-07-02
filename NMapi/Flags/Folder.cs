@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Folder.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,7 +33,11 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public enum Folder // IMAPIFolder folder type (enum)
+	/// <summary>
+	///  The possible values for the Property.FolderType tag. 
+	///  Indicates the type of an IMapiFolder object.
+	/// </summary>
+	public enum Folder
 	{
 		Root = 0,
 		Generic,

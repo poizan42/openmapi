@@ -155,6 +155,11 @@ namespace NMapi.Flags {
 			/// <summary>
 			///  
 			/// </summary>
+			public const string PREFIX = "REPORT.IPM";
+		
+			/// <summary>
+			///  
+			/// </summary>
 			public const string DeliveryReceipt = "REPORT.IPM.Note.DR";
 
 			/// <summary>

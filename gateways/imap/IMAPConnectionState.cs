@@ -353,7 +353,7 @@ Log ( "ProcessNotificationRespo6");
 		public void DoWork () 
 		{
 			while (!loopEnd) {
-				Thread.Sleep(50);
+				Thread.Sleep(5);
 				
 				// lock execution against the execution of a notification request (see NotificationHandler)
 //				lock (this){

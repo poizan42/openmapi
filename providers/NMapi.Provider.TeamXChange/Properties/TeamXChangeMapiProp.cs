@@ -174,8 +174,13 @@ namespace NMapi.Properties {
 			catch (OncRpcException e) {
 				throw new MapiException (e);
 			}
-			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+			// TODO: The next 2 lines have been commented-out, but this really is not 
+			//       a correct fix. The problem here is, that warnings must be returned 
+			//       in the hresult to the client but the PropertyProblem must still be 
+			//       returned.
+			
+			//if (Error.CallHasFailed (res.hr))
+			//	throw new MapiException (res.hr);
 			return res.lpProblems.value;
 		}
 
