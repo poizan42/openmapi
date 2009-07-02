@@ -124,11 +124,6 @@
 		<autocast>SBinary</autocast>
 	</class>
 
-	<class id="XProperty" type="DEFAULT">
-		<compare type="default" />
-		<getobj>Value</getobj>
-	</class>
-
 	<class id="NullProperty" type="Null">
 		<compare type="fixed">0</compare>
 		<getobj>null</getobj>
@@ -199,5 +194,11 @@
 		<compare type="array" />
 		<getobj>Value</getobj>
 	</class>
-
+	
+	<!-- Must be the last one. //-->
+	<class id="XProperty" type="DEFAULT">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+	
 </propertyclasses>
