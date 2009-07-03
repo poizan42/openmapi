@@ -68,24 +68,24 @@ namespace NMapi.Linq {
 					case PropertyType.Unspecified:
 						throw new Exception ("PropertyType.Unspecified is invalid!");
 					case PropertyType.Null:		return "System.Int32";
-					case PropertyType.I2:		return "System.Short";
-					case PropertyType.Long:		return "System.Int32";
-					case PropertyType.R4:		return "System.Float";
+					case PropertyType.Int16:		return "System.Short";
+					case PropertyType.Int32:		return "System.Int32";
+					case PropertyType.Float:		return "System.Float";
 					case PropertyType.Double:	return "System.Double";
 					case PropertyType.Currency:	return "System.Long";
 					case PropertyType.AppTime:	return "System.Double";
 					case PropertyType.Error:	return "System.Int32";
 					case PropertyType.Boolean:	return "System.Short";
 					case PropertyType.Object:	return "System.Int32";
-					case PropertyType.I8:		return "System.Int64";
+					case PropertyType.Int64:		return "System.Int64";
 					case PropertyType.String8:	return "System.String";
 					case PropertyType.Unicode:	return "System.String";
 					case PropertyType.SysTime:	return "NMapi.FileTime";
 					case PropertyType.ClsId:	return "NMapi.NMapiGuid";
 					case PropertyType.Binary:	return "NMapi.SBinary";
-					case PropertyType.MvI2:		return "System.Short[]";
-					case PropertyType.MvLong:	return "System.Int32[]";
-					case PropertyType.MvR4:		return "System.Float[]";
+					case PropertyType.MvInt16:		return "System.Short[]";
+					case PropertyType.MvInt32:	return "System.Int32[]";
+					case PropertyType.MvFloat:		return "System.Float[]";
 					case PropertyType.MvDouble:	return "System.Double[]";
 					case PropertyType.MvCurrency:	return "System.Int64[]";
 					case PropertyType.MvAppTime:	return "System.Double[]";
@@ -94,9 +94,9 @@ namespace NMapi.Linq {
 					case PropertyType.MvBinary:	return "NMapi.SBinary[]";
 					case PropertyType.MvUnicode:	return "System.String[]";
 					case PropertyType.MvClsId:	return "NMapi.NMapiGuid[]";
-					case PropertyType.MvI8:		return "System.Int64[]";
+					case PropertyType.MvInt64:		return "System.Int64[]";
 				}
-				throw new Exception ("Unknown type!");
+				throw new Exception ("Unknown type! (X!!!!)" + pt);
 			}
 		}
 
@@ -106,24 +106,24 @@ namespace NMapi.Linq {
 				switch (pt) {
 					case PropertyType.Unspecified:	return "PropertyType.Unspecified";
 					case PropertyType.Null:		return "PropertyType.Null";
-					case PropertyType.I2:		return "PropertyType.I2";
-					case PropertyType.Long:		return "PropertyType.Long";
-					case PropertyType.R4:		return "PropertyType.R4";
+					case PropertyType.Int16:	return "PropertyType.Int16";
+					case PropertyType.Int32:	return "PropertyType.Int32";
+					case PropertyType.Float:	return "PropertyType.Float";
 					case PropertyType.Double:	return "PropertyType.Double";
 					case PropertyType.Currency:	return "PropertyType.Currency";
 					case PropertyType.AppTime:	return "PropertyType.AppTime";
 					case PropertyType.Error:	return "PropertyType.Error";
 					case PropertyType.Boolean:	return "PropertyType.Boolean";
 					case PropertyType.Object:	return "PropertyType.Object";
-					case PropertyType.I8:		return "PropertyType.I8";
+					case PropertyType.Int64:	return "PropertyType.Int64";
 					case PropertyType.String8:	return "PropertyType.String8";
 					case PropertyType.Unicode:	return "PropertyType.Unicode";
 					case PropertyType.SysTime:	return "PropertyType.SysTime";
 					case PropertyType.ClsId:	return "PropertyType.ClsId";
 					case PropertyType.Binary:	return "PropertyType.Binary";
-					case PropertyType.MvI2:		return "PropertyType.MvI2";
-					case PropertyType.MvLong:	return "PropertyType.MvLong";
-					case PropertyType.MvR4:		return "PropertyType.MvR4";
+					case PropertyType.MvInt16:		return "PropertyType.MvInt16";
+					case PropertyType.MvInt32:	return "PropertyType.MvInt32";
+					case PropertyType.MvFloat:	return "PropertyType.MvFloat";
 					case PropertyType.MvDouble:	return "PropertyType.MvDouble";
 					case PropertyType.MvCurrency:	return "PropertyType.MvCurrency";
 					case PropertyType.MvAppTime:	return "PropertyType.MvAppTime";
@@ -132,9 +132,9 @@ namespace NMapi.Linq {
 					case PropertyType.MvBinary:	return "PropertyType.MvBinary";
 					case PropertyType.MvUnicode:	return "PropertyType.MvUnicode";
 					case PropertyType.MvClsId:	return "PropertyType.MvClsId";
-					case PropertyType.MvI8:		return "PropertyType.MvI8";
+					case PropertyType.MvInt64:		return "PropertyType.MvInt64";
 				}
-				throw new NotSupportedException ("Unknown type!");
+				throw new NotSupportedException ("Unknown type: " + pt);
 			}
 		}
 

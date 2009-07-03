@@ -64,6 +64,9 @@ NMapi.dll:
 	$(XSLTPROC) -o NMapi/Data/Data_Generated.cs \
 	NMapi/Data/xslt/cs/xdrgen.xsl NMapi/Data/Defs.xml
 
+	$(XSLTPROC) -o NMapi/Data/Data_Props_Generated.cs \
+	NMapi/Data/xslt/cs/props.xsl NMapi/Data/Props.xml
+	
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.dll \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
 	/r:nunit.framework.dll \
@@ -81,9 +84,8 @@ NMapi.dll:
 # Providers
 #
 
-#NMapi.Provider.Indigo 
-#NMapi.Provider.Mox
-allproviders: NMapi.Provider.TeamXChange
+#NMapi.Provider.Indigo NMapi.Provider.WabiSabi
+allproviders: NMapi.Provider.TeamXChange 
 
 NMapi.Provider.Indigo:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.Indigo.dll \
@@ -96,28 +98,30 @@ NMapi.Provider.Indigo:
 	`find providers/NMapi.Provider.Indigo -name "*.cs"`
 
 #
-# MOX VIRTUAL PROVIDER
+# WabiSabi VIRTUAL PROVIDER
 #
 
+WABISABI_SPECIAL_PATH = providers/NMapi.Provider.WabiSabi/Properties/Special
+WABISABI_GENERATED_PATH = providers/NMapi.Provider.WabiSabi/Properties/generated
 
-MOX_SPECIAL_PATH = providers/NMapi.Provider.Mox/Properties/Special
-MOX_GENERATED_PATH = providers/NMapi.Provider.Mox/Properties/generated
+NMapi.Provider.WabiSabi:
+	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MsgStore.mapimap -o $(WABISABI_GENERATED_PATH)/MsgStorePropHandler.generated.cs
+	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MsgPublicStore.mapimap -o $(WABISABI_GENERATED_PATH)/MsgPublicStorePropHandler.generated.cs
+	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MoxFolder.mapimap -o $(WABISABI_GENERATED_PATH)/MoxFolderPropHandler.generated.cs
+	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/VirtualMessage.mapimap -o $(WABISABI_GENERATED_PATH)/VirtualMessagePropHandler.generated.cs
 
-NMapi.Provider.Mox:
-	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/VirtualFolder.mapimap -o $(MOX_GENERATED_PATH)/VirtualFolderPropHandler.generated.cs
-	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/MsgStore.mapimap -o $(MOX_GENERATED_PATH)/MsgStorePropHandler.generated.cs
-	$(MAPIMAP) -map $(MOX_SPECIAL_PATH)/MsgPublicStore.mapimap -o $(MOX_GENERATED_PATH)/MsgPublicStorePropHandler.generated.cs
-
-	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.Mox.dll \
+	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.WabiSabi.dll \
 	/nowarn:$(NO_WARN) /target:library \
 	/r:System.Configuration.dll \
+	/r:System.Data.dll \
+	/r:Mono.Data.Sqlite.dll \
 	/r:System.Web.Services.dll \
 	/r:System.Xml.Linq.dll \
 	/r:bin/NMapi.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
 	/r:bin/NMapi.OX.Http.dll \
-	`find providers/NMapi.Provider.Mox -name "*.cs"`
+	`find providers/NMapi.Provider.WabiSabi -name "*.cs"`
 
 
 NMapi.Provider.TeamXChange:
@@ -267,6 +271,7 @@ test:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:bin/NMapi.dll /r:bin/nmapisvr.exe \
 	/r:bin/NMapi.Provider.TeamXChange.dll `find tests -name "*.cs"` $(TEST_SOURCES)
+# /r:bin/NMapi.Provider.WabiSabi.dll
 
 runtests: test
 	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml

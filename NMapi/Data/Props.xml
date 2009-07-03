@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - Props.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//	
+//-->
+
+<propertyclasses>
+
+	<class id="ShortProperty" type="Int16">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="IntProperty" type="Int32">
+		<compare type="default" />
+		<getobj>Value</getobj>
+		<autocast>int</autocast>
+	</class>
+
+	<class id="FloatProperty" type="Float">
+		<compare type="default" />
+		<getobj>Value</getobj>
+		<autocast>float</autocast>
+	</class>
+
+	<class id="DoubleProperty" type="Double">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="CurrencyProperty" type="Currency">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="AppTimeProperty" type="AppTime">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="ErrorProperty" type="Error">
+		<compare type="fixed">0</compare>
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="BooleanProperty" type="Boolean">
+		<compare type="code">
+		<![CDATA[
+			
+			bool v1 = (Value != 0);
+			bool v2 = (((BooleanProperty) obj).Value != 0);
+			if (v1 == v2)
+				return 0;
+			if (v1 && !v2)
+				return 1;
+			return -1;
+			
+		]]>
+		</compare>
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="ObjectProperty" type="Object">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="LongProperty" type="Int64">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="String8Property" type="String8">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="UnicodeProperty" type="Unicode">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="FileTimeProperty" type="SysTime">
+		<compare type="default" />
+		<getobj>Value</getobj>
+		<autocast>FileTime</autocast>
+	</class>
+
+	<class id="GuidProperty" type="ClsId">
+		<compare type="code">
+		<![CDATA[
+			if (Value.Equals (((GuidProperty) obj).Value))
+				return 0;
+			return 1; // TODO: correct?
+		]]>
+		</compare>
+		<getobj>Value</getobj>
+		<autocast>NMapiGuid</autocast>
+	</class>
+
+	<class id="BinaryProperty" type="Binary">
+		<compare type="default" />
+		<getobj>Value</getobj>
+		<autocast>SBinary</autocast>
+	</class>
+
+	<class id="NullProperty" type="Null">
+		<compare type="fixed">0</compare>
+		<getobj>null</getobj>
+	</class>
+
+	<class id="ShortArrayProperty" type="MvInt16">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>short[]</autocast>
+	</class>
+
+	<class id="IntArrayProperty" type="MvInt32">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>int[]</autocast>
+	</class>
+
+	<class id="FloatArrayProperty" type="MvFloat">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>float[]</autocast>
+	</class>
+
+	<class id="DoubleArrayProperty" type="MvDouble">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="CurrencyArrayProperty" type="MvCurrency">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="AppTimeArrayProperty" type="MvAppTime">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="FileTimeArrayProperty" type="MvSysTime">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>FileTime[]</autocast>
+	</class>
+
+	<class id="BinaryArrayProperty" type="MvBinary">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>SBinary[]</autocast>
+	</class>
+
+	<class id="String8ArrayProperty" type="MvString8">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="UnicodeArrayProperty" type="MvUnicode">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+
+	<class id="GuidArrayProperty" type="MvClsId">
+		<compare type="array" />
+		<getobj>Value</getobj>
+		<autocast>NMapiGuid[]</autocast>
+	</class>
+
+	<class id="LongArrayProperty" type="MvInt64">
+		<compare type="array" />
+		<getobj>Value</getobj>
+	</class>
+	
+	<!-- Must be the last one. //-->
+	<class id="XProperty" type="DEFAULT">
+		<compare type="default" />
+		<getobj>Value</getobj>
+	</class>
+	
+</propertyclasses>

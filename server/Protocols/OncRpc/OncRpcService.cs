@@ -109,10 +109,19 @@ namespace NMapi.Server {
 			}
 			var result = new Base_Close_res ();
 			result.refCount = 0; // TODO: check - correct?
-			Trace.WriteLine (" ==> END CALL Base_RefClose");
+			Trace.WriteLine (" ==> END CALL Base_Close");
 			return result;	
 		}
 
+		// DEBUGGING ...
+		public override MsgStore_SetWrappedEID_res MsgStore_SetWrappedEID_1 (
+			OncRpcCallInformation call, MsgStore_SetWrappedEID_arg arg1)
+		{
+			Console.WriteLine (arg1.eid.ToHexString ());
+			return new MsgStore_SetWrappedEID_res ();
+		}
+		
+		
 		public override MsgStore_GetOrigEID_res MsgStore_GetOrigEID_1 (
 			OncRpcCallInformation call, MsgStore_GetOrigEID_arg arg1)
 		{
@@ -122,6 +131,8 @@ namespace NMapi.Server {
 			IMsgStore obj = session.ObjectStore.GetIMsgStore (arg1.obj.value.Value);
 			var result = new MsgStore_GetOrigEID_res ();
 			
+			result.eid = new SBinary (obj.OrigEID);
+/*				
 			if (obj is TeamXChangeMsgStore)
 				result.eid = new SBinary ( ((TeamXChangeMsgStore) obj).OrigEID);
 			else {
@@ -131,7 +142,7 @@ namespace NMapi.Server {
 					throw new MapiException ("Property.EntryID " + 
 						"property not found on MessageStore object.");
 				result.eid = (SBinary) props [0];
-			}
+			}*/
 			
 			Trace.WriteLine (" ==> END CALL MsgStore_GetOrigEID");	
 			return result;
@@ -168,22 +179,69 @@ namespace NMapi.Server {
 			return result;
 		}
 
+
+
+		public override Session_ABGetChangeTime_res Session_ABGetChangeTime_1 (
+			OncRpcCallInformation call, Session_ABGetChangeTime_arg arg1)
+		{
+			int flags = arg1.ulFlags;
+
+			Trace.WriteLine (" ==> Session_ABGetChangeTime_1 - NOT IMPLEMENTED!");
+			var res = new Session_ABGetChangeTime_res ();
+			res.ft = new FileTime (DateTime.Today); // TODO: STUB!
+			return res;
+		}
+		
+		
+		public override Session_ABGetUserList_res Session_ABGetUserList_1 (
+			OncRpcCallInformation call, Session_ABGetUserList_arg arg1)
+		{
+			int flags = arg1.ulFlags;
+
+			Trace.WriteLine (" ==> Session_ABGetUserList_1 - NOT IMPLEMENTED!");
+			var res = new Session_ABGetUserList_res (); // STUB
+			
+			res.pList = new ABUSERLIST (); // TODO: STUB!
+			res.pList.pData = MakeStubData ();
+			res.pList.pNext = null;
+
+			return res;
+		}
+		
+
 		// TODO: stubbed !!!!!!!!!!!
 		public override Session_ABGetUserData_res Session_ABGetUserData_1 (
 			OncRpcCallInformation call, Session_ABGetUserData_arg arg1)
 		{
 			Trace.WriteLine (" ==> Session_ABGetUserData_1 - NOT IMPLEMENTED!");
 			var res = new Session_ABGetUserData_res (); // STUB
-			var ud = new ABUSERDATA ();
-			ud.pwszId = new UnicodeAdapter ("");
-			ud.pwszDisplay = new UnicodeAdapter ("");
-			ud.pwszAdrType = new UnicodeAdapter ("");
-			ud.pwszSmtpAdr = new UnicodeAdapter ("");
-			ud.pwszIntAdr = new UnicodeAdapter ("");
-			ud.eid = new SBinary (new byte [] {0});
-			ud.searchKey = new SBinary (new byte [] {0});
-			res.pData = ud;
+			res.pData = MakeStubData ();
 			return res;
+		}
+		
+		// debug
+		private ABUSERDATA MakeStubData ()
+		{
+			return MakeABUserData ("0400000", "STUB", "EX", "STUB@STUB.de", "/o=ORGANIZATION/ou=UNIT/cn=Recipients/cn=STUB", 
+								new byte [] {0x00, 0x00, 0x00, 0x00, 0xA1, 0x06, 0xC2, 0xC5, 0x81, 0x96, 0x44, 0x92, 0xA3, 0xCA, 0xC9, 0xDA, 0xF4, 0x73, 0xA2, 0x16, 0x02, 0x6A, 0x00, 
+													0x72, 0x00, 0x6F, 0x00, 0x69, 0x00, 0x74, 0x00, 0x68, 0x00, 0x00, 0x00 },
+
+								new byte [] {0x00, 0x00, 0x00, 0x00, 0xA1, 0x06, 0xC2, 0xC5, 0x81, 0x96, 0x44, 0x92, 0xA3, 0xCA, 0xC9, 0xDA, 0xF4, 0x73, 0xA2, 0x16, 0x02, 0x6A, 0x00, 
+													0x72, 0x00, 0x6F, 0x00, 0x69, 0x00, 0x74, 0x00, 0x68, 0x00, 0x00, 0x00 } );
+		}
+		
+		private ABUSERDATA MakeABUserData (string id, string display, string adrType, 
+			string smtpAdr, string intAdr, byte[] eid, byte[] searchKey)
+		{
+			var ud = new ABUSERDATA ();
+			ud.pwszId = new UnicodeAdapter (id);
+			ud.pwszDisplay = new UnicodeAdapter (display);
+			ud.pwszAdrType = new UnicodeAdapter (adrType);
+			ud.pwszSmtpAdr = new UnicodeAdapter (smtpAdr);
+			ud.pwszIntAdr = new UnicodeAdapter (intAdr);
+			ud.eid = new SBinary (eid);
+			ud.searchKey = new SBinary (searchKey);
+			return ud;
 		}
 		
 	}

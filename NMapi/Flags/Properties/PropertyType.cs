@@ -43,26 +43,26 @@ namespace NMapi.Flags {
 	{	
 		Unspecified = 0,     // Reserved
 		Null        = 1,     //
-		I2          = 2,     // Signed 16-bit integer
-		Long        = 3,     // Signed 32-bit integer
-		R4          = 4,     // 4-byte floating point
+		Int16       = 2,     // Signed 16-bit integer "I2"
+		Int32       = 3,     // Signed 32-bit integer "Long"
+		Float       = 4,     // 4-byte floating point "R4"
 		Double      = 5,     // Floating point double
 		Currency    = 6,     // Signed 64-bit int (decimal w/    4 digits right of decimal pt)
 		AppTime     = 7,     // Application Time
 		Error       = 10,    // 32-bit Error Value
 		Boolean     = 11,    // 16-bit Boolean (0 = false, otherwise true)
 		Object      = 13,    // Object embedded in property
-		I8          = 20,    // 8-byte signed integer
+		Int64       = 20,    // 8-byte signed integer "I8"
 		String8     = 30,    // 8-bit character string (Null-Terminated)
 		Unicode     = 31,    // Unicode string  (Null-Terminated)
-		TString     = Unicode,
+//		TString     = Unicode,
 		SysTime     = 64,    // FILETIME 64-bit integer (number of 100 ns periods since 1. January 1601)
 		ClsId       = 72,    // A Guid
 		Binary      = 258,   // An arbitrary array of bytes
 
-		MvI2        = (NMAPI.MV_FLAG | I2),
-		MvLong      = (NMAPI.MV_FLAG | Long),
-		MvR4        = (NMAPI.MV_FLAG | R4),
+		MvInt16     = (NMAPI.MV_FLAG | Int16),
+		MvInt32     = (NMAPI.MV_FLAG | Int32),
+		MvFloat     = (NMAPI.MV_FLAG | Float),
 		MvDouble    = (NMAPI.MV_FLAG | Double),
 		MvCurrency  = (NMAPI.MV_FLAG | Currency),
 		MvAppTime   = (NMAPI.MV_FLAG | AppTime),
@@ -70,23 +70,8 @@ namespace NMapi.Flags {
 		MvString8   = (NMAPI.MV_FLAG | String8),
 		MvBinary    = (NMAPI.MV_FLAG | Binary),
 		MvUnicode   = (NMAPI.MV_FLAG | Unicode),
-		MvTString   = MvUnicode,
 		MvClsId     = (NMAPI.MV_FLAG | ClsId),
-		MvI8        = (NMAPI.MV_FLAG | I8),
-
-		// Aliases
-
-		Short    = I2,
-		I4       = Long,
-		Float    = R4,
-		R8       = Double,
-		LongLong = I8,
-	
-		MvShort    = MvI2,
-		MvI4       = MvLong,
-		MvFloat    = MvR4,
-		MvR8       = MvDouble,
-		MvLongLong = MvI8
+		MvInt64     = (NMAPI.MV_FLAG | Int64),
 
 	}
 

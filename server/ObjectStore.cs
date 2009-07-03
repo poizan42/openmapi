@@ -83,7 +83,7 @@ namespace NMapi.Server {
 			if (!objectMap.ContainsKey (obj))
 				throw new Exception ("Object '" + obj + 
 					"' was not registered in object-map.");
-			Trace.WriteLine ("Retrieving object '" + obj + "'");
+			Trace.WriteLine ("Retrieving object " + objectMap [obj].MapiObject.GetType () + " '" + obj + "'");
 			return objectMap [obj].MapiObject;
 		}
 

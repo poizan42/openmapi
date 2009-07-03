@@ -183,8 +183,11 @@ namespace NMapi.Properties.Special {
 				ret.ExplicitClass = res.lpszExplicitClassA.value;
 			return ret;
 		}
-	
-		// NOT IMPLEMENTED: GetReceiveFolderTable()
+		
+		public IMapiTableReader GetReceiveFolderTable (int flags)
+		{
+			throw new NotSupportedException ("This call is not supported by the TeamXChange provider.");
+		}
 
 		public void StoreLogoff (int flags)
 		{
@@ -209,7 +212,13 @@ namespace NMapi.Properties.Special {
 					clnt.MsgStore_AbortSubmit_1, prms);
 		}
 		
-		// NOT IMPLEMENTED: GetOutgoingQueue() 
+		
+		public IMapiTableReader GetOutgoingQueue (int flags)
+		{
+			throw new NotSupportedException ("This call is not supported by the TeamXChange provider.");
+		}
+		
+		
 		// NOT IMPLEMENTED: SetLockState()
 		// NOT IMPLEMENTED: FinishedMsg()
 		// NOT IMPLEMENTED: NotifyNewMail()

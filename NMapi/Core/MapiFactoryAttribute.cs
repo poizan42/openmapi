@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - MapiFactoryAttribute.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -25,17 +25,89 @@ using System;
 
 namespace NMapi {
 
+	/// <summary>
+	///  When applied to a class, indicates that the class implements 
+	///  an OpenMapi/NMapi provider. It also provides information like the 
+	///  type and version of the provider.
+	/// </summary>
 	public sealed class MapiFactoryAttribute : Attribute
 	{
-		private string name;
+		private readonly string name;
+		private readonly MapiProviderType type;
+		private readonly string description;
+		private readonly Version version;
+		private readonly string license;
+		private readonly string[] authors;
 
+		/// <summary>
+		///  A string containing the qualified name of the provider that is 
+		///  used when an dynamic selection of a provider at runtime is required.
+		/// </summary>
 		public string Name {
 			get { return name; }
 		}
 
-		public MapiFactoryAttribute (string name)
+		/// <summary>
+		///  Indicates the type of the provider.
+		/// </summary>
+		public MapiProviderType ProviderType {
+			get { return type; }
+		}
+
+		/// <summary>
+		///  A short description that can be displayed to users.
+		/// </summary>
+		public string Description {
+			get { return description; }
+		}
+
+		/// <summary>
+		///  The current version of the provider.
+		/// </summary>
+		public Version Version {
+			get { return version; }
+		}
+
+		/// <summary>
+		///  Can be used to specify the name of the license of the provider.
+		/// </summary>
+		public string License {
+			get { return license; }
+		}
+
+		/// <summary>
+		///  An array of strings, each containing the name of an author.
+		/// </summary>
+		public string[] Authors {
+			get { return authors; }
+		}
+
+		public MapiFactoryAttribute (string name)// : this (name, 
+//			MapiProviderType.Unknown, null, null, null, null)
 		{
 			this.name = name;
+		}
+	
+		public MapiFactoryAttribute (string name, MapiProviderType type, string description, 
+			int[] version, string license, params string[] authors)
+		{
+			this.name = name;
+			this.type = type;
+			this.description = description;
+/*			if (version == null)
+				this.version = new Version (0, 0, 0, 0);
+			else {
+				switch (version.Length) {
+					case 0: this.version = new Version (0, 0, 0, 0); break;
+					case 1: this.version = new Version (version [0], 0); break;
+					case 2: this.version = new Version (version [0], version [1]); break;
+					case 3: this.version = new Version (version [0], version [1], version [2]); break;
+					case 4:
+					default: this.version = new Version (version [0], version [1], version [2], version [3]); break;
+				}
+			}*/
+			this.license = license;
+			this.authors = authors;
 		}
 
 	}

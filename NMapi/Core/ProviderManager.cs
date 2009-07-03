@@ -38,13 +38,26 @@ using Mono.Cecil.Cil;
 
 namespace NMapi {
 
+	/// <summary>
+	///  A static helper class that contains some methods to load/select 
+	///  a provider from an assembly or find the providers available.
+	/// </summary>
 	public static class ProviderManager
 	{
+		
+		/// <summary>
+		///  Creates an instance of a provider (an IMapiFactory-class) from the 
+		///  specified assembly/type-pair.
+		/// </summary>
 		public static IMapiFactory GetFactory (string[] pair)
 		{
 			return GetFactory (pair [0], pair [1]);
 		}
 
+		/// <summary>
+		///  Creates an instance of a provider (an IMapiFactory-class) from the 
+		///  specified assembly/type-pair.
+		/// </summary>
 		public static IMapiFactory GetFactory (string assemblyName, string typeName)
 		{
 			object o = Activator.CreateInstance (assemblyName, typeName).Unwrap () as IMapiFactory;
@@ -53,6 +66,10 @@ namespace NMapi {
 			return (IMapiFactory) o;
 		}
 
+		/// <summary>
+		///  Finds the providers that exist in the same directory as the NMapi 
+		///  assembly itself.
+		/// </summary>
 		public static Dictionary<string, string[]> FindProviders ()
 		{
 			var list = new Dictionary<string, string[]> ();
@@ -107,6 +124,9 @@ namespace NMapi {
 			return CecilUtil.ImplementsInterface (type, "NMapi", typeof (IMapiFactory).Name);
 		}
 
+		/// <summary>
+		///  Returns the name of the provider.
+		/// </summary>
 		public static string GetName (IMapiFactory factory)
 		{
 			if (factory == null)

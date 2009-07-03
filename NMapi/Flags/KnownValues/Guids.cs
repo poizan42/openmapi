@@ -31,8 +31,10 @@ using NMapi.Properties;
 using NMapi.Table;
 
 namespace NMapi.Flags {
-
-	public class Guids
+	
+	// TODO: This class should be removed by merging the stuff elsewhere.
+	
+	public static class Guids
 	{
 		public static NMapiGuid DefineGuid (int  doubleWord, short word1, 
 			short word2, params byte[] bytes)

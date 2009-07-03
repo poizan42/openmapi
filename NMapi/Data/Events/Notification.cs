@@ -38,14 +38,10 @@ using NMapi.Table;
 namespace NMapi.Events {
 
 	/// <summary>
-	///  The NOTIFICATION structure.
+	///  Abstract base class for all notifications.
 	/// </summary>
-	/// <remarks>
-	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms528898.aspx
-	/// </remarks>
-
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public abstract class Notification : IXdrAble
+	public abstract class Notification : IXdrAble, ICloneable
 	{
 		private NotificationEventType ulEventType;
 		
@@ -106,6 +102,9 @@ namespace NMapi.Events {
 			notify.ulEventType = eventType;
 			return notify;
 		}
+		
+		
+		public abstract object Clone ();
 	
 	}
 

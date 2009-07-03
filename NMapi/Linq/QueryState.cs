@@ -258,13 +258,13 @@ namespace NMapi.Linq {
 			Console.Write ("(" + ResolveObjectPropertyName (propRes.PropTag));
 			string opName = "UNKNOWN_OPERATOR";
 			switch (propRes.RelOp) {
-				case RelOp.Lt: opName = "<"; break;
-				case RelOp.Le: opName = "=<"; break;
-				case RelOp.Gt: opName = ">"; break;
-				case RelOp.Ge: opName = ">="; break;
-				case RelOp.Eq: opName = "=="; break;
-				case RelOp.Ne: opName = "!="; break;
-				case RelOp.Re: opName = "REGEX"; break;
+				case RelOp.LessThan: opName = "<"; break;
+				case RelOp.LessThanOrEqual: opName = "=<"; break;
+				case RelOp.GreaterThan: opName = ">"; break;
+				case RelOp.GreaterThanOrEqual: opName = ">="; break;
+				case RelOp.Equal: opName = "=="; break;
+				case RelOp.NotEqual: opName = "!="; break;
+				case RelOp.RegEx: opName = "REGEX"; break;
 			}
 			Console.Write (" " + opName + " ");
 			Console.Write ("\"" + propRes.Prop.GetValueObj () + "\")");

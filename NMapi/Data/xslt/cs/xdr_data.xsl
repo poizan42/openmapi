@@ -40,10 +40,11 @@
 	/// &lt;summary&gt;
 	///  
 	/// &lt;/summary&gt;
+	<xsl:variable name="override"><xsl:if test="@inherits != ''"> override </xsl:if></xsl:variable>
 	<xsl:value-of select="$dataContractAttribute" />
 	public <xsl:if test="@isSealed != 'false'">sealed</xsl:if> partial class <xsl:value-of select="@id" />
 	<xsl:if test="@genericParam != ''">&lt;<xsl:value-of select="@genericParam" />&gt;</xsl:if>
-		: <xsl:if test="@inherits != ''"><xsl:value-of select="@inherits" />, </xsl:if> IXdrAble
+		: <xsl:if test="@inherits != ''"><xsl:value-of select="@inherits" />, </xsl:if> IXdrAble, ICloneable
 	{
 		<xsl:apply-templates select="declare" />
 		
@@ -91,6 +92,22 @@
 		}
 		<xsl:apply-templates select="both|encode" mode="encode" />
 		<xsl:apply-templates select="both|decode" mode="decode" />
+		
+		/// &lt;summary&gt;
+		///
+		/// &lt;/summary&gt;
+		public <xsl:value-of select="$override" /> object Clone ()
+		{
+			// TODO: This is not a real / correct implementation!
+			//       - We need to apple some templates in a new mode
+			//         and check if a simple/value type or a string is used. 
+			//         In this case, we just assign it.
+			//         Otherwise we call Clone () on it and assign the result.
+			//       - We also need to be able to deal with the base class.
+			//
+			//var cloned = new <xsl:value-of select="@id" /> ();
+			return MemberwiseClone ();
+		}
 	}
 </xsl:template>
 <xsl:template match="both|encode" mode="encode">

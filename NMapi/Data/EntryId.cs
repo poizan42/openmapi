@@ -59,7 +59,7 @@ namespace NMapi {
 		{
 			Debug.Assert (flags.Length == FLAGS_LENGTH);
 			Array.Copy (flags, 0, result, 0, FLAGS_LENGTH);
-			Array.Copy (mapiStoreUniqueId.ToByteArray (), 0, result, FLAGS_LENGTH-1, NMapiGuid.LENGTH);
+			Array.Copy (mapiStoreUniqueId.ToByteArray (), 0, result, FLAGS_LENGTH, NMapiGuid.LENGTH);
 			return result;
 		}
 		
@@ -68,7 +68,7 @@ namespace NMapi {
 		}
 		
 		/// <summary>
-		///  
+		///  Returns true if the entry id is a short term entry id.
 		/// </summary>
 		public bool IsShortTerm {
 			get { return (FirstByteFlags & EntryIdFlags.ShortTerm) != 0; }
@@ -82,7 +82,7 @@ namespace NMapi {
 		}
 		
 		/// <summary>
-		///  
+		///  Returns true if the entry id is only valid during the current session.
 		/// </summary>
 		public bool IsThisSession {
 			get { return (FirstByteFlags & EntryIdFlags.ThisSession) != 0; }
@@ -101,7 +101,7 @@ namespace NMapi {
 		public bool IsNotReserved {
 			get { return (FirstByteFlags & EntryIdFlags.NotReserved) != 0; }
 		}
-
+		
 
 
 		/// <summary>
@@ -123,7 +123,7 @@ namespace NMapi {
 			flags = new byte [FLAGS_LENGTH];			
 			Array.Copy (completeEntryId, 0, flags, 0, FLAGS_LENGTH);
 			byte[] tmp = new byte [NMapiGuid.LENGTH];
-			Array.Copy (completeEntryId, FLAGS_LENGTH-1, tmp, 0, NMapiGuid.LENGTH);
+			Array.Copy (completeEntryId, FLAGS_LENGTH, tmp, 0, NMapiGuid.LENGTH);
 			mapiStoreUniqueId = new NMapiGuid (tmp);
 		}
 		
@@ -137,16 +137,8 @@ namespace NMapi {
 
 		protected bool BaseEqualMapi (EntryId entryId2)
 		{
-			// DEBUG			
-			Console.WriteLine (">>> BASE EQUAL MAPI ---- ");
-			Console.WriteLine (mapiStoreUniqueId.ToHexString ());
-			Console.WriteLine (entryId2.mapiStoreUniqueId.ToHexString ());	
-			Console.WriteLine  (isValid && entryId2.isValid
-				&& (mapiStoreUniqueId).Equals (entryId2.mapiStoreUniqueId));
-				
 			return (isValid && entryId2.isValid
-				&& (mapiStoreUniqueId).Equals (entryId2.mapiStoreUniqueId));
-			
+				&& (mapiStoreUniqueId).Equals (entryId2.mapiStoreUniqueId));			
 		}
 
 	}
