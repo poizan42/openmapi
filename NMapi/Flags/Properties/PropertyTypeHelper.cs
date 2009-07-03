@@ -57,6 +57,12 @@ namespace NMapi.Flags {
 		{
 			return PROP_TAG (propType, PROP_ID (propTag));
 		}
+		
+		// TODO: move method...
+		public static bool IsSamePropertyId (int prop1, int prop2)
+		{
+			return PropertyTypeHelper.PROP_ID (prop1) == PropertyTypeHelper.PROP_ID (prop2);
+		}
 
 	}
 

@@ -103,8 +103,7 @@ namespace NMapi.Properties {
 			return result;
 		}
 		
-		[Obsolete]
-		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: MapiNameId");
 			// must be called by derived classes!
@@ -112,8 +111,7 @@ namespace NMapi.Properties {
 			xdr.XdrEncodeInt ((int) UlKind);
 		}
 		
-		[Obsolete]
-		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 		
