@@ -60,7 +60,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMsgStore Store {
+		public IMsgStore Store {
 			get { return store; }
 			set { store = value; }
 		}
@@ -68,27 +68,27 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string RootDir {
+		public string RootDir {
 			get { return rootDir; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string InboxPath {
+		public string InboxPath {
 			get { return inboxPath; }
 		}
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string User {
+		public string User {
 			get { return user; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal bool LoggedOn {
+		public bool LoggedOn {
 			get { return loggedOn; }
 			set { loggedOn = value; }
 		}
@@ -97,7 +97,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiFactory Factory {
+		public IMapiFactory Factory {
 			get { return factory; }
 			set { factory = value; }
 		}
@@ -105,7 +105,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiSession Session {
+		public IMapiSession Session {
 			get { return session; }
 			set { session = value; }
 		}
@@ -113,17 +113,17 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal MapiContext MapiContext {
+		public MapiContext MapiContext {
 			get { return mapiContext; }
 			set { mapiContext = value; }
 		}
 
-		internal FolderHelper FolderHelper {
+		public FolderHelper FolderHelper {
 			get { return folderHelper; }
-			set { folderHelper = value; }
+			internal set { folderHelper = value; }
 		}
 
-		internal IMAPConnectionState State {
+		public IMAPConnectionState State {
 			get { return state; }
 		}
 

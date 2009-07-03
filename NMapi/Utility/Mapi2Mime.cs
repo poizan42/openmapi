@@ -47,6 +47,7 @@ namespace NMapi.Utility {
 			Property.Subject, 
 			Property.SenderName,
 			Property.SenderEmailAddress,
+			Property.SenderEntryId,
 			Property.DisplayTo,
 			Property.DisplayCc,
 			Property.ClientSubmitTime, 

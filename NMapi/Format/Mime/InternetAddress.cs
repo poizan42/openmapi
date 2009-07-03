@@ -38,10 +38,11 @@ namespace NMapi.Format.Mime
 	public class InternetAddress : Field
 	{
 
-		String address;
+		String address; // this is to keep the address unchanged, when no changes are made to it
+		String personal = "";
+		String email = "";
 		String charset;
-		//String personal;
-
+		
 		private static String RFC822 = "rfc822";
 
 		/// <summary>
@@ -50,19 +51,21 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public String Address {
 			get {
-				return MimeUtility.DecodeText (address);
+				if (personal != "")
+					return personal + "<" + email +">";
+				else
+					return email;
 			}
 			set {
 				int pos = value.IndexOf ('<');
 				if (pos == -1) {
-					address = value;
+					email = value;
+					personal = "";
 				} else {
-					if (charset == null || charset == "")
-						charset = Encoding.Default.BodyName;
-					address = MimeUtility.EncodeText (value.Substring (0, pos), charset, "Q");
-					address = address +
-						(address.EndsWith ("=") ? " " : "") +
-						value.Substring (pos);
+					address = null;
+					personal = MimeUtility.DecodeText (value.Substring (0, pos)).Trim();
+					email = value.Substring (pos+1, value.Length - pos - 2);
+					email = email.Trim();
 				}
 			}
 		}
@@ -74,70 +77,27 @@ namespace NMapi.Format.Mime
 		public String Personal
 		{
 		    get {
-				string personal = null;
-				
-				int pos = address.IndexOf ('<');
-				if (pos == -1) {
-					personal = address;
-				} else {
-					personal = address.Substring (0, pos);
-				}
-				
-				personal = MimeUtility.DecodeText (personal);
-				return personal.Trim ();
+				return personal;
 			}
 		    set {
-				string email = null;
-				
-				if (charset == null || charset == "")
-					charset = "utf-8";
-				
-				int pos = address.IndexOf ('<');
-				if (pos == -1) {
-					email = "<" + address + ">";
-				} else {
-					email = address.Substring (pos);
-				}
-				
-					address = MimeUtility.EncodeText (value, charset, "Q");
-					address = address +
-						(address.EndsWith ("=") ? " " : "") +
-						email;
+				address = null;
+				personal = (value == null)? "" : value.Trim();
 			}
 		}
 
 		public String Email {
 		    get {
-				int pos = address.IndexOf ('<');
-				int pos2 = address.IndexOf ('>');
-				if (pos == -1) {
-					if (address.IndexOf ("@") == -1)
-						return null;
-					return address;
-				}
-				if (address.Length > pos) {
-					if (pos2 == -1) {
-						return address.Substring (pos + 1);
-					} else {
-						return address.Substring (pos + 1, pos2 - pos - 1);
-					}
-				}
-				return null;					                          
+				return email;
 			}
 
 			set {
-				int pos = address.IndexOf ('<');
-				string personal = address;
-				if (pos != -1)
-					personal = address.Substring (0, pos).Trim ();
-				if (personal == string.Empty || personal.Contains ("@")) {
-					address = value.Trim ();
-					return;
-				} 
-				address = personal +
-							(personal.EndsWith ("=") ? " " : "") + 
-							"<" + value + ">";
+				address = null;
+				email = (value == null)? "" : value.Trim();
 			}
+		}
+
+		public InternetAddress ()
+		{
 		}
 
 		/// <summary>
@@ -151,14 +111,17 @@ namespace NMapi.Format.Mime
 
 		public InternetAddress (String address)
 		{
-			this.address = address.Trim ();
-			if (this.address.StartsWith ("\r\n")) {
-				this.address = this.address.Substring (2);
+			string adr = address;
+			adr = address.Trim ();
+			if (adr.StartsWith ("\r\n")) {
+				adr = adr.Substring (2);
 			}
-			if (this.address.StartsWith ("\t")) {
-				this.address.Substring (1);
+			if (adr.StartsWith ("\t")) {
+				adr.Substring (1);
 			}
 
+			Address = adr;
+			this.address = adr;   // Address clears this.address
 		}
 
 		/// <summary>
@@ -210,7 +173,19 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public override String ToString ()
 		{
-			return address;
+			if (address != null) {
+				return address;
+			} else {
+				if (personal != "") {
+					if (charset == null || charset == "")
+						charset = Encoding.Default.BodyName;
+					string pers = MimeUtility.EncodeText (personal, charset, "Q");
+
+					return pers + (pers.EndsWith ("=") ? " " : "") + "<" + email +">";
+				} else {
+					return email;
+				}
+			}
 		}
 
 		/// <summary>
