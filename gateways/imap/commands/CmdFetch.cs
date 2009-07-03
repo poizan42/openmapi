@@ -455,6 +455,7 @@ namespace NMapi.Gateways.IMAP {
 			Property.SenderName,
 			Property.SenderEmailAddress,
 			Property.DisplayTo,
+			Property.DisplayCc,
 			Property.ClientSubmitTime, 
 			Property.TransportMessageHeaders
 		};
