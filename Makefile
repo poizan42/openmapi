@@ -270,7 +270,9 @@ mapitool:
 test:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:bin/NMapi.dll /r:bin/nmapisvr.exe \
-	/r:bin/NMapi.Provider.TeamXChange.dll `find tests -name "*.cs"` $(TEST_SOURCES)
+	/r:bin/NMapi.Provider.TeamXChange.dll /r:bin/NMapi.Gateways.IMAP.exe \
+	/r:System.Web.Services.dll \
+	`find tests -name "*.cs"` $(TEST_SOURCES)
 # /r:bin/NMapi.Provider.WabiSabi.dll
 
 runtests: test
