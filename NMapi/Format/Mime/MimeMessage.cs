@@ -98,10 +98,32 @@ namespace NMapi.Format.Mime
 		public InternetAddress[] GetFrom ()
 		{
 			InternetAddress[] from = GetInternetAddresses (FROM_NAME);
-			if (from == null) {
+			if (from == null || from.Length == 0) {
 				from = GetInternetAddresses (SENDER_NAME);
 			}
 			return from;
+		}
+
+		/// <summary>
+		/// Set the RFC 822 "Sender" header field.
+		/// </summary>
+		///     throws MessagingException
+		public void SetSender (InternetAddress a)
+		{
+			if (a == null) {
+				RemoveHeader (SENDER_NAME);
+			} else {
+				SetHeader (SENDER_NAME, a.ToString ());
+			}
+		}
+
+		/// <summary>
+		/// Get the RFC 822 "Sender" header field.
+		/// </summary>
+		///     throws MessagingException
+		public InternetAddress[] GetSender ()
+		{
+			return GetInternetAddresses (SENDER_NAME);
 		}
 
 		/// <summary>
