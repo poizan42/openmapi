@@ -33,6 +33,9 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  
+	/// </summary>
 	[Flags]
 	public enum MsgFlag
 	{

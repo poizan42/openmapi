@@ -46,7 +46,7 @@ namespace NMapi.Table {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public abstract class Restriction : IXdrAble
+	public abstract class Restriction : IXdrAble, ICloneable
 	{
 		public static Restriction Decode (XdrDecodingStream xdr)
 		{
@@ -79,15 +79,18 @@ namespace NMapi.Table {
 			XdrDecode (xdr);
 		}
 
-		[Obsolete]
-		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 		}
 
-		[Obsolete]
-		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
+		
+		/// <summary>
+		///  
+		/// </summary>
+		public abstract object Clone ();
 		
 	}
 

@@ -60,7 +60,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMsgStore Store {
+		public IMsgStore Store {
 			get { return store; }
 			set { store = value; }
 		}
@@ -68,27 +68,27 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string RootDir {
+		public string RootDir {
 			get { return rootDir; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string InboxPath {
+		public string InboxPath {
 			get { return inboxPath; }
 		}
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string User {
+		public string User {
 			get { return user; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal bool LoggedOn {
+		public bool LoggedOn {
 			get { return loggedOn; }
 			set { loggedOn = value; }
 		}
@@ -97,7 +97,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiFactory Factory {
+		public IMapiFactory Factory {
 			get { return factory; }
 			set { factory = value; }
 		}
@@ -105,7 +105,7 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiSession Session {
+		public IMapiSession Session {
 			get { return session; }
 			set { session = value; }
 		}
@@ -113,17 +113,17 @@ namespace NMapi.Gateways.IMAP
 		/// <summary>
 		/// 
 		/// </summary>
-		internal MapiContext MapiContext {
+		public MapiContext MapiContext {
 			get { return mapiContext; }
 			set { mapiContext = value; }
 		}
 
-		internal FolderHelper FolderHelper {
+		public FolderHelper FolderHelper {
 			get { return folderHelper; }
-			set { folderHelper = value; }
+			internal set { folderHelper = value; }
 		}
 
-		internal IMAPConnectionState State {
+		public IMAPConnectionState State {
 			get { return state; }
 		}
 
@@ -350,7 +350,7 @@ state.Log ("setrootdir 4");
 			case IMAPGatewayNamedProperty.UID:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-message-UID";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UID_Path:
@@ -368,13 +368,13 @@ state.Log ("setrootdir 4");
 			case IMAPGatewayNamedProperty.UIDNEXT:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder-UIDNEXT";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDVALIDITY:
 				guid = Guids.PS_PUBLIC_STRINGS;
 				name = "openmapi-folder_UIDVALIDITY";
-				type= PropertyType.Long;
+				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.AdditionalFlags:

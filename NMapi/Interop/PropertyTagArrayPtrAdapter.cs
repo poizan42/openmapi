@@ -100,7 +100,7 @@ namespace NMapi.Interop {
 			else {
 				value = new PropertyTag [len];
 				for (i = 0; i < len; i++)
-					value [i] = new PropertyTag (xdr.XdrDecodeInt ());
+					value [i] = PropertyTag.CreatePropertyTag (xdr.XdrDecodeInt ());
 			}
 		}
 	}

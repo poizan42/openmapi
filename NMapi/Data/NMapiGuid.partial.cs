@@ -35,8 +35,11 @@ using NMapi.Properties;
 using NMapi.Table;
 
 namespace NMapi {
-		
-	public partial class NMapiGuid
+	
+	/// <summary>
+	///  
+	/// </summary>
+	public partial class NMapiGuid : IComparable
 	{
 		public const int LENGTH = 16;
 		
@@ -52,7 +55,26 @@ namespace NMapi {
 			Array.Copy (Data4, 0, result, 8, 8);
 			return result;
 		}
+		
+		public long[] ToInt64Pair ()
+		{
+			byte[] bytes = ToByteArray ();
+			long[] result = new long [2];
+			result [0] = BitConverter.ToInt64 (bytes, 0);
+			result [1] = BitConverter.ToInt64 (bytes, 8);
+			return result;
+		}
 
+		public static NMapiGuid FromInt64Pair (long part1, long part2) 
+		{
+			byte[] part1Bytes = BitConverter.GetBytes (part1);
+			byte[] part2Bytes = BitConverter.GetBytes (part2);			
+			byte[] result = new byte [16];
+			Array.Copy (part1Bytes, 0, result, 0, part1Bytes.Length);
+			Array.Copy (part2Bytes, 0, result, 8, part2Bytes.Length);
+			return new NMapiGuid (result);
+		}
+		
 		public NMapiGuid (byte[] bytes) 
 		{
 			Data1 = BitConverter.ToInt32 (bytes, 0);
@@ -62,6 +84,9 @@ namespace NMapi {
 			Array.Copy (bytes, 8, Data4, 0, 8);
 		}
 		
+		/// <summary>
+		///  
+		/// </summary>
 		public static NMapiGuid MakeNew ()
 		{
 			return new NMapiGuid (Guid.NewGuid ());
@@ -104,7 +129,10 @@ namespace NMapi {
 				return false;
 			return this.Equals (guid2);
 		}
-
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public string ToHexString ()
 		{
 			return new SBinary (ToByteArray ()).ToHexString ();
@@ -120,6 +148,19 @@ namespace NMapi {
 			}
 			return hash;
 		}
+		
+		/// <summary>
+		///  Implementation of the IComparable interface.
+		/// </summary>
+		public int CompareTo (object obj)
+		{
+			if (!(obj is NMapiGuid))
+				throw new ArgumentException ("Not an NMapiGuid object.");
+			if (Equals ((NMapiGuid) obj))
+				return 0;
+			return 1; // TODO: correct?
+		}
+
 		
 	}
 

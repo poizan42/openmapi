@@ -33,11 +33,12 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  Contains the possible values for PR_ATTACH_METHOD
+	/// </summary>
 	public enum Attach
 	{
-		// Values for PR_ATTACH_METHOD
-
-		NoAttachment = 0, // Exception from Rule
+		NoAttachment = 0,
 		ByValue,
 		ByReference,
 		ByRefResolve,

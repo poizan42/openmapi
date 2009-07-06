@@ -181,7 +181,7 @@ namespace CompactTeaSharp.Server
 			this.certFile = certFile;
 			this.keyFile = keyFile;
 			
-			 openTransports = new LinkedList<OncRpcTcpConnectionServerTransport> ();
+			openTransports = new LinkedList<OncRpcTcpConnectionServerTransport> ();
 				
 			//
 			// Make sure the buffer is large enough and resize system buffers

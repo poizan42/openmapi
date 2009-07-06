@@ -33,8 +33,9 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	// PR_STATUS
-
+	/// <summary>
+	///  PR_STATUS
+	/// </summary>
 	[Flags]
 	public enum FldStatus
 	{

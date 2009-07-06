@@ -44,7 +44,19 @@ namespace NMapi.Server {
 			private OncEventDispatcher parent;
 			private int backendConnection;
 			private int clientConnection;
-
+			private SBinary targetEntryID;
+			private NotificationEventType targetMask;
+			
+			public SBinary TargetEntryID {
+				get { return targetEntryID; }
+				set { targetEntryID = value; }
+			}
+			
+			public NotificationEventType TargetEventMask {
+				get { return targetMask; }
+				set { targetMask = value; }
+			}
+			
 			public int ClientConnection {
 				get { return clientConnection; }
 				set { clientConnection = value; }
@@ -58,6 +70,11 @@ namespace NMapi.Server {
 			public VirtualAdviseSink (OncEventDispatcher parent)
 			{
 				this.parent = parent;
+			}
+			
+			public bool MatchMask (NotificationEventType eventType)
+			{
+				return ((targetMask & eventType) != 0);
 			}
 
 			public void OnNotify (Notification [] notifications)
@@ -92,8 +109,12 @@ namespace NMapi.Server {
 			int backendConnection = targetAdvisor.Advise (entryID, eventMask, sink);
 			sink.BackendConnection = backendConnection;
 			sink.ClientConnection = txcOutlookHack;
+			sink.TargetEntryID = new SBinary (entryID);
+			sink.TargetEventMask = eventMask;
 			sinks [txcOutlookHack] = sink;
-			Trace.WriteLine ("registered SINK '" + txcOutlookHack + "' on server!");
+			Console.WriteLine ("registered SINK '" + txcOutlookHack + "' on server!");
+			if (entryID != null)
+				Console.WriteLine ("--> " + new SBinary (entryID).ToHexString () + "");
 			return txcOutlookHack;
 		}
 
@@ -104,6 +125,29 @@ namespace NMapi.Server {
 			sinks.Remove (txcOutlookHackConnection);
 			Trace.WriteLine ("unregistered '" + txcOutlookHackConnection + "' sink.");
 		}
+		
+		// POC
+		// TODO: check eventmask...
+		public void PushEvents (byte[] entryID, Notification[] notifications)
+		{
+			
+			Console.WriteLine (" --- ATTEMPTING TO PUSH EVENTS!!! --- ");
+			//lock (callBackMonitor) {
+			/*
+				SBinary binEntryId = new SBinary (entryID);
+				foreach (var currentPair in sinks) {
+					var currentSink = currentPair.Value;
+
+					if (currentSink.TargetEntryID.Equals (binEntryId) 
+						&& currentSink.MatchMask (notifications [0].EventType)) { // HACK!
+						Console.WriteLine (" ---> FOUND SINK ");
+			//			currentSink.OnNotify (notifications);
+					}
+				}
+			//}
+			*/
+		}
+		
 	}
 
 }

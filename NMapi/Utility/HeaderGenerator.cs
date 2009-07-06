@@ -97,16 +97,13 @@ namespace NMapi.Utility {
 		public bool DoFrom ()
 		{
 			props.Prop = Property.SenderName;
-			PropertyHelper props2 = new PropertyHelper(props.Props);
-			props2.Prop = Property.SenderEmailAddress;
-			if (props.Exists && props2.Exists) {
-				InternetAddress ia = new InternetAddress ("dummy");
+			PropertyHelper props2 = new PropertyHelper (props.Props);
+			props.Prop = Property.SenderEmailAddress;
+			if (props.Exists || props2.Exists) {
+				InternetAddress ia = new InternetAddress ();
 				ia.Personal = props.Unicode;
 				ia.Email = props2.Unicode;
 				ih.SetHeader ("From", ia.ToString ());
-				return true;
-			} else if (props.Exists || props2.Exists) {
-				ih.SetHeader ("From", props.Unicode + props2.Unicode);
 				return true;
 			}
 			return false;
@@ -147,7 +144,8 @@ namespace NMapi.Utility {
 					PropertyHelper props2 = new PropertyHelper (row.Props);
 					props.Prop = Property.DisplayNameW;
 					props2.Prop = Property.EmailAddressW;
-					InternetAddress ia = new InternetAddress ("dummy");
+
+					InternetAddress ia = new InternetAddress ();
 					ia.Personal = props.Unicode;
 					ia.Email = props2.Unicode;
 					
@@ -159,7 +157,6 @@ namespace NMapi.Utility {
 					case Mapi.Bcc: 	rt = RecipientType.BCC;	break;
 					default: continue;
 					}
-					
 					Trace.WriteLine ("doRecipients 3");
 					MimeMessage mm = new MimeMessage ();
 					mm.Headers = ih;
@@ -225,14 +222,14 @@ namespace NMapi.Utility {
 
 		public bool DoAll ()
 		{
-				DoTransportMessageHeaders ();
-				DoDate ();
-				DoFrom ();
-				DoRecipients ();
-				DoSubject ();
-				DoPriority ();
-				DoXPriority ();
-				return true;
+			DoTransportMessageHeaders ();
+			DoDate ();
+			DoFrom ();
+			DoRecipients ();
+			DoSubject ();
+			DoPriority ();
+			DoXPriority ();
+			return true;
 		}
 		private string MapiReturnPropFileTime (PropertyValue[] props, int prop)
 		{

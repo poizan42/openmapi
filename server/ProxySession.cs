@@ -150,6 +150,13 @@ namespace NMapi.Server {
 		public abstract IEventDispatcher EventDispatcher {
 			get;
 		}
+		
+		
+		internal Dictionary<IStream, int> streamToPropertyMap = new Dictionary<IStream, int> ();
+		
+		
+		
+		
 
 /*
 		/// <summary>

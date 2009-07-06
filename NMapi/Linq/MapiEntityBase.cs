@@ -269,7 +269,7 @@ namespace NMapi.Linq {
 				ForeachMapiProperty ( (pInfo, attribute) => {
 
 					foreach (PropertyValue newVal in newVals) {
-						if (Property.IsSamePropertyId (newVal.PropTag, attribute.PropertyOrKind)) {
+						if (PropertyTypeHelper.IsSamePropertyId (newVal.PropTag, attribute.PropertyOrKind)) {
 
 							if (!PropertyLoaded (pInfo, attribute)) {
 								// we got a match, but no local property has 

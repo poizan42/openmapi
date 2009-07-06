@@ -67,32 +67,32 @@ namespace NMapi.Gateways.IMAP {
 		/// <summary>
 		/// 
 		/// </summary>
-		internal string CurrentPath {
+		public string CurrentPath {
 			get { return currentPath; }
 		}
 			
 		/// <summary>
 		/// 
 		/// </summary>
-		internal SBinary CurrentFolderEntryId {
+		public SBinary CurrentFolderEntryId {
 			get { return currentFolderEntryId; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal long UIDNEXT {
+		public long UIDNEXT {
 			get { return uidNext; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal long UIDVALIDITY {
+		public long UIDVALIDITY {
 			get { return uidValidity; }
 		}
 
-		internal SequenceNumberList SequenceNumberList { 
+		public SequenceNumberList SequenceNumberList { 
 			get { return sequenceNumberList; }
 			set { sequenceNumberList = value; }
 		}
@@ -101,18 +101,18 @@ namespace NMapi.Gateways.IMAP {
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiFolder CurrentFolder {
+		public IMapiFolder CurrentFolder {
 			get { return currentFolder; }
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		internal IMapiTable CurrentFolderTable {
+		public IMapiTable CurrentFolderTable {
 			get { return currentFolderTable; }
 		}
 
-		internal static int AdditionalFlagsPropTag {
+		public static int AdditionalFlagsPropTag {
 			get { return additionalFlagsPropTag; }
 		}
 
@@ -153,7 +153,7 @@ namespace NMapi.Gateways.IMAP {
 			return null;
 		}
 
-		internal IMapiContainer GetSubDir (IMapiContainer parent, string match)
+		public IMapiContainer GetSubDir (IMapiContainer parent, string match)
 		{
 			if (parent == null)
 				return null;
@@ -165,7 +165,7 @@ namespace NMapi.Gateways.IMAP {
 			return (IMapiContainer) _SharedGetSubDir (parent, match, action);
 		}
 
-		internal SBinary GetSubDirEntryId (IMapiContainer parent, string match)
+		public SBinary GetSubDirEntryId (IMapiContainer parent, string match)
 		{
 			if (parent == null)
 				return null;
@@ -174,7 +174,7 @@ namespace NMapi.Gateways.IMAP {
 			return (SBinary) _SharedGetSubDir (parent, match, action);
 		}
 
-		internal IMapiFolder OpenFolder (string path)
+		public IMapiFolder OpenFolder (string path)
 		{
 			if (path [0] != PathHelper.PathSeparator)
 				throw new Exception ("path must start with '/'.");
@@ -193,7 +193,7 @@ namespace NMapi.Gateways.IMAP {
 			return (IMapiFolder) container; // TODO: Container? Folder?
 		}
 
-		internal string Input2AbsolutePath (string input)
+		public string Input2AbsolutePath (string input)
 		{
 			string path = null;
 			string relPath = input;
@@ -204,7 +204,7 @@ namespace NMapi.Gateways.IMAP {
 			return path;
 		}
 
-		internal bool ChangeDir (string path)
+		public bool ChangeDir (string path)
 		{
 			servCon.State.Log ("ChangeDir: " + path);
 			if (!servCon.CheckStore())
@@ -234,7 +234,7 @@ servCon.State.Log ("changedir almost done");
 		}
 
 		
-		internal string[] GetSubDirNames (IMapiContainer parent)
+		public string[] GetSubDirNames (IMapiContainer parent)
 		{
 			List<string>  names = new List<string> ();
 			IMapiTableReader tableReader = null;
@@ -260,7 +260,7 @@ servCon.State.Log ("changedir almost done");
 			return names.ToArray ();
 		}
 
-		internal bool GetFolderProps ()
+		public bool GetFolderProps ()
 		{
 			return _GetFolderProps (out uidValidity, out uidNext, currentFolder);
 		}
@@ -496,7 +496,7 @@ servCon.State.Log ("FixUIDsIn");
 			return _BuildSequenceSetQuery (sequenceNumberList, command);
 		}
 
-		internal static List<SequenceNumberListItem> _BuildSequenceSetQuery(SequenceNumberList snl, Command command)
+		public static List<SequenceNumberListItem> _BuildSequenceSetQuery(SequenceNumberList snl, Command command)
 		{
 			List<SequenceNumberListItem> masterQuery = null;
 			IQueryable<SequenceNumberListItem> query = null;

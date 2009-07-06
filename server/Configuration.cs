@@ -22,20 +22,20 @@ using System.Net;
 namespace NMapi.Server {
 
 	/// <summary>
-	///  
+	///  Provides access to some confioguration options.
 	/// </summary>
 	public sealed class Configuration
 	{
 		
 		/// <summary>
-		///  
+		///  The IPAddress where the server should listen for incoming connections.
 		/// </summary>
 		public IPAddress ListenAddress {
 			get { return IPAddress.Any; }
 		}
 		
 		/// <summary>
-		///  
+		///  The port number where the server should listen for incoming connections.
 		/// </summary>
 		public int ListenPort {
 			get {
@@ -44,21 +44,32 @@ namespace NMapi.Server {
 		}
 		
 		/// <summary>
-		///  
+		///  The name of the NMapi provider to use as backend.
+		/// </summary>
+		public string NMapiProvider {
+			get {
+				string provider = Environment.GetEnvironmentVariable ("OPENMAPI_PROVIDER");
+				if (!String.IsNullOrEmpty (provider))
+					return provider;
+				return "org.openmapi.txc";
+			}
+		}
+		/// <summary>
+		///  The name of the file where the X509 certificate is stored.
 		/// </summary>
 		public string X509CertificateCertFile {
 			get { return Environment.GetEnvironmentVariable ("OPENMAPI_CERT_FILE"); }
 		}
 		
 		/// <summary>
-		///  
+		///  The name of the file where the X509 certificate key is stored.
 		/// </summary>
 		public string X509CertificateKeyFile {
 			get { return Environment.GetEnvironmentVariable ("OPENMAPI_KEY_FILE"); }
 		}
 		
 		/// <summary>
-		///  
+		///  The hostname that should be passed to the backend to be used by the server.
 		/// </summary>
 		public string TargetHost {
 			get {
@@ -70,7 +81,7 @@ namespace NMapi.Server {
 		}
 		
 		/// <summary>
-		///  
+		///  The port that should be passed to the backend to be used by the server.
 		/// </summary>
 		public int TargetPort {
 			get {

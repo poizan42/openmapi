@@ -36,6 +36,8 @@ namespace NMapi.Server {
 		int Register (IAdvisor targetAdvisor, byte[] entryID, NotificationEventType eventMask, int txcOutlookHack);
 
 		void Unregister (IAdvisor targetAdvisor, int txcOutlookHackConnection);
+		
+		void PushEvents (byte[] entryID, Notification[] notifications);
 	}
 
 }

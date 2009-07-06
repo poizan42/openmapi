@@ -53,8 +53,8 @@ namespace NMapi.Flags {
 			[MapiPropDef] public const int IPM_NOTE_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D3 << 16);
 			[MapiPropDef] public const int IPM_TASK_ENTRYID        = ((int) PropertyType.Binary)  | (0x36D4 << 16);
 		
-			[MapiPropDef] public const int INTERNET_CPID           = ((int) PropertyType.Long)    | (0x3FDE << 16);
-			[MapiPropDef] public const int MESSAGE_CODEPAGE        = ((int) PropertyType.Long)    | (0x3FFD << 16);
+			[MapiPropDef] public const int INTERNET_CPID           = ((int) PropertyType.Int32)    | (0x3FDE << 16);
+			[MapiPropDef] public const int MESSAGE_CODEPAGE        = ((int) PropertyType.Int32)    | (0x3FFD << 16);
 			[MapiPropDef] public const int INTERNET_MESSAGE_ID_A   = ((int) PropertyType.String8) | (0x1035 << 16);
 			[MapiPropDef] public const int INTERNET_MESSAGE_ID_W   = ((int) PropertyType.Unicode) | (0x1035 << 16);
 			[MapiPropDef] public const int IN_REPLY_TO_ID_A        = ((int) PropertyType.String8) | (0x1042 << 16);
@@ -62,10 +62,10 @@ namespace NMapi.Flags {
 			[MapiPropDef] public const int HTML                    = ((int) PropertyType.Binary)  | (0x1013 << 16);
 			[MapiPropDef] public const int BODY_HTML_A             = ((int) PropertyType.String8) | (0x1013 << 16);
 			[MapiPropDef] public const int BODY_HTML_W             = ((int) PropertyType.Unicode) | (0x1013 << 16);
-			[MapiPropDef] public const int ICON_INDEX              = ((int) PropertyType.Long)    | (0x1080 << 16);
-			[MapiPropDef] public const int FLAG_STATUS             = ((int) PropertyType.Long)    | (0x1090 << 16);
-			[MapiPropDef] public const int RECIPIENT_FLAGS         = ((int) PropertyType.Long)    | (0x5ffd << 16);
-			[MapiPropDef] public const int RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Long)    | (0x5fff << 16);
+			[MapiPropDef] public const int ICON_INDEX              = ((int) PropertyType.Int32)    | (0x1080 << 16);
+			[MapiPropDef] public const int FLAG_STATUS             = ((int) PropertyType.Int32)    | (0x1090 << 16);
+			[MapiPropDef] public const int RECIPIENT_FLAGS         = ((int) PropertyType.Int32)    | (0x5ffd << 16);
+			[MapiPropDef] public const int RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Int32)    | (0x5fff << 16);
 		}
 		
 		//
@@ -83,14 +83,14 @@ namespace NMapi.Flags {
 		// Exchange 2003
 		//
 
-		[MapiPropDef] public const int Property_ATTACH_MIME_SEQUENCE      = ((int) PropertyType.Long)    | (0x3710 << 16);
+		[MapiPropDef] public const int Property_ATTACH_MIME_SEQUENCE      = ((int) PropertyType.Int32)    | (0x3710 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_BASE_A     = ((int) PropertyType.String8) | (0x3711 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_BASE_W     = ((int) PropertyType.Unicode) | (0x3711 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_ID_A       = ((int) PropertyType.String8) | (0x3712 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_ID_W       = ((int) PropertyType.Unicode) | (0x3712 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_LOCATION_A = ((int) PropertyType.String8) | (0x3713 << 16);
 		[MapiPropDef] public const int Property_ATTACH_CONTENT_LOCATION_W = ((int) PropertyType.Unicode) | (0x3713 << 16);
-		[MapiPropDef] public const int Property_ATTACH_FLAGS              = ((int) PropertyType.Long)    | (0x3714 << 16);
+		[MapiPropDef] public const int Property_ATTACH_FLAGS              = ((int) PropertyType.Int32)    | (0x3714 << 16);
 		public const int ATT_INVISIBLE_IN_HTML        = 0x1;
 		public const int ATT_INVISIBLE_IN_RTF         = 0x2;
 		public const int ATT_MHTML_REF                = 0x4;

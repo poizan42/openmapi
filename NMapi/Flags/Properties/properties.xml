@@ -1,0 +1,999 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - properties.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<properties>
+	<property name="AcknowledgementMode" type="Int32" id="0x0001" />
+
+	<property name="AlternateRecipientAllowed" type="Boolean" id="0x0002" />
+	<property name="AuthorizingUsers" type="Binary" id="0x0003" />
+	<property name="AutoForwardComment" type="Unicode" id="0x0004" />
+	<property name="AutoForwardCommentW" type="Unicode" id="0x0004" />
+	<property name="AutoForwardCommentA" type="String8" id="0x0004" />
+	<property name="AutoForwarded" type="Boolean" id="0x0005" />
+	<property name="ContentConfidentialityAlgorithmId" type="Binary" id="0x0006" />
+	<property name="ContentCorrelator" type="Binary" id="0x0007" />
+	<property name="ContentIdentifier" type="Unicode" id="0x0008" />
+	<property name="ContentIdentifierW" type="Unicode" id="0x0008" />
+	<property name="ContentIdentifierA" type="String8" id="0x0008" />
+	<property name="ContentLength" type="Int32" id="0x0009" />
+	<property name="ContentReturnRequested" type="Boolean" id="0x000A" />
+
+	<property name="ConversatioKkey" type="Binary" id="0x000B" />
+
+	<property name="ConversionEits" type="Binary" id="0x000C" />
+	<property name="ConversionWithLossProhibited" type="Boolean" id="0x000D" />
+	<property name="ConvertedEits" type="Binary" id="0x000E" />
+	<property name="DeferredDeliveryTime" type="SysTime" id="0x000F" />
+	<property name="DeliverTime" type="SysTime" id="0x0010" />
+	<property name="DiscardReason" type="Int32" id="0x0011" />
+	<property name="DisclosureOfRecipients" type="Boolean" id="0x0012" />
+	<property name="DlExpansionHistory" type="Binary" id="0x0013" />
+	<property name="DlExpansionProhibited" type="Boolean" id="0x0014" />
+	<property name="ExpiryTime" type="SysTime" id="0x0015" />
+	<property name="ImplicitConversionProhibited" type="Boolean" id="0x0016" />
+	<property name="Importance" type="Int32" id="0x0017" />
+
+	<!-- Obsolete //-->
+	<property name="IpmId" type="Binary" id="0x0018" />
+
+	<property name="LatestDeliveryTime" type="SysTime" id="0x0019" />
+	<property name="MessageClass" type="Unicode" id="0x001A" />
+	<property name="MessageClassW" type="Unicode" id="0x001A" />
+	<property name="MessageClassA" type="String8" id="0x001A" />
+	<property name="MessageDeliveryId" type="Binary" id="0x001B" />
+
+	<property name="MessageSecurityLabel" type="Binary" id="0x001E" />
+	<property name="ObsoletedIpms" type="Binary" id="0x001F" />
+	<property name="OriginallyIntendedRecipientName" type="Binary" id="0x0020" />
+	<property name="OriginalEits" type="Binary" id="0x0021" />
+	<property name="OriginatorCertificate" type="Binary" id="0x0022" />
+	<property name="OriginatorDeliveryReportRequested" type="Boolean" id="0x0023" />
+	<property name="OriginatorReturnAddress" type="Binary" id="0x0024" />
+
+	<!-- Obsolete //-->
+	<property name="ParentKey" type="Binary" id="0x0025" />
+
+	<property name="Priority" type="Int32" id="0x0026" />
+
+	<property name="OriginCheck" type="Binary" id="0x0027" />
+	<property name="ProofOfSubmissionRequested" type="Boolean" id="0x0028" />
+	<property name="ReadReceiptRequested" type="Boolean" id="0x0029" />
+	<property name="ReceiptTime" type="SysTime" id="0x002A" />
+	<property name="RecipientReassignmentProhibited" type="Boolean" id="0x002B" />
+	<property name="RedirectionHistory" type="Binary" id="0x002C" />
+	<property name="RelatedIpms" type="Binary" id="0x002D" />
+	<property name="OriginalSensitivity" type="Int32" id="0x002E" />
+	<property name="Languages" type="Unicode" id="0x002F" />
+	<property name="LanguagesW" type="Unicode" id="0x002F" />
+	<property name="LanguagesA" type="String8" id="0x002F" />
+	<property name="ReplyTime" type="SysTime" id="0x0030" />
+	<property name="ReportTag" type="Binary" id="0x0031" />
+	<property name="ReportTime" type="SysTime" id="0x0032" />
+	<property name="ReturnedIpm" type="Boolean" id="0x0033" />
+	<property name="Security" type="Int32" id="0x0034" />
+	<property name="IncompleteCopy" type="Boolean" id="0x0035" />
+	<property name="Sensitivity" type="Int32" id="0x0036" />
+	<property name="Subject" type="Unicode" id=" 0x0037" />
+	<property name="SubjectW" type="Unicode" id="0x0037" />
+	<property name="SubjectA" type="String8" id="0x0037" />
+	<property name="SubjectIpm" type="Binary" id="0x0038" />
+	<property name="ClientSubmitTime" type="SysTime" id="0x0039" />
+	<property name="ReportName" type="Unicode" id="0x003A" />
+	<property name="ReportNameW" type="Unicode" id="0x003A" />
+	<property name="ReportNameA" type="String8" id="0x003A" />
+	<property name="SentRepresentingSearchKey" type="Binary" id="0x003B" />
+	<property name="X400ContentType" type="Binary" id="0x003C" />
+	<property name="SubjectPrefix" type="Unicode" id="0x003D" />
+	<property name="SubjectPrefixW" type="Unicode" id="0x003D" />
+	<property name="SubjectPrefixA" type="String8" id="0x003D" />
+	<property name="NonReceiptReason" type="Int32" id="0x003E" />
+	<property name="ReceivedByEntryId" type="Binary" id="0x003F" />
+	<property name="ReceivedByName" type="Unicode" id="0x0040" />
+	<property name="ReceivedByNameW" type="Unicode" id="0x0040" />
+	<property name="ReceivedByNameA" type="String8" id="0x0040" />
+	<property name="SentRepresentingEntryId" type="Binary" id="0x0041" />
+	<property name="SentRepresentingName" type="Unicode" id="0x0042" />
+	<property name="SentRepresentingNameW" type="Unicode" id="0x0042" />
+	<property name="SentRepresentingNameA" type="String8" id="0x0042" />
+	<property name="RcvdRepresentingEntryId" type="Binary" id="0x0043" />
+	<property name="RcvdRepresentingName" type="Unicode" id="0x0044" />
+	<property name="RcvdRepresentingNameW" type="Unicode" id="0x0044" />
+	<property name="RcvdRepresentingNameA" type="String8" id="0x0044" />
+	<property name="ReportEntryId" type="Binary" id="0x0045" />
+	<property name="ReadReceiptEntryId" type="Binary" id="0x0046" />
+	<property name="MessageSubmissionId" type="Binary" id="0x0047" />
+	<property name="ProviderSubmitTime" type="SysTime" id="0x0048" />
+	<property name="OriginalSubject" type="Unicode" id="0x0049" />
+	<property name="OriginalSubjectW" type="Unicode" id="0x0049" />
+	<property name="OriginalSubjectA" type="String8" id="0x0049" />
+
+	<!-- Obsolete //-->
+	<property name="DiscVal" type="Boolean" id="0x004A" />
+
+	<property name="OrigMessageClass" type="Unicode" id="0x004B" />
+	<property name="OrigMessageClassW" type="Unicode" id="0x004B" />
+	<property name="OrigMessageClassA" type="String8" id="0x004B" />
+	<property name="OriginalAuthorEntryId" type="Binary" id="0x004C" />
+	<property name="OriginalAuthorName" type="Unicode" id="0x004D" />
+	<property name="OriginalAuthorNameW" type="Unicode" id="0x004D" />
+	<property name="OriginalAuthorNameA" type="String8" id="0x004D" />
+	<property name="OriginalSubmitTime" type="SysTime" id="0x004E" />
+	<property name="ReplyRecipientEntries" type="Binary" id="0x004F" />
+	<property name="ReplyRecipientNames" type="Unicode" id="0x0050" />
+	<property name="ReplyRecipientNamesW" type="Unicode" id="0x0050" />
+	<property name="ReplyRecipientNamesA" type="String8" id="0x0050" />
+
+	<property name="ReceivedBySearchKey" type="Binary" id="0x0051" />
+	<property name="RcvdRepresentingSearchKey" type="Binary" id="0x0052" />
+	<property name="ReadReceiptSearchKkey" type="Binary" id="0x0053" />
+	<property name="ReportSearchKey" type="Binary" id="0x0054" />
+	<property name="OriginalDeliveryTime" type="SysTime" id="0x0055" />
+	<property name="OriginalAuthorSearchKey" type="Binary" id="0x0056" />
+
+	<property name="MessageToMe" type="Boolean" id="0x0057" />
+	<property name="MessageCcMe" type="Boolean" id="0x0058" />
+	<property name="MessageRecipMe" type="Boolean" id="0x0059" />
+
+	<property name="OriginalSenderName" type="Unicode" id="0x005A" />
+	<property name="OriginalSenderNameW" type="Unicode" id="0x005A" />
+	<property name="OriginalSenderNameA" type="String8" id="0x005A" />
+	<property name="OriginalSenderEntryId" type="Binary" id="0x005B" />
+	<property name="OriginalSenderSearchKey" type="Binary" id="0x005C" />
+	<property name="OriginalSentRepresentingName" type="Unicode" id="0x005D" />
+	<property name="OriginalSentRepresentingNameW" type="Unicode" id="0x005D" />
+	<property name="OriginalSentRepresentingNameA" type="String8" id="0x005D" />
+	<property name="OriginalSentRepresentingEntryid" type="Binary" id="0x005E" />
+	<property name="OriginalSentRepresentingSearchKey" type="Binary" id="0x005F" />
+
+	<property name="StartDate" type="SysTime" id="0x0060" />
+	<property name="EndDate" type="SysTime" id="0x0061" />
+	<property name="OwnerApptId" type="Int32" id="0x0062" />
+	<property name="ResponseRequested" type="Boolean" id="0x0063" />
+
+	<property name="SentRepresentingAddrType" type="Unicode" id="0x0064" />
+	<property name="SentRepresentingAddrTypeW" type="Unicode" id="0x0064" />
+	<property name="SentRepresentingAddrTypeA" type="String8" id="0x0064" />
+	<property name="SentRepresentingEmailAddress" type="Unicode" id="0x0065" />
+	<property name="SentRepresentingEmailAddressW" type="Unicode" id="0x0065" />
+	<property name="SentRepresentingEmailAddressA" type="String8" id="0x0065" />
+
+	<property name="OriginalSenderAddrType" type="Unicode" id="0x0066" />
+	<property name="OriginalSenderAddrTypeW" type="Unicode" id="0x0066" />
+	<property name="OriginalSenderAddrTypeA" type="String8" id="0x0066" />
+	<property name="OriginalSenderEmailAddress" type="Unicode" id="0x0067" />
+	<property name="OriginalSenderEmailAddressW" type="Unicode" id="0x0067" />
+	<property name="OriginalSenderEmailAddressA" type="String8" id="0x0067" />
+
+	<property name="OriginalSentRepresentingAddrType" type="Unicode" id="0x0068" />
+	<property name="OriginalSentRepresentingAddrTypeW" type="Unicode" id="0x0068" />
+	<property name="OriginalSentRepresentingAddrTypeA" type="String8" id="0x0068" />
+	<property name="OriginalSentRepresentingEmailAaddress" type="Unicode" id="0x0069" />
+	<property name="OriginalSentRepresentingEmailAddressW" type="Unicode" id="0x0069" />
+	<property name="OriginalSentRepresentingEmailAddressA" type="String8" id="0x0069" />
+
+	<property name="ConversationTopic" type="Unicode" id="0x0070" />
+	<property name="ConversationTopicW" type="Unicode" id="0x0070" />
+	<property name="ConversationTopicA" type="String8" id="0x0070" />
+	<property name="ConversationIndex" type="Binary" id="0x0071" />
+
+	<property name="OriginalDisplayBcc" type="Unicode" id="0x0072" />
+	<property name="OriginalDisplayBccW" type="Unicode" id="0x0072" />
+	<property name="OriginalDisplayBccA" type="String8" id="0x0072" />
+	<property name="OriginalDisplayCc" type="Unicode" id="0x0073" />
+	<property name="OriginalDisplayCcW" type="Unicode" id="0x0073" />
+	<property name="OriginalDisplayCcA" type="String8" id="0x0073" />
+	<property name="OriginalDisplayTo" type="Unicode" id="0x0074" />
+	<property name="OriginalDisplayToW" type="Unicode" id="0x0074" />
+	<property name="OriginalDisplayToA" type="String8" id="0x0074" />
+
+	<property name="ReceivedByAddrType" type="Unicode" id="0x0075" />
+	<property name="ReceivedByAddrTypeW" type="Unicode" id="0x0075" />
+	<property name="ReceivedByAddrTypeA" type="String8" id="0x0075" />
+	<property name="ReceivedByEmailAddress" type="Unicode" id="0x0076" />
+	<property name="ReceivedByEmailAddressW" type="Unicode" id="0x0076" />
+	<property name="ReceivedByEmailAddressA" type="String8" id="0x0076" />
+
+	<property name="RcvdRepresentingAddrType" type="Unicode" id="0x0077" />
+	<property name="RcvdRepresentingAddrTypeW" type="Unicode" id="0x0077" />
+	<property name="RcvdRepresentingAddrTypeA" type="String8" id="0x0077" />
+	<property name="RcvdRepresentingEmailAddress" type="Unicode" id="0x0078" />
+	<property name="RcvdRepresentingEmailAddressW" type="Unicode" id="0x0078" />
+	<property name="RcvdRepresentingEmailAddressA" type="String8" id="0x0078" />
+
+	<property name="OriginalAuthorAddrType" type="Unicode" id="0x0079" />
+	<property name="OriginalAuthorAddrTypeW" type="Unicode" id="0x0079" />
+	<property name="OriginalAuthorAddrTypeA" type="String8" id="0x0079" />
+	<property name="OriginalAuthorEmailAddress" type="Unicode" id="0x007A" />
+	<property name="OriginalAuthorEmailAddressW" type="Unicode" id="0x007A" />
+	<property name="OriginalAuthorEmailAddressA" type="String8" id="0x007A" />
+
+	<property name="OriginallyIntendedRecipAddrType" type="Unicode" id="0x007B" />
+	<property name="OriginallyIntendedRecipAddrTypeW" type="Unicode" id="0x007B" />
+	<property name="OriginallyIntendedRecipAddrTypeA" type="String8" id="0x007B" />
+	<property name="OriginallyIntendedRecipEmailAddress" type="Unicode" id="0x007C" />
+	<property name="OriginallyIntendedRecipEmailAddressW" type="Unicode" id="0x007C" />
+	<property name="OriginallyIntendedRecipEmailAddressA" type="String8" id="0x007C" />
+
+	<property name="TransportMessageHeaders" type="Unicode" id="0x007D" />
+	<property name="TransportMessageHeadersW" type="Unicode" id="0x007D" />
+	<property name="TransportMessageHeadersA" type="String8" id="0x007D" />
+
+	<property name="Delegation" type="Binary" id="0x007E" />
+
+	<property name="TnefCorrelationKey" type="Binary" id="0x007F" />
+
+	<!--
+		Message content
+	//-->
+	<property name="Body" type="Unicode" id="0x1000" />
+	<property name="BodyW" type="Unicode" id="0x1000" />
+	<property name="BodyA" type="String8" id="0x1000" />
+	<property name="ReportText" type="Unicode" id="0x1001" />
+	<property name="ReportTextW" type="Unicode" id="0x1001" />
+	<property name="ReportTextA" type="String8" id="0x1001" />
+	<property name="OriginatorAndDlExpansionHistory" type="Binary" id="0x1002" />
+	<property name="ReportingDlName" type="Binary" id="0x1003" />
+	<property name="ReportingMtaCertificate" type="Binary" id="0x1004" />
+
+	<property name="RtfSyncBodyCrc" type="Int32" id="0x1006" />
+	<property name="RtfSyncBodyCount" type="Int32" id="0x1007" />
+	<property name="RtfSyncBodyTag" type="Unicode" id="0x1008" />
+	<property name="RtfSyncBodyTagW" type="Unicode" id="0x1008" />
+	<property name="RtfSyncBodyTagA" type="String8" id="0x1008" />
+	<property name="RtfCompressed" type="Binary" id="0x1009" />
+	<property name="RtfSyncPrefixCount" type="Int32" id="0x1010" />
+	<property name="RtfSyncTrailingCount" type="Int32" id="0x1011" />
+	<property name="OriginallyIntendedRecipEntryId" type="Binary" id="0x1012" />
+
+	<!--
+		Message recipient
+	//-->
+	<property name="ContentIntegrityCheck" type="Binary" id="0x0C00" />
+	<property name="ExplicitConversion" type="Int32" id="0x0C01" />
+	<property name="IpmReturnRequested" type="Boolean" id="0x0C02" />
+	<property name="MessageToken" type="Binary" id="0x0C03" />
+	<property name="NdrReasonCode" type="Int32" id="0x0C04" />
+	<property name="NdrDiagCode" type="Int32" id="0x0C05" />
+	<property name="NonReceiptNotificationRequested" type="Boolean" id="0x0C06" />
+	<property name="DeliveryPoint" type="Int32" id="0x0C07" />
+
+	<property name="OriginatorNonDeliveryReportRequested" type="Boolean" id="0x0C08" />
+	<property name="OriginatorRequestedAlternateRecipient" type="Binary" id="0x0C09" />
+	<property name="PhysicalDeliveryBureauFaxDelivery" type="Boolean" id="0x0C0A" />
+	<property name="PhysicalDeliveryMode" type="Int32" id="0x0C0B" />
+	<property name="PhysicalDeliveryReportRequest" type="Int32" id="0x0C0C" />
+	<property name="PhysicalForwardingAddress" type="Binary" id="0x0C0D" />
+	<property name="PhysicalForwardingAddressRequested" type="Boolean" id="0x0C0E" />
+	<property name="PhysicalForwardingProhibited" type="Boolean" id="0x0C0F" />
+	<property name="PhysicalRenditionAttributes" type="Binary" id="0x0C10" />
+	<property name="ProofOfDelivery" type="Binary" id="0x0C11" />
+	<property name="ProofOfDeliveryRequested" type="Boolean" id="0x0C12" />
+	<property name="RecipientCertificate" type="Binary" id="0x0C13" />
+	<property name="RecipientNumberForAdvice" type="Unicode" id="0x0C14" />
+	<property name="RecipientNumberForAdviceW" type="Unicode" id="0x0C14" />
+	<property name="RecipientNumberForAdviceA" type="String8" id="0x0C14" />
+	<property name="RecipientType" type="Int32" id="0x0C15" />
+	<property name="RegisteredMailType" type="Int32" id="0x0C16" />
+	<property name="ReplyRequested" type="Boolean" id="0x0C17" />
+	<property name="RequestedDeliveryMethod" type="Int32" id="0x0C18" />
+	<property name="SenderEntryId" type="Binary" id="0x0C19" />
+	<property name="SenderName" type="Unicode" id="0x0C1A" />
+	<property name="SenderNameW" type="Unicode" id="0x0C1A" />
+	<property name="SenderNameA" type="String8" id="0x0C1A" />
+	<property name="SupplementaryInfo" type="Unicode" id="0x0C1B" />
+	<property name="SupplementaryInfoW" type="Unicode" id="0x0C1B" />
+	<property name="SupplementaryInfoA" type="String8" id="0x0C1B" />
+	<property name="TypeOfMtsUser" type="Int32" id="0x0C1C" />
+	<property name="SenderSearchKey" type="Binary" id="0x0C1D" />
+	<property name="SenderAddrType" type="Unicode" id="0x0C1E" />
+	<property name="SenderAddrTypeW" type="Unicode" id="0x0C1E" />
+	<property name="SenderAddrTypeA" type="String8" id="0x0C1E" />
+	<property name="SenderEmailAddress" type="Unicode" id="0x0C1F" />
+	<property name="SenderEmailAddressW" type="Unicode" id="0x0C1F" />
+	<property name="SenderEmailAddressA" type="String8" id="0x0C1F" />
+
+	<!--
+		Message non-transmittable
+	//-->
+	
+	<!-- Obsolete //-->
+	<property name="CurrentVersion" type="Int64" id="0x0E00" />
+
+	<property name="DeleteAfterSubmit" type="Boolean" id="0x0E01" />
+	<property name="DisplayBcc" type="Unicode" id="0x0E02" />
+	<property name="DisplayBccW" type="Unicode" id="0x0E02" />
+	<property name="DisplayBccA" type="String8" id="0x0E02" />
+	<property name="DisplayCc" type="Unicode" id="0x0E03" />
+	<property name="DisplayCcW" type="Unicode" id="0x0E03" />
+	<property name="DisplayCcA" type="String8" id="0x0E03" />
+	<property name="DisplayTo" type="Unicode" id="0x0E04" />
+	<property name="DisplayToW" type="Unicode" id="0x0E04" />
+	<property name="DisplayToA" type="String8" id="0x0E04" />
+	<property name="ParentDisplay" type="Unicode" id="0x0E05" />
+	<property name="ParentDisplayW" type="Unicode" id="0x0E05" />
+	<property name="ParentDisplayA" type="String8" id="0x0E05" />
+	<property name="MessageDeliveryTime" type="SysTime" id="0x0E06" />
+	<property name="MessageFlags" type="Int32" id="0x0E07" />
+	<property name="MessageSize" type="Int32" id="0x0E08" />
+	<property name="ParentEntryId" type="Binary" id="0x0E09" />
+	<property name="SentMailEntryId" type="Binary" id="0x0E0A" />
+	<property name="Correlate" type="Boolean" id="0x0E0C" />
+	<property name="CorrelateMtsId" type="Binary" id="0x0E0D" />
+	<property name="DiscreteValues" type="Boolean" id="0x0E0E" />
+	<property name="Responsibility" type="Boolean" id="0x0E0F" />
+	<property name="SpoolerStatus" type="Int32" id="0x0E10" />
+
+	<!-- Obsolete //-->
+	<property name="TransportStatus" type="Int32" id="0x0E11" />
+
+	<property name="MessageRecipients" type="Object" id="0x0E12" />
+	<property name="MessageAttachments" type="Object" id="0x0E13" />
+	<property name="SubmitFlags" type="Int32" id="0x0E14" />
+	<property name="RecipientStatus" type="Int32" id="0x0E15" />
+	<property name="TransportKey" type="Int32" id="0x0E16" />
+	<property name="MsgStatus" type="Int32" id="0x0E17" />
+	<property name="MessageDownloadTime" type="Int32" id="0x0E18" />
+
+	<!-- Obsolete //-->
+	<property name="CreationVersion" type="Int64" id="0x0E19" />
+
+	<!-- Obsolete //-->
+	<property name="ModifyVersion" type="Int64" id="0x0E1A" />
+
+	<property name="HasAttach" type="Boolean" id="0x0E1B" />
+	<property name="BodyCrc" type="Int32" id="0x0E1C" />
+	<property name="NormalizedSubject" type="Unicode" id="0x0E1D" />
+	<property name="NormalizedSubjectW" type="Unicode" id="0x0E1D" />
+	<property name="NormalizedSubjectA" type="String8" id="0x0E1D" />
+	<property name="RtfInSync" type="Boolean" id="0x0E1F" />
+	<property name="AttachSize" type="Int32" id="0x0E20" />
+	<property name="AttachNum" type="Int32" id="0x0E21" />
+	<property name="Preprocess" type="Boolean" id="0x0E22" />
+
+	<property name="OriginatingMtaCertificate" type="Binary" id="0x0E25" />
+	<property name="ProofOfSubmission" type="Binary" id="0x0E26" />
+
+	<property name="EntryId" type="Binary" id="0x0FFF" />
+	<property name="ObjectType" type="Int32" id="0x0FFE" />
+	<property name="Icon" type="Binary" id="0x0FFD" />
+	<property name="MiniIcon" type="Binary" id="0x0FFC" />
+	<property name="StoreEntryid" type="Binary" id="0x0FFB" />
+	<property name="StoreRecordKey" type="Binary" id="0x0FFA" />
+	<property name="RecordKey" type="Binary" id="0x0FF9" />
+	<property name="MappingSignature" type="Binary" id="0x0FF8" />
+	<property name="AccessLevel" type="Int32" id="0x0FF7" />
+	<property name="InstanceKey" type="Binary" id="0x0FF6" />
+	<property name="RowType" type="Int32" id="0x0FF5" />
+	<property name="Access" type="Int32" id="0x0FF4" />
+
+	<property name="RowId" type="Int32" id="0x3000" />
+	<property name="DisplayName" type="Unicode" id="0x3001" />
+	<property name="DisplayNameW" type="Unicode" id="0x3001" />
+	<property name="DisplayNameA" type="String8" id="0x3001" />
+	<property name="AddrType" type="Unicode" id="0x3002" />
+	<property name="AddrTypeW" type="Unicode" id="0x3002" />
+	<property name="AddrTypeA" type="String8" id="0x3002" />
+	<property name="EmailAddress" type="Unicode" id="0x3003" />
+	<property name="EmailAddressW" type="Unicode" id="0x3003" />
+	<property name="EmailAddressA" type="String8" id="0x3003" />
+	<property name="Comment" type="Unicode" id="0x3004" />
+	<property name="CommentW" type="Unicode" id="0x3004" />
+	<property name="CommentA" type="String8" id="0x3004" />
+	<property name="Depth" type="Int32" id="0x3005" />
+	<property name="ProviderDisplay" type="Unicode" id="0x3006" />
+	<property name="ProviderDisplayW" type="Unicode" id="0x3006" />
+	<property name="ProviderDisplayA" type="String8" id="0x3006" />
+	<property name="CreationTime" type="SysTime" id="0x3007" />
+	<property name="LastModificationTime" type="SysTime" id="0x3008" />
+	<property name="ResourceFlags" type="Int32" id="0x3009" />
+	<property name="ProviderDllName" type="Unicode" id="0x300A" />
+	<property name="ProviderDllNameW" type="Unicode" id="0x300A" />
+	<property name="ProviderDllNameA" type="String8" id="0x300A" />
+	<property name="SearchKey" type="Binary" id="0x300B" />
+	<property name="ProviderUid" type="Binary" id="0x300C" />
+	<property name="ProviderOrdinal" type="Int32" id="0x300D" />
+
+	<!--
+		MAPI Form	
+	//-->
+	<property name="FormVersion" type="Unicode" id="0x3301" />
+	<property name="FormVersionW" type="Unicode" id="0x3301" />
+	<property name="FormVersionA" type="String8" id="0x3301" />
+	<property name="FormClsid" type="ClsId" id="0x3302" />
+	<property name="FormContactName" type="Unicode" id="0x3303" />
+	<property name="FormContactNameW" type="Unicode" id="0x3303" />
+	<property name="FormContactNameA" type="String8" id="0x3303" />
+	<property name="FormCategory" type="Unicode" id="0x3304" />
+	<property name="FormCategoryW" type="Unicode" id="0x3304" />
+	<property name="FormCategoryA" type="String8" id="0x3304" />
+	<property name="FormCategorySub" type="Unicode" id="0x3305" />
+	<property name="FormCategorySubW" type="Unicode" id="0x3305" />
+	<property name="FormCategorySubA" type="String8" id="0x3305" />
+	<property name="FormHostMap" type="MvInt32" id="0x3306" />
+	<property name="FormHidden" type="Boolean" id="0x3307" />
+	<property name="FormDesignerName" type="Unicode" id="0x3308" />
+	<property name="FormDesignerNameW" type="Unicode" id="0x3308" />
+	<property name="FormDesignerNameA" type="String8" id="0x3308" />
+	<property name="FormDesignerGuid" type="ClsId" id="0x3309" />
+	<property name="FormMessageBehavior" type="Int32" id="0x330A" />
+
+	<!--
+		Message Store	
+	//-->
+	<property name="DefaultStore" type="Boolean" id="0x3400" />
+	<property name="StoreSupportMask" type="Int32" id="0x340D" />
+	<property name="StoreState" type="Int32" id="0x340E" />
+
+	<!-- Obsolete //-->
+	<property name="IpmSubtreeSearchKey" type="Binary" id="0x3410" />
+
+	<!-- Obsolete //-->
+	<property name="IpmOutboxSearchKey" type="Binary" id="0x3411" />
+
+	<!-- Obsolete //-->
+	<property name="IpmWastebasketSearchKey" type="Binary" id="0x3412" />
+
+	<!-- Obsolete //-->
+	<property name="IpmSentmailSearchKey" type="Binary" id="0x3413" />
+
+	<property name="MdbProvider" type="Binary" id="0x3414" />
+	<property name="ReceiveFolderSettings" type="Object" id="0x3415" />
+
+	<property name="ValidFolderMask" type="Int32" id="0x35DF" />
+	<property name="IpmSubtreeEntryId" type="Binary" id="0x35E0" />
+
+	<property name="IpmOutboxEntryId" type="Binary" id="0x35E2" />
+	<property name="IpmWastebasketEntryId" type="Binary" id="0x35E3" />
+	<property name="IpmSentmailEntryId" type="Binary" id="0x35E4" />
+	<property name="ViewsEntryId" type="Binary" id="0x35E5" />
+	<property name="CommonViewsEntryId" type="Binary" id="0x35E6" />
+	<property name="FinderEntryId" type="Binary" id="0x35E7" />
+
+	<!--
+		Folder and AB Container
+	//-->
+	<property name="ContainerFlags" type="Int32" id="0x3600" />
+	<property name="FolderType" type="Int32" id="0x3601" />
+	<property name="ContentCount" type="Int32" id="0x3602" />
+	<property name="ContentUnread" type="Int32" id="0x3603" />
+	<property name="CreateTemplates" type="Object" id="0x3604" />
+	<property name="DetailsTable" type="Object" id="0x3605" />
+	<property name="Search" type="Object" id="0x3607" />
+	<property name="Selectable" type="Boolean" id="0x3609" />
+	<property name="Subfolders" type="Boolean" id="0x360A" />
+	<property name="Status" type="Int32" id="0x360B" />
+	<property name="Anr" type="Unicode" id="0x360C" />
+	<property name="AnrW" type="Unicode" id="0x360C" />
+	<property name="AnrA" type="String8" id="0x360C" />
+
+	<!-- Obsolete //-->
+	<property name="ContentsSortOrder" type="MvInt32" id="0x360D" />
+
+	<property name="ContainerHierarchy" type="Object" id="0x360E" />
+	<property name="ContainerContents" type="Object" id="0x360F" />
+	<property name="FolderAssociatedContents" type="Object" id="0x3610" />
+	<property name="DefCreateDl" type="Binary" id="0x3611" />
+	<property name="DefCreateMailuser" type="Binary" id="0x3612" />
+	<property name="ContainerClass" type="Unicode" id="0x3613" />
+	<property name="ContainerClassW" type="Unicode" id="0x3613" />
+	<property name="ContainerClassA" type="String8" id="0x3613" />
+
+	<!-- Obsolete //-->
+	<property name="ContainerModifyVersion" type="Int64" id="0x3614" />
+
+	<property name="AbProviderId" type="Binary" id="0x3615" />
+	<property name="DefaultWiewEntryId" type="Binary" id="0x3616" />
+	<property name="AssocContentCount" type="Int32" id="0x3617" />
+
+	<!--
+		Attachment
+	//-->
+
+	<!-- Obsolete //-->
+	<property name="AttachmentX400Parameters" type="Binary" id="0x3700" />
+
+	<property name="AttachDataObj" type="Object" id="0x3701" />
+	<property name="AttachDataBin" type="Binary" id="0x3701" />
+	<property name="AttachEncoding" type="Binary" id="0x3702" />
+	<property name="AttachExtension" type="Unicode" id="0x3703" />
+	<property name="AttachExtensionW" type="Unicode" id="0x3703" />
+	<property name="AttachExtensionA" type="String8" id="0x3703" />
+	<property name="AttachFilename" type="Unicode" id="0x3704" />
+	<property name="AttachFilenameW" type="Unicode" id="0x3704" />
+	<property name="AttachFilenameA" type="String8" id="0x3704" />
+	<property name="AttachMethod" type="Int32" id="0x3705" />
+	<property name="AttachLongFilename" type="Unicode" id="0x3707" />
+	<property name="AttachLongFilenameW" type="Unicode" id="0x3707" />
+	<property name="AttachLongFilenameA" type="String8" id="0x3707" />
+	<property name="AttachPathname" type="Unicode" id="0x3708" />
+	<property name="AttachPathnameW" type="Unicode" id="0x3708" />
+	<property name="AttachPathnameA" type="String8" id="0x3708" />
+	<property name="AttachRendering" type="Binary" id="0x3709" />
+	<property name="AttachTag" type="Binary" id="0x370A" />
+	<property name="RenderingPosition" type="Int32" id="0x370B" />
+	<property name="AttachTransportName" type="Unicode" id="0x370C" />
+	<property name="AttachTransportNameW" type="Unicode" id="0x370C" />
+	<property name="AttachTransportNameA" type="String8" id="0x370C" />
+	<property name="AttachLongPathname" type="Unicode" id="0x370D" />
+	<property name="AttachLongPathnameW" type="Unicode" id="0x370D" />
+	<property name="AttachLongPathnameA" type="String8" id="0x370D" />
+	<property name="AttachMimeTag" type="Unicode" id="0x370E" />
+	<property name="AttachMimeTagW" type="Unicode" id="0x370E" />
+	<property name="AttachMimeTagA" type="String8" id="0x370E" />
+	<property name="AttachAdditionalInfo" type="Binary" id="0x370F" />
+
+	<!--
+		AB Object
+	//-->
+	<property name="DisplayType" type="Int32" id="0x3900" />
+	<property name="TemplateId" type="Binary" id="0x3902" />
+
+	<!-- Obsolete //-->
+	<property name="PrimaryCapability" type="Binary" id="0x3904" />
+
+
+	<!--
+		Mail user
+	//-->
+	<property name="SevenBitDisplayName" type="String8" id="0x39FF" />
+	<property name="Account" type="Unicode" id="0x3A00" />
+	<property name="AccountW" type="Unicode" id="0x3A00" />
+	<property name="AccountA" type="String8" id="0x3A00" />
+	<property name="AlternateRecipient" type="Binary" id="0x3A01" />
+	<property name="CallbackTelephoneNumber" type="Unicode" id="0x3A02" />
+	<property name="CallbackTelephoneNumberW" type="Unicode" id="0x3A02" />
+	<property name="CallbackTelephoneNumberA" type="String8" id="0x3A02" />
+	<property name="ConversionProhibited" type="Boolean" id="0x3A03" />
+	<property name="DiscloseRecipients" type="Boolean" id="0x3A04" />
+	<property name="Generation" type="Unicode" id="0x3A05" />
+	<property name="GenerationW" type="Unicode" id="0x3A05" />
+	<property name="GenerationA" type="String8" id="0x3A05" />
+	<property name="GivenName" type="Unicode" id="0x3A06" />
+	<property name="GivenNameW" type="Unicode" id="0x3A06" />
+	<property name="GivenNameA" type="String8" id="0x3A06" />
+	<property name="GovernmentIdNumber" type="Unicode" id="0x3A07" />
+	<property name="GovernmentIdNumberW" type="Unicode" id="0x3A07" />
+	<property name="GovernmentIdNumberA" type="String8" id="0x3A07" />
+	<property name="BusinessTelephoneNumber" type="Unicode" id="0x3A08" />
+	<property name="BusinessTelephoneNumberW" type="Unicode" id="0x3A08" />
+	<property name="BusinessTelephoneNumberA" type="String8" id="0x3A08" />
+
+<!--	<property name="OfficeTelephoneNumber=BusinessTelephoneNumber;
+	<property name="OfficeTelephoneNumberW =BusinessTelephoneNumberW;
+	<property name="OfficeTelephoneNumberA =BusinessTelephoneNumberA;
+//-->
+
+	<property name="HomeTelephoneNumber" type="Unicode" id="0x3A09" />
+	<property name="HomeTelephoneNumberW" type="Unicode" id="0x3A09" />
+	<property name="HomeTelephoneNumberA" type="String8" id="0x3A09" />
+	<property name="Initials" type="Unicode" id="0x3A0A" />
+	<property name="InitialsW" type="Unicode" id="0x3A0A" />
+	<property name="InitialsA" type="String8" id="0x3A0A" />
+	<property name="Keyword" type="Unicode" id="0x3A0B" />
+	<property name="KeywordW" type="Unicode" id="0x3A0B" />
+	<property name="KeywordA" type="String8" id="0x3A0B" />
+	<property name="Language" type="Unicode" id="0x3A0C" />
+	<property name="LanguageW" type="Unicode" id="0x3A0C" />
+	<property name="LanguageA" type="String8" id="0x3A0C" />
+	<property name="Location" type="Unicode" id="0x3A0D" />
+	<property name="LocationW" type="Unicode" id="0x3A0D" />
+	<property name="LocationA" type="String8" id="0x3A0D" />
+	<property name="MailPermission" type="Boolean" id="0x3A0E" />
+	<property name="MhsCommonName" type="Unicode" id="0x3A0F" />
+	<property name="MhsCommonNameW" type="Unicode" id="0x3A0F" />
+	<property name="MhsCommonNameA" type="String8" id="0x3A0F" />
+	<property name="OrganizationalIdNumber" type="Unicode" id="0x3A10" />
+	<property name="OrganizationalIdNumberW" type="Unicode" id="0x3A10" />
+	<property name="OrganizationalIdNumberA" type="String8" id="0x3A10" />
+	<property name="Surname" type="Unicode" id="0x3A11" />
+	<property name="SurnameW" type="Unicode" id="0x3A11" />
+	<property name="SurnameA" type="String8" id="0x3A11" />
+	<property name="OriginalEntryId" type="Binary" id="0x3A12" />
+	<property name="OriginalDisplayName" type="Unicode" id="0x3A13" />
+	<property name="OriginalDisplayNameW" type="Unicode" id="0x3A13" />
+	<property name="OriginalDisplayNameA" type="String8" id="0x3A13" />
+	<property name="OriginalSearchKey" type="Binary" id="0x3A14" />
+	<property name="PostalAddress" type="Unicode" id="0x3A15" />
+	<property name="PostalAddressW" type="Unicode" id="0x3A15" />
+	<property name="PostalAddressA" type="String8" id="0x3A15" />
+	<property name="CompanyName" type="Unicode" id="0x3A16" />
+	<property name="CompanyNameW" type="Unicode" id="0x3A16" />
+	<property name="CompanyNameA" type="String8" id="0x3A16" />
+	<property name="Title" type="Unicode" id="0x3A17" />
+	<property name="TitleW" type="Unicode" id="0x3A17" />
+	<property name="TitleA" type="String8" id="0x3A17" />
+	<property name="DepartmentName" type="Unicode" id="0x3A18" />
+	<property name="DepartmentNameW" type="Unicode" id="0x3A18" />
+	<property name="DepartmentNameA" type="String8" id="0x3A18" />
+	<property name="OfficeLocation" type="Unicode" id="0x3A19" />
+	<property name="OfficeLocationW" type="Unicode" id="0x3A19" />
+	<property name="OfficeLocationA" type="String8" id="0x3A19" />
+	<property name="PrimaryTelephoneNumber" type="Unicode" id="0x3A1A" />
+	<property name="PrimaryTelephoneNumberW" type="Unicode" id="0x3A1A" />
+	<property name="PrimaryTelephoneNumberA" type="String8" id="0x3A1A" />
+	<property name="Business2TelephoneNumber" type="Unicode" id="0x3A1B" />
+	<property name="Business2TelephoneNumberW" type="Unicode" id="0x3A1B" />
+	<property name="Business2TelephoneNumberA" type="String8" id="0x3A1B" />
+<!--
+		<property name="Office2TelephoneNumber =Business2TelephoneNumber;
+	<property name="Office2TelephoneNumberW=Business2TelephoneNumberW;
+	<property name="Office2TelephoneNumberA=Business2TelephoneNumberA;
+//-->
+		
+	<property name="MobileTelephoneNumber" type="Unicode" id="0x3A1C" />
+	<property name="MobileTelephoneNumberW" type="Unicode" id="0x3A1C" />
+	<property name="MobileTelephoneNumberA" type="String8" id="0x3A1C" />
+<!--
+	<property name="CellularTelephoneNumber=MobileTelephoneNumber;
+	<property name="CellularTelephoneNumberW =MobileTelephoneNumberW;
+	<property name="CellularTelephoneNumberA =MobileTelephoneNumberA;
+//-->
+	<property name="RadiotelephoneNumber" type="Unicode" id="0x3A1D" />
+	<property name="RadiotelephoneNumberW" type="Unicode" id="0x3A1D" />
+	<property name="RadiotelephoneNumberA" type="String8" id="0x3A1D" />
+	<property name="CarTelephoneNumber" type="Unicode" id="0x3A1E" />
+	<property name="CarTelephoneNumberW" type="Unicode" id="0x3A1E" />
+	<property name="CarTelephoneNumberA" type="String8" id="0x3A1E" />
+	<property name="OtherTelephone_number" type="Unicode" id="0x3A1F" />
+	<property name="OtherTelephoneNumberW" type="Unicode" id="0x3A1F" />
+	<property name="OtherTelephoneNumberA" type="String8" id="0x3A1F" />
+	<property name="TransmitableDisplayName" type="Unicode" id="0x3A20" />
+	<property name="TransmitableDisplayNameW" type="Unicode" id="0x3A20" />
+	<property name="TransmitableDisplayNameA" type="String8" id="0x3A20" />
+	<property name="PagerTelephoneNumber" type="Unicode" id="0x3A21" />
+	<property name="PagerTelephoneNumberW" type="Unicode" id="0x3A21" />
+	<property name="PagerTelephoneNumberA" type="String8" id="0x3A21" />
+<!--
+	<property name="BeeperTelephoneNumber=PagerTelephoneNumber;
+	<property name="BeeperTelephoneNumberW =PagerTelephoneNumberW;
+	<property name="BeeperTelephoneNumberA =PagerTelephoneNumberA;
+//-->
+	<property name="UserCertificate" type="Binary" id="0x3A22" />
+	<property name="PrimaryFaxNumber" type="Unicode" id="0x3A23" />
+	<property name="PrimaryFaxNumberW" type="Unicode" id="0x3A23" />
+	<property name="PrimaryFaxNumberA" type="String8" id="0x3A23" />
+	<property name="BusinessFaxNumber" type="Unicode" id="0x3A24" />
+	<property name="BusinessFaxNumberW" type="Unicode" id="0x3A24" />
+	<property name="BusinessFaxNumberA" type="String8" id="0x3A24" />
+	<property name="HomeFaxNumber" type="Unicode" id="0x3A25" />
+	<property name="HomeFaxNumberW" type="Unicode" id="0x3A25" />
+	<property name="HomeFaxNumberA" type="String8" id="0x3A25" />
+	<property name="Country" type="Unicode" id="0x3A26" />
+	<property name="CountryW" type="Unicode" id="0x3A26" />
+	<property name="CountryA" type="String8" id="0x3A26" />
+<!--
+	<property name="BusinessAddressCountry =Country;
+	<property name="BusinessAddressCountryW=CountryW;
+	<property name="BusinessAddressCountryA=CountryA;
+//-->
+
+	<property name="Locality" type="Unicode" id="0x3A27" />
+	<property name="LocalityW" type="Unicode" id="0x3A27" />
+	<property name="LocalityA" type="String8" id="0x3A27" />
+<!--
+	<property name="BusinessAddressCity=Locality;
+	<property name="BusinessAddressCityW =LocalityW;
+	<property name="BusinessAddressCityA =LocalityA;
+//-->
+
+	<property name="StateOrProvince" type="Unicode" id="0x3A28" />
+	<property name="StateOrProvinceW" type="Unicode" id="0x3A28" />
+	<property name="StateOrProvinceA" type="String8" id="0x3A28" />
+<!--
+	<property name="BusinessAddressStateOrProvince =StateOrProvince;
+	<property name="BusinessAddressStateOrProvinceW=StateOrProvinceW;
+	<property name="BusinessAddressStateOrProvinceA=StateOrProvinceA;
+//-->
+
+	<property name="StreetAddress" type="Unicode" id="0x3A29" />
+	<property name="StreetAddressW" type="Unicode" id="0x3A29" />
+	<property name="StreetAddressA" type="String8" id="0x3A29" />
+<!--
+	<property name="BusinessAddressStreet=StreetAddress;
+	<property name="BusinessAddressStreetW =StreetAddressW;
+	<property name="BusinessAddressStreetA =StreetAddressA;
+//-->
+
+	<property name="PostalCode" type="Unicode" id="0x3A2A" />
+	<property name="PostalCodeW" type="Unicode" id="0x3A2A" />
+	<property name="PostalCodeA" type="String8" id="0x3A2A" />
+<!--
+	<property name="BusinessAddressPostalCode=PostalCode;
+	<property name="BusinessAddressPostalCodeW =PostalCodeW;
+	<property name="BusinessAddressPostalCodeA =PostalCodeA;
+//-->
+
+	<property name="PostOfficeBox" type="Unicode" id="0x3A2B" />
+	<property name="PostOfficeBoxW" type="Unicode" id="0x3A2B" />
+	<property name="PostOfficeBoxA" type="String8" id="0x3A2B" />
+<!--
+	<property name="BusinessAddressPostOfficeBox =PostOfficeBox;
+	<property name="BusinessAddressPostOfficeBoxW=PostOfficeBoxW;
+	<property name="BusinessAddressPostOfficeBoxA=PostOfficeBoxA;
+//-->
+
+	<property name="TelexNumber" type="Unicode" id="0x3A2C" />
+	<property name="TelexNumberW" type="Unicode" id="0x3A2C" />
+	<property name="TelexNumberA" type="String8" id="0x3A2C" />
+	<property name="IsdnNumber" type="Unicode" id="0x3A2D" />
+	<property name="IsdnNumberW" type="Unicode" id="0x3A2D" />
+	<property name="IsdnNumberA" type="String8" id="0x3A2D" />
+	<property name="AssistantTelephoneNumber" type="Unicode" id="0x3A2E" />
+	<property name="AssistantTelephoneNumberW" type="Unicode" id="0x3A2E" />
+	<property name="AssistantTelephoneNumberA" type="String8" id="0x3A2E" />
+	<property name="Home2TelephoneNumber" type="Unicode" id="0x3A2F" />
+	<property name="Home2TelephoneNumberW" type="Unicode" id="0x3A2F" />
+	<property name="Home2TelephoneNumberA" type="String8" id="0x3A2F" />
+	<property name="Assistant" type="Unicode" id="0x3A30" />
+	<property name="AssistantW" type="Unicode" id="0x3A30" />
+	<property name="AssistantA" type="String8" id="0x3A30" />
+	<property name="SendRichInfo" type="Boolean" id="0x3A40" />
+
+	<property name="WeddingAnniversary" type="SysTime" id="0x3A41" />
+	<property name="Birthday" type="SysTime" id="0x3A42" />
+
+
+	<property name="Hobbies" type="Unicode" id="0x3A43" />
+	<property name="HobbiesW" type="Unicode" id="0x3A43" />
+	<property name="HobbiesA" type="String8" id="0x3A43" />
+
+	<property name="MiddleName" type="Unicode" id="0x3A44" />
+	<property name="MiddleNameW" type="Unicode" id="0x3A44" />
+	<property name="MiddleNameA" type="String8" id="0x3A44" />
+
+	<property name="DisplayNamePrefix" type="Unicode" id="0x3A45" />
+	<property name="DisplayNamePrefixW" type="Unicode" id="0x3A45" />
+	<property name="DisplayNamePrefixA" type="String8" id="0x3A45" />
+
+	<property name="Profession" type="Unicode" id="0x3A46" />
+	<property name="ProfessionW" type="Unicode" id="0x3A46" />
+	<property name="ProfessionA" type="String8" id="0x3A46" />
+
+	<property name="PreferredByName" type="Unicode" id="0x3A47" />
+	<property name="PreferredByNameW" type="Unicode" id="0x3A47" />
+	<property name="PreferredByNameA" type="String8" id="0x3A47" />
+
+	<property name="SpouseName" type="Unicode" id="0x3A48" />
+	<property name="SpouseNameW" type="Unicode" id="0x3A48" />
+	<property name="SpouseNameA" type="String8" id="0x3A48" />
+
+	<property name="ComputerNetworkName" type="Unicode" id="0x3A49" />
+	<property name="ComputerNetworkNameW" type="Unicode" id="0x3A49" />
+	<property name="ComputerNetworkNameA" type="String8" id="0x3A49" />
+
+	<property name="CustomerId" type="Unicode" id="0x3A4A" />
+	<property name="CustomerIdW" type="Unicode" id="0x3A4A" />
+	<property name="CustomerIdA" type="String8" id="0x3A4A" />
+
+	<property name="TtytddPhoneNumber" type="Unicode" id="0x3A4B" />
+	<property name="TtytddPhoneNumberW" type="Unicode" id="0x3A4B" />
+	<property name="TtytddPhoneNumberA" type="String8" id="0x3A4B" />
+
+	<property name="FtpSite" type="Unicode" id="0x3A4C" />
+	<property name="FtpSite_w" type="Unicode" id="0x3A4C" />
+	<property name="FtpSite_a" type="String8" id="0x3A4C" />
+
+	<property name="Gender" type="Int16" id="0x3A4D" />
+
+	<property name="ManagerName" type="Unicode" id="0x3A4E" />
+	<property name="ManagerNameW" type="Unicode" id="0x3A4E" />
+	<property name="ManagerNameA" type="String8" id="0x3A4E" />
+
+	<property name="Nickname" type="Unicode" id="0x3A4F" />
+	<property name="NicknameW" type="Unicode" id="0x3A4F" />
+	<property name="NicknameA" type="String8" id="0x3A4F" />
+
+	<property name="PersonalHomePage" type="Unicode" id="0x3A50" />
+	<property name="PersonalHomePageW" type="Unicode" id="0x3A50" />
+	<property name="PersonalHomePageA" type="String8" id="0x3A50" />
+
+	<property name="BusinessHomePage" type="Unicode" id="0x3A51" />
+	<property name="BusinessHomePageW" type="Unicode" id="0x3A51" />
+	<property name="BusinessHomePageA" type="String8" id="0x3A51" />
+
+	<property name="ContactVersion" type="ClsId" id="0x3A52" />
+	<property name="ContactEntryIds" type="MvBinary" id="0x3A53" />
+
+	<property name="ContactAddrtypes" type="MvUnicode" id="0x3A54" />
+	<property name="ContactAddrtypesW" type="MvUnicode" id="0x3A54" />
+	<property name="ContactAddrtypesA" type="MvString8" id="0x3A54" />
+
+	<property name="ContactDefaultAddressIndex" type="Int32" id="0x3A55" />
+
+	<property name="ContactEmailAddresses" type="MvUnicode" id="0x3A56" />
+	<property name="ContactEmailAddressesW" type="MvUnicode" id="0x3A56" />
+	<property name="ContactEmailAddressesA" type="MvString8" id="0x3A56" />
+
+
+	<property name="CompanyMainPhoneNumber" type="Unicode" id=" 0x3A57" />
+	<property name="CompanyMainPhoneNumberW" type="Unicode" id=" 0x3A57" />
+	<property name="CompanyMainPhoneNumberA" type="String8" id=" 0x3A57" />
+
+	<property name="ChildrensNames" type="MvUnicode" id=" 0x3A58" />
+	<property name="ChildrensNamesW" type="MvUnicode" id=" 0x3A58" />
+	<property name="ChildrensNamesA" type="MvString8" id=" 0x3A58" />
+
+	<property name="HomeAddressCity" type="Unicode" id="0x3A59" />
+	<property name="HomeAddressCityW" type="Unicode" id="0x3A59" />
+	<property name="HomeAddressCityA" type="String8" id="0x3A59" />
+
+	<property name="HomeAddressCountry" type="Unicode" id="0x3A5A" />
+	<property name="HomeAddressCountryW" type="Unicode" id="0x3A5A" />
+	<property name="HomeAddressCountryA" type="String8" id="0x3A5A" />
+
+	<property name="HomeAddressPostalCode" type="Unicode" id="0x3A5B" />
+	<property name="HomeAddressPostalCodeW" type="Unicode" id="0x3A5B" />
+	<property name="HomeAddressPostalCodeA" type="String8" id="0x3A5B" />
+
+	<property name="HomeAddressStateOrProvince" type="Unicode" id="0x3A5C" />
+	<property name="HomeAddressStateOrProvinceW" type="Unicode" id="0x3A5C" />
+	<property name="HomeAddressStateOrProvinceA" type="String8" id="0x3A5C" />
+
+	<property name="HomeAddressStreet" type="Unicode" id="0x3A5D" />
+	<property name="HomeAddressStreetW" type="Unicode" id="0x3A5D" />
+	<property name="HomeAddressStreetA" type="String8" id="0x3A5D" />
+
+	<property name="HomeAddressPostOfficeBox" type="Unicode" id="0x3A5E" />
+	<property name="HomeAddressPostOfficeBoxW" type="Unicode" id="0x3A5E" />
+	<property name="HomeAddressPostOfficeBoxA" type="String8" id="0x3A5E" />
+
+	<property name="OtherAddressCity" type="Unicode" id="0x3A5F" />
+	<property name="OtherAddressCityW" type="Unicode" id="0x3A5F" />
+	<property name="OtherAddressCityA" type="String8" id="0x3A5F" />
+
+	<property name="OtherAddressCountry" type="Unicode" id="0x3A60" />
+	<property name="OtherAddressCountryW" type="Unicode" id="0x3A60" />
+	<property name="OtherAddressCountryA" type="String8" id="0x3A60" />
+
+	<property name="OtherAddressPostalCode" type="Unicode" id="0x3A61" />
+	<property name="OtherAddressPostalCodeW" type="Unicode" id="0x3A61" />
+	<property name="OtherAddressPostalCodeA" type="String8" id="0x3A61" />
+
+	<property name="OtherAddressStateOrProvince" type="Unicode" id="0x3A62" />
+	<property name="OtherAddressStateOrProvinceW" type="Unicode" id="0x3A62" />
+	<property name="OtherAddressStateOrProvinceA" type="String8" id="0x3A62" />
+
+	<property name="OtherAddressStreet" type="Unicode" id="0x3A63" />
+	<property name="OtherAddressStreetW" type="Unicode" id="0x3A63" />
+	<property name="OtherAddressStreetA" type="String8" id="0x3A63" />
+
+	<property name="OtherAddressPostOfficeBox" type="Unicode" id="0x3A64" />
+	<property name="OtherAddressPostOfficeBoxW" type="Unicode" id="0x3A64" />
+	<property name="OtherAddressPostOfficeBoxA" type="String8" id="0x3A64" />
+
+	<!--
+		Profile section
+	//-->
+	<property name="StoreProviders" type="Binary" id="0x3D00" />
+	<property name="AbProviders" type="Binary" id="0x3D01" />
+	<property name="TransportProviders" type="Binary" id="0x3D02" />
+
+	<property name="DefaultProfile" type="Boolean" id="0x3D04" />
+	<property name="AbSearchPath" type="MvBinary" id="0x3D05" />
+	<property name="AbDefaultDir" type="Binary" id="0x3D06" />
+	<property name="AbDefaultPab" type="Binary" id="0x3D07" />
+
+	<!-- Obsolete //-->
+	<property name="FilteringHooks" type="Binary" id="0x3D08" />
+
+	<property name="ServiceName" type="Unicode" id="0x3D09" />
+	<property name="ServiceNameW" type="Unicode" id="0x3D09" />
+	<property name="ServiceNameA" type="String8" id="0x3D09" />
+	<property name="ServiceDllName" type="Unicode" id="0x3D0A" />
+	<property name="ServiceDllNameW" type="Unicode" id="0x3D0A" />
+	<property name="ServiceDllNameA" type="String8" id="0x3D0A" />
+	<property name="ServiceEntryName" type="String8" id="0x3D0B" />
+	<property name="ServiceUid" type="Binary" id="0x3D0C" />
+	<property name="ServiceExtraUids" type="Binary" id="0x3D0D" />
+	<property name="Services" type="Binary" id="0x3D0E" />
+	<property name="ServiceSupportFiles" type="MvUnicode" id="0x3D0F" />
+	<property name="ServiceSupportFilesW" type="MvUnicode" id="0x3D0F" />
+	<property name="ServiceSupportFilesA" type="MvString8" id="0x3D0F" />
+	<property name="ServiceDeleteFiles" type="MvUnicode" id="0x3D10" />
+	<property name="ServiceDeleteFilesW" type="MvUnicode" id="0x3D10" />
+	<property name="ServiceDeleteFilesA" type="MvString8" id="0x3D10" />
+	<property name="AbSearchPathUpdate" type="Binary" id="0x3D11" />
+	<property name="ProfileName" type="Unicode" id="0x3D12" />
+	<property name="ProfileNameA" type="String8" id="0x3D12" />
+	<property name="ProfileNameW" type="Unicode" id="0x3D12" />
+	
+	<!--
+		Status object
+	//-->
+	<property name="IdentityDisplay" type="Unicode" id="0x3E00" />
+	<property name="IdentityDisplayW" type="Unicode" id="0x3E00" />
+	<property name="IdentityDisplayA" type="String8" id="0x3E00" />
+	<property name="IdentityEntryId" type="Binary" id="0x3E01" />
+	<property name="ResourceMethods" type="Int32" id="0x3E02" />
+	<property name="ResourceType" type="Int32" id="0x3E03" />
+	<property name="StatusCode" type="Int32" id="0x3E04" />
+	<property name="IdentitySearchKey" type="Binary" id="0x3E05" />
+	<property name="OwnStoreEntryId" type="Binary" id="0x3E06" />
+	<property name="ResourcePath" type="Unicode" id="0x3E07" />
+	<property name="ResourcePathW" type="Unicode" id="0x3E07" />
+	<property name="ResourcePathA" type="String8" id="0x3E07" />
+	<property name="StatusString" type="Unicode" id="0x3E08" />
+	<property name="StatusStringW" type="Unicode" id="0x3E08" />
+	<property name="StatusStringA" type="String8" id="0x3E08" />
+
+	<!-- Obsolete //-->
+	<property name="X400DeferredDeliveryCancel" type="Boolean" id="0x3E09" />
+
+	<!-- Obsolete //-->
+	<property name="HeaderFolderEntryId" type="Binary" id="0x3E0A" />
+
+	<property name="RemoteProgress" type="Int32" id="0x3E0B" />
+	<property name="RemoteProgressText" type="Unicode" id="0x3E0C" />
+	<property name="RemoteProgressTextW" type="Unicode" id="0x3E0C" />
+	<property name="RemoteProgressTextA" type="String8" id="0x3E0C" />
+	<property name="RemoteValidateOK" type="Boolean" id="0x3E0D" />
+
+	<!--
+	   Display table
+	//-->
+	<property name="ControlFlags" type="Int32" id="0x3F00" />
+	<property name="ControlStructure" type="Binary" id="0x3F01" />
+	<property name="ControlType" type="Int32" id="0x3F02" />
+	<property name="DeltaX" type="Int32" id="0x3F03" />
+	<property name="DeltaY" type="Int32" id="0x3F04" />
+	<property name="XPos" type="Int32" id="0x3F05" />
+	<property name="YPos" type="Int32" id="0x3F06" />
+	<property name="ControlId" type="Binary" id="0x3F07" />
+	<property name="Initialdetailspane" type="Int32" id="0x3F08" />
+
+
+
+
+
+
+
+	<property name="Null" type="Null" id="0x0000" />
+
+
+
+
+
+
+	<property name="MessageSynchronizer" type="Object" id="0x678c" />
+	<property name="FolderSynchronizer" type="Object" id="0x678d" />
+
+
+
+
+
+	<!-- required for vmapi //-->
+
+
+
+	<property name="AdditionalRenEntryId" type="MvBinary" id="0x36D8" />
+	<property name="AdditionalRenEntryIdEx" type="Binary" id="0x36D9" />
+	<property name="ChangeKey" type="Binary" id="0x65e2" />
+	<property name="RemOnlineEntryId" type="Binary" id="0x36D5" />
+	<property name="RemOfflineEntryId" type="Binary" id="0x36D6" />
+
+	<property name="ExtendedFolderTypeFlags" type="Binary" id="0x36DA" />
+	<property name="FolderViewList" type="Binary" id="0x36EB" /> // correct?
+	<property name="FreeBusyEntryIds" type="MvBinary" id="0x36E4" />
+
+	<!-- ICS-related //-->
+	<property name="LocalCommitTimeMax" type="SysTime" id="0x670A" /> <!-- correct? //-->
+	<property name="SourceKey" type="Binary" id="0x65E0" /> <!-- 22 bytes lenghth (storeid + some id) ... //-->
+	<property name="ParentSourceKey" type="Binary" id="0x65E1" /> 
+</properties>

@@ -87,14 +87,13 @@ namespace NMapi.Server {
 				if (ev != null) {
 					int program = 1;
 					int version = 1;
-
-					bool useSsl = true;
+					
 					var sendingXdr = new XdrTcpEncodingStream (tcpClient, stream, 8192);
 					var callHeader = new OncRpcClientCallMessage (++xid, 
 							program, version, 1, OncRpcClientAuthNone.AUTH_NONE);
 					tcpClient.SendTimeout = 10;
 					sendingXdr.BeginEncoding (null, 0);
-					((IXdrEncodeable) callHeader).XdrEncode (sendingXdr);
+					callHeader.XdrEncode (sendingXdr);
 					((IXdrEncodeable) ev).XdrEncode (sendingXdr);
 					sendingXdr.EndEncoding ();
 

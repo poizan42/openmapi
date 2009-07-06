@@ -104,7 +104,7 @@ namespace NMapi.Gateways.IMAP {
 					eId.Value = slq[msgno2].EntryId;
 					entryPropRestr.Prop = eId;
 					entryPropRestr.PropTag = Property.EntryId;
-					entryPropRestr.RelOp = RelOp.Eq;
+					entryPropRestr.RelOp = RelOp.Equal;
 					entryRestrictions.Add (entryPropRestr);
 				}
 				// create head restriction, append the single restrictions and add head restriction to contentsTable
@@ -164,7 +164,15 @@ namespace NMapi.Gateways.IMAP {
 				}
 				if ("RFC822.SIZE ALL FAST FULL".Contains(Fetch_att_key)) {
 
-					if (config.ComputeRFC822_SIZE) {
+					// calculate exact size, if configured mandatory or if body will be retrieved with the same fetch command
+					// otherwise return rough value provided by store.
+					// This is a trick to save some time, when imap clients scan new emails in a mailbox.
+					// Works for thunderbird 2.0.0.21. Result is fast retrieval when body is not requested.
+					// !!! Works only, because Thunderbird requests RFC822.SIZE along with BODY when actually
+					// opening the email. Also it adjusts itself to the size provided in that situation. Thus,
+					// Thunderbird will read the whole content in sections (trace the use of Section_number1/
+					// Section_number2), if the real size is greater than the rough value provided in the first scan.
+					if (config.ComputeRFC822_SIZE || (ScanForBodyRequest (command))) {
 						StringBuilder tmpMsg = new StringBuilder();
 	
 						// XXX get full message to calculate MIME size
@@ -447,6 +455,7 @@ namespace NMapi.Gateways.IMAP {
 			Property.SenderName,
 			Property.SenderEmailAddress,
 			Property.DisplayTo,
+			Property.DisplayCc,
 			Property.ClientSubmitTime, 
 			Property.TransportMessageHeaders
 		};
@@ -598,7 +607,36 @@ namespace NMapi.Gateways.IMAP {
 			return propList.Distinct ().ToArray ();
 		}
 
+		// scans all fetch items to see if the mail body will need to be retrieved (via Mapi2Mime) in the course of this request
+		static private bool ScanForBodyRequest (Command cmd)
+		{
+			if (cmd == null)
+				return false;
 
+			foreach (CommandFetchItem cfi in cmd.Fetch_item_list) {
+				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
+				string section_text = (cfi.Section_text != null) ? cfi.Section_text.ToUpper () : null;
+
+				if ("BODY FULL".Contains(Fetch_att_key)) {
+					return true;
+				}
+				if (Fetch_att_key == "BODY.PEEK") {
+					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
+						return true;
+					}
+					if (section_text == null) {
+						return true;
+					}
+					if (section_text == "HEADER") {
+						return true;
+					}
+					if (section_text == "TEXT") {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 
 		static private IMAPGatewayConfig config;
 		static private void init ()

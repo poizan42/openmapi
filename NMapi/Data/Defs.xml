@@ -553,7 +553,10 @@
 		</class>
 
 		<class id="NullProperty" inherits="PropertyValue">
-			<both />
+			<declare type="int" privName="ignored" constrarg="false">__ignored</declare>
+			<both>
+				<int>ignored</int>
+			</both>
 		</class>
 
 		<class id="NumericMapiNameId" inherits="MapiNameId">

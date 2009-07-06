@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PropertyValue.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -23,11 +23,11 @@
 
 using System;
 using System.IO;
+using System.Collections;
 using System.Runtime.Serialization;
 
 using System.Diagnostics;
 using CompactTeaSharp;
-
 
 using NMapi;
 using NMapi.Flags;
@@ -46,28 +46,47 @@ namespace NMapi.Properties {
 	/// </remarks>
 
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
-	public abstract class PropertyValue : IXdrEncodeable
+	public abstract partial class PropertyValue : IXdrEncodeable, IComparable
 	{
 		protected int ulPropTag;
 	
 		/// <summary>
 		///  The property tag.
 		/// </summary>
-		/// <remarks>
-		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms529939.aspx
-		/// </remarks>
 		[DataMember (Name="PropTag")]
 		public int PropTag {
 			get { return ulPropTag; }
 			set { ulPropTag = value; }
 		}
 		
+		
+		/// <summary>
+		///  Provides weak-typed access to Value field.
+		/// /summary>
 		public abstract object GetValueObj ();
+		
+		
+		/// <summary>
+		///  Derived classes must implement the IComparable interface.
+		/// </summary>
+		public abstract int CompareTo (object obj);
+		
+		
+		/// <summary>
+		///  Derived classes must implement DEEP (!) cloneing.
+		/// </summary>
+		public abstract object Clone ();
+
+
+
+
 
 		protected PropertyValue ()
 		{
 			ulPropTag = Property.Null;
 		}
+		
+		
 
 		protected PropertyValue (int ulPropTag) 
 		{
@@ -79,7 +98,7 @@ namespace NMapi.Properties {
 		/// </summary>
 		/// <param name="proparray">The array to search</param>
 		/// <param name="ulPropTag">The property tag to search</param>
-		/// <returns>The index</returns>	
+		/// <returns>The index</returns>
 		public static int GetArrayIndex (PropertyValue [] proparray, int ulPropTag)
 		{
 			int id = PropertyTypeHelper.PROP_ID (ulPropTag);
@@ -124,17 +143,22 @@ namespace NMapi.Properties {
 			XdrEncode (xdr);
 		}
 
-		[Obsolete]
 		// throws OncRpcException, IOException 
-		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			// This must be called by derived classes overriding 
 			//  this method with base.XdrEncode (xdr) ...
+
+			// Ensure correct property type. This is required, because otherwise 
+			// the network protocol may be totally messed up.
+			ulPropTag = PropertyTypeHelper.CHANGE_PROP_TYPE (ulPropTag, GetRequiredPropertyType ());
+			
 			xdr.XdrEncodeInt (ulPropTag);
 		}
 		
-		[Obsolete]
-		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		protected internal abstract PropertyType GetRequiredPropertyType ();
+		
+		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 		
@@ -145,7 +169,7 @@ namespace NMapi.Properties {
 			Trace.WriteLine ("XdrDecode called: PropertyValue");
 
 			int ptag = xdr.XdrDecodeInt ();
-			Trace.WriteLine ("DEBUG (ptag): " + ptag);
+			Trace.WriteLine ("DEBUG (ptag): " + ptag.ToString ("X"));
 			Trace.WriteLine ("DEBUG (ptype): " + PropertyTypeHelper.PROP_TYPE (ptag));
 			PropertyValue prop = DecodeRest (ptag, xdr);
 			prop.PropTag = ptag; // assigned afterwards ....
@@ -182,28 +206,6 @@ namespace NMapi.Properties {
 		}
 		
 		/// <summary>
-		///  Valid for IntProperty
-		/// </summary>
-		public static explicit operator int (PropertyValue p)
-		{
-			if (p is IntProperty)
-		    	return (int) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'IntProperty' can be casted to int.");
-		}
-		
-		/// <summary>
-		///  Valid for FloatProperty
-		/// </summary>
-		public static explicit operator float (PropertyValue p)
-		{
-			if (p is FloatProperty)
-		    	return (float) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'FloatProperty' can be casted to float.");
-		}
-
-		/// <summary>
 		///  Valid for DoubleProperty, AppTimeProperty
 		/// </summary>
 		public static explicit operator double (PropertyValue p)
@@ -212,28 +214,6 @@ namespace NMapi.Properties {
 		    	return (double) p.GetValueObj ();
 			throw new InvalidCastException ("Only properties with type " + 
 			"'DoubleProperty' or 'AppTimeProperty' can be casted to double.");
-		}
-		
-		/// <summary>
-		///  Valid for FileTimeProperty
-		/// </summary>
-		public static explicit operator FileTime (PropertyValue p)
-		{
-			if (p is FileTimeProperty)
-		    	return (FileTime) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'FileTimeProperty' can be casted to FileTime.");
-		}
-		
-		/// <summary>
-		///  Valid for BinaryProperty
-		/// </summary>
-		public static explicit operator SBinary (PropertyValue p)
-		{
-			if (p is BinaryProperty)
-		    	return (SBinary) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'BinaryProperty' can be casted to SBinary.");
 		}
 		
 		/// <summary>
@@ -260,17 +240,6 @@ namespace NMapi.Properties {
 			throw new InvalidCastException ("Only properties with type " + 
 			"'LongProperty' or 'CurrencyProperty' can be casted to long.");
 		}
-		
-		/// <summary>
-		///  Valid for GuidProperty
-		/// </summary>
-		public static explicit operator NMapiGuid (PropertyValue p)
-		{
-			if (p is GuidProperty)
-		    	return (NMapiGuid) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'GuidProperty' can be casted to NMapiGuid.");
-		}
 				
 		/// <summary>
 		///  Valid for UnicodeArrayProperty, String8ArrayProperty
@@ -281,39 +250,6 @@ namespace NMapi.Properties {
 		    	return (string[]) p.GetValueObj ();
 			throw new InvalidCastException ("Only properties with types " + 
 			"'UnicodeArrayProperty' or 'String8ArrayProperty' can be casted to string[].");
-		}
-		
-		/// <summary>
-		///  Valid for ShortArrayProperty
-		/// </summary>
-		public static explicit operator short[] (PropertyValue p)
-		{
-			if (p is ShortArrayProperty)
-		    	return (short[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'ShortArrayProperty' can be casted to short[].");
-		}
-		
-		/// <summary>
-		///  Valid for IntArrayProperty
-		/// </summary>
-		public static explicit operator int[] (PropertyValue p)
-		{
-			if (p is IntArrayProperty)
-		    	return (int[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'IntArrayProperty' can be casted to int[].");
-		}
-		
-		/// <summary>
-		///  Valid for FloatArrayProperty
-		/// </summary>
-		public static explicit operator float[] (PropertyValue p)
-		{
-			if (p is FloatArrayProperty)
-		    	return (float[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'FloatArrayProperty' can be casted to float[].");
 		}
 
 		/// <summary>
@@ -328,28 +264,6 @@ namespace NMapi.Properties {
 		}
 		
 		/// <summary>
-		///  Valid for FileTimeArrayProperty
-		/// </summary>
-		public static explicit operator FileTime[] (PropertyValue p)
-		{
-			if (p is FileTimeArrayProperty)
-		    	return (FileTime[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'FileTimeArrayProperty' can be casted to FileTime[].");
-		}
-		
-		/// <summary>
-		///  Valid for BinaryArrayProperty
-		/// </summary>
-		public static explicit operator SBinary[] (PropertyValue p)
-		{
-			if (p is BinaryArrayProperty)
-		    	return (SBinary[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'BinaryArrayProperty' can be casted to SBinary[].");
-		}
-		
-		/// <summary>
 		///  Valid for LongArrayProperty, CurrencyArrayProperty
 		/// </summary>
 		public static explicit operator long[] (PropertyValue p)
@@ -358,17 +272,6 @@ namespace NMapi.Properties {
 		    	return (long[]) p.GetValueObj ();
 			throw new InvalidCastException ("Only properties with type " + 
 			"'LongArrayProperty' or 'CurrencyArrayProperty' can be casted to long[].");
-		}
-		
-		/// <summary>
-		///  Valid for GuidArrayProperty
-		/// </summary>
-		public static explicit operator NMapiGuid[] (PropertyValue p)
-		{
-			if (p is GuidArrayProperty)
-		    	return (NMapiGuid[]) p.GetValueObj ();
-			throw new InvalidCastException ("Only properties with type " + 
-			"'GuidArrayProperty' can be casted to NMapiGuid[].");
 		}
 		
 		/// <summary>
@@ -383,70 +286,86 @@ namespace NMapi.Properties {
 		}
 		
 		
-		private static PropertyValue DecodeRest (int ptag, XdrDecodingStream xdr)
+		/// <summary>
+		///  Matches the PropertyValue with another PropertyValue using an relational 
+		///  operator specified in the RelOp enumeration. 
+		/// </summary>
+		public bool MatchRelOp (RelOp op, PropertyValue value2)
 		{
-			switch (PropertyTypeHelper.PROP_TYPE (ptag)) {
-				case PropertyType.I2: return new ShortProperty (xdr);
-				case PropertyType.I4: return new IntProperty (xdr);
-				case PropertyType.R4: return new FloatProperty (xdr);
-				case PropertyType.R8: return new DoubleProperty (xdr);
-				case PropertyType.Currency: return new CurrencyProperty (xdr);
-				case PropertyType.AppTime: return new AppTimeProperty (xdr);
-				case PropertyType.Error: return new ErrorProperty (xdr);
-				case PropertyType.Boolean: return new BooleanProperty (xdr);
-				case PropertyType.Object: return new ObjectProperty (xdr);
-				case PropertyType.I8: return new LongProperty (xdr);
-				case PropertyType.String8: return new String8Property (xdr);
-				case PropertyType.Unicode: return new UnicodeProperty (xdr);
-				case PropertyType.SysTime: return new FileTimeProperty (xdr);				
-				case PropertyType.ClsId: return new GuidProperty (xdr);
-				case PropertyType.Binary: return new BinaryProperty (xdr);
-				case PropertyType.MvI2: return new ShortArrayProperty (xdr);
-				case PropertyType.MvI4: return new IntArrayProperty (xdr);
-				case PropertyType.MvR4: return new FloatArrayProperty (xdr);
-				case PropertyType.MvR8: return new DoubleArrayProperty (xdr);
-				case PropertyType.MvCurrency: return new CurrencyArrayProperty (xdr);
-				case PropertyType.MvAppTime: return new AppTimeArrayProperty (xdr);
-				case PropertyType.MvSysTime: return new FileTimeArrayProperty (xdr);
-				case PropertyType.MvString8: return new String8ArrayProperty (xdr);
-				case PropertyType.MvBinary: return new BinaryArrayProperty (xdr);
-				case PropertyType.MvUnicode: return new UnicodeArrayProperty (xdr);
-				case PropertyType.MvClsId: return new GuidArrayProperty (xdr);
-				case PropertyType.MvI8: return new LongArrayProperty (xdr);
-				default: return new XProperty (xdr);
-			}
+			return MatchRelOp (op, this, value2);
 		}
 		
+		/// <summary>
+		///  Matches a PropertyValue with another PropertyValue using an relational 
+		///  operator specified in the RelOp enumeration. 
+		/// </summary>
+		public static bool MatchRelOp (RelOp op, PropertyValue value1, PropertyValue value2)
+		{
+			PropertyComparer comparer = new PropertyComparer ();
+			switch (op) {
+				case RelOp.LessThan: return comparer.Compare (value1, value2) < 0;
+				case RelOp.LessThanOrEqual: return comparer.Compare (value1, value2) <= 0;
+				case RelOp.GreaterThan: return comparer.Compare (value1, value2) > 0;
+				case RelOp.GreaterThanOrEqual: return comparer.Compare (value1, value2) >= 0;
+				case RelOp.Equal: return comparer.Compare (value1, value2) == 0;
+				case RelOp.NotEqual: return comparer.Compare (value1, value2) != 0;
+				case RelOp.RegEx:
+					throw new NotImplementedException ("TODO!");
+//					return /// MATCH! value1 < value2; break; // regex
+			}
+			return false;
+		}
+		
+		// TODO: This is a helper method --> might be an extension method on Array for example.
+		internal protected int CompareArraysHelper<T> (T[] values1, T[] values2)
+				where T : IComparable 
+		{
+			int shorterLength = Math.Min (values1.Length, values2.Length);
+			for (int i=0; i < shorterLength; i++)
+				if (!values1 [i].Equals (values2 [i]))
+					return values1 [i].CompareTo (values2 [i]);
+			return values1.Length.CompareTo (values2.Length);
+		}
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public static PropertyValue Make (PropertyType ptype, object data)
 		{
 			return Make ((int) ptype, data);
 		}
 		
+		
+		// TODO: Generate from xml as well ...
+		
+		/// <summary>
+		///  
+		/// </summary>
 		public static PropertyValue Make (int propTag, object data)
 		{
 			PropertyValue val = null;
 			PropertyType ptype = PropertyTypeHelper.PROP_TYPE (propTag);
 			switch (ptype) {
 				case PropertyType.Null: val = new NullProperty (); break;
-				case PropertyType.I2: val = new ShortProperty ((short) data); break;
-				case PropertyType.I4: val = new IntProperty ((int) data); break;
-				case PropertyType.R4: val = new FloatProperty ((float) data); break;
-				case PropertyType.R8: val = new DoubleProperty ((double) data); break;
+				case PropertyType.Int16: val = new ShortProperty ((short) data); break;
+				case PropertyType.Int32: val = new IntProperty ((int) data); break;
+				case PropertyType.Float: val = new FloatProperty ((float) data); break;
+				case PropertyType.Double: val = new DoubleProperty ((double) data); break;
 				case PropertyType.Currency: val = new CurrencyProperty ((long) data); break;
 				case PropertyType.AppTime: val = new AppTimeProperty ((double) data); break;
 				case PropertyType.Error: val = new ErrorProperty ((int) data); break;
 				case PropertyType.Boolean: val = new BooleanProperty ((short) data); break;
 				case PropertyType.Object: val = new ObjectProperty ((int) data); break;
-				case PropertyType.I8: val = new LongProperty ((long) data); break;
+				case PropertyType.Int64: val = new LongProperty ((long) data); break;
 				case PropertyType.String8: val = new String8Property ((string) data); break;
 				case PropertyType.Unicode: val = new UnicodeProperty ((string) data); break;
 				case PropertyType.SysTime: val = new FileTimeProperty ((FileTime) data); break;			
 				case PropertyType.ClsId: val = new GuidProperty ((NMapiGuid) data); break;
 				case PropertyType.Binary: val = new BinaryProperty ((SBinary) data); break;
-				case PropertyType.MvI2: val = new ShortArrayProperty ((short[]) data); break;
-				case PropertyType.MvI4: val = new IntArrayProperty ((int[]) data); break;
-				case PropertyType.MvR4: val = new FloatArrayProperty ((float[]) data); break;
-				case PropertyType.MvR8: val = new DoubleArrayProperty ((double[]) data); break;
+				case PropertyType.MvInt16: val = new ShortArrayProperty ((short[]) data); break;
+				case PropertyType.MvInt32: val = new IntArrayProperty ((int[]) data); break;
+				case PropertyType.MvFloat: val = new FloatArrayProperty ((float[]) data); break;
+				case PropertyType.MvDouble: val = new DoubleArrayProperty ((double[]) data); break;
 				case PropertyType.MvCurrency: val = new CurrencyArrayProperty ((long[]) data); break;
 				case PropertyType.MvAppTime: val = new AppTimeArrayProperty ((double[]) data); break;
 				case PropertyType.MvSysTime: val = new FileTimeArrayProperty ((FileTime[]) data); break;
@@ -454,7 +373,7 @@ namespace NMapi.Properties {
 				case PropertyType.MvBinary: val = new BinaryArrayProperty ((SBinary[]) data); break;
 				case PropertyType.MvUnicode: val = new UnicodeArrayProperty ((string[]) data); break;
 				case PropertyType.MvClsId: val = new GuidArrayProperty ((NMapiGuid[]) data); break;
-				case PropertyType.MvI8: val = new LongArrayProperty ((long[]) data); break;
+				case PropertyType.MvInt64: val = new LongArrayProperty ((long[]) data); break;
 				default: val = new XProperty ((int) data); break;
 			}
 			
@@ -464,38 +383,6 @@ namespace NMapi.Properties {
 
 	}
 
-	// crap ...
 	
-	public partial class ShortProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class IntProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class FloatProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class DoubleProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class CurrencyProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class AppTimeProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class ErrorProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class BooleanProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class ObjectProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class LongProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class String8Property : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class UnicodeProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class FileTimeProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class GuidProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class BinaryProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class ShortArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class IntArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class FloatArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class DoubleArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class CurrencyArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class AppTimeArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class FileTimeArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class String8ArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class BinaryArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class UnicodeArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class GuidArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class LongArrayProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-
-	public partial class XProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return Value; } }
-	public partial class NullProperty : PropertyValue, IXdrAble { public override object GetValueObj () { return null; } }
-
 
 }
