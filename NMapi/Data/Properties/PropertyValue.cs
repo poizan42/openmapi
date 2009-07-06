@@ -143,9 +143,8 @@ namespace NMapi.Properties {
 			XdrEncode (xdr);
 		}
 
-		[Obsolete]
 		// throws OncRpcException, IOException 
-		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 			// This must be called by derived classes overriding 
 			//  this method with base.XdrEncode (xdr) ...
@@ -157,11 +156,9 @@ namespace NMapi.Properties {
 			xdr.XdrEncodeInt (ulPropTag);
 		}
 		
-		[Obsolete]
 		protected internal abstract PropertyType GetRequiredPropertyType ();
 		
-		[Obsolete]
-		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 		

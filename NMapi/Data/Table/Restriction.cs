@@ -79,13 +79,11 @@ namespace NMapi.Table {
 			XdrDecode (xdr);
 		}
 
-		[Obsolete]
-		protected internal virtual void XdrEncode (XdrEncodingStream xdr)
+		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
 		}
 
-		[Obsolete]
-		protected internal virtual void XdrDecode (XdrDecodingStream xdr)
+		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
 		}
 		

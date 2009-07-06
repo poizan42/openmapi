@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 //
-// openmapi.org - NMapi C# Mapi API - props2.xsl
+// openmapi.org - NMapi C# Mapi API - props.xsl
 //
 // Copyright 2009 Topalis AG
 //
@@ -48,6 +48,13 @@ namespace NMapi.Properties {
 
 	<xsl:apply-templates select="class" />
 
+
+
+
+	//
+	// TODO: move this to it's own xsl file.
+	//
+
 	public partial class PropertyValue
 	{
 	
@@ -56,19 +63,33 @@ namespace NMapi.Properties {
 			switch (PropertyTypeHelper.PROP_TYPE (ptag)) {
 				<xsl:for-each select="class">
 					<xsl:choose>
-						<xsl:when test="@type = 'DEFAULT'">default: return new <xsl:value-of select="@id" /> (xdr);</xsl:when>
-						<xsl:otherwise>case PropertyType.<xsl:value-of select="@type" />: return new <xsl:value-of select="@id" /> (xdr);</xsl:otherwise>
+						<xsl:when test="@type = 'DEFAULT'">default: return new <xsl:value-of select="@id" /> (xdr);
+						</xsl:when>
+						<xsl:otherwise>case PropertyType.<xsl:value-of select="@type" />: return new <xsl:value-of select="@id" /> (xdr);
+						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:for-each>
 			}
 		}
 
+		<xsl:for-each select="class">
+			/// &lt;summary&gt;
+			///  Creates a strongly typed property value from a (strongly typed) property tag.
+			/// &lt;/summary&gt;
+			public static <xsl:value-of select="@id" /> CreateFromTag (<xsl:value-of select="@id" />Tag tag)
+			{
+				var prop = new <xsl:value-of select="@id" /> ();
+				prop.PropTag = tag.Tag;
+				return prop;
+			}
+		</xsl:for-each>
+		
 		<!-- TODO this currently only works if there is exactly one property that allows data to be casted to the type ... //-->
 		<xsl:for-each select="class">
 			<xsl:if test="autocast/text() != ''">
-				/// <summary>
+				/// &lt;summary&gt;
 				///  Valid for <xsl:value-of select="@id" />
-				/// </summary>
+				/// &lt;/summary&gt;
 				public static explicit operator <xsl:value-of select="autocast/text()" /> (PropertyValue p)
 				{
 					if (p is <xsl:value-of select="@id" />)
@@ -77,11 +98,9 @@ namespace NMapi.Properties {
 					"'<xsl:value-of select="@id" />' can be casted to <xsl:value-of select="autocast/text()" />.");
 				}
 			</xsl:if>
-		</xsl:for-each>
-
-		
+		</xsl:for-each>	
 	}
-
+	
 }
 
 </xsl:template>
@@ -128,9 +147,7 @@ namespace NMapi.Properties {
 		{
 			return <xsl:value-of select="getobj/text()" />;
 		}
-
 	}
 	
 </xsl:template>
-
 </xsl:stylesheet>
