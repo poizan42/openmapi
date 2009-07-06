@@ -269,7 +269,7 @@ test:
 	/r:bin/NMapi.Provider.TeamXChange.dll `find tests -name "*.cs"` $(TEST_SOURCES)
 
 runtests: test
-	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml
+	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xmli;true
 
 #
 # Sample
@@ -282,6 +282,8 @@ sample:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/grid.exe /nowarn:$(NO_WARN) /target:exe \
 		/r:System.Windows.Forms.dll /r:System.Drawing.dll  /r:bin/NMapi.dll \
 		samples/Grid.cs samples/MyTask.xml_Generated.cs
+	$(MCS) $(DEBUG) $(TRACE) /out:bin/contactReader.exe /nowarn:$(NO_WARN) /target:exe \
+		/r:bin/NMapi.dll samples/ContactReader.cs 
 	cp samples/*.config bin/
 
 
