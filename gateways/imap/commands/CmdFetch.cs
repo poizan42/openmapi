@@ -377,6 +377,7 @@ namespace NMapi.Gateways.IMAP {
 							}
 							if (headerItem == "SENDER") {
 								headerItems.AddResponseItem ("SENDER");
+								headerGenerator.DoSender ();
 							}
 							if (headerItem == "RETURN-PATH") {
 								headerItems.AddResponseItem ("RETURN-PATH");
@@ -454,6 +455,8 @@ namespace NMapi.Gateways.IMAP {
 			Property.Subject, 
 			Property.SenderName,
 			Property.SenderEmailAddress,
+			Property.SentRepresentingName,
+			Property.SentRepresentingEmailAddress,
 			Property.DisplayTo,
 			Property.DisplayCc,
 			Property.ClientSubmitTime, 
@@ -553,6 +556,8 @@ namespace NMapi.Gateways.IMAP {
 							if (headerItem == "FROM") {
 								propList.Add (Property.SenderName);
 								propList.Add (Property.SenderEmailAddress);
+								propList.Add (Property.SentRepresentingName);
+								propList.Add (Property.SentRepresentingEmailAddress);
 							}
 							if (headerItem == "TO") {
 								propList.Add (Property.DisplayTo);
@@ -595,6 +600,10 @@ namespace NMapi.Gateways.IMAP {
 							if (headerItem == "X-LIST") {
 							}
 							if (headerItem == "SENDER") {
+								propList.Add (Property.SenderName);
+								propList.Add (Property.SenderEmailAddress);
+								propList.Add (Property.SentRepresentingName);
+								propList.Add (Property.SentRepresentingEmailAddress);
 							}
 							if (headerItem == "RETURN-PATH") {
 							}

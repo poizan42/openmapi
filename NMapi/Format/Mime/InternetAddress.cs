@@ -39,8 +39,8 @@ namespace NMapi.Format.Mime
 	{
 
 		String address; // this is to keep the address unchanged, when no changes are made to it
-		String personal = "";
-		String email = "";
+		String personal = null;
+		String email = null;
 		String charset;
 		
 		private static String RFC822 = "rfc822";
@@ -51,7 +51,7 @@ namespace NMapi.Format.Mime
 		/// <returns></returns>
 		public String Address {
 			get {
-				if (personal != "")
+				if (personal != null && personal != email)
 					return personal + "<" + email +">";
 				else
 					return email;
@@ -60,7 +60,7 @@ namespace NMapi.Format.Mime
 				int pos = value.IndexOf ('<');
 				if (pos == -1) {
 					email = value;
-					personal = "";
+					personal = null;
 				} else {
 					address = null;
 					personal = MimeUtility.DecodeText (value.Substring (0, pos)).Trim();
@@ -81,7 +81,7 @@ namespace NMapi.Format.Mime
 			}
 		    set {
 				address = null;
-				personal = (value == null)? "" : value.Trim();
+				personal = (value == null)? null : value.Trim();
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace NMapi.Format.Mime
 
 			set {
 				address = null;
-				email = (value == null)? "" : value.Trim();
+				email = (value == null)? null : value.Trim();
 			}
 		}
 
@@ -176,7 +176,7 @@ namespace NMapi.Format.Mime
 			if (address != null) {
 				return address;
 			} else {
-				if (personal != "") {
+				if (personal != null && personal != email) {
 					if (charset == null || charset == "")
 						charset = Encoding.Default.BodyName;
 					string pers = MimeUtility.EncodeText (personal, charset, "Q");
