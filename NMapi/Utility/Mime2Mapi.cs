@@ -115,8 +115,56 @@ namespace NMapi.Utility {
 			lprop.Value = prioVal - 1;
 			props.Add (lprop);
 			
+
+			// sentRepresenting and sender must be filled the same, so
+			// Outlook will display it as regular sender, not as representing xxxx
+			// Also, use rfc822.sender for from, if from is empty & vice versa
+			InternetAddress[] sentRepresenting = mm.GetFrom ();
+			InternetAddress[] sender = mm.GetSender ();
+			if (sentRepresenting.Length == 0) sentRepresenting = sender;
+			if (sender.Length == 0) sender = sentRepresenting;
+
 			//sender address
-			foreach (InternetAddress ia in mm.GetFrom ()) {
+			foreach (InternetAddress ia in sentRepresenting) {
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingAddrType;
+				uprop.Value = "SMTP";
+				props.Add (uprop);
+
+				string sentRepresentingName = (ia.Personal == null) ? ia.Email:ia.Personal;
+				string sentRepresentingAdress = (ia.Email == null) ? "":ia.Email;
+	
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingName;
+				uprop.Value = sentRepresentingName;
+				props.Add (uprop);
+	
+				sprop = new String8Property ();
+				sprop.PropTag = Property.SentRepresentingEmailAddressA;
+				sprop.Value = sentRepresentingAdress;
+				props.Add (sprop);
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingEmailAddressW;
+				uprop.Value = sentRepresentingAdress;
+				props.Add (uprop);
+
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SentRepresentingSearchKey;
+				bprop.Value = new SBinary (Encoding.ASCII.GetBytes ("SMTP:"+sentRepresentingAdress));
+				props.Add (bprop);
+	
+
+				OneOff oneOff = new OneOff (sentRepresentingName, "SMTP", sentRepresentingAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SentRepresentingEntryId;
+				bprop.Value = new SBinary (oneOff.EntryID);
+				props.Add (bprop);
+
+				break;
+			}
+	
+			//sender address
+			foreach (InternetAddress ia in sender) {
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.SenderAddrType;
 				uprop.Value = "SMTP";
@@ -138,6 +186,12 @@ namespace NMapi.Utility {
 				uprop.PropTag = Property.SenderEmailAddressW;
 				uprop.Value = senderAdress;
 				props.Add (uprop);
+
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SenderSearchKey;
+				bprop.Value = new SBinary (Encoding.ASCII.GetBytes ("SMTP:"+senderAdress));
+				props.Add (bprop);
+	
 
 				OneOff oneOff = new OneOff (senderName, "SMTP", senderAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
 				bprop = new BinaryProperty ();
@@ -172,6 +226,7 @@ namespace NMapi.Utility {
 			ih.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
 			ih.RemoveHeader (MimePart.CONTENT_TYPE_NAME);
 			ih.RemoveHeader ("From");
+			ih.RemoveHeader ("Sender");
 			ih.RemoveHeader ("To");
 			ih.RemoveHeader ("Cc");
 			ih.RemoveHeader ("Bcc");

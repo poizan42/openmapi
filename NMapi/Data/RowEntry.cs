@@ -69,8 +69,7 @@ namespace NMapi {
 			XdrDecode (xdr);
 		}
 
-		[Obsolete]
-		protected internal void XdrEncode (XdrEncodingStream xdr)
+		internal void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			xdr.XdrEncodeInt (ulRowFlags);
@@ -82,8 +81,7 @@ namespace NMapi {
 			}
 		}
 
-		[Obsolete]
-		protected internal void XdrDecode (XdrDecodingStream xdr)
+		internal void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			ulRowFlags = xdr.XdrDecodeInt ();

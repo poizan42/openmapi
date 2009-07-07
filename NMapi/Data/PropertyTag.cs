@@ -31,7 +31,7 @@ namespace NMapi {
 	///  Wraps the property tag integer for stronger typing
 	//   and easier access to Id and Type of the tag.
 	/// </summary>
-	public struct PropertyTag
+	public abstract partial class PropertyTag
 	{
 		private int propTag;
 
@@ -108,7 +108,7 @@ namespace NMapi {
 		/// </summary>
 		public PropertyTag AsType (PropertyType type)
 		{
-			return new PropertyTag (PropertyTypeHelper.CHANGE_PROP_TYPE (Tag, type));
+			return PropertyTag.CreatePropertyTag (PropertyTypeHelper.CHANGE_PROP_TYPE (Tag, type));
 		}
 		
 		/// <summary>
@@ -123,7 +123,7 @@ namespace NMapi {
 		/// <summary>
 		///  Creates a new property tag object from a 32-bit property tag integer.
 		/// </summary>
-		public PropertyTag (int pt)
+		protected PropertyTag (int pt)
 		{
 			propTag = pt;
 		}
@@ -137,7 +137,7 @@ namespace NMapi {
 			PropertyTag[] result = new PropertyTag [intTags.Length];
 			int i = 0;
 			foreach (int tag in intTags)
-				result [i++] = new PropertyTag (tag);
+				result [i++] = PropertyTag.CreatePropertyTag (tag);
 			return result;
 		}
 

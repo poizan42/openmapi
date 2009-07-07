@@ -61,7 +61,7 @@ namespace NMapi.Properties {
 				return 1;
 
 			// at this point, both are NOT null.
-			if (new PropertyTag (prop1.PropTag).Type != new PropertyTag (prop2.PropTag).Type)
+			if (PropertyTag.CreatePropertyTag (prop1.PropTag).Type != PropertyTag.CreatePropertyTag (prop2.PropTag).Type)
 				throw new MapiException (Error.InvalidParameter); // TODO: add better error message
 			return prop1.CompareTo (prop2);
 		}

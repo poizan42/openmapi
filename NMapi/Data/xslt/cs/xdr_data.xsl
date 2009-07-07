@@ -118,8 +118,7 @@
 			XdrEncode (xdr);
 		}
 		
-		[Obsolete ("XdrEncode MUST only be used by NMapi components and may be removed!", false)]
-		protected internal <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
+		internal <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrEncode (xdr);</xsl:if><!-- a little hack-ish //-->
@@ -135,8 +134,7 @@
 			XdrDecode (xdr);
 		}
 	
-		[Obsolete ("XdrDecode MUST only be used by NMapi components and may be removed!", false)]
-		protected internal <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
+		internal <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrDecode (xdr);</xsl:if><!-- a little hack-ish //-->

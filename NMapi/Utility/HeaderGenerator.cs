@@ -97,26 +97,86 @@ namespace NMapi.Utility {
 		public bool DoFrom ()
 		{
 			props.Prop = Property.SenderName;
-			PropertyHelper props2 = new PropertyHelper(props.Props);
+			PropertyHelper props2 = new PropertyHelper (props.Props);
 			props2.Prop = Property.SenderEmailAddress;
-			if (props.Exists && props2.Exists) {
-				InternetAddress ia = new InternetAddress ("dummy");
-				ia.Personal = props.Unicode;
-				ia.Email = props2.Unicode;
-				ih.SetHeader ("From", ia.ToString ());
-				return true;
-			} else if (props.Exists || props2.Exists) {
-				ih.SetHeader ("From", props.Unicode + props2.Unicode);
-				return true;
+			PropertyHelper props3 = new PropertyHelper (props.Props);
+			props3.Prop = Property.SentRepresentingName;
+			PropertyHelper props4 = new PropertyHelper (props.Props);
+			props4.Prop = Property.SentRepresentingEmailAddress;
+
+			// if sender and sentrepresenting are equal, fill in only from
+			InternetAddress iaFrom = null;
+			InternetAddress iaSender = null;
+
+			if (props2.Exists && props4.Exists) {
+				if (props2.Unicode == props4.Unicode) {
+					iaFrom = new InternetAddress ();
+					iaFrom.Personal = props.Unicode;
+					iaFrom.Email = props2.Unicode;
+				} else {
+					iaFrom = new InternetAddress ();
+					iaFrom.Personal = props3.Unicode;
+					iaFrom.Email = props4.Unicode;
+				}
+			} else if (props3.Exists || props4.Exists) {
+					iaFrom = new InternetAddress ();
+					iaFrom.Personal = props3.Unicode;
+					iaFrom.Email = props4.Unicode;
 			}
-			return false;
+			
+			bool ret = false;
+			if (iaFrom != null) {
+				ih.SetHeader ("From", iaFrom.ToString ());
+				ret = true;
+			}
+
+			return ret;
 		}
+
+		public bool DoSender ()
+		{
+			props.Prop = Property.SenderName;
+			PropertyHelper props2 = new PropertyHelper (props.Props);
+			props2.Prop = Property.SenderEmailAddress;
+			PropertyHelper props3 = new PropertyHelper (props.Props);
+			props3.Prop = Property.SentRepresentingName;
+			PropertyHelper props4 = new PropertyHelper (props.Props);
+			props4.Prop = Property.SentRepresentingEmailAddress;
+
+			// if sender and sentrepresenting are equal, fill in only from
+			InternetAddress iaFrom = null;
+			InternetAddress iaSender = null;
+
+			if (props2.Exists && props4.Exists) {
+				if (props2.Unicode != props4.Unicode) {
+					iaSender = new InternetAddress ();
+					iaSender.Personal = props.Unicode;
+					iaSender.Email = props2.Unicode;
+				}
+			} else if (props.Exists || props2.Exists) {
+					iaSender = new InternetAddress ();
+					iaSender.Personal = props.Unicode;
+					iaSender.Email = props2.Unicode;
+			}
+			
+			bool ret = false;
+			if (iaSender != null) {
+				ih.SetHeader ("Sender", iaSender.ToString ());
+				ret = true;
+			}
+
+			return ret;
+		}
+
+
 
 		public bool DoTo ()
 		{
 			props.Prop = Property.DisplayTo;
 			if (props.Exists) {
-				ih.SetHeader ("To", props.Unicode.Replace(";", ","));
+				string displayTo = props.Unicode.Replace(";", ",");
+				displayTo = MimeUtility.EncodeText (displayTo, Encoding.Default.BodyName, "Q");
+				ih.SetHeader ("To", displayTo);
 				return true;
 			}
 			return true;
@@ -126,7 +186,9 @@ namespace NMapi.Utility {
 		{
 			props.Prop = Property.DisplayCc;
 			if (props.Exists) {
-				ih.SetHeader ("Cc", props.Unicode.Replace(";", ","));
+				string displayCc = props.Unicode.Replace(";", ",");
+				displayCc = MimeUtility.EncodeText (displayCc, Encoding.Default.BodyName, "Q");
+				ih.SetHeader ("Cc",displayCc);
 				return true;
 			}
 			return true;
@@ -140,14 +202,19 @@ namespace NMapi.Utility {
 //			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
 			RowSet rs = mtr.GetRows (20);
 			while (rs.Count () > 0) {
-				Trace.WriteLine ("doRecipients 1");				
+				Trace.WriteLine ("doRecipients 1");
+				// as to/cc/bcc may be part of the transport headers, we need to clear these upfront				
+				ih.RemoveHeader (RecipientType.TO.ToString());
+				ih.RemoveHeader (RecipientType.CC.ToString());
+				ih.RemoveHeader (RecipientType.BCC.ToString());
 				foreach (Row row in rs) {
 					Trace.WriteLine ("doRecipients 2");
 					PropertyHelper props = new PropertyHelper (row.Props);
 					PropertyHelper props2 = new PropertyHelper (row.Props);
 					props.Prop = Property.DisplayNameW;
 					props2.Prop = Property.EmailAddressW;
-					InternetAddress ia = new InternetAddress ("dummy");
+
+					InternetAddress ia = new InternetAddress ();
 					ia.Personal = props.Unicode;
 					ia.Email = props2.Unicode;
 					
@@ -159,7 +226,6 @@ namespace NMapi.Utility {
 					case Mapi.Bcc: 	rt = RecipientType.BCC;	break;
 					default: continue;
 					}
-					
 					Trace.WriteLine ("doRecipients 3");
 					MimeMessage mm = new MimeMessage ();
 					mm.Headers = ih;
@@ -225,14 +291,15 @@ namespace NMapi.Utility {
 
 		public bool DoAll ()
 		{
-				DoTransportMessageHeaders ();
-				DoDate ();
-				DoFrom ();
-				DoRecipients ();
-				DoSubject ();
-				DoPriority ();
-				DoXPriority ();
-				return true;
+			DoTransportMessageHeaders ();
+			DoDate ();
+			DoFrom ();
+			DoSender ();
+			DoRecipients ();
+			DoSubject ();
+			DoPriority ();
+			DoXPriority ();
+			return true;
 		}
 		private string MapiReturnPropFileTime (PropertyValue[] props, int prop)
 		{
