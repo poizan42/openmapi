@@ -416,7 +416,7 @@ servCon.State.Log ("changedir almost done");
 			while (true) {
 				servCon.State.Log ("Select3");
 				servCon.State.Log ("Select3b");
-				RowSet rows = currentTable.QueryRows (10, Mapi.Unicode);
+				RowSet rows = currentTable.QueryRows (100, Mapi.Unicode);
 				servCon.State.Log ("Select4");
 				if (rows.Count == 0)
 					break;

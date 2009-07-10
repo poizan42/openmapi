@@ -198,8 +198,7 @@ state.Log ("Server1");
 		{
 			if (session != null) {
 				state.Log ("serverconnection, disconnect");
-				session.Dispose();
-				session = null;
+				CloseSession ();
 			}
 		}
 
