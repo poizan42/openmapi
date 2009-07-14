@@ -55,6 +55,7 @@ namespace NMapi.Gateways.IMAP
 		private string rootDir;
 		private string inboxPath;
 		private FolderHelper folderHelper;
+		private Dictionary <string, PropertyValue> cachedPropTagFrames = new Dictionary <string, PropertyValue> ();
 		
 
 		/// <summary>
@@ -332,7 +333,8 @@ state.Log ("setrootdir 4");
 			return true;
 		}
 
-		public PropertyValue GetNamedProp(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
+
+		public PropertyValue GetNamedPropFrame(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
 		{
 			state.Log ("GetNamedProp 1");
 			NMapiGuid guid;
@@ -386,14 +388,21 @@ state.Log ("setrootdir 4");
 				throw new Exception ("Named Property not defined");
 			}
 					
-			state.Log ("GetNamedProp 2. name=" + name);
-			state.Log ("GetNamedProp 2. guid=" + guid);
-			state.Log ("GetNamedProp 2. type=" + type);
-// This version has a problem, because r57 of NMapi.dll does return an Exception, if the property does not jet exist.
-/*			MapiPropHelper mph = new MapiPropHelper (mapiProperty);
-			PropertyValue spv = mph.HrGetNamedProp (guid, name);
-			int tag = spv.PropTag;
-*/
+			// do caching
+			// works on the assumption, that a store will link one named property name
+			// to only on property tag throughout the complete store
+			if (cachedPropTagFrames.ContainsKey (name)) {
+				prop.PropTag = cachedPropTagFrames [name].PropTag;
+				return prop;
+			}
+
+			state.Log ("GetNamedProp 2. name=" + name + " guid=" + guid + " type=" + PropertyTypeHelper.PROP_TYPE (prop.PropTag));
+			// This version has a problem, because r57 of NMapi.dll does return an Exception, if the property does not jet exist.
+			/*			MapiPropHelper mph = new MapiPropHelper (mapiProperty);
+						PropertyValue spv = mph.HrGetNamedProp (guid, name);
+						int tag = spv.PropTag;
+			*/
+
 			StringMapiNameId mnid = new StringMapiNameId (name);
 			mnid.Guid = guid;
 			MapiNameId []  mnids = new MapiNameId [] { mnid };
@@ -402,12 +411,26 @@ state.Log ("setrootdir 4");
 					Mapi.Unicode);			
 			PropertyValue spv = propsx[0];
 
-				
 
-			int tag = spv.PropTag;
-				
-			state.Log ("GetNamedProp 3. Tag=" + tag);
+// sicherheitsprüfung. Sonst wird evtl. der Store kaputt gemacht und outlook kann sich nicht mehr verbinden
+			if (prop.PropTag == 10)
+				throw new Exception ("GetNamedProp: internal Problem. Error after getIdsFromNames");
 
+			prop.PropTag = PropertyTypeHelper.CHANGE_PROP_TYPE (spv.PropTag, type);
+				
+			state.Log ("GetNamedProp 3. Tag=" + prop.PropTag);
+
+
+			// add PropTagFrame to cache
+			cachedPropTagFrames.Add (name, prop);
+
+			return prop;
+		}				
+
+		public PropertyValue GetNamedProp(IMapiProp mapiProperty, IMAPGatewayNamedProperty ignp)
+		{
+			PropertyValue prop = GetNamedPropFrame (mapiProperty, ignp);
+			int tag = prop.PropTag;
 // sicherheitsprüfung. Sonst wird evtl. der Store kaputt gemacht und outlook kann sich nicht mehr verbinden
 			if (tag == 10)
 				throw new Exception ("GetNamedProp: internal Problem. Error after getIdsFromNames");
@@ -419,6 +442,7 @@ state.Log ("setrootdir 4");
 				state.Log ("GetNamedProp 4");
 
 				if (props.Length == 0  || props[0] is ErrorProperty){
+					PropertyType type = PropertyTypeHelper.PROP_TYPE (prop.PropTag);
 					tag = PropertyTypeHelper.CHANGE_PROP_TYPE (tag, type);
 					prop.PropTag = tag;
 					state.Log ("GetNamedProp 5");

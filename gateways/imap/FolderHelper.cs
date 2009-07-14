@@ -131,7 +131,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 
 			while (true) {
-				RowSet rows = tableReader.GetRows (10);
+				RowSet rows = tableReader.GetRows (50);
 				if (rows.Count == 0)
 					break;
 
@@ -246,7 +246,7 @@ servCon.State.Log ("changedir almost done");
 				return new string [] {};
 			}
 			while (true) {
-				RowSet rows = tableReader.GetRows (30);
+				RowSet rows = tableReader.GetRows (50);
 				if (rows.Count == 0)
 					break;
 				int nameIndex = -1;
@@ -312,15 +312,15 @@ servCon.State.Log ("changedir almost done");
 			}
 			
 			List<PropertyValue> lv = new List<PropertyValue> ();
-			IntProperty longValue = (IntProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID);
+			IntProperty longValue = (IntProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID);
 			longValue.Value = (int) snli.UID;
 			lv.Add (longValue);
 			
-			UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Path);
+			UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Path);
 			unicodeValue.Value = snli.Path;
 			lv.Add (unicodeValue);
 
-			BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
+			BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
 			binaryValue.Value = snli.CreationEntryId;
 			lv.Add (binaryValue);
 
@@ -416,7 +416,7 @@ servCon.State.Log ("changedir almost done");
 			while (true) {
 				servCon.State.Log ("Select3");
 				servCon.State.Log ("Select3b");
-				RowSet rows = currentTable.QueryRows (100, Mapi.Unicode);
+				RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
 				servCon.State.Log ("Select4");
 				if (rows.Count == 0)
 					break;

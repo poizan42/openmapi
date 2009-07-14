@@ -48,6 +48,8 @@ namespace NMapi.Gateways.IMAP
 		private List<Pair> sequence_set = new List<Pair>();
 		private List<CommandFetchItem> fetch_item_list= new List<CommandFetchItem>();
 		private CommandFetchItem current_fetch_item;
+		private List<CommandSearchKey> search_key_list = new List<CommandSearchKey>();
+		private CommandSearchKey current_search_key;
 
 		
 		public bool UIDCommand { 
@@ -135,8 +137,7 @@ namespace NMapi.Gateways.IMAP
 			get { return status_list; }
 		}
 		
-		public void AddStatus(string status)
-		{
+		public void AddStatus(string status) {
 			status_list.Add(status);
 		}
 		
@@ -144,35 +145,52 @@ namespace NMapi.Gateways.IMAP
 			get { return flag_list; } 
 		}
 		
-		public void AddFlag(string flag)
-		{
+		public void AddFlag(string flag) {
 			flag_list.Add(flag.ToLower ());
 		}
 
 		public List<Pair> Sequence_set { 
 			get { return sequence_set; } 
 		}
-		public void AddSequenceRange(string first, string second)
-		{
+
+		public void AddSequenceRange(string first, string second) {
 			sequence_set.Add(new Pair((object) first, (object) second));
 		}
-		public void AddSequenceNumber(string first)
-		{
+
+		public void AddSequenceNumber(string first) {
 			sequence_set.Add(new Pair((object) first, null));
 		}
 
 		public List<CommandFetchItem> Fetch_item_list { 
 			get { return fetch_item_list; } 
 		}
-		public void NewFetch_item()
-		{
+
+		public CommandFetchItem NewFetch_item()	{
 			current_fetch_item = new CommandFetchItem();
 			fetch_item_list.Add (current_fetch_item );
+			return current_fetch_item;
 		}
+
 		public CommandFetchItem Current_fetch_item { 
 			get { return current_fetch_item; } 
 		}
 		
+		public List<CommandSearchKey> Search_key_list { 
+			get { return search_key_list; } 
+		}
+
+		public CommandSearchKey NewSearch_key()	{
+			current_search_key = new CommandSearchKey();
+			search_key_list.Add (current_search_key);
+			return current_search_key;
+		}
+
+		public CommandSearchKey Current_search_key { 
+			get { return current_search_key; } 
+		}
+		
+
+
 		public Command()
 		{
 		}

@@ -79,7 +79,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Console.WriteLine ("DoFetchLoop");
 
-			int querySize = 100; //so many rows are requested for the contentsTable in each acces to MAPI
+			int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			IMapiTable contentsTable = null;
 			try {
