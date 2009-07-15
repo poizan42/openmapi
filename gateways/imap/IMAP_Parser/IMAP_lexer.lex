@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP
 			Yylex yy = new Yylex(f);
 			Symbol t;
 			while ((t = yy.next_token()) != null)
-				System.Diagnostics.Trace.WriteLine(t);
+				Console.WriteLine(t);
 		}
 
 		public void init(String filePathName)
@@ -61,7 +61,9 @@ namespace NMapi.Gateways.IMAP
 
 		public Symbol nextToken()
 		{
-			return yy.next_token();
+			Symbol t = yy.next_token();
+			Console.WriteLine(t);
+			return t;
 		}
 		
 		public void close()
@@ -104,7 +106,7 @@ class Utility {
     int code
     )
     {
-    System.Diagnostics.Trace.WriteLine(errorMsg[code]);
+    Console.WriteLine(errorMsg[code]);
     }
   }
 
@@ -194,7 +196,7 @@ astring=(({ASTRING_CHAR})+)
 ASTRING_CHAR_WITHOUT_PLUS=[^{atom-specials}|\+]|{resp-specials}
 ASTRING_CHAR={ATOM_CHAR}|{resp-specials}
 charset=CHARSET
-date=\"{date-day-fixed}-{date-month}\"
+date={date-day-fixed}-{date-month}-{date-year}
 date-time=\"{date-day-fixed}-{date-month}-{date-year}{SP}{time}{SP}{zone}\"
 date-day-fixed=({SP}{DIGIT}|{DIGIT}{DIGIT})
 date-month=(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
@@ -337,7 +339,10 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandsearch> {search-keyword-date} { return new Symbol(sym.SEARCH_KEYWORD_DATE, yytext()); }
 <commandsearch> {search-keyword-number} { return new Symbol(sym.SEARCH_KEYWORD_NUMBER, yytext()); }
 <commandsearch> {search-keyword-astring} { return new Symbol(sym.SEARCH_KEYWORD_ASTRING, yytext()); }
+<commandsearch> \"({date})\" { return new Symbol(sym.DATE, yytext().Substring(1, yytext().Length-2)); }
 <commandsearch> {date} { return new Symbol(sym.DATE, yytext()); }
+<commandsearch> {number} { return new Symbol(sym.NUMBER, yytext()); }
+<commandsearch> {astring} { return new Symbol(sym.ASTRING, yytext()); }
 <commandsearch> {quoted} { return new Symbol(sym.QUOTED, yytext()); }
 <commandsearch> {literal} { return new Symbol(sym.LITERAL, yytext()); }
 <commandsearch> {SP} { return new Symbol(sym.SP); }

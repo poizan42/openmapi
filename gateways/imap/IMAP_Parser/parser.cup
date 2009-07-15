@@ -123,6 +123,7 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 
+
 /*----------------------------------------------------------------*/ 
 
 
@@ -158,6 +159,7 @@ parser code {:
   {
   		((Yylex) getScanner()).newReader(sr);
   }
+
 :};
 
 /*----------------------------------------------------------------*/ 
@@ -185,7 +187,7 @@ non terminal
   command, command_detail, command_any,	command_auth, command_nonauth, command_select,
   cmd_append, cmd_create, cmd_copy, cmd_delete, cmd_examine, cmd_fetch, cmd_list, cmd_lsub, cmd_login, 
   cmd_rename, cmd_search, cmd_select, cmd_status, cmd_store, cmd_subscribe, cmd_unsubscribe, 
-  date, opt_date_time, date_time, opt_flag_list,
+  opt_date_time, date_time, opt_flag_list,
   flag_list, flag_list_elements, flag_list_element, mailbox1, mailbox2, list_mailbox,
   fetch_att, fetch_att_list, fetch_att_section, header_element, header_elements,
   section_msgtext, section_part, opt_sec_number,
@@ -193,7 +195,10 @@ non terminal
   search_key, search_key_list;
 
 non terminal string  
-  quoted, literal, string, astringstring, tag, number, sequence_number;
+  quoted, literal, string, astringstring, tag, number, sequence_number, search_keyword_or_astring;
+
+non terminal DateTimeBox
+  date;
 
 /*----------------------------------------------------------------*/ 
 
@@ -505,6 +510,7 @@ cmd_search ::=
 		{: ParseInt.command.Charset=c; Console.WriteLine("charset: "+c); :}
 	|
 	search_key_list
+		{: Console.WriteLine("cmd_search:search key list"); :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
@@ -515,13 +521,13 @@ search_key_list ::=
 	search_key
 	|
 	search_key
+		{: Console.WriteLine("search key list"); :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 search_key ::=
 	SEARCH_KEYWORD_SOLE:k
-	SP
 	{: 
 		Console.WriteLine("search_keyword: "+k);
 		ParseInt.command.NewSearch_key();
@@ -535,7 +541,8 @@ search_key ::=
 		Console.WriteLine("search_keyword: "+k);
 		ParseInt.command.NewSearch_key();
 		ParseInt.command.Current_search_key.Keyword=k;
-		ParseInt.command.Current_search_key.Date=(DateTime) dt;
+		if (dt != null)
+			ParseInt.command.Current_search_key.Date= dt.Value;
 	:}
 	|
 	SEARCH_KEYWORD_NUMBER:k
@@ -550,13 +557,32 @@ search_key ::=
 	|
 	SEARCH_KEYWORD_ASTRING:k
 	SP
-	astringstring:s
+	search_keyword_or_astring:s
 	{: 
 		Console.WriteLine("search_keyword: "+k);
 		ParseInt.command.NewSearch_key();
 		ParseInt.command.Current_search_key.Keyword=k;
 		ParseInt.command.Current_search_key.Astring=s;
 	:}
+	;
+
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+search_keyword_or_astring ::=
+	astringstring:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_SOLE:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_DATE:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_NUMBER:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_ASTRING:s
+		{: RESULT = s; :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
@@ -857,11 +883,10 @@ date ::=
 	DATE:dt
 	{: 
 	  Console.WriteLine("Datestring:" + dt);
-	  try {
-	  	RESULT = DateTime.Parse(dt.Substring(1,dt.Length-2));
-	  } catch {
-	  	RESULT = new DateTime ();
-	  }
+      RESULT = new DateTimeBox ();
+      try {
+		RESULT.Value = DateTime.Parse (dt);
+      } finally { }
 	:}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
