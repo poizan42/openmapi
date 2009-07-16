@@ -181,7 +181,8 @@ terminal string
   FETCH_MSG_TEXT_SINGLE, FETCH_MSG_TEXT_HEADERLIST_KEY, SECTION_TEXT_MIME,
   FLAG_KEY, FLAG_SIGN, STATUS_ATT, 
   CHARSET, SEARCH_KEYWORD_SOLE, SEARCH_KEYWORD_DATE, SEARCH_KEYWORD_NUMBER, 
-  SEARCH_KEYWORD_ASTRING;
+  SEARCH_KEYWORD_ASTRING, SEARCH_KEYWORD_UID, SEARCH_KEYWORD_NOT, SEARCH_KEYWORD_OR,
+  SEARCH_KEYWORD_HEADER, SEARCH_KEYWORD_LPARENT, SEARCH_KEYWORD_RPARENT;
 
 non terminal
   command, command_detail, command_any,	command_auth, command_nonauth, command_select,
@@ -191,14 +192,19 @@ non terminal
   flag_list, flag_list_elements, flag_list_element, mailbox1, mailbox2, list_mailbox,
   fetch_att, fetch_att_list, fetch_att_section, header_element, header_elements,
   section_msgtext, section_part, opt_sec_number,
-  sequence_set, sequence_range, status_list,
-  search_key, search_key_list;
+  sequence_set, sequence_range, status_list;
 
 non terminal string  
-  quoted, literal, string, astringstring, tag, number, sequence_number, search_keyword_or_astring;
+  quoted, literal, string, astringstring, tag, number, sequence_number, search_keyword_or_astring_or_number;
 
 non terminal DateTimeBox
   date;
+
+non terminal CommandSearchKey
+  search_key;
+
+non terminal CommandSearchKeyList
+  search_key_list;
 
 /*----------------------------------------------------------------*/ 
 
@@ -506,22 +512,36 @@ cmd_search ::=
 	SP
 	astringstring:c
 	SP
-	search_key_list
-		{: ParseInt.command.Charset=c; Console.WriteLine("charset: "+c); :}
+	search_key_list:skl
+	{: 
+		ParseInt.command.Charset=c; 
+		Console.WriteLine("charset: "+c); 
+		ParseInt.command.Search_key_list = skl;
+	:}
 	|
-	search_key_list
-		{: Console.WriteLine("cmd_search:search key list"); :}
+	search_key_list:skl
+	{: 
+		Console.WriteLine("cmd_search:search key list");
+		ParseInt.command.Search_key_list = skl;
+	:}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 search_key_list ::=
-	search_key_list
+	search_key_list:skl
     SP
-	search_key
+	search_key:sk
+	{: 
+		RESULT = skl;
+		RESULT.Add(sk); 
+	:}
 	|
-	search_key
-		{: Console.WriteLine("search key list"); :}
+	search_key:sk
+	{: 
+		RESULT = new CommandSearchKeyList ();
+		RESULT.Add(sk); 
+	:}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
@@ -530,8 +550,8 @@ search_key ::=
 	SEARCH_KEYWORD_SOLE:k
 	{: 
 		Console.WriteLine("search_keyword: "+k);
-		ParseInt.command.NewSearch_key();
-		ParseInt.command.Current_search_key.Keyword=k;
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
 	:}
 	|
 	SEARCH_KEYWORD_DATE:k
@@ -539,10 +559,10 @@ search_key ::=
 	date:dt
 	{: 
 		Console.WriteLine("search_keyword: "+k);
-		ParseInt.command.NewSearch_key();
-		ParseInt.command.Current_search_key.Keyword=k;
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
 		if (dt != null)
-			ParseInt.command.Current_search_key.Date= dt.Value;
+			RESULT.Date= dt.Value;
 	:}
 	|
 	SEARCH_KEYWORD_NUMBER:k
@@ -550,26 +570,75 @@ search_key ::=
 	number:n
 	{: 
 		Console.WriteLine("search_keyword: "+k);
-		ParseInt.command.NewSearch_key();
-		ParseInt.command.Current_search_key.Keyword=k;
-		ParseInt.command.Current_search_key.Number=Convert.ToInt32 (n);
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
+		RESULT.Number=Convert.ToInt32 (n);
 	:}
 	|
 	SEARCH_KEYWORD_ASTRING:k
 	SP
-	search_keyword_or_astring:s
+	search_keyword_or_astring_or_number:s
 	{: 
 		Console.WriteLine("search_keyword: "+k);
-		ParseInt.command.NewSearch_key();
-		ParseInt.command.Current_search_key.Keyword=k;
-		ParseInt.command.Current_search_key.Astring=s;
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
+		RESULT.Astring=s;
+	:}
+	|
+	SEARCH_KEYWORD_NOT:k
+	SP
+	search_key:sk
+	{: 
+		Console.WriteLine("search_keyword: "+k);
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
+		RESULT.Search_key1=sk;
+	:}
+	|
+	SEARCH_KEYWORD_HEADER:k
+	SP
+	search_keyword_or_astring_or_number:s1
+	SP
+	search_keyword_or_astring_or_number:s2
+	{: 
+		Console.WriteLine("search_keyword: "+k);
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
+		RESULT.Header_fld_name=s1;
+		RESULT.Astring=s2;
+	:}
+	|
+	SEARCH_KEYWORD_OR:k
+	SP
+	search_key:sk1
+	SP
+	search_key:sk2
+	{: 
+		Console.WriteLine("search_keyword or: "+k);
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword=k;
+		RESULT.Search_key1=sk1;
+		RESULT.Search_key2=sk2;
+	:}
+	|
+	SEARCH_KEYWORD_LPARENT
+	search_key_list:skl
+	SEARCH_KEYWORD_RPARENT
+	{: 
+		Console.WriteLine("search_keyword param");
+		RESULT = new CommandSearchKey ();
+		RESULT.Keyword="PARENTHESIS";
+		RESULT.Search_key_list = skl;
 	:}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
-search_keyword_or_astring ::=
+search_keyword_or_astring_or_number ::=
 	astringstring:s
+		{: RESULT = s; :}
+	|
+	number:s
 		{: RESULT = s; :}
 	|
 	SEARCH_KEYWORD_SOLE:s
@@ -583,6 +652,33 @@ search_keyword_or_astring ::=
 	|
 	SEARCH_KEYWORD_ASTRING:s
 		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_UID:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_NOT:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_OR:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_HEADER:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_LPARENT:s
+		{: RESULT = s; :}
+	|
+	SEARCH_KEYWORD_RPARENT:s
+		{: RESULT = s; :}
+	|
+	STAR
+		{: RESULT = "*"; :}
+	|
+	COMMA
+		{: RESULT = ","; :}
+	|
+	COLON
+		{: RESULT = ":"; :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 

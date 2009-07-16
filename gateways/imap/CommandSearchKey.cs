@@ -25,6 +25,7 @@ namespace NMapi.Gateways.IMAP
 	public class CommandSearchKey
 	{
 		private string keyword;
+		private bool uidSearchKey;
 		private string astring;
 		private DateTime date;
 		private int number;
@@ -44,7 +45,12 @@ namespace NMapi.Gateways.IMAP
 			get { return keyword; }
 			set { keyword = value; }
 		}
-		
+
+		public bool UIDSearchKey { 
+			get { return uidSearchKey; } 
+			set { uidSearchKey = value; } 
+		}
+
 		public string Astring {
 			get { return astring; }
 			set { astring = value; }
@@ -89,16 +95,22 @@ namespace NMapi.Gateways.IMAP
 
 		public List<CommandSearchKey> Search_key_list { 
 			get { return search_key_list; } 
+			set { search_key_list = value; }
 		}
 
-		public CommandSearchKey NewSearch_key()	{
-			CommandSearchKey search_key = new CommandSearchKey();
-			search_key_list.Add (search_key);
-			return search_key;
+		public void AddSearch_key(CommandSearchKey sk)	{
+			search_key_list.Add (sk);
 		}
 
 
 		public CommandSearchKey()
+		{
+		}
+	}
+
+	public class CommandSearchKeyList: List<CommandSearchKey>
+	{
+		public CommandSearchKeyList () : base ()
 		{
 		}
 	}

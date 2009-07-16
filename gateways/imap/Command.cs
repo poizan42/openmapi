@@ -49,7 +49,6 @@ namespace NMapi.Gateways.IMAP
 		private List<CommandFetchItem> fetch_item_list= new List<CommandFetchItem>();
 		private CommandFetchItem current_fetch_item;
 		private List<CommandSearchKey> search_key_list = new List<CommandSearchKey>();
-		private CommandSearchKey current_search_key;
 
 		
 		public bool UIDCommand { 
@@ -177,18 +176,13 @@ namespace NMapi.Gateways.IMAP
 		
 		public List<CommandSearchKey> Search_key_list { 
 			get { return search_key_list; } 
+			set { search_key_list = value; }
 		}
 
-		public CommandSearchKey NewSearch_key()	{
-			current_search_key = new CommandSearchKey();
-			search_key_list.Add (current_search_key);
-			return current_search_key;
+		public void AddSearch_key(CommandSearchKey sk)	{
+			search_key_list.Add (sk);
 		}
 
-		public CommandSearchKey Current_search_key { 
-			get { return current_search_key; } 
-		}
-		
 
 
 		public Command()

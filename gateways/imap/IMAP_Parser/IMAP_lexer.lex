@@ -225,10 +225,16 @@ quoted=(\"({QUOTED_CHAR})*\")
 QUOTED_CHAR=[^{quoted-specials}|{CR}|{LF}]|\\{quoted-specials}
 quoted-specials=\"|\\
 resp-specials   = \]
-search-keyword-sole=ALL|ANSWERED|DELETED|DRAFT|FLAGGED|NEW|OLD|RECENT|SEEN|UNANSWERED|UNDELETED|UNFLAGGED|UNSEEN|UNDRAFT
+search-keyword-sole=ALL|ANSWERED|DELETED|DRAFT|FLAGGED|NEW|OLD|RECENT|SEEN|UNANSWERED|UNDELETED|UNDRAFT|UNFLAGGED|UNSEEN|UNDRAFT
 search-keyword-date=BEFORE|ON|SINCE|SENTBEFORE|SENTON|SENTSINCE
 search-keyword-number=LARGER|SMALLER
 search-keyword-astring=UNKEYWORD|BCC|BODY|CC|FROM|KEYWORD|SUBJECT|TEXT|TO
+search-keyword-uid=UID
+search-keyword-not=NOT
+search-keyword-or=OR
+search-keyword-header=HEADER
+search-keyword-lparent=\(
+search-keyword-rparent=\)
 status-att=MESSAGES|RECENT|UIDNEXT|UIDVALIDITY|UNSEEN
 section-text-mime=MIME        
 tag=({ASTRING_CHAR_WITHOUT_PLUS})+
@@ -329,16 +335,20 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandstatuslist> {status-att} { return new Symbol(sym.STATUS_ATT, yytext()); }
 <commandstatuslist> \( { return new Symbol(sym.LPARENT); }
 <commandstatuslist> \) { return new Symbol(sym.RPARENT); }
-<commandsearchsequence> "*" { return new Symbol(sym.STAR); }
-<commandsearchsequence> "," { return new Symbol(sym.COMMA); }
-<commandsearchsequence> ":" { return new Symbol(sym.COLON); } 
-<commandsearchsequence> {number} { return new Symbol(sym.NUMBER, yytext()); }
-<commandsearchsequence> (DUMMY_FOR_NOTHING)? { yybegin(commandsearch); break; }
+<commandsearchsequence> {search-keyword-uid}(SP) { return new Symbol(sym.SEARCH_KEYWORD_UID, yytext().Substring(1, yytext().Length-1)); }
+<commandsearch> "*" { return new Symbol(sym.STAR); }
+<commandsearch> "," { return new Symbol(sym.COMMA); }
+<commandsearch> ":" { return new Symbol(sym.COLON); } 
 <commandsearch> {charset} { return new Symbol(sym.CHARSET, yytext()); }
 <commandsearch> {search-keyword-sole} { return new Symbol(sym.SEARCH_KEYWORD_SOLE, yytext()); }
 <commandsearch> {search-keyword-date} { return new Symbol(sym.SEARCH_KEYWORD_DATE, yytext()); }
 <commandsearch> {search-keyword-number} { return new Symbol(sym.SEARCH_KEYWORD_NUMBER, yytext()); }
 <commandsearch> {search-keyword-astring} { return new Symbol(sym.SEARCH_KEYWORD_ASTRING, yytext()); }
+<commandsearch> {search-keyword-not} { return new Symbol(sym.SEARCH_KEYWORD_NOT, yytext()); }
+<commandsearch> {search-keyword-or} { return new Symbol(sym.SEARCH_KEYWORD_OR, yytext()); }
+<commandsearch> {search-keyword-header} { return new Symbol(sym.SEARCH_KEYWORD_HEADER, yytext()); }
+<commandsearch> {search-keyword-lparent} { return new Symbol(sym.SEARCH_KEYWORD_LPARENT, yytext()); }
+<commandsearch> {search-keyword-rparent} { return new Symbol(sym.SEARCH_KEYWORD_RPARENT, yytext()); }
 <commandsearch> \"({date})\" { return new Symbol(sym.DATE, yytext().Substring(1, yytext().Length-2)); }
 <commandsearch> {date} { return new Symbol(sym.DATE, yytext()); }
 <commandsearch> {number} { return new Symbol(sym.NUMBER, yytext()); }

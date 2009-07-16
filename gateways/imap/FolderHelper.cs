@@ -116,6 +116,9 @@ namespace NMapi.Gateways.IMAP {
 			get { return additionalFlagsPropTag; }
 		}
 
+		public static int UIDPropTag {
+			get { return uidPropTag; }
+		}
 		
 		
 		internal object _SharedGetSubDir (IMapiContainer parent, string match, 

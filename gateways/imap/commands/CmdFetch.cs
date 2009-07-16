@@ -482,7 +482,7 @@ namespace NMapi.Gateways.IMAP {
 			List<int> propList = new List<int> ();
 
 			propList.Add (Property.EntryId);
-			propList.Add (ServCon.GetNamedProp(ServCon.FolderHelper.CurrentFolder, IMAPGatewayNamedProperty.UID).PropTag); // TODO: Replace for named property for UID
+			propList.Add (FolderHelper.UIDPropTag); // TODO: Replace for named property for UID
 			//propList.Add (Property.ReportName); // TODO: Replace for named property for folder path
 					
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
