@@ -511,11 +511,14 @@ cmd_search ::=
 	CHARSET
 	SP
 	astringstring:c
+	{:
+		ParseInt.command.Charset=c; 
+		Console.WriteLine("charset: "+c); 
+		ParseInt.SetEncoding (c);
+	:}
 	SP
 	search_key_list:skl
 	{: 
-		ParseInt.command.Charset=c; 
-		Console.WriteLine("charset: "+c); 
 		ParseInt.command.Search_key_list = skl;
 	:}
 	|
@@ -897,7 +900,7 @@ string ::=
 	{: RESULT = q; :}
 	|
 	literal:l
-	{: RESULT = Encoding.ASCII.GetString(LiteralByteParkingSpace); :}
+	{: RESULT = ParseInt.Encoding.GetString(LiteralByteParkingSpace); :}
 	;
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 

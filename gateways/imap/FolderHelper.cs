@@ -117,7 +117,11 @@ namespace NMapi.Gateways.IMAP {
 		}
 
 		public static int UIDPropTag {
-			get { return uidPropTag; }
+			get { 
+				if (uidPropTag == 0)
+					throw new Exception ("Use only, if select has been executed before in the session");
+				return uidPropTag; 
+			}
 		}
 		
 		

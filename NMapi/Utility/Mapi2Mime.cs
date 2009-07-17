@@ -271,7 +271,7 @@ namespace NMapi.Utility {
 			int attachCnt = 0;
 			relatedAttachments = false;
 			using (IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0)) {
-				RowSet rs = tr.GetRows (1);
+				RowSet rs = tr.GetRows (20);
 			
 				while (rs.Count > 0) {
 					foreach (Row row in rs) {

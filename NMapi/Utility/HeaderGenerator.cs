@@ -290,9 +290,21 @@ namespace NMapi.Utility {
 			return true;
 		}						
 
+		public bool DoStdUnicode (string name, int propTag)
+		{
+			props.Prop = propTag;
+			if (props.Exists) {
+				string val = MimeUtility.EncodeText (props.Unicode, Encoding.Default.BodyName, "Q");
+				ih.SetHeader (name, val);
+				return true;
+			}
+			return false;
+		}						
+
 		public bool DoAll ()
 		{
 			DoTransportMessageHeaders ();
+			DoStdUnicode ("Message-ID", Outlook.Property.INTERNET_MESSAGE_ID_W);
 			DoDate ();
 			DoFrom ();
 			DoSender ();

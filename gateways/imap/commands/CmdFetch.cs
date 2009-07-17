@@ -351,6 +351,7 @@ namespace NMapi.Gateways.IMAP {
 							}
 							if (headerItem == "MESSAGE-ID") {
 								headerItems.AddResponseItem ("MESSAGE-ID");
+								headerGenerator.DoStdUnicode ("Message-ID", Outlook.Property.INTERNET_MESSAGE_ID_W);
 							}
 							if (headerItem == "MIME-VERSION") {
 								headerItems.AddResponseItem ("MIME-VERSION");
@@ -358,8 +359,8 @@ namespace NMapi.Gateways.IMAP {
 							}
 							if (headerItem == "CONTENT-TYPE") {
 								headerItems.AddResponseItem ("CONTENT-TYPE");
-								IMapiTableReader tr = GetMessage (snli).GetAttachmentTable(0);
-								if (tr.GetRows (1).Count != 0) {
+								props.Prop = Property.HasAttach;
+								if (props.Exists && props.Boolean) {
 									headerGenerator.InternetHeaders.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
 								}
 							}
@@ -482,8 +483,9 @@ namespace NMapi.Gateways.IMAP {
 			List<int> propList = new List<int> ();
 
 			propList.Add (Property.EntryId);
-			propList.Add (FolderHelper.UIDPropTag); // TODO: Replace for named property for UID
+			propList.Add (FolderHelper.UIDPropTag); 
 			//propList.Add (Property.ReportName); // TODO: Replace for named property for folder path
+			propList.Add (Property.HasAttach);
 					
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
 				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
@@ -590,6 +592,7 @@ namespace NMapi.Gateways.IMAP {
 							if (headerItem == "IN-REPLY-TO") {
 							}
 							if (headerItem == "MESSAGE-ID") {
+								propList.Add (Outlook.Property.INTERNET_MESSAGE_ID_W);
 							}
 							if (headerItem == "MIME-VERSION") {
 							}

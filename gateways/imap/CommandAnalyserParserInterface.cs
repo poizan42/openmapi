@@ -28,6 +28,7 @@ namespace NMapi.Gateways.IMAP
 
 		private CommandAnalyser parent;
 		private Command _command;
+		private Encoding encoding = Encoding.ASCII;
 		/// <summary>
 		/// the stream coming from the client connection
 		/// </summary>
@@ -88,6 +89,19 @@ namespace NMapi.Gateways.IMAP
 			return null;
 		}
 
+		public Encoding Encoding {
+			get { return encoding; }
+		}
+
+		public void SetEncoding (string charset)
+		{
+			try {
+			encoding = Encoding.GetEncoding(charset);
+			} catch {
+			}
+		}
+
+		
 		public Command command {
 			get { return _command; }
 		}

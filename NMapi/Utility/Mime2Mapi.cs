@@ -77,6 +77,13 @@ namespace NMapi.Utility {
 			uprop.Value = "IPM.Note";
 			props.Add (uprop);
 	
+			if (mm.GetMessageID () != null) {
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Outlook.Property.INTERNET_MESSAGE_ID_W;
+				uprop.Value = mm.GetMessageID ();
+				props.Add (uprop);
+			}
+
 			uprop = new UnicodeProperty ();
 			uprop.PropTag = Property.Subject;
 			uprop.Value = MimeUtility.DecodeText (string.Empty + mm.GetHeader ("Subject", ";") );

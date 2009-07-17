@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -48,6 +49,17 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			Response r = null;
+		 	Encoding encoding = null;
+
+			if (command.Charset != null) {
+				try {
+					encoding = Encoding.GetEncoding(command.Charset);
+				} catch {
+					state.ResponseManager.AddResponse (new Response (ResponseState.BAD, Name, command.Tag).AddResponseItem ("BADCHARSET"));
+					return;
+				}
+			}
+
 			try {
 				int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
 				Restriction restr = BuildRestriction (command.Search_key_list);
@@ -67,7 +79,6 @@ namespace NMapi.Gateways.IMAP {
 					// set the properties to fetch
 					PropertyTag [] currentPropTagArray = PropertyTag.ArrayFromIntegers (new int[] {FolderHelper.UIDPropTag});
 					contentsTable.SetColumns(currentPropTagArray, 0);
-ObjectDumper.Write( restr, 5);
 					contentsTable.Restrict (restr, 0);
 					// get rows
 					Console.WriteLine ("DoFetchLoop Query Rows");
@@ -96,7 +107,6 @@ ObjectDumper.Write( restr, 5);
 						state.ResponseManager.AddResponse (r);
 					}
 				}
-ObjectDumper.Write(r,5);
 				r = new Response (ResponseState.OK, Name, command.Tag);
 				r.UIDResponse = command.UIDCommand;
 				r.AddResponseItem ("completed");
@@ -115,10 +125,13 @@ ObjectDumper.Write(r,5);
 			foreach (CommandSearchKey searchKey in searchKeyList) {
 				if (searchKey.Keyword == "OR") {
 				} else if (searchKey.Keyword == "NOT") {
-				} else if (searchKey.Keyword == "HEADER") {
+				} else if ((restriction = SoleKeywordRestriction (searchKey)) != null) {
+					entryRestrictions.Add (restriction);
+				} else if ((restriction = HeaderKeywordRestriction (searchKey)) != null) {
+					entryRestrictions.Add (restriction);
 				} else if (searchKey.Keyword == "PARENTHESIS") {
 				} else if (searchKey.Keyword == "SEQUENCE-SET") {
-				} else if ((restriction = SingleStringRestrictions (searchKey)) != null) {
+				} else if ((restriction = AstringKeywordRestrictions (searchKey)) != null) {
 					entryRestrictions.Add (restriction);
 				}
 			}
@@ -129,7 +142,34 @@ ObjectDumper.Write(r,5);
 			return andRestr;
 		}			
 
-		private Restriction SingleStringRestrictions (CommandSearchKey searchKey)
+
+		private Restriction HeaderKeywordRestriction (CommandSearchKey searchKey)
+		{
+			if ("HEADER".Contains (searchKey.Keyword)) {
+				ContentRestriction entryPropRestr = new ContentRestriction ();
+				UnicodeProperty uprop = new UnicodeProperty();
+				uprop.PropTag = PropTagFromHeaderName(searchKey.Header_fld_name);
+				uprop.Value = searchKey.Astring;
+				entryPropRestr.Prop = uprop;
+				entryPropRestr.FuzzyLevel = FuzzyLevel.Substring | FuzzyLevel.Loose;
+				entryPropRestr.PropTag = uprop.PropTag;
+				return entryPropRestr;
+			}
+			return null;
+		}
+
+		private Restriction SoleKeywordRestriction (CommandSearchKey searchKey)
+		{
+/* XXX: BitMask Restrictions dont work for some reason....
+
+			if ("DELETED UNDELETED".Contains (searchKey.Keyword)) {
+				return FlagHelper.BuildSearchRestriction (searchKey.Keyword);
+			}
+*/
+			return null;
+		}
+
+		private Restriction AstringKeywordRestrictions (CommandSearchKey searchKey)
 		{
 			if ("BODY".Contains (searchKey.Keyword)) {
 				ContentRestriction entryPropRestr = new ContentRestriction ();
@@ -137,7 +177,7 @@ ObjectDumper.Write(r,5);
 				uprop.PropTag = PropTagFromHeaderName(searchKey.Keyword);
 				uprop.Value = searchKey.Astring;
 				entryPropRestr.Prop = uprop;
-				entryPropRestr.FuzzyLevel = FuzzyLevel.Substring;
+				entryPropRestr.FuzzyLevel = FuzzyLevel.Substring | FuzzyLevel.Loose;
 				entryPropRestr.PropTag = uprop.PropTag;
 				return entryPropRestr;
 			}
@@ -149,10 +189,10 @@ ObjectDumper.Write(r,5);
 		{
 			switch (headerName.ToUpper()) {
 			case "BODY": return Property.Body;
+			case "MESSAGE-ID": return Outlook.Property.INTERNET_MESSAGE_ID_W;
 			}
 			return 0;
 		}
-
 
 	}
 }
