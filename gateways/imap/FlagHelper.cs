@@ -299,5 +299,23 @@ namespace NMapi.Gateways.IMAP {
 			select toDel.EntryId;
 			return new EntryList (query.ToArray ());
 		}
+
+		public static Restriction BuildSearchRestriction (string searchKeyword) 
+		{
+			switch (searchKeyword) {
+			case "UNDELETED": return _BuildSearchRestriction (Property.MsgStatus, NMAPI.MSGSTATUS_DELMARKED, false);
+			case "DELETED": return _BuildSearchRestriction (Property.MsgStatus, NMAPI.MSGSTATUS_DELMARKED, true);
+			}
+			return null;
+		}
+		private static Restriction _BuildSearchRestriction (int propType, int mask, bool setUnset) 
+		{
+				BitMaskRestriction entryPropRestr = new BitMaskRestriction ();
+				entryPropRestr.RelBMR = setUnset ? NMAPI.BMR_NEZ : NMAPI.BMR_EQZ;
+				entryPropRestr.Mask = mask;
+				entryPropRestr.PropTag = propType;
+				return entryPropRestr;
+			
+		}
 	}
 }

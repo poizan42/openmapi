@@ -198,43 +198,44 @@ namespace NMapi.Utility {
 		{
 			Trace.WriteLine ("doRecipients ");				
 			IMessage msg = GetMessage();
-			IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode);
-//			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
-			RowSet rs = mtr.GetRows (20);
-			while (rs.Count () > 0) {
-				Trace.WriteLine ("doRecipients 1");
-				// as to/cc/bcc may be part of the transport headers, we need to clear these upfront				
-				ih.RemoveHeader (RecipientType.TO.ToString());
-				ih.RemoveHeader (RecipientType.CC.ToString());
-				ih.RemoveHeader (RecipientType.BCC.ToString());
-				foreach (Row row in rs) {
-					Trace.WriteLine ("doRecipients 2");
-					PropertyHelper props = new PropertyHelper (row.Props);
-					PropertyHelper props2 = new PropertyHelper (row.Props);
-					props.Prop = Property.DisplayNameW;
-					props2.Prop = Property.EmailAddressW;
+			using (IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode)) {
+	//			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
+				RowSet rs = mtr.GetRows (20);
+				while (rs.Count () > 0) {
+					Trace.WriteLine ("doRecipients 1");
+					// as to/cc/bcc may be part of the transport headers, we need to clear these upfront				
+					ih.RemoveHeader (RecipientType.TO.ToString());
+					ih.RemoveHeader (RecipientType.CC.ToString());
+					ih.RemoveHeader (RecipientType.BCC.ToString());
+					foreach (Row row in rs) {
+						Trace.WriteLine ("doRecipients 2");
+						PropertyHelper props = new PropertyHelper (row.Props);
+						PropertyHelper props2 = new PropertyHelper (row.Props);
+						props.Prop = Property.DisplayNameW;
+						props2.Prop = Property.EmailAddressW;
 
-					InternetAddress ia = new InternetAddress ();
-					ia.Personal = props.Unicode;
-					ia.Email = props2.Unicode;
+						InternetAddress ia = new InternetAddress ();
+						ia.Personal = props.Unicode;
+						ia.Email = props2.Unicode;
 					
-					RecipientType rt = null;
-					props.Prop = Property.RecipientType;
-					switch (props.LongNum) {
-					case Mapi.To:	rt = RecipientType.TO;	break;
-					case Mapi.Cc: 	rt = RecipientType.CC;	break;
-					case Mapi.Bcc: 	rt = RecipientType.BCC;	break;
-					default: continue;
+						RecipientType rt = null;
+						props.Prop = Property.RecipientType;
+						switch (props.LongNum) {
+						case Mapi.To:	rt = RecipientType.TO;	break;
+						case Mapi.Cc: 	rt = RecipientType.CC;	break;
+						case Mapi.Bcc: 	rt = RecipientType.BCC;	break;
+						default: continue;
+						}
+						Trace.WriteLine ("doRecipients 3");
+						MimeMessage mm = new MimeMessage ();
+						mm.Headers = ih;
+						List<InternetAddress> lia = mm.GetRecipients (rt).ToList ();
+						lia.Add (ia);
+						mm.SetRecipients (rt, lia);
+						ih = mm.Headers;
 					}
-					Trace.WriteLine ("doRecipients 3");
-					MimeMessage mm = new MimeMessage ();
-					mm.Headers = ih;
-					List<InternetAddress> lia = mm.GetRecipients (rt).ToList ();
-					lia.Add (ia);
-					mm.SetRecipients (rt, lia);
-					ih = mm.Headers;
+					rs = mtr.GetRows (20);
 				}
-				rs = mtr.GetRows (20);
 			}
 			return true;
 		}
@@ -289,9 +290,21 @@ namespace NMapi.Utility {
 			return true;
 		}						
 
+		public bool DoStdUnicode (string name, int propTag)
+		{
+			props.Prop = propTag;
+			if (props.Exists) {
+				string val = MimeUtility.EncodeText (props.Unicode, Encoding.Default.BodyName, "Q");
+				ih.SetHeader (name, val);
+				return true;
+			}
+			return false;
+		}						
+
 		public bool DoAll ()
 		{
 			DoTransportMessageHeaders ();
+			DoStdUnicode ("Message-ID", Outlook.Property.INTERNET_MESSAGE_ID_W);
 			DoDate ();
 			DoFrom ();
 			DoSender ();

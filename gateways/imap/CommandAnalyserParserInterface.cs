@@ -28,6 +28,7 @@ namespace NMapi.Gateways.IMAP
 
 		private CommandAnalyser parent;
 		private Command _command;
+		private Encoding encoding = Encoding.ASCII;
 		/// <summary>
 		/// the stream coming from the client connection
 		/// </summary>
@@ -46,28 +47,28 @@ namespace NMapi.Gateways.IMAP
 		public Command CheckCommand()
 		{
 
-			Trace.WriteLine ("statustest: " + StateAuthenticated());
+			Console.WriteLine ("statustest: " + StateAuthenticated());
 			
 			if (clientConnection.DataAvailable()) {
 
-				Trace.WriteLine("pi_1");
+				Console.WriteLine("pi_1");
 				NewCommand();
 				SetupStreamReader();
 				if(_inSR == null) return null;
-				Trace.WriteLine("pi_2_streamreader done");
+				Console.WriteLine("pi_2_streamreader done");
 				if (yy == null) {
 					yy = new Yylex (_inSR);
 				} else {
 					yy.ReInit (_inSR);
 				}
 
-				Trace.WriteLine("pi_3_yylex done");
+				Console.WriteLine("pi_3_yylex done");
 				parser_obj = new parser(yy , this);
-				Trace.WriteLine("pi_4_parser done");
+				Console.WriteLine("pi_4_parser done");
 				/* open input files, etc. here */
 				TUVienna.CS_CUP.Runtime.Symbol parse_tree = null;
 
-				bool do_debug_parse = false;
+				bool do_debug_parse = true;
 				try {
 					if (do_debug_parse)
 						parse_tree = parser_obj.debug_parse();
@@ -78,16 +79,29 @@ namespace NMapi.Gateways.IMAP
 					// an error stored yet. We want to preserve state errors,
 					// as they can lead to further formal errors.
 					if (_command.Parse_error == null)
-						_command.Parse_error = "Formal parsing error: " + e.Message;
+						_command.Parse_error = "Formal parsing error: " + e.Message + "\n" + e.StackTrace;
 				} finally {
 					/* do close out here */
 				}
-				Trace.WriteLine("pi_5");
+				Console.WriteLine("pi_5");
 				return _command;
 		    }
 			return null;
 		}
 
+		public Encoding Encoding {
+			get { return encoding; }
+		}
+
+		public void SetEncoding (string charset)
+		{
+			try {
+			encoding = Encoding.GetEncoding(charset);
+			} catch {
+			}
+		}
+
+		
 		public Command command {
 			get { return _command; }
 		}
@@ -100,7 +114,7 @@ namespace NMapi.Gateways.IMAP
 		public byte[] ReadLiteral (int count)
 		{
 			byte [] s = null;
-			Trace.WriteLine("readLiteral: "+count);
+			Console.WriteLine("readLiteral: "+count);
 
 			// only read a literal, if no formal or state error has been
 			// identified so far.
@@ -111,7 +125,7 @@ namespace NMapi.Gateways.IMAP
 				
 				// read literal data
 				s = clientConnection.ReadBlock(count);
-				Trace.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
+				Console.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
 	
 				/* read the rest of the command and set the parser up with the new stream reader*/
 				SetupStreamReader();
@@ -162,5 +176,21 @@ namespace NMapi.Gateways.IMAP
 			}			
 		}
 		
+	}
+
+
+	class DateTimeBox
+	{
+		DateTime dt;
+
+		public DateTime Value {
+			get { return dt; }
+			set { dt = value; }
+		}
+
+		public string ToString ()
+		{
+			return "DateTimeBox " + dt;
+		}
 	}
 }
