@@ -150,14 +150,7 @@ namespace NMapi.Gateways.IMAP
 
 		public List<Pair> Sequence_set { 
 			get { return sequence_set; } 
-		}
-
-		public void AddSequenceRange(string first, string second) {
-			sequence_set.Add(new Pair((object) first, (object) second));
-		}
-
-		public void AddSequenceNumber(string first) {
-			sequence_set.Add(new Pair((object) first, null));
+			set { sequence_set = value; }
 		}
 
 		public List<CommandFetchItem> Fetch_item_list { 
@@ -189,4 +182,13 @@ namespace NMapi.Gateways.IMAP
 		{
 		}
 	}
+
+
+	public class CommandSequenceSet: List<Pair>
+	{
+		public CommandSequenceSet () : base ()
+		{
+		}
+	}
+
 }

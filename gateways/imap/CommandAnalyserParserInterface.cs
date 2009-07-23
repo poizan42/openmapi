@@ -47,7 +47,6 @@ namespace NMapi.Gateways.IMAP
 		public Command CheckCommand()
 		{
 
-			Console.WriteLine ("statustest: " + StateAuthenticated());
 			
 			if (clientConnection.DataAvailable()) {
 
@@ -114,7 +113,7 @@ namespace NMapi.Gateways.IMAP
 		public byte[] ReadLiteral (int count)
 		{
 			byte [] s = null;
-			Console.WriteLine("readLiteral: "+count);
+			Console.WriteLine("rCommandAnalyserParserInterfaceeadLiteral: "+count);
 
 			// only read a literal, if no formal or state error has been
 			// identified so far.

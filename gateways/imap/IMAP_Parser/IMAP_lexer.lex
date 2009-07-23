@@ -182,7 +182,7 @@ public class Yytoken : ICloneable  {
 %cup
 %unicode
 %ignorecase
-%state commandbase, commanddetail, commandsequence, commandfetchsequence, commandfetch, commandfetchheaderlist, commandstoresequence, commandstoreflags, commandstatus, commandstatuslist, commandsearch, commandsearchsequence
+%state commandbase, commanddetail, commandsequence, commandfetchsequence, commandfetch, commandfetchheaderlist, commandstoresequence, commandstoreflags, commandstatus, commandstatuslist, commandsearch, commandsearchheader, commandsearchastring, commandsearchnumber, commandsearchsequence, commandsearchuidsequence
 
 SP=" "
 CR=\x0d
@@ -335,29 +335,37 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandstatuslist> {status-att} { return new Symbol(sym.STATUS_ATT, yytext()); }
 <commandstatuslist> \( { return new Symbol(sym.LPARENT); }
 <commandstatuslist> \) { return new Symbol(sym.RPARENT); }
-<commandsearchsequence> {search-keyword-uid}(SP) { return new Symbol(sym.SEARCH_KEYWORD_UID, yytext().Substring(1, yytext().Length-1)); }
-<commandsearch> "*" { return new Symbol(sym.STAR); }
-<commandsearch> "," { return new Symbol(sym.COMMA); }
-<commandsearch> ":" { return new Symbol(sym.COLON); } 
-<commandsearch> {charset} { return new Symbol(sym.CHARSET, yytext()); }
+<commandsearch> {charset} { yybegin(commandsearchastring); return new Symbol(sym.CHARSET, yytext()); }
 <commandsearch> {search-keyword-sole} { return new Symbol(sym.SEARCH_KEYWORD_SOLE, yytext()); }
 <commandsearch> {search-keyword-date} { return new Symbol(sym.SEARCH_KEYWORD_DATE, yytext()); }
-<commandsearch> {search-keyword-number} { return new Symbol(sym.SEARCH_KEYWORD_NUMBER, yytext()); }
-<commandsearch> {search-keyword-astring} { return new Symbol(sym.SEARCH_KEYWORD_ASTRING, yytext()); }
+<commandsearch> {search-keyword-number} { yybegin(commandsearchnumber); return new Symbol(sym.SEARCH_KEYWORD_NUMBER, yytext()); }
+<commandsearch> {search-keyword-astring} { yybegin(commandsearchastring); return new Symbol(sym.SEARCH_KEYWORD_ASTRING, yytext()); }
+<commandsearch> {search-keyword-header} { yybegin(commandsearchheader); return new Symbol(sym.SEARCH_KEYWORD_HEADER, yytext()); }
 <commandsearch> {search-keyword-not} { return new Symbol(sym.SEARCH_KEYWORD_NOT, yytext()); }
 <commandsearch> {search-keyword-or} { return new Symbol(sym.SEARCH_KEYWORD_OR, yytext()); }
-<commandsearch> {search-keyword-header} { return new Symbol(sym.SEARCH_KEYWORD_HEADER, yytext()); }
 <commandsearch> {search-keyword-lparent} { return new Symbol(sym.SEARCH_KEYWORD_LPARENT, yytext()); }
 <commandsearch> {search-keyword-rparent} { return new Symbol(sym.SEARCH_KEYWORD_RPARENT, yytext()); }
 <commandsearch> \"({date})\" { return new Symbol(sym.DATE, yytext().Substring(1, yytext().Length-2)); }
 <commandsearch> {date} { return new Symbol(sym.DATE, yytext()); }
-<commandsearch> {number} { return new Symbol(sym.NUMBER, yytext()); }
-<commandsearch> {astring} { return new Symbol(sym.ASTRING, yytext()); }
-<commandsearch> {quoted} { return new Symbol(sym.QUOTED, yytext()); }
-<commandsearch> {literal} { return new Symbol(sym.LITERAL, yytext()); }
+<commandsearch> {number} { yybegin(commandsearchsequence); return new Symbol(sym.NUMBER, yytext()); }
+<commandsearch> {search-keyword-uid} { yybegin(commandsearchuidsequence); return new Symbol(sym.SEARCH_KEYWORD_UID, yytext()); }
 <commandsearch> {SP} { return new Symbol(sym.SP); }
 <commandsearch> {CRLF} { return new Symbol(sym.CRLF); }
-<commandsearch> \( { return new Symbol(sym.LPARENT); }
-<commandsearch> \) { return new Symbol(sym.RPARENT); }
+<commandsearchnumber> {number} { yybegin(commandsearch); return new Symbol(sym.NUMBER, yytext()); }
+<commandsearchnumber> {SP} { return new Symbol(sym.SP); }
+<commandsearchastring> {astring} { yybegin(commandsearch); return new Symbol(sym.ASTRING, yytext()); }
+<commandsearchastring> {quoted} { yybegin(commandsearch); return new Symbol(sym.QUOTED, yytext()); }
+<commandsearchastring> {literal} { yybegin(commandsearch); return new Symbol(sym.LITERAL, yytext()); }
+<commandsearchastring> {SP} { return new Symbol(sym.SP); }
+<commandsearchheader> {astring} { yybegin(commandsearchastring); return new Symbol(sym.ASTRING, yytext()); }
+<commandsearchheader> {quoted} { yybegin(commandsearchastring); return new Symbol(sym.QUOTED, yytext()); }
+<commandsearchheader> {literal} { yybegin(commandsearchastring); return new Symbol(sym.LITERAL, yytext()); }
+<commandsearchheader> {SP} { return new Symbol(sym.SP); }
+<commandsearchuidsequence> {SP} { yybegin(commandsearchsequence); return new Symbol(sym.SP); }
+<commandsearchsequence> "*" { return new Symbol(sym.STAR); }
+<commandsearchsequence> "," { return new Symbol(sym.COMMA); }
+<commandsearchsequence> ":" { return new Symbol(sym.COLON); } 
+<commandsearchsequence> {number} { return new Symbol(sym.NUMBER, yytext()); }
+<commandsearchsequence> (DUMMY_FOR_NOTHING)? { yybegin(commandsearch); break; }
 <YYINITIAL> . { return new Symbol(sym.OTHER, yytext()); }
 
