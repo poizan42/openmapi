@@ -78,6 +78,30 @@ namespace NMapi.Format.Mime
 		}
 
 
+
+		/// <summary>
+		/// Set the RFC 822 "Message-Id" header field.
+		/// </summary>
+		///     throws MessagingException
+		public void SetMessageID (string id)
+		{
+			if (id == null) {
+				RemoveHeader (MESSAGE_ID_NAME);
+			} else {
+				SetHeader (MESSAGE_ID_NAME, id);
+			}
+		}
+
+		/// <summary>
+		/// Get the RFC 822 "Message-Id" header field.
+		/// </summary>
+		///     throws MessagingException
+		public string GetMessageID ()
+		{
+			return GetHeader (MESSAGE_ID_NAME, "; ");
+
+		}
+
 		/// <summary>
 		/// Set the RFC 822 "From" header field.
 		/// </summary>

@@ -125,7 +125,7 @@ using System.Collections;
         public mStack(Stack origin):base(origin) {}
         public object elementAt(int index)
         {
-            string tmp=(string)((Symbol)(base.ToArray()[index])).value;
+//            string tmp=(string)((Symbol)(base.ToArray()[index])).value;
             return base.ToArray()[index];
         }
     }

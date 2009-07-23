@@ -68,7 +68,10 @@ namespace NMapi.Gateways.IMAP {
 					state.Log ("CmdStore " + e.Message);
 					state.Log (e.StackTrace);
 				}
-				fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
+
+				using (msg) {
+					fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
+				}
 				
 			}
 

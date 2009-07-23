@@ -77,7 +77,9 @@ namespace NMapi.Gateways.IMAP {
 
 		public void DoFetchLoop (Command command) 
 		{
-			int querySize = 3; //so many rows are requested for the contentsTable in each acces to MAPI
+			Console.WriteLine ("DoFetchLoop");
+
+			int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			IMapiTable contentsTable = null;
 			try {
@@ -88,39 +90,44 @@ namespace NMapi.Gateways.IMAP {
 				return;
 			}
 
-			// set the properties to fetch
-			currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));
-			contentsTable.SetColumns(currentPropTagArray, 0);
+			using (contentsTable = contentsTable) {
 
-			// Loop the items in Sequence-Set
-			for (int msgno = 0; msgno < slq.Count; msgno += querySize) {
-				// build restriction list
-				List<Restriction> entryRestrictions = new List<Restriction> ();
-				int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
-				for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
-					PropertyRestriction entryPropRestr = new PropertyRestriction ();
-					BinaryProperty eId = new BinaryProperty();
-					eId.PropTag = Property.EntryId;
-					eId.Value = slq[msgno2].EntryId;
-					entryPropRestr.Prop = eId;
-					entryPropRestr.PropTag = Property.EntryId;
-					entryPropRestr.RelOp = RelOp.Equal;
-					entryRestrictions.Add (entryPropRestr);
-				}
-				// create head restriction, append the single restrictions and add head restriction to contentsTable
-				OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
-				contentsTable.Restrict (orRestr, 0);
-				// get rows
-				RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
-				if (rows.Count == 0)
-					break;
-				foreach (Row row in rows) {
-					uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 1)).Value;
-					if (uid != 0) {
-						SequenceNumberListItem snli;
-						snli = slq.Find ((a) => uid == a.UID);
-						if (snli != null) 
-							BuildFetchResponseRow (command, snli, row);
+				// set the properties to fetch
+				currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));
+				contentsTable.SetColumns(currentPropTagArray, 0);
+
+				// Loop the items in Sequence-Set
+				for (int msgno = 0; msgno < slq.Count; msgno += querySize) {
+					// build restriction list
+					List<Restriction> entryRestrictions = new List<Restriction> ();
+					int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
+					for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
+						PropertyRestriction entryPropRestr = new PropertyRestriction ();
+						BinaryProperty eId = new BinaryProperty();
+						eId.PropTag = Property.EntryId;
+						eId.Value = slq[msgno2].EntryId;
+						entryPropRestr.Prop = eId;
+						entryPropRestr.PropTag = Property.EntryId;
+						entryPropRestr.RelOp = RelOp.Equal;
+						entryRestrictions.Add (entryPropRestr);
+					}
+					// create head restriction, append the single restrictions and add head restriction to contentsTable
+					OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
+					Console.WriteLine ("DoFetchLoop Restrict");
+					contentsTable.Restrict (orRestr, 0);
+					// get rows
+					Console.WriteLine ("DoFetchLoop Query Rows");
+					RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
+					if (rows.Count == 0)
+						break;
+					foreach (Row row in rows) {
+						uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 1)).Value;
+						if (uid != 0) {
+							SequenceNumberListItem snli;
+							snli = slq.Find ((a) => uid == a.UID);
+							if (snli != null) 
+								BuildFetchResponseRow (command, snli, row);
+						}
 					}
 				}
 			}
@@ -130,6 +137,8 @@ namespace NMapi.Gateways.IMAP {
 				
 		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, Row rowProperties) 
 		{
+			Console.WriteLine ("BuildFetchResponseRow");
+
 			currentMessage = null; //reset currentMessage
 			currentSNLI = snli;
 			Response r = null;
@@ -342,6 +351,7 @@ namespace NMapi.Gateways.IMAP {
 							}
 							if (headerItem == "MESSAGE-ID") {
 								headerItems.AddResponseItem ("MESSAGE-ID");
+								headerGenerator.DoStdUnicode ("Message-ID", Outlook.Property.INTERNET_MESSAGE_ID_W);
 							}
 							if (headerItem == "MIME-VERSION") {
 								headerItems.AddResponseItem ("MIME-VERSION");
@@ -349,8 +359,8 @@ namespace NMapi.Gateways.IMAP {
 							}
 							if (headerItem == "CONTENT-TYPE") {
 								headerItems.AddResponseItem ("CONTENT-TYPE");
-								IMapiTableReader tr = GetMessage (snli).GetAttachmentTable(0);
-								if (tr.GetRows (1).Count != 0) {
+								props.Prop = Property.HasAttach;
+								if (props.Exists && props.Boolean) {
 									headerGenerator.InternetHeaders.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
 								}
 							}
@@ -427,6 +437,9 @@ namespace NMapi.Gateways.IMAP {
 			}
 			r.AddResponseItem (fetchItems);
 			state.ResponseManager.AddResponse (r);
+
+			if (currentMessage != null) currentMessage.Dispose ();
+
 			return r;
 		}
 
@@ -448,7 +461,7 @@ namespace NMapi.Gateways.IMAP {
 		}
 		
 
-		private int[] propsAllHeaderProperties = new int[]
+		public static int[] propsAllHeaderProperties = new int[]
 		{
 			Property.Importance,
 			Property.Priority,
@@ -465,11 +478,14 @@ namespace NMapi.Gateways.IMAP {
 
 		public int[] PropertyListFromCommand (Command command)
 		{
+			Console.WriteLine ("PropertyListFromCommand");
+
 			List<int> propList = new List<int> ();
 
 			propList.Add (Property.EntryId);
-			propList.Add (ServCon.GetNamedProp(ServCon.FolderHelper.CurrentFolder, IMAPGatewayNamedProperty.UID).PropTag); // TODO: Replace for named property for UID
+			propList.Add (FolderHelper.UIDPropTag); 
 			//propList.Add (Property.ReportName); // TODO: Replace for named property for folder path
+			propList.Add (Property.HasAttach);
 					
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
 				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
@@ -498,7 +514,6 @@ namespace NMapi.Gateways.IMAP {
 						propList.AddRange (propsAllHeaderProperties);
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
-						propList.Add (Outlook.Property.HTML);
 						propList.Add (Outlook.Property.INTERNET_CPID);
 					} else {
 						propList.Add (Property.MessageSize);
@@ -517,7 +532,6 @@ namespace NMapi.Gateways.IMAP {
 					propList.AddRange (propsAllHeaderProperties);
 					propList.Add (Property.Body);
 					propList.Add (Property.RtfCompressed);
-					propList.Add (((int) PropertyType.String8)  | (0x1013 << 16)); //Outlook.Property.HTML);
 					propList.Add (Outlook.Property.INTERNET_CPID);
 				}
 				if (Fetch_att_key == "BODY.PEEK") {
@@ -529,7 +543,6 @@ namespace NMapi.Gateways.IMAP {
 					if (section_text == null) {
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
-						propList.Add (Outlook.Property.HTML);
 						propList.Add (Outlook.Property.INTERNET_CPID);
 					}
 					if (section_text == "HEADER") {
@@ -537,7 +550,6 @@ namespace NMapi.Gateways.IMAP {
 					if (section_text == "TEXT") {
 						propList.Add (Property.Body);
 						propList.Add (Property.RtfCompressed);
-						propList.Add (Outlook.Property.HTML);
 						propList.Add (Outlook.Property.INTERNET_CPID);
 					}
 					if (section_text == "MIME") {
@@ -580,6 +592,7 @@ namespace NMapi.Gateways.IMAP {
 							if (headerItem == "IN-REPLY-TO") {
 							}
 							if (headerItem == "MESSAGE-ID") {
+								propList.Add (Outlook.Property.INTERNET_MESSAGE_ID_W);
 							}
 							if (headerItem == "MIME-VERSION") {
 							}
@@ -613,6 +626,7 @@ namespace NMapi.Gateways.IMAP {
 					}
 				}
 			}
+			Console.WriteLine ("PropertyListFromCommand Finished");
 			return propList.Distinct ().ToArray ();
 		}
 

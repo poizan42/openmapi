@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP
 			Yylex yy = new Yylex(f);
 			Symbol t;
 			while ((t = yy.next_token()) != null)
-				System.Diagnostics.Trace.WriteLine(t);
+				Console.WriteLine(t);
 		}
 
 		public void init(String filePathName)
@@ -61,7 +61,9 @@ namespace NMapi.Gateways.IMAP
 
 		public Symbol nextToken()
 		{
-			return yy.next_token();
+			Symbol t = yy.next_token();
+			Console.WriteLine(t);
+			return t;
 		}
 		
 		public void close()
@@ -104,7 +106,7 @@ class Utility {
     int code
     )
     {
-    System.Diagnostics.Trace.WriteLine(errorMsg[code]);
+    Console.WriteLine(errorMsg[code]);
     }
   }
 
@@ -180,7 +182,7 @@ public class Yytoken : ICloneable  {
 %cup
 %unicode
 %ignorecase
-%state commandbase, commanddetail, commandsequence, commandfetchsequence, commandfetch, commandfetchheaderlist, commandstoresequence, commandstoreflags, commandstatus, commandstatuslist
+%state commandbase, commanddetail, commandsequence, commandfetchsequence, commandfetch, commandfetchheaderlist, commandstoresequence, commandstoreflags, commandstatus, commandstatuslist, commandsearch, commandsearchsequence
 
 SP=" "
 CR=\x0d
@@ -193,6 +195,8 @@ atom-specials=\(|\)|\{|{SP}|{CTL}|{list-wildcards}|{quoted-specials}|{resp-speci
 astring=(({ASTRING_CHAR})+)
 ASTRING_CHAR_WITHOUT_PLUS=[^{atom-specials}|\+]|{resp-specials}
 ASTRING_CHAR={ATOM_CHAR}|{resp-specials}
+charset=CHARSET
+date={date-day-fixed}-{date-month}-{date-year}
 date-time=\"{date-day-fixed}-{date-month}-{date-year}{SP}{time}{SP}{zone}\"
 date-day-fixed=({SP}{DIGIT}|{DIGIT}{DIGIT})
 date-month=(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)
@@ -221,6 +225,16 @@ quoted=(\"({QUOTED_CHAR})*\")
 QUOTED_CHAR=[^{quoted-specials}|{CR}|{LF}]|\\{quoted-specials}
 quoted-specials=\"|\\
 resp-specials   = \]
+search-keyword-sole=ALL|ANSWERED|DELETED|DRAFT|FLAGGED|NEW|OLD|RECENT|SEEN|UNANSWERED|UNDELETED|UNDRAFT|UNFLAGGED|UNSEEN|UNDRAFT
+search-keyword-date=BEFORE|ON|SINCE|SENTBEFORE|SENTON|SENTSINCE
+search-keyword-number=LARGER|SMALLER
+search-keyword-astring=BCC|BODY|CC|FROM|KEYWORD|SUBJECT|TEXT|TO|UNKEYWORD
+search-keyword-uid=UID
+search-keyword-not=NOT
+search-keyword-or=OR
+search-keyword-header=HEADER
+search-keyword-lparent=\(
+search-keyword-rparent=\)
 status-att=MESSAGES|RECENT|UIDNEXT|UIDVALIDITY|UNSEEN
 section-text-mime=MIME        
 tag=({ASTRING_CHAR_WITHOUT_PLUS})+
@@ -255,7 +269,7 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandbase> {SP}(COPY){SP} { yybegin(commandsequence); return new Symbol(sym.COPY, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(FETCH){SP} { yybegin(commandfetchsequence); return new Symbol(sym.FETCH, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(STORE){SP} { yybegin(commandstoresequence); return new Symbol(sym.STORE, yytext().Substring(1, yytext().Length-2)); }
-<commandbase> {SP}(SEARCH){SP} { yybegin(commanddetail); return new Symbol(sym.SEARCH, yytext().Substring(1, yytext().Length-2)); }
+<commandbase> {SP}(SEARCH){SP} { yybegin(commandsearch); return new Symbol(sym.SEARCH, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(UID) { return new Symbol(sym.UID, yytext().Substring(1)); }
 <commanddetail> {atom} { return new Symbol(sym.ATOM, yytext()); }
 <commanddetail> {astring} { return new Symbol(sym.ASTRING, yytext()); }
@@ -321,5 +335,29 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandstatuslist> {status-att} { return new Symbol(sym.STATUS_ATT, yytext()); }
 <commandstatuslist> \( { return new Symbol(sym.LPARENT); }
 <commandstatuslist> \) { return new Symbol(sym.RPARENT); }
-
+<commandsearchsequence> {search-keyword-uid}(SP) { return new Symbol(sym.SEARCH_KEYWORD_UID, yytext().Substring(1, yytext().Length-1)); }
+<commandsearch> "*" { return new Symbol(sym.STAR); }
+<commandsearch> "," { return new Symbol(sym.COMMA); }
+<commandsearch> ":" { return new Symbol(sym.COLON); } 
+<commandsearch> {charset} { return new Symbol(sym.CHARSET, yytext()); }
+<commandsearch> {search-keyword-sole} { return new Symbol(sym.SEARCH_KEYWORD_SOLE, yytext()); }
+<commandsearch> {search-keyword-date} { return new Symbol(sym.SEARCH_KEYWORD_DATE, yytext()); }
+<commandsearch> {search-keyword-number} { return new Symbol(sym.SEARCH_KEYWORD_NUMBER, yytext()); }
+<commandsearch> {search-keyword-astring} { return new Symbol(sym.SEARCH_KEYWORD_ASTRING, yytext()); }
+<commandsearch> {search-keyword-not} { return new Symbol(sym.SEARCH_KEYWORD_NOT, yytext()); }
+<commandsearch> {search-keyword-or} { return new Symbol(sym.SEARCH_KEYWORD_OR, yytext()); }
+<commandsearch> {search-keyword-header} { return new Symbol(sym.SEARCH_KEYWORD_HEADER, yytext()); }
+<commandsearch> {search-keyword-lparent} { return new Symbol(sym.SEARCH_KEYWORD_LPARENT, yytext()); }
+<commandsearch> {search-keyword-rparent} { return new Symbol(sym.SEARCH_KEYWORD_RPARENT, yytext()); }
+<commandsearch> \"({date})\" { return new Symbol(sym.DATE, yytext().Substring(1, yytext().Length-2)); }
+<commandsearch> {date} { return new Symbol(sym.DATE, yytext()); }
+<commandsearch> {number} { return new Symbol(sym.NUMBER, yytext()); }
+<commandsearch> {astring} { return new Symbol(sym.ASTRING, yytext()); }
+<commandsearch> {quoted} { return new Symbol(sym.QUOTED, yytext()); }
+<commandsearch> {literal} { return new Symbol(sym.LITERAL, yytext()); }
+<commandsearch> {SP} { return new Symbol(sym.SP); }
+<commandsearch> {CRLF} { return new Symbol(sym.CRLF); }
+<commandsearch> \( { return new Symbol(sym.LPARENT); }
+<commandsearch> \) { return new Symbol(sym.RPARENT); }
 <YYINITIAL> . { return new Symbol(sym.OTHER, yytext()); }
+

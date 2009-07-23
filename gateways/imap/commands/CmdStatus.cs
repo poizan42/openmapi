@@ -50,49 +50,50 @@ namespace NMapi.Gateways.IMAP {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 					state.Log ("Select: path = " + path);
-					IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path);
+					using (IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path)) {
 
-					// build sequence number list
-					SequenceNumberList snl = ServCon.FolderHelper._BuildSequenceNumberList (folder);
+						// build sequence number list
+						SequenceNumberList snl = ServCon.FolderHelper._BuildSequenceNumberList (folder);
 
-					int recent = snl.Count ((x) => x.UID == null);
+						int recent = snl.Count ((x) => x.UID == null);
 						
-					int unseen = FlagHelper.GetUnseenIDFromSNL (snl);
+						int unseen = FlagHelper.GetUnseenIDFromSNL (snl);
 
-					MyStringComparer mycomp = new MyStringComparer ();
-					// write Responses
-					Response r;
-					r = new Response (ResponseState.NONE, "STATUS");
-					r.AddResponseItem (command.Mailbox1);
-					ResponseItemList ril = new ResponseItemList ();
-					if (command.Status_list.Contains ("MESSAGES", mycomp)) {
-						ril.AddResponseItem ("MESSAGES");
-						ril.AddResponseItem (snl.Count.ToString ());
-					}
-					if (command.Status_list.Contains ("RECENT", mycomp)) {
-						ril.AddResponseItem ("RECENT");
-						ril.AddResponseItem (recent.ToString ());
-					}
-					if (command.Status_list.Contains ("UNSEEN", mycomp)) {
-						ril.AddResponseItem ("UNSEEN");
-						ril.AddResponseItem (unseen.ToString ());
-					}
-					if (command.Status_list.Contains ("UIDVALIDITY", mycomp) || command.Status_list.Contains ("UIDNEXT")) {
-						long uidnext, uidvalidity;
-						ServCon.FolderHelper._GetFolderProps (out uidvalidity, out uidnext, folder);
-						if (command.Status_list.Contains ("UIDVALIDITY", mycomp)) {
-							ril.AddResponseItem ("UIDVALIDITY");
-							ril.AddResponseItem (uidvalidity.ToString ());
+						MyStringComparer mycomp = new MyStringComparer ();
+						// write Responses
+						Response r;
+						r = new Response (ResponseState.NONE, "STATUS");
+						r.AddResponseItem (command.Mailbox1);
+						ResponseItemList ril = new ResponseItemList ();
+						if (command.Status_list.Contains ("MESSAGES", mycomp)) {
+							ril.AddResponseItem ("MESSAGES");
+							ril.AddResponseItem (snl.Count.ToString ());
 						}
-						if (command.Status_list.Contains ("UIDNEXT", mycomp)) {
-							ril.AddResponseItem ("UIDNEXT");
-							ril.AddResponseItem (uidnext.ToString ());
+						if (command.Status_list.Contains ("RECENT", mycomp)) {
+							ril.AddResponseItem ("RECENT");
+							ril.AddResponseItem (recent.ToString ());
 						}
+						if (command.Status_list.Contains ("UNSEEN", mycomp)) {
+							ril.AddResponseItem ("UNSEEN");
+							ril.AddResponseItem (unseen.ToString ());
+						}
+						if (command.Status_list.Contains ("UIDVALIDITY", mycomp) || command.Status_list.Contains ("UIDNEXT")) {
+							long uidnext, uidvalidity;
+							ServCon.FolderHelper._GetFolderProps (out uidvalidity, out uidnext, folder);
+							if (command.Status_list.Contains ("UIDVALIDITY", mycomp)) {
+								ril.AddResponseItem ("UIDVALIDITY");
+								ril.AddResponseItem (uidvalidity.ToString ());
+							}
+							if (command.Status_list.Contains ("UIDNEXT", mycomp)) {
+								ril.AddResponseItem ("UIDNEXT");
+								ril.AddResponseItem (uidnext.ToString ());
+							}
+						}
+						r.AddResponseItem (ril);
+						state.ResponseManager.AddResponse (r);
+						state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+						return;
 					}
-					r.AddResponseItem (ril);
-					state.ResponseManager.AddResponse (r);
-					state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
-					return;
 				} catch (Exception e) {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 					state.Log (e.StackTrace);
