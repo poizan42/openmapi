@@ -44,6 +44,8 @@ namespace NMapi.Test
 				byte[] synckey = sync.EndExport();
 
 				Console.WriteLine("new synckey: " + Hexkey(synckey));
+
+				//TODO add asserts when fixed output is availlable
 		}
 		class MyFolderImporter : TeamXChangeFolderImporter1 {
 			public MyFolderImporter ()
