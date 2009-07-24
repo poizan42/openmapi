@@ -117,7 +117,7 @@ namespace CompactTeaSharp
 		///  Begins encoding a new XDR record. This typically involves resetting this
 		///  encoding XDR stream back into a known state.
 		/// </summary>
-		/// <param name="receiverAddress Indicates the receiver of the XDR data. This can be
+		/// <param name="receiverAddress"> Indicates the receiver of the XDR data. This can be
 		///   null for XDR streams connected permanently to a receiver (like in case 
 		///   of TCP/IP based XDR streams).</param>
 		/// <param name="receiverPort">Port number of the receiver.</param>

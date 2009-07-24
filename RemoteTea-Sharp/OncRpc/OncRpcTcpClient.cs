@@ -87,7 +87,7 @@ namespace CompactTeaSharp
 		/// <summary>
 		///  Set the character encoding for (de-)serializing strings.
 		/// </summary>
-		/// <param name="characterEncoding the encoding to use for (de-)serializing strings.
+		/// <param name="characterEncoding"> the encoding to use for (de-)serializing strings.
 		///   If null, the system's default encoding is to be used.</param>
 		public override string CharacterEncoding {
 			get { return receivingXdr.CharacterEncoding; }
