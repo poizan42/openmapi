@@ -140,7 +140,7 @@ namespace CompactTeaSharp
 		/// <param name="version">Program version number.</param>
 		/// <param name="port">The port number where the ONC/RPC server can be contacted.
 		///   If 0, then the OncRpcUdpClient object will
-		///   ask the portmapper at host for the port number.
+		///   ask the portmapper at host for the port number.</param>
 		/// <param name="bufferSize">Size of receive and send buffers. In contrast to
 		///   UDP-based ONC/RPC clients, messages larger than the specified
 		///   buffer size can still be sent and received. The buffer is only
@@ -163,9 +163,9 @@ namespace CompactTeaSharp
 		/// <param name="host">The host where the ONC/RPC server resides.</param>
 		/// <param name="program">Program number of the ONC/RPC server to call.</param>
 		/// <param name="version">Program version number.</param>
-		/// <param name="port">The port number where the ONC/RPC server can be contacted.</param>
+		/// <param name="port">The port number where the ONC/RPC server can be contacted.
 		/// If <code>0</code>, then the <code>OncRpcUdpClient</code> object will
-		/// ask the portmapper at <code>host</code> for the port number.
+		/// ask the portmapper at <code>host</code> for the port number.</param>
 		/// <param name="bufferSize">Size of receive and send buffers. In contrast to
 		///   UDP-based ONC/RPC clients, messages larger than the specified
 		///   buffer size can still be sent and received. The buffer is only
@@ -232,24 +232,11 @@ namespace CompactTeaSharp
 			//
 			
 			Stream stream = client.GetStream ();
-			if (useSsl) {
-				var sslStream = new SslStream (stream, false, 
-					new RemoteCertificateValidationCallback (ValidateServerCertificate));
-				sslStream.AuthenticateAsClient ("ignored"); // insecure
-				stream = sslStream;
-			}
-			
+			if (useSsl)
+                stream = OncNetworkUtility.GetSslClientStream (stream, host);
+                
 			sendingXdr = new XdrTcpEncodingStream (client, stream, bufferSize);
 			receivingXdr = new XdrTcpDecodingStream (client, stream, bufferSize);
-		}
-		
-		public static bool ValidateServerCertificate (
-		      object sender,
-		      X509Certificate certificate,
-		      X509Chain chain,
-		      SslPolicyErrors sslPolicyErrors)
-		{
-			return true; // insecure
 		}
 		
 		/// <summary>
@@ -293,11 +280,11 @@ namespace CompactTeaSharp
 		///  BatchCall as it provides better control over when the
 		///  batch should be flushed to the server.
 		/// </summary>
-		/// <param name="procedureNumber Procedure number of the procedure to call.</param>
-		/// <param name="versionNumber Protocol version number.</param>
-		/// <param name="params The parameters of the procedure to call, contained
+		/// <param name="procedureNumber">Procedure number of the procedure to call.</param>
+		/// <param name="versionNumber">Protocol version number.</param>
+		/// <param name="params">The parameters of the procedure to call, contained
 		///   in an object which implements the {@link IXdrAble} interface.</param>
-		/// <param name="result The object receiving the result of the procedure call.</param>
+		/// <param name="result">The object receiving the result of the procedure call.</param>
 		// OncRpcException
 		public override void Call (int procedureNumber, int versionNumber,
 		                 IXdrAble @params, IXdrAble result)

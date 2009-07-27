@@ -44,7 +44,7 @@ namespace NMapi.Server {
 		{
 			this.service = service;
 			this.tcpClient = tcpClient;
-			this.stream = OncNetworkUtility.GetSslStream (tcpClient.GetStream (), 
+			this.stream = OncNetworkUtility.GetSslServerStream (tcpClient.GetStream (), 
 								certFile, keyFile);
 		}
 			

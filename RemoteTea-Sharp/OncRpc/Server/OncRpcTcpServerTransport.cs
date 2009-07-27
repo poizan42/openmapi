@@ -339,7 +339,7 @@ namespace CompactTeaSharp.Server
 						
 					Stream stream = newSocket.GetStream ();
 					if (useSsl)
-						stream = OncNetworkUtility.GetSslStream (stream, certFile, keyFile);
+						stream = OncNetworkUtility.GetSslServerStream (stream, certFile, keyFile);
 					
 					var transport = new OncRpcTcpConnectionServerTransport (
 						dispatcher, newSocket, bufferSize, this, transmissionTimeout, stream);

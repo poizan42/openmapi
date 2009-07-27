@@ -30,6 +30,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace CompactTeaSharp
@@ -45,7 +46,7 @@ namespace CompactTeaSharp
 		/// <summary>
 		///  Wraps a stream in an SSL stream.
 		/// </summary>
-		public static Stream GetSslStream (Stream stream, string certFile, string keyFile)
+		public static Stream GetSslServerStream (Stream stream, string certFile, string keyFile)
 		{			
 			if (!File.Exists (certFile) || !File.Exists (keyFile))
 				throw new IOException ("Certificate or key file not found!");
@@ -73,6 +74,43 @@ namespace CompactTeaSharp
 			return sslStream;
 		}
 		
+        /// <summary>
+        /// In .NET, the SSL context is cached by default. Therefore, SSL context ID's
+        /// are reused. Unfortunately, TeamExchange (conversations) can't handle
+        /// SSL reconnects with these cached contexts. Therefore, we use
+        /// Mono.Security.Protocol.Tls.SslClientStream which does the same caching by default.
+        /// In Mono's implementation however, the environment variable MONO_TLS_SESSION_CACHE_TIMEOUT
+        /// can be used to adjust the cache timeout. We set this variable to 0, effectively disabling
+        /// the whole caching.
+        /// </summary>
+        public static Stream GetSslClientStream (Stream stream, IPAddress host)
+        {
+#if USE_MONO_SECURITY
+
+            Environment.SetEnvironmentVariable("MONO_TLS_SESSION_CACHE_TIMEOUT", "0");
+            // We use true for ownsStream, which results in the underlayed network stream to be
+            // automatically closed.
+            var sslStream = new Mono.Security.Protocol.Tls.SslClientStream(stream, host.ToString(), true);
+            sslStream.ServerCertValidationDelegate += (certificate, errors) => true;
+
+#else
+
+            var sslStream = new SslStream (stream, true, 
+                    new RemoteCertificateValidationCallback (ValidateServerCertificate));
+            sslStream.AuthenticateAsClient ("ignored"); // insecure
+
+#endif
+            return sslStream;
+        }
+
+#if !USE_MONO_SECURITY
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
+                X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true; // insecure
+        }
+#endif
+
 		/// <summary>
 		///  
 		/// </summary>
