@@ -1,0 +1,10 @@
+# globs
+*_Generated.cs
+generated
+# explicit
+/testresults.xml
+/xmldocs
+/bin
+/docs
+/server.zip
+/server/aspx/Bin
