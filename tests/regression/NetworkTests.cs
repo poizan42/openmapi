@@ -7,6 +7,7 @@ namespace NMapi.Test
 	using NUnit.Framework;
 
 	[TestFixture]
+    [Category("Networking")]
 	public class ConnectionTest
 	{
 		[Test]

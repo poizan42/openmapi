@@ -282,7 +282,10 @@ test:
 # /r:bin/NMapi.Provider.WabiSabi.dll
 
 runtests: test
-	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml; true
+	-nunit-console2 bin/NMapi.Test.dll -nologo -labels -exclude=Networking -xml=testresults.xml
+
+runalltests: test
+	-nunit-console2 bin/NMapi.Test.dll -nologo -labels -xml=testresults.xml
 
 #
 # Sample
@@ -339,6 +342,6 @@ clean:
 		NMapi/Code/NMapi_Generated.cs NMapi/Code/RemoteCalls_Generated.cs \
 		NMapi/Data/Data_Generated.cs  server/CommonRpcService_Generated.cs \
 		xml/generated/*.xml
-	-rm -R *~
+	-rm -fR *~
 	-rm -f -R docs xmldocs
 
