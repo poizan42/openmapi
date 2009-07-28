@@ -76,18 +76,22 @@ namespace CompactTeaSharp
         /// can be used to adjust the cache timeout. We set this variable to 0, effectively disabling
         /// the whole caching.
         /// </summary>
-        public static Stream GetSslClientStream (Stream stream, IPAddress host)
+        public static Stream GetSslClientStream (Stream stream, string host)
         {
 
             Environment.SetEnvironmentVariable("MONO_TLS_SESSION_CACHE_TIMEOUT", "0");
             // We use true for ownsStream, which results in the underlayed network stream to be
             // automatically closed.
-            var sslStream = new Mono.Security.Protocol.Tls.SslClientStream(stream, host.ToString(), true);
+            var sslStream = new Mono.Security.Protocol.Tls.SslClientStream(stream, host, true);
             sslStream.ServerCertValidationDelegate += (certificate, errors) => true;
 
             return sslStream;
         }
 
+        public static Stream GetSslClientStream (Stream stream, IPAddress host)
+        {
+            return GetSslClientStream(stream, host.ToString());
+        }
 
 		/// <summary>
 		///  
