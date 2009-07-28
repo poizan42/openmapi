@@ -53,23 +53,16 @@ namespace CompactTeaSharp
 			
 			X509Certificate cert = X509Certificate2.CreateFromCertFile (certFile);
 			
-			#if USE_MONO_SECURITY
 			
-				// This whole thing is required, because Mono doesn't seems to be 
-				// able to deal with the standard way of opening the key file.
+			// This whole thing is required, because Mono doesn't seems to be 
+			// able to deal with the standard way of opening the key file.
 
-				bool ownStream = true;
-				var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
-				sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
-					Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
-				sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
+			bool ownStream = true;
+			var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
+			sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
+				Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
+			sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
 			
-			#else
-			
-				var sslStream = new SslStream (stream, false);
-				sslStream.AuthenticateAsServer (cert, false, SslProtocols.Tls, false);
-			
-			#endif
 			
 			return sslStream;
 		}
@@ -85,7 +78,6 @@ namespace CompactTeaSharp
         /// </summary>
         public static Stream GetSslClientStream (Stream stream, IPAddress host)
         {
-#if USE_MONO_SECURITY
 
             Environment.SetEnvironmentVariable("MONO_TLS_SESSION_CACHE_TIMEOUT", "0");
             // We use true for ownsStream, which results in the underlayed network stream to be
@@ -93,23 +85,9 @@ namespace CompactTeaSharp
             var sslStream = new Mono.Security.Protocol.Tls.SslClientStream(stream, host.ToString(), true);
             sslStream.ServerCertValidationDelegate += (certificate, errors) => true;
 
-#else
-
-            var sslStream = new SslStream (stream, true, 
-                    new RemoteCertificateValidationCallback (ValidateServerCertificate));
-            sslStream.AuthenticateAsClient ("ignored"); // insecure
-
-#endif
             return sslStream;
         }
 
-#if !USE_MONO_SECURITY
-        public static bool ValidateServerCertificate(object sender, X509Certificate certificate,
-                X509Chain chain, SslPolicyErrors sslPolicyErrors)
-        {
-            return true; // insecure
-        }
-#endif
 
 		/// <summary>
 		///  
