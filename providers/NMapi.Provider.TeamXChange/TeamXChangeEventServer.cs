@@ -57,57 +57,6 @@ namespace NMapi {
 		private Dictionary<int, TeamXChangeEventSubscription> eventSubMap;
 
 
-		class TxcEventSslStream : SslStream
-		{
-			private bool handshakeDone;
-			
-			public TxcEventSslStream (Stream stream) : base (stream, false, 
-				new RemoteCertificateValidationCallback (ValidateServerCertificate))
-			{
-			}
-			
-			public void EnsureHandshake ()
-			{
-				lock (this) {
-					if (handshakeDone)
-						return;
-					handshakeDone = true;
-				}
-				AuthenticateAsClient ("IGNORE");
-			}
-			
-			public override void Write (byte[] buffer, int offset, int count)
-			{
-				EnsureHandshake ();
-				base.Write (buffer, offset, count);
-			}
-			
-			public override void WriteByte (byte data)
-			{
-				EnsureHandshake ();
-				base.WriteByte (data);
-			}
-			
-			public override int ReadByte ()
-			{
-				EnsureHandshake ();
-				return base.ReadByte ();
-			}
-			
-			public override int Read (byte[] buffer, int offset, int count)
-			{
-				EnsureHandshake ();
-				return base.Read (buffer, offset, count);
-			}
-			
-			private static bool ValidateServerCertificate (object sender, 
-				X509Certificate certificate, X509Chain chain, 
-				SslPolicyErrors sslPolicyErrors)
-			{
-				return true; // insecure
-			}
-		}
-
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public TeamXChangeEventServer (MAPIRPCClient client, string host, int port, byte[] objb) 
 		{
@@ -120,7 +69,7 @@ namespace NMapi {
 				eventSubMap = new Dictionary<int, TeamXChangeEventSubscription> ();
 				eventSock = new TcpClient (this.host, this.port);
 
-				TxcEventSslStream wrappedStream = new TxcEventSslStream (eventSock.GetStream ());
+                Stream wrappedStream = OncNetworkUtility.GetSslClientStream(eventSock.GetStream(), host);
 				eventServ = new OncRpcTcpConnectionServerTransport (
 					this, eventSock, 8192, null, 10, wrappedStream);
 				eventServ.Listen ();
@@ -128,7 +77,7 @@ namespace NMapi {
 				wrappedStream.Write (objb, 0, objb.Length);
 			}
 			catch (SocketException e) {
-				throw new MapiException ("unknown host="+host, e);
+				throw new MapiException ("unknown host=" + host, e);
 			}
 			catch (IOException e) {
 				throw new MapiException ("host="+host, e);
