@@ -21,7 +21,7 @@ namespace NMapi.Test
 		const string password = user;
 
 		[SetUp]
-		public void Clear ()
+		public void SetUp ()
 		{
 			session = new TeamXChangeMapiSession();
 
@@ -38,31 +38,77 @@ namespace NMapi.Test
 
 			IMsgStore store = session.PrivateStore;
 			Assert.That (store, Is.Not.Null);
-			BinaryProperty entryID;
 
-			using (IBase root = store.OpenEntry (null)) {
-				Assert.That (root, Is.Not.Null);
-				IMapiFolder folder = root as IMapiFolder;
-				Assert.That (folder, Is.Not.Null);
-				PropertyTag [] lpPropTagArray = folder.GetPropList (0);
-				PropertyValue [] lpcValues = folder.GetProps (lpPropTagArray, 0);
-				int index = PropertyValue.GetArrayIndex (lpcValues, Outlook.Property.IPM_CONTACT_ENTRYID);
+			using (IBase entry = store.OpenEntry (null, null, Mapi.Modify)) {
+				Assert.That (entry, Is.Not.Null);
+				IMapiFolder rootFolder = entry as IMapiFolder;
+				Assert.That (rootFolder, Is.Not.Null);
+				PropertyTag [] propTagArray = rootFolder.GetPropList (0);
+				PropertyValue [] propValueArray = rootFolder.GetProps (propTagArray, 0);
+				int index = PropertyValue.GetArrayIndex (propValueArray, Outlook.Property.IPM_CONTACT_ENTRYID);
 
 				if (index == -1) {
-					NMapiGuid lpInterface = InterfaceIdentifiers.IMapiFolder;
+					using (IMapiFolder contactFolder = rootFolder.CreateFolder (Folder.Generic, "Kontakte 2", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
+						Assert.That (contactFolder, Is.Not.Null);
+						PropertyTag propTag = PropertyTag.CreatePropertyTag (Property.ContainerClass);
+						Assert.That (propTag, Is.Not.Null);
+						PropertyValue propValue = propTag.CreateValue (FolderClasses.Ipf.Contact);
+						Assert.That (propValue, Is.Not.Null);
+						propValueArray = new PropertyValue [1];
+						propValueArray [0] = propValue;
+						PropertyProblem [] propProblemArray = contactFolder.SetProps (propValueArray);
+						Assert.That (propProblemArray.Length, Is.EqualTo (0));
+						contactFolder.SaveChanges (0);
 
-					using (IMapiFolder contacts = folder.CreateFolder (Folder.Generic, "Contacts", "Testing", lpInterface, Mapi.Unicode)) {
-						Assert.That (contacts, Is.Not.Null);
-						var containerClass = Property.Typed.ContainerClass.CreateValue (FolderClasses.Ipf.Contact);
-						PropertyValue [] lpPropArray = new PropertyValue [1];
-						lpPropArray [0] = PropertyValue.Make (Property.ContainerClass, containerClass);
-						PropertyProblem [] lppProblems = contacts.SetProps (lpPropArray);
-						Assert.That (lppProblems.Length, Is.EqualTo (0));
-						contacts.SaveChanges (0);
+						// Set reference from root folder to contact folder
+						propTag = PropertyTag.CreatePropertyTag (Outlook.Property.IPM_CONTACT_ENTRYID);
+						Assert.That (propTag, Is.Not.Null);
+						propTagArray = contactFolder.GetPropList (0);
+						propValueArray = contactFolder.GetProps (propTagArray, 0);
+						index = PropertyValue.GetArrayIndex (propValueArray, Property.EntryId);
+						Assert.That (index, Is.GreaterThanOrEqualTo (0));
+						propValue = PropertyValue.GetArrayProp (propValueArray, index);
+						Assert.That (propValue, Is.Not.Null);
+						BinaryProperty binProp = propValue as BinaryProperty;
+						Assert.That (binProp, Is.Not.Null);
+						byte [] entryID = (byte []) binProp;
+
+						using (IBase b = store.OpenEntry (entryID)) {
+							Assert.That (b, Is.Not.Null);
+						}
+
+						SBinary data = new SBinary (entryID);
+						propValue = propTag.CreateValue (data);
+						Assert.That (propValue, Is.Not.Null);
+						binProp = propValue as BinaryProperty;
+						Assert.That (binProp, Is.Not.Null);
+						entryID = (byte []) binProp;
+
+						using (IBase b = store.OpenEntry (entryID)) {
+							Assert.That (b, Is.Not.Null);
+						}
+
+						propValueArray = new PropertyValue [1];
+						propValueArray [0] = propValue;
+						Assert.That (rootFolder, Is.Not.Null);
+						Assert.That (propValue, Is.Not.Null);
+						propProblemArray = rootFolder.SetProps (propValueArray);
+						Assert.That (propProblemArray.Length, Is.EqualTo (0));
+						rootFolder.SaveChanges (0);
 					}
 				}
 			}
-			
+
+			/*
+					using (IBase e = store.OpenEntry (null, null, Mapi.Modify)) {
+						IMapiFolder r = e as IMapiFolder;
+						PropertyTag propTag = PropertyTag.CreatePropertyTag (Outlook.Property.IPM_CONTACT_ENTRYID);
+						PropertyTag [] propTagArray = new PropertyTag [1];
+						propTagArray [0] = propTag;
+						r.DeleteProps (propTagArray);
+					}
+					*/
+
 			using (IMapiFolder lppUnk = GetContactFolder ()) {
 				Assert.That (lppUnk, Is.Not.Null);
 				IMapiProgress lpProgress = null;
@@ -71,7 +117,7 @@ namespace NMapi.Test
 		}
 
 		[TearDown]
-		public void Logoff ()
+		public void Dispose ()
 		{
 			session.Dispose ();
 		}
