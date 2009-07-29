@@ -1,7 +1,5 @@
 namespace NMapi.Test
 {
-	using System;
-
 	using NMapi.Server;
 	using NMapi.Flags;
 	using NMapi.Properties;
@@ -15,7 +13,7 @@ namespace NMapi.Test
 	using System.Net.Sockets;
 
 	[TestFixture]
-    [Category("Networking")]
+	[Category("Networking")]
 	public class BasicMapiTest
 	{
 		IMapiSession session;
@@ -28,7 +26,7 @@ namespace NMapi.Test
 			session = new TeamXChangeMapiSession();
 
 			try {
-				session.Logon ("localhost", "demo1", "demo1");
+				session.Logon ("localhost", "demo2", "demo2");
 			} catch (MapiException exception) {
 				Console.WriteLine (exception);
 
@@ -38,12 +36,37 @@ namespace NMapi.Test
 				}
 			}
 
-			const int ulFlags = 0;
+			IMsgStore store = session.PrivateStore;
+			Assert.That (store, Is.Not.Null);
+			BinaryProperty entryID;
+
+			using (IBase root = store.OpenEntry (null)) {
+				Assert.That (root, Is.Not.Null);
+				IMapiFolder folder = root as IMapiFolder;
+				Assert.That (folder, Is.Not.Null);
+				PropertyTag [] lpPropTagArray = folder.GetPropList (0);
+				PropertyValue [] lpcValues = folder.GetProps (lpPropTagArray, 0);
+				int index = PropertyValue.GetArrayIndex (lpcValues, Outlook.Property.IPM_CONTACT_ENTRYID);
+
+				if (index == -1) {
+					NMapiGuid lpInterface = InterfaceIdentifiers.IMapiFolder;
+
+					using (IMapiFolder contacts = folder.CreateFolder (Folder.Generic, "Contacts", "Testing", lpInterface, Mapi.Unicode)) {
+						Assert.That (contacts, Is.Not.Null);
+						var containerClass = Property.Typed.ContainerClass.CreateValue (FolderClasses.Ipf.Contact);
+						PropertyValue [] lpPropArray = new PropertyValue [1];
+						lpPropArray [0] = PropertyValue.Make (Property.ContainerClass, containerClass);
+						PropertyProblem [] lppProblems = contacts.SetProps (lpPropArray);
+						Assert.That (lppProblems.Length, Is.EqualTo (0));
+						contacts.SaveChanges (0);
+					}
+				}
+			}
 			
 			using (IMapiFolder lppUnk = GetContactFolder ()) {
 				Assert.That (lppUnk, Is.Not.Null);
 				IMapiProgress lpProgress = null;
-				lppUnk.EmptyFolder (lpProgress, ulFlags);
+				lppUnk.EmptyFolder (lpProgress, 0);
 			}
 		}
 
@@ -68,10 +91,7 @@ namespace NMapi.Test
 				PropertyValue [] lpcValues = prop.GetProps (lpPropTagArray, 0);
 				int index = PropertyValue.GetArrayIndex (lpcValues, ulPropTag);
 				Assert.That (index, Is.GreaterThanOrEqualTo (0));
-
-				PropertyValue lpcValue =
-					   	PropertyValue.GetArrayProp (lpcValues, index);
-
+				PropertyValue lpcValue = PropertyValue.GetArrayProp (lpcValues, index);
 				Assert.That (lpcValue, Is.Not.Null);
 				entryID = lpcValue as BinaryProperty;
 				Assert.That (entryID, Is.Not.Null);
@@ -90,13 +110,12 @@ namespace NMapi.Test
 		[Test]
 		public void CreateContact ()
 		{
-			const int ulFlags = 0; //TODO user NMapi.Flags	
 			using (IMapiContainer lppUnk = GetContactFolder ()) {
 				Assert.That (lppUnk, Is.Not.Null);
 
-				using (IMapiTable lppTable = lppUnk.GetContentsTable (ulFlags)) {
+				using (IMapiTable lppTable = lppUnk.GetContentsTable (Mapi.Unicode)) {
 					Assert.That (lppTable, Is.Not.Null);
-					Assert.That (lppTable.GetRowCount (ulFlags), Is.EqualTo (0));
+					Assert.That (lppTable.GetRowCount (0), Is.EqualTo (0));
 				}
 			}
 
@@ -104,23 +123,27 @@ namespace NMapi.Test
 				Assert.That (lppUnk, Is.Not.Null);
 				NMapiGuid lpInterface = InterfaceIdentifiers.IMessage;
 
-				using (IMessage lppMessage = lppUnk.CreateMessage (lpInterface, ulFlags)) {
+				using (IMessage lppMessage = lppUnk.CreateMessage (lpInterface, 0)) {
 					Assert.That (lppMessage, Is.Not.Null);
 					PropertyValue [] lpPropArray = new PropertyValue [2];
-					lpPropArray [0] = PropertyValue.Make (Property.GivenNameA, "Achim");
-					lpPropArray [1] = PropertyValue.Make (Property.SurnameA, "Derigs");
+					var givenName = Property.Typed.GivenName.CreateValue ();
+					givenName.Value = "Achim";
+					lpPropArray [0] = givenName;
+					var surname = Property.Typed.Surname.CreateValue ();
+					surname.Value = "Derigs";
+					lpPropArray [1] = surname;
 					PropertyProblem [] lppProblems = lppMessage.SetProps (lpPropArray);
 					Assert.That (lppProblems.Length, Is.EqualTo (0));
-					lppMessage.SaveChanges (ulFlags);
+					lppMessage.SaveChanges (0);
 				}
 			}
 
 			using (IMapiContainer lppUnk = GetContactFolder ()) {
 				Assert.That (lppUnk, Is.Not.Null);
 
-				using (IMapiTable lppTable = lppUnk.GetContentsTable (ulFlags)) {
+				using (IMapiTable lppTable = lppUnk.GetContentsTable (Mapi.Unicode)) {
 					Assert.That (lppTable, Is.Not.Null);
-					Assert.That (lppTable.GetRowCount (ulFlags), Is.EqualTo (1));
+					Assert.That (lppTable.GetRowCount (0), Is.EqualTo (1));
 				}
 			}
 		}
