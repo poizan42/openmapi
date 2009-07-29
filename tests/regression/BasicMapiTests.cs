@@ -26,7 +26,7 @@ namespace NMapi.Test
 			session = new TeamXChangeMapiSession();
 
 			try {
-				session.Logon ("localhost", "demo2", "demo2");
+				session.Logon ("localhost", "demo1", "demo1");
 			} catch (MapiException exception) {
 				Console.WriteLine (exception);
 
@@ -48,7 +48,7 @@ namespace NMapi.Test
 				int index = PropertyValue.GetArrayIndex (propValueArray, Outlook.Property.IPM_CONTACT_ENTRYID);
 
 				if (index == -1) {
-					using (IMapiFolder contactFolder = rootFolder.CreateFolder (Folder.Generic, "Kontakte 2", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
+					using (IMapiFolder contactFolder = rootFolder.CreateFolder (Folder.Generic, "Kontakte", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
 						Assert.That (contactFolder, Is.Not.Null);
 						PropertyTag propTag = PropertyTag.CreatePropertyTag (Property.ContainerClass);
 						Assert.That (propTag, Is.Not.Null);
@@ -169,18 +169,26 @@ namespace NMapi.Test
 				Assert.That (lppUnk, Is.Not.Null);
 				NMapiGuid lpInterface = InterfaceIdentifiers.IMessage;
 
-				using (IMessage lppMessage = lppUnk.CreateMessage (lpInterface, 0)) {
-					Assert.That (lppMessage, Is.Not.Null);
-					PropertyValue [] lpPropArray = new PropertyValue [2];
-					var givenName = Property.Typed.GivenName.CreateValue ();
-					givenName.Value = "Achim";
-					lpPropArray [0] = givenName;
-					var surname = Property.Typed.Surname.CreateValue ();
-					surname.Value = "Derigs";
-					lpPropArray [1] = surname;
-					PropertyProblem [] lppProblems = lppMessage.SetProps (lpPropArray);
-					Assert.That (lppProblems.Length, Is.EqualTo (0));
-					lppMessage.SaveChanges (0);
+				using (IMessage message = lppUnk.CreateMessage (lpInterface, 0)) {
+					Assert.That (message, Is.Not.Null);
+
+					PropertyValue[] propValueArray = new PropertyValue [2];
+					//GivenName
+					PropertyTag propTag = PropertyTag.CreatePropertyTag (Property.GivenName);
+					Assert.That (propTag, Is.Not.Null);
+					PropertyValue propValue = propTag.CreateValue ("Achim");
+					Assert.That (propValue, Is.Not.Null);
+					propValueArray [0] = propValue;
+					//Surname
+					propTag = PropertyTag.CreatePropertyTag (Property.Surname);
+					Assert.That (propTag, Is.Not.Null);
+					propValue = propTag.CreateValue ("Derigs");
+					Assert.That (propValue, Is.Not.Null);
+					propValueArray [1] = propValue;
+
+					PropertyProblem [] propProblemArray = message.SetProps (propValueArray);
+					Assert.That (propProblemArray.Length, Is.EqualTo (0));
+					message.SaveChanges (0);
 				}
 			}
 
