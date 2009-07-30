@@ -70,13 +70,21 @@ namespace NMapi.Test
 		[Test]
 		public void FloatPropertyTest ()
 		{
-			// TODO
+			var p1 = new FloatProperty ();
+			p1.Value = 5.4f;
+			var p2 = new FloatProperty ();
+			p2.Value = -4.3f;
+			AssertFirstGreater (p1, p2);
 		}
 		
 		[Test]
 		public void DoublePropertyTest ()
 		{
-			// TODO
+			var p1 = new DoubleProperty ();
+			p1.Value = 5.4;
+			var p2 = new DoubleProperty ();
+			p2.Value = -4.3;
+			AssertFirstGreater (p1, p2);
 		}
 		
 		[Test]
@@ -112,7 +120,11 @@ namespace NMapi.Test
 		[Test]
 		public void LongPropertyTest ()
 		{
-			// TODO
+			var p1 = new LongProperty ();
+			p1.Value = 5;
+			var p2 = new LongProperty ();
+			p2.Value = -4;
+			AssertFirstGreater (p1, p2);
 		}
 		
 		[Test]
