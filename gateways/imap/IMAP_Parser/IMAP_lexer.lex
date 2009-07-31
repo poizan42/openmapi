@@ -266,6 +266,7 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandbase> {SP}(CHECK) { yybegin(commanddetail); return new Symbol(sym.CHECK, yytext().Substring(1, yytext().Length-1)); }
 <commandbase> {SP}(CLOSE) { yybegin(commanddetail); return new Symbol(sym.CLOSE, yytext().Substring(1)); }
 <commandbase> {SP}(EXPUNGE) { yybegin(commanddetail); return new Symbol(sym.EXPUNGE, yytext().Substring(1)); }
+<commandbase> {SP}(EXPUNGE){SP} { yybegin(commandsequence); return new Symbol(sym.EXPUNGE, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(COPY){SP} { yybegin(commandsequence); return new Symbol(sym.COPY, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(FETCH){SP} { yybegin(commandfetchsequence); return new Symbol(sym.FETCH, yytext().Substring(1, yytext().Length-2)); }
 <commandbase> {SP}(STORE){SP} { yybegin(commandstoresequence); return new Symbol(sym.STORE, yytext().Substring(1, yytext().Length-2)); }

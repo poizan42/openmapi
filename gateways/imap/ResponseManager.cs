@@ -44,7 +44,7 @@ imapConnectionState.Log( response.Tag + " Response2");
 				
 				// regular responses
 				foreach (Response r in responses) {
-					imapConnectionState.ClientConnection.Send (r.ToString());
+					imapConnectionState.ClientConnectionSend (r.ToString());
 				}
 
 imapConnectionState.Log( response.Tag + " Response3");
@@ -55,13 +55,13 @@ imapConnectionState.Log( response.Tag + " Response4");
 imapConnectionState.Log( response.Tag + " Response5");
 						foreach (Response r in imapConnectionState.ProcessNotificationResponses ()) {
 imapConnectionState.Log( response.Tag + " Response6 " + r.ToString ());
-							imapConnectionState.ClientConnection.Send (r.ToString());
+							imapConnectionState.ClientConnectionSend (r.ToString());
 						}
 					}
 				}
 imapConnectionState.Log( response.Tag + " Response7");
 				
-				imapConnectionState.ClientConnection.Send (response.ToString());
+				imapConnectionState.ClientConnectionSend (response.ToString());
 				
 imapConnectionState.Log( response.Tag + " Response8");
 				responses = new List<Response> ();

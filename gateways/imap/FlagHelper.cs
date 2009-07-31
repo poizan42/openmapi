@@ -315,6 +315,14 @@ namespace NMapi.Gateways.IMAP {
 			return new EntryList (query.ToArray ());
 		}
 
+		public static List<SequenceNumberListItem> DeletableMessagesAsSequenceNumberList (SequenceNumberList snl)
+		{
+			var query = from toDel in snl
+			where (IsDeleteMarked (toDel))
+			select toDel;
+			return new List<SequenceNumberListItem> (query.ToArray ());
+		}
+
 		public static Restriction BuildSearchRestriction (string searchKeyword) 
 		{
 			switch (searchKeyword) {

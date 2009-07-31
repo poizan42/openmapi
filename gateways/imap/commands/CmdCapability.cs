@@ -40,7 +40,7 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 
-			state.ResponseManager.AddResponse (new Response (ResponseState.NONE, Name).AddResponseItem ("IMAP4REV1")); //.AddResponseItem("UIDPLUS"));
+			state.ResponseManager.AddResponse (new Response (ResponseState.NONE, Name).AddResponseItem ("IMAP4REV1").AddResponseItem("UIDPLUS"));
 			state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag).AddResponseItem ("completed"));
 
 		}

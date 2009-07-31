@@ -187,7 +187,7 @@ terminal string
 
 non terminal
   command, command_detail, command_any,	command_auth, command_nonauth, command_select,
-  cmd_append, cmd_create, cmd_copy, cmd_delete, cmd_examine, cmd_fetch, cmd_list, cmd_lsub, cmd_login, 
+  cmd_append, cmd_create, cmd_copy, cmd_expunge, cmd_delete, cmd_examine, cmd_fetch, cmd_list, cmd_lsub, cmd_login, 
   cmd_rename, cmd_search, cmd_select, cmd_status, cmd_store, cmd_subscribe, cmd_unsubscribe, 
   opt_date_time, date_time, opt_flag_list,
   flag_list, flag_list_elements, flag_list_element, mailbox1, mailbox2, list_mailbox,
@@ -430,6 +430,14 @@ command_select ::=
 			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
 	:}
 	cmd_store
+	|
+	UID {: ParseInt.command.UIDCommand=true; :}
+	EXPUNGE:n
+	{: ParseInt.command.Command_name=n.ToUpper();
+	   if (!ParseInt.StateSelected ())
+			ParseInt.command.Parse_error = "statement not allowed in nonselected state";
+	:}
+	cmd_expunge
 	;
 
 
@@ -449,6 +457,14 @@ cmd_copy ::=
     sequence_set:ss
     SP
 	mailbox1
+	{: 
+		ParseInt.command.Sequence_set = ss;
+	:}
+	;
+/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
+
+cmd_expunge ::=
+    sequence_set:ss
 	{: 
 		ParseInt.command.Sequence_set = ss;
 	:}

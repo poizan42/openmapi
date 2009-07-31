@@ -377,7 +377,7 @@ servCon.State.Log ("changedir almost done");
 		}
 		
 
-		internal void BuildSequenceNumberList ()
+		public void BuildSequenceNumberList ()
 		{
 			sequenceNumberList = _BuildSequenceNumberList (out currentFolderTable, currentFolder);
 		}
@@ -388,7 +388,7 @@ servCon.State.Log ("changedir almost done");
 			return _BuildSequenceNumberList (out dummyTable, folder);
 		}
 
-		internal PropertyTag[] PropTagsForSequenceNumberList (IMapiProp iMapiProp)
+		public PropertyTag[] PropTagsForSequenceNumberList (IMapiProp iMapiProp)
 		{
 			if (uidPropTag == 0 || uidPathPropTag == 0 || uidEntryIdPropTag == 0 || additionalFlagsPropTag == 0) {
 				uidPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID).PropTag;
