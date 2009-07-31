@@ -161,7 +161,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 				if ("FLAGS ALL FAST FULL".Contains (Fetch_att_key)) {
 					fetchItems.AddResponseItem ("FLAGS");
-					fetchItems.AddResponseItem (Flags (props));
+					fetchItems.AddResponseItem (Flags (snli, props));
 				}
 				if ("ENVELOPE ALL FULL".Contains (Fetch_att_key)) {
 				}
@@ -252,7 +252,7 @@ namespace NMapi.Gateways.IMAP {
 					string Section_number1 = cfi.Section_number1;
 					string Section_number2 = cfi.Section_number2;
 					ResponseItemList bodyItems = null;
-					bodyItems = new ResponseItemList().SetSigns ("BODY[", "]");
+					bodyItems = new ResponseItemList ().SetSigns ("BODY[", "]");
 					MimeMessage mm = null;
 					HeaderGenerator headerGenerator = null;
 					// preparation for HEADER/TEXT/MIME
@@ -455,9 +455,9 @@ namespace NMapi.Gateways.IMAP {
 			return GetMessage (currentSNLI);
 		}
 		
-		public ResponseItemList Flags (PropertyHelper propertyHelper)
+		public ResponseItemList Flags (SequenceNumberListItem snli, PropertyHelper propertyHelper)
 		{
-			return new FlagHelper (propertyHelper).ResponseItemListFromFlags ();
+			return new FlagHelper (snli, propertyHelper).ResponseItemListFromFlags ();
 		}
 		
 

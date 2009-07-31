@@ -278,6 +278,7 @@ test:
 	/r:nunit.framework.dll /r:bin/NMapi.dll /r:bin/nmapisvr.exe \
 	/r:bin/NMapi.Provider.TeamXChange.dll /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
+	/r:System.Web.dll \
 	`find tests -name "*.cs"` $(TEST_SOURCES)
 # /r:bin/NMapi.Provider.WabiSabi.dll
 

@@ -16,6 +16,7 @@
 //
 
 using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -65,6 +66,7 @@ namespace NMapi.Gateways.IMAP {
 		private ulong msgStatus;
 		private ulong flagStatus;
 		private List<string> additionalFlags;
+		private bool recent;
 
 		public SBinary EntryId {
 			get { return entryId; }
@@ -110,6 +112,23 @@ namespace NMapi.Gateways.IMAP {
 		public List<string> AdditionalFlags {
 			get { return additionalFlags; }
 			set { additionalFlags = value; }
+		}
+
+		public string GetAdditionalFlagsAsString ()
+		{
+
+			if (additionalFlags == null)
+				return "";
+
+			StringBuilder sb = new StringBuilder ();
+			foreach (string str in additionalFlags)
+				sb.Append (str);
+			return sb.ToString();
+		}
+
+		public bool Recent {
+			get { return recent; }
+			set { recent = value; }
 		}
 
 		public SequenceNumberListItem () 

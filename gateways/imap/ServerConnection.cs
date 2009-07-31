@@ -197,6 +197,9 @@ state.Log ("Server1");
 
 		public void Disconnect()
 		{
+			if (folderHelper != null)
+				folderHelper.Dispose ();
+
 			if (session != null) {
 				state.Log ("serverconnection, disconnect");
 				CloseSession ();

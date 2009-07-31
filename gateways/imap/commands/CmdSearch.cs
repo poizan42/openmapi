@@ -84,8 +84,10 @@ namespace NMapi.Gateways.IMAP {
 					Console.WriteLine ("DoFetchLoop Query Rows");
 					RowSet rows = null;
 					while ((rows = contentsTable.QueryRows (querySize, Mapi.Unicode)).Count > 0) {
+						Console.WriteLine ("DoFetchLoop Query Rows Fetch");
 						r = new Response (ResponseState.NONE, Name);
 						foreach (Row row in rows) {
+							Console.WriteLine ("DoFetchLoop Query Rows Fetch Process Row");
 							uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 0)).Value;
 							if (uid != 0) {
 								if (command.UIDCommand) {
@@ -160,12 +162,11 @@ namespace NMapi.Gateways.IMAP {
 
 		private Restriction SoleKeywordRestriction (CommandSearchKey searchKey)
 		{
-/* XXX: BitMask Restrictions dont work for some reason....
 
 			if ("DELETED UNDELETED".Contains (searchKey.Keyword)) {
 				return FlagHelper.BuildSearchRestriction (searchKey.Keyword);
 			}
-*/
+
 			return null;
 		}
 
