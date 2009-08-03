@@ -50,7 +50,7 @@ namespace NMapi.Gateways.IMAP {
 						throw new Exception ("internal error");
 
 					PropertyValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
-					state.Log ("lsub 1");
+					Log ("lsub 1");
 					string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
 					if (subsArray == null)
 						subsArray = new string[] { };
@@ -60,18 +60,18 @@ namespace NMapi.Gateways.IMAP {
 					string path = ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox);
 					path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + path);
 					string path_no_jokers = path.Replace ("*", "").Replace ("%", "");
-					state.Log ("LSUB path: " + path);				
+					Log ("LSUB path: " + path);				
 					int pathLength = PathHelper.Path2Array (path).Length;
 				
 					foreach (string s in subs) {
-						state.Log ("lsub 2, s: " + s);
+						Log ("lsub 2, s: " + s);
 						if (s.StartsWith (path_no_jokers)) {
 							int sPathLength = (s.Trim () != string.Empty) ? PathHelper.Path2Array (s).Length : 0;
-							state.Log ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
+							Log ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
 							if ((path.EndsWith ("%") && sPathLength <= pathLength) ||
 								(path.EndsWith ("*") && sPathLength >= pathLength) ||
 								(!path.EndsWith ("%") && !path.EndsWith ("*") && sPathLength == pathLength)) {
-									state.Log ("lsub 4");
+									Log ("lsub 4");
 									string sendString = s.TrimStart ('/'); // get rid of leading "/"
 									sendString = state.FolderMappingAgent.MapMAPIToIMAP (sendString);
 									state.ResponseManager.AddResponse (
@@ -82,7 +82,7 @@ namespace NMapi.Gateways.IMAP {
 							}
 						}
 					}
-					state.Log ("lsub 6");
+					Log ("lsub 6");
 					state.ResponseManager.AddResponse (
 						new Response (ResponseState.OK, Name, command.Tag)
 							.AddResponseItem ("completed"));
@@ -90,7 +90,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		}
 

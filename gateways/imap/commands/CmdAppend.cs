@@ -81,7 +81,7 @@ namespace NMapi.Gateways.IMAP {
 						// fix UID info and append to SequenceNumberList. Can only happen after saving mail
 						SequenceNumberListItem snli = fh.AppendAndFixNewMessage (im);
 				
-						state.Log ("CmdAppend.Run finish");
+						Log ("CmdAppend.Run finish");
 						Response r = new Response (ResponseState.OK, Name, command.Tag);
 						r.Val = new ResponseItemList ().SetSigns ("", "")
 								.AddResponseItem ("APPENDUID")
@@ -93,7 +93,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 			} catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		}
 

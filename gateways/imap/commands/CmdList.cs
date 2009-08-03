@@ -142,7 +142,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		
 		}
@@ -150,7 +150,7 @@ namespace NMapi.Gateways.IMAP {
 
 		internal List<Response> FindSubDirs (IMapiContainer parent, string path, int depth, string filter)
 		{
-			state.Log ("findsubdirs:"+path+":"+depth+":"+filter);			
+			Log ("findsubdirs:"+path+":"+depth+":"+filter);			
 			List<Response> nameList = new List<Response> ();
 			IMapiTableReader tableReader = null;
 			try {

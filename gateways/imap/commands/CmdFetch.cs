@@ -69,7 +69,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 			return;
 		}
@@ -269,7 +269,7 @@ namespace NMapi.Gateways.IMAP {
 
 							// fill message
 							if (section_text == null || section_text == "TEXT" || section_text == "HEADER") {
-								state.Log ("memory test1");
+								Log ("memory test1");
 								mm = ma2mi.BuildMimeMessageFromMapi (props, im, headerGenerator.InternetHeaders);
 								state.SetCache (snli.EntryId, mm);
 							}

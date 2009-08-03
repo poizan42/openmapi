@@ -441,7 +441,7 @@ servCon.State.Log ("changedir almost done");
 			return _BuildSequenceNumberListItem (props);
 		}
 
-		internal SequenceNumberListItem AppendAndFixNewMessage (IMessage im)
+		public SequenceNumberListItem AppendAndFixNewMessage (IMessage im)
 		{
 			SequenceNumberListItem snli = SequenceNumberListItemFromIMessage (im);
 			SetUID (snli);

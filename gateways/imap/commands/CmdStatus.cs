@@ -49,7 +49,7 @@ namespace NMapi.Gateways.IMAP {
 			if (command.Mailbox1 != null) {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-					state.Log ("Select: path = " + path);
+					Log ("Select: path = " + path);
 					using (IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path)) {
 
 						// build sequence number list
@@ -96,7 +96,7 @@ namespace NMapi.Gateways.IMAP {
 					}
 				} catch (Exception e) {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-					state.Log (e.StackTrace);
+					Log (e.StackTrace);
 					return;
 				}
 			}

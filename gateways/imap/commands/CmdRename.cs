@@ -105,7 +105,7 @@ namespace NMapi.Gateways.IMAP {
 			catch (Exception e) {
 				// XXX better error handling would be nice
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		}
 	}

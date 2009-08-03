@@ -62,7 +62,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 			} catch (Exception e) { 
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 				
 		}
@@ -94,7 +94,7 @@ state.Log ("uidexpunge1");
 			// subtract all Entry-IDs which have not been named by the sequence-set
 			var querySequenceSet = servCon.FolderHelper.BuildSequenceSetQuery (command);
 			var query2 = from snl in querySequenceSet
-							where !(snlDel.Contains (snl))
+							where (0 != snlDel.Count ((x) => x.UID == snl.UID))
 							select snl;
 
 state.Log ("uidexpunge2");
@@ -102,7 +102,6 @@ state.Log ("uidexpunge2");
 			var entry_ids = from snl in query2
 							select snl.EntryId;
 			EntryList el = new EntryList (entry_ids.ToArray ());
-
 state.Log ("uidexpunge3");
 			servCon.FolderHelper.CurrentFolder.DeleteMessages (el, null, 0);
 			servCon.FolderHelper.CurrentFolder.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
