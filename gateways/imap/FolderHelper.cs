@@ -35,7 +35,7 @@ using System.Security.Cryptography;
 namespace NMapi.Gateways.IMAP {
 	
 	
-	public class FolderHelper
+	public class FolderHelper : IDisposable
 	{
 
 		private ServerConnection servCon;
@@ -116,6 +116,13 @@ namespace NMapi.Gateways.IMAP {
 			get { return additionalFlagsPropTag; }
 		}
 
+		public static int UIDPropTag {
+			get { 
+				if (uidPropTag == 0)
+					throw new Exception ("Use only, if select has been executed before in the session");
+				return uidPropTag; 
+			}
+		}
 		
 		
 		internal object _SharedGetSubDir (IMapiContainer parent, string match, 
@@ -131,7 +138,7 @@ namespace NMapi.Gateways.IMAP {
 			}
 
 			while (true) {
-				RowSet rows = tableReader.GetRows (10);
+				RowSet rows = tableReader.GetRows (50);
 				if (rows.Count == 0)
 					break;
 
@@ -246,7 +253,7 @@ servCon.State.Log ("changedir almost done");
 				return new string [] {};
 			}
 			while (true) {
-				RowSet rows = tableReader.GetRows (30);
+				RowSet rows = tableReader.GetRows (50);
 				if (rows.Count == 0)
 					break;
 				int nameIndex = -1;
@@ -295,7 +302,6 @@ servCon.State.Log ("changedir almost done");
 			}
 		}			
 
-		
 		private void SetUID (SequenceNumberListItem snli)
 		{
 			
@@ -312,15 +318,15 @@ servCon.State.Log ("changedir almost done");
 			}
 			
 			List<PropertyValue> lv = new List<PropertyValue> ();
-			IntProperty longValue = (IntProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID);
+			IntProperty longValue = (IntProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID);
 			longValue.Value = (int) snli.UID;
 			lv.Add (longValue);
 			
-			UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Path);
+			UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Path);
 			unicodeValue.Value = snli.Path;
 			lv.Add (unicodeValue);
 
-			BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedProp (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
+			BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
 			binaryValue.Value = snli.CreationEntryId;
 			lv.Add (binaryValue);
 
@@ -371,7 +377,7 @@ servCon.State.Log ("changedir almost done");
 		}
 		
 
-		internal void BuildSequenceNumberList ()
+		public void BuildSequenceNumberList ()
 		{
 			sequenceNumberList = _BuildSequenceNumberList (out currentFolderTable, currentFolder);
 		}
@@ -380,6 +386,25 @@ servCon.State.Log ("changedir almost done");
 		{
 			IMapiTable dummyTable;
 			return _BuildSequenceNumberList (out dummyTable, folder);
+		}
+
+		public PropertyTag[] PropTagsForSequenceNumberList (IMapiProp iMapiProp)
+		{
+			if (uidPropTag == 0 || uidPathPropTag == 0 || uidEntryIdPropTag == 0 || additionalFlagsPropTag == 0) {
+				uidPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID).PropTag;
+				uidPathPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Path).PropTag;
+				uidEntryIdPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
+				additionalFlagsPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
+			}
+
+			int [] propTags = new int[] 
+			{ 
+				Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag,
+				uidPathPropTag, uidEntryIdPropTag
+			}
+			.Union (FlagHelper.PropsFlagProperties).ToArray ();
+
+			return PropertyTag.ArrayFromIntegers (propTags);
 		}
 
 		public SequenceNumberList _BuildSequenceNumberList (out IMapiTable currentTable, IMapiFolder folder)
@@ -396,75 +421,79 @@ servCon.State.Log ("changedir almost done");
 				return snl;
 			}
 
-			if (uidPropTag == 0 || uidPathPropTag == 0 || uidEntryIdPropTag == 0 || additionalFlagsPropTag == 0) {
-				uidPropTag = servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UID).PropTag;
-				uidPathPropTag = servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Path).PropTag;
-				uidEntryIdPropTag = servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
-				additionalFlagsPropTag = servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
-			}
-
-			int [] propTags = new int[] 
-			{ 
-				Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag,
-				uidPathPropTag, uidEntryIdPropTag
-			}
-			.Union (FlagHelper.PropsFlagProperties).ToArray ();
-			
-			currentTable.SetColumns (PropertyTag.ArrayFromIntegers (propTags), 0);
+			currentTable.SetColumns (PropTagsForSequenceNumberList (folder), 0);
 			
 			servCon.State.Log ("Select1");
 			while (true) {
-				servCon.State.Log ("Select3");
-				servCon.State.Log ("Select3b");
-				RowSet rows = currentTable.QueryRows (10, Mapi.Unicode);
-				servCon.State.Log ("Select4");
+				RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
 				if (rows.Count == 0)
 					break;
 				foreach (Row row in rows) {
-					servCon.State.Log ("Select5");
-					SequenceNumberListItem snli = new SequenceNumberListItem ();
-					BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(row.Props, 0);
-						
-					servCon.State.Log ("Select5a");
-					if (entryId != null) 
-						snli.EntryId = entryId.Value;
-					servCon.State.Log ("Select5b");
-						
-					PropertyValue val = PropertyValue.GetArrayProp(row.Props, 1);
-					if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
-						
-					val = PropertyValue.GetArrayProp(row.Props, 3);
-					if (val != null) snli.UID = ((IntProperty) val).Value;
-						
-					val = PropertyValue.GetArrayProp(row.Props, 4);
-					if (val != null) snli.Path = ((UnicodeProperty) val).Value;
-						
-					val = PropertyValue.GetArrayProp(row.Props, 5);
-					if (val != null) snli.CreationEntryId = ((BinaryProperty) val).Value;
-						
-					val = PropertyValue.GetArrayProp(row.Props, 6);
-					if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
-Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
-						
-					val = PropertyValue.GetArrayProp(row.Props, 7);
-					if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
-
-					val = PropertyValue.GetArrayProp(row.Props, 8);
-					if (val != null) snli.FlagStatus = (ulong) ((IntProperty) val).Value;
-
-					val = PropertyValue.GetArrayProp(row.Props, 9);
-					try {
-						if (val != null) 
-							snli.AdditionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) val).Value);
-					} catch (Exception)
-					{
-					}
-
-					servCon.State.Log ("Select8");
-					snl.Add (snli);
+					snl.Add (_BuildSequenceNumberListItem (row.Props));
 				}
 			}
 			return snl;
+		}
+
+		internal SequenceNumberListItem SequenceNumberListItemFromIMessage (IMessage im)
+		{
+			PropertyValue[] props = im.GetProps (PropTagsForSequenceNumberList (im), Mapi.Unicode);
+			return _BuildSequenceNumberListItem (props);
+		}
+
+		public SequenceNumberListItem AppendAndFixNewMessage (IMessage im)
+		{
+			SequenceNumberListItem snli = SequenceNumberListItemFromIMessage (im);
+			SetUID (snli);
+			sequenceNumberList.Add (snli);
+			return snli;
+		}
+
+		internal SequenceNumberListItem _BuildSequenceNumberListItem (PropertyValue[] props)
+		{
+			servCon.State.Log ("Select5");
+			SequenceNumberListItem snli = new SequenceNumberListItem ();
+			BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(props, 0);
+			
+			servCon.State.Log ("Select5a");
+			if (entryId != null) 
+				snli.EntryId = entryId.Value;
+			servCon.State.Log ("Select5b");
+			
+			PropertyValue val = PropertyValue.GetArrayProp(props, 1);
+			if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
+			
+			val = PropertyValue.GetArrayProp(props, 3);
+			if (val != null) snli.UID = ((IntProperty) val).Value;
+			
+			val = PropertyValue.GetArrayProp(props, 4);
+			if (val != null) snli.Path = ((UnicodeProperty) val).Value;
+			
+			val = PropertyValue.GetArrayProp(props, 5);
+			if (val != null) snli.CreationEntryId = ((BinaryProperty) val).Value;
+			
+			val = PropertyValue.GetArrayProp(props, 6);
+			if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
+Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
+			
+			val = PropertyValue.GetArrayProp(props, 7);
+			if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
+
+			val = PropertyValue.GetArrayProp(props, 8);
+			if (val != null) snli.FlagStatus = (ulong) ((IntProperty) val).Value;
+
+			val = PropertyValue.GetArrayProp(props, 9);
+			try {
+				if (val != null) 
+					snli.AdditionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) val).Value);
+				else
+					snli.AdditionalFlags = new List<string> ();
+			} catch (Exception)
+			{
+				snli.AdditionalFlags = new List<string> ();
+			}
+
+			return snli;
 		}
 
 		internal int FixUIDsInSequenceNumberList ()
@@ -479,6 +508,7 @@ Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 			foreach (SequenceNumberListItem snli in query) {
 servCon.State.Log ("FixUIDsIn");
 				SetUID (snli);
+				snli.Recent = true;
 			}
 
 			sequenceNumberList.Sort ();
@@ -604,5 +634,14 @@ servCon.State.Log ("FixUIDsIn");
 				}
 			return 0; // should never be reached
 		}						
+
+		public void Dispose ()
+		{
+			if (currentFolderTable != null)
+				currentFolderTable.Dispose ();
+
+			if (currentFolder != null)
+				currentFolder.Dispose ();
+		}
 	}
 }

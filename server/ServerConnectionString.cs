@@ -85,10 +85,10 @@ namespace NMapi.Server {
 		{
 			this.data = new Dictionary<string, string> ();
 			Parse (str);
-
-
+#if DEBUG
 			foreach (var pair in data)
 				Console.WriteLine (pair.Key, pair.Value);
+#endif
 		}
 
 		private bool HasKeyNotNull (string key)

@@ -147,6 +147,16 @@ namespace NMapi.Utility {
 			}
 		}
 
+		public bool Boolean {
+			get {
+				if (Index != -1) {
+					PropertyValue val = PropertyValue.GetArrayProp(props, Index);
+					if (val != null)
+						return ((BooleanProperty) val).Value != 0;
+				}
+				return false;
+			}
+		}
 		
 		// fixed in core. TODO: remove this method and any reference to it.
 		public static string Trim0Terminator (string str)

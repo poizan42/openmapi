@@ -91,6 +91,7 @@ namespace NMapi.Gateways.IMAP {
 			case "NOOP": cmd = new CmdNoop (imapConnectionState); break;
 			case "RENAME": cmd = new CmdRename (imapConnectionState); break;
 			case "SELECT": cmd = new CmdSelect (imapConnectionState); break;
+			case "SEARCH": cmd = new CmdSearch (imapConnectionState); break;
 			case "STORE": cmd = new CmdStore (imapConnectionState); break;
 			case "STATUS": cmd = new CmdStatus (imapConnectionState); break;
 			case "SUBSCRIBE": cmd = new CmdSubscribe (imapConnectionState); break;

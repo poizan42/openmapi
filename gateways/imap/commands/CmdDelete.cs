@@ -54,21 +54,22 @@ namespace NMapi.Gateways.IMAP {
 				}
 
 				string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-				IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path);
-				if (folder == null) {
-					state.ResponseManager.AddResponse (
-						new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
-					return;
-				}
+				using (IMapiFolder folder = ServCon.FolderHelper.OpenFolder (path)) {
+					if (folder == null) {
+						state.ResponseManager.AddResponse (
+							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
+						return;
+					}
 
-				MapiPropHelper mph = new MapiPropHelper (folder);
-				BinaryProperty eId = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
-				folder.DeleteFolder (eId.Value.ByteArray, null, 0);
-				state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+					MapiPropHelper mph = new MapiPropHelper (folder);
+					BinaryProperty eId = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
+					folder.DeleteFolder (eId.Value.ByteArray, null, 0);
+					state.ResponseManager.AddResponse (new Response (ResponseState.OK, Name, command.Tag));
+				}
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		}
 

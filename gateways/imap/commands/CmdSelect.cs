@@ -59,7 +59,7 @@ namespace NMapi.Gateways.IMAP {
 			if (command.Mailbox1 != null) {
 				try {
 					string path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
-					state.Log ("Select: path = " + path);					
+					Log ("Select: path = " + path);					
 					if (!ServCon.FolderHelper.ChangeDir (path)) {
 						state.ResponseManager.AddResponse (
 							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
@@ -122,7 +122,7 @@ namespace NMapi.Gateways.IMAP {
 					return true;
 				} catch (Exception e) {
 					state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-					state.Log (e.StackTrace);
+					Log (e.StackTrace);
 					return false;
 				}
 			}

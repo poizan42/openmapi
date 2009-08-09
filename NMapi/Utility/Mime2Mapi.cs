@@ -77,6 +77,13 @@ namespace NMapi.Utility {
 			uprop.Value = "IPM.Note";
 			props.Add (uprop);
 	
+			if (mm.GetMessageID () != null) {
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Outlook.Property.INTERNET_MESSAGE_ID_W;
+				uprop.Value = mm.GetMessageID ();
+				props.Add (uprop);
+			}
+
 			uprop = new UnicodeProperty ();
 			uprop.PropTag = Property.Subject;
 			uprop.Value = MimeUtility.DecodeText (string.Empty + mm.GetHeader ("Subject", ";") );
@@ -115,8 +122,56 @@ namespace NMapi.Utility {
 			lprop.Value = prioVal - 1;
 			props.Add (lprop);
 			
+
+			// sentRepresenting and sender must be filled the same, so
+			// Outlook will display it as regular sender, not as representing xxxx
+			// Also, use rfc822.sender for from, if from is empty & vice versa
+			InternetAddress[] sentRepresenting = mm.GetFrom ();
+			InternetAddress[] sender = mm.GetSender ();
+			if (sentRepresenting.Length == 0) sentRepresenting = sender;
+			if (sender.Length == 0) sender = sentRepresenting;
+
 			//sender address
-			foreach (InternetAddress ia in mm.GetFrom ()) {
+			foreach (InternetAddress ia in sentRepresenting) {
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingAddrType;
+				uprop.Value = "SMTP";
+				props.Add (uprop);
+
+				string sentRepresentingName = (ia.Personal == null) ? ia.Email:ia.Personal;
+				string sentRepresentingAdress = (ia.Email == null) ? "":ia.Email;
+	
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingName;
+				uprop.Value = sentRepresentingName;
+				props.Add (uprop);
+	
+				sprop = new String8Property ();
+				sprop.PropTag = Property.SentRepresentingEmailAddressA;
+				sprop.Value = sentRepresentingAdress;
+				props.Add (sprop);
+				uprop = new UnicodeProperty ();
+				uprop.PropTag = Property.SentRepresentingEmailAddressW;
+				uprop.Value = sentRepresentingAdress;
+				props.Add (uprop);
+
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SentRepresentingSearchKey;
+				bprop.Value = new SBinary (Encoding.ASCII.GetBytes ("SMTP:"+sentRepresentingAdress));
+				props.Add (bprop);
+	
+
+				OneOff oneOff = new OneOff (sentRepresentingName, "SMTP", sentRepresentingAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SentRepresentingEntryId;
+				bprop.Value = new SBinary (oneOff.EntryID);
+				props.Add (bprop);
+
+				break;
+			}
+	
+			//sender address
+			foreach (InternetAddress ia in sender) {
 				uprop = new UnicodeProperty ();
 				uprop.PropTag = Property.SenderAddrType;
 				uprop.Value = "SMTP";
@@ -139,6 +194,12 @@ namespace NMapi.Utility {
 				uprop.Value = senderAdress;
 				props.Add (uprop);
 
+				bprop = new BinaryProperty ();
+				bprop.PropTag = Property.SenderSearchKey;
+				bprop.Value = new SBinary (Encoding.ASCII.GetBytes ("SMTP:"+senderAdress));
+				props.Add (bprop);
+	
+
 				OneOff oneOff = new OneOff (senderName, "SMTP", senderAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
 				bprop = new BinaryProperty ();
 				bprop.PropTag = Property.SenderEntryId;
@@ -157,7 +218,7 @@ namespace NMapi.Utility {
 			PropertyProblem [] sppa = im.SetProps (props.ToArray ());
 			for (int i = 0; i < sppa.Length; i++) 
 				if (sppa [i].SCode != Error.Computed) {
-					Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
+					Console.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
 					throw MapiException.Make (sppa [i].SCode);
 			}
 			im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
@@ -172,6 +233,7 @@ namespace NMapi.Utility {
 			ih.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
 			ih.RemoveHeader (MimePart.CONTENT_TYPE_NAME);
 			ih.RemoveHeader ("From");
+			ih.RemoveHeader ("Sender");
 			ih.RemoveHeader ("To");
 			ih.RemoveHeader ("Cc");
 			ih.RemoveHeader ("Bcc");
@@ -193,12 +255,12 @@ namespace NMapi.Utility {
 		
 		private void MimeToMapiRecipients (MimeMessage mm, IMessage im, List<PropertyValue> props) 
 		{
-			Trace.WriteLine ("MimeToMapiRecipients 1");
+			Console.WriteLine ("MimeToMapiRecipients 1");
 			List<AdrEntry> lae = new List<AdrEntry> ();
 			foreach (RecipientType rt in new RecipientType [] {RecipientType.TO, RecipientType.CC, RecipientType.BCC}) {
-				Trace.WriteLine ("MimeToMapiRecipients 2");
+				Console.WriteLine ("MimeToMapiRecipients 2");
 				foreach (InternetAddress ia in mm.GetRecipients (rt)) {
-					Trace.WriteLine ("MimeToMapiRecipients 3");
+					Console.WriteLine ("MimeToMapiRecipients 3");
 					List<PropertyValue> lpv= new List<PropertyValue> ();
 					
 					IntProperty lprop = new IntProperty ();
@@ -236,17 +298,22 @@ namespace NMapi.Utility {
 					uprop.Value = recAdress;
 //					lpv.Add (uprop);
 
-					Trace.WriteLine ("MimeToMapiRecipients " + recAdress);
+					Console.WriteLine ("MimeToMapiRecipients " + recAdress);
 
 					uprop = new UnicodeProperty ();
 					uprop.PropTag = Property.DisplayName;
 					uprop.Value = recName;
 					lpv.Add (uprop);
 					
-					Trace.WriteLine ("MimeToMapiRecipients " + recName);
+					Console.WriteLine ("MimeToMapiRecipients " + recName);
+
+					BinaryProperty bprop = new BinaryProperty ();
+					bprop.PropTag = Property.SearchKey;
+					bprop.Value = new SBinary (Encoding.ASCII.GetBytes ("SMTP:"+recAdress));
+					lpv.Add (bprop);
 
 					OneOff oneOff = new OneOff (recName, "SMTP", recAdress, Mapi.Unicode | NMAPI.MAPI_SEND_NO_RICH_INFO);
-					BinaryProperty bprop = new BinaryProperty ();
+					bprop = new BinaryProperty ();
 					bprop.PropTag = Property.EntryId;
 					bprop.Value = new SBinary (oneOff.EntryID);
 					lpv.Add (bprop);
@@ -254,19 +321,19 @@ namespace NMapi.Utility {
 
 					AdrEntry ae = new AdrEntry (lpv.ToArray ());
 					lae.Add (ae);
-					Trace.WriteLine ("MimeToMapiRecipients 8");
+					Console.WriteLine ("MimeToMapiRecipients 8");
 				}
 			}
 			
-			Trace.WriteLine ("MimeToMapiRecipients 9");
+			Console.WriteLine ("MimeToMapiRecipients 9");
 			if (lae.Count () > 0) {
-				Trace.WriteLine ("MimeToMapiRecipients 10");
+				Console.WriteLine ("MimeToMapiRecipients 10");
 				AdrList al = new AdrList (lae.ToArray ());
-				Trace.WriteLine ("MimeToMapiRecipients 11");
+				Console.WriteLine ("MimeToMapiRecipients 11");
 				im.ModifyRecipients (ModRecip.Add, al);
-				Trace.WriteLine ("MimeToMapiRecipients 12");
+				Console.WriteLine ("MimeToMapiRecipients 12");
 			}
-			Trace.WriteLine ("recipients end");
+			Console.WriteLine ("recipients end");
 		}
 		
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<PropertyValue> props) 
@@ -274,14 +341,14 @@ namespace NMapi.Utility {
 			UnicodeProperty uprop = null;
 			String8Property sprop = null;
 			string charset = null;
-			Trace.WriteLine ("MimeToMapiAttachments ct = " + mm.ContentType);		
+			Console.WriteLine ("MimeToMapiAttachments ct = " + mm.ContentType);		
 
 			if (mm.ContentType == null || mm.ContentType.ToLower () == "text/plain") {
-				Trace.WriteLine ("MimeToMapiAttachments Prop Body");			
+				Console.WriteLine ("MimeToMapiAttachments Prop Body");			
 
 				string textPlain;
 				if (mm.ContentType != null && mm.ContentType.ToLower () == "text/plain") {
-					Trace.WriteLine ("MimeToMapiAttachments text/plain");
+					Console.WriteLine ("MimeToMapiAttachments text/plain");
 					charset = mm.ContentTypeHeader.GetParam ("charset");
 					if (charset != null) {
 						// only first text/plain part may determine the main messages character set
@@ -312,11 +379,12 @@ namespace NMapi.Utility {
 				msTextPlain = new MemoryStream (msTextPlain.ToArray ());
 				issTextPlain.PutData (msTextPlain);
 				msTextPlain.Close ();
+				issTextPlain.Close ();
 
 				prBodyFilled = true;
 
 			} else if (mm.ContentType.ToLower () == "text/html") {
-				Trace.WriteLine ("MimeToMapiAttachments text/html");
+				Console.WriteLine ("MimeToMapiAttachments text/html");
 				PropertyHelper ph = new PropertyHelper (props.ToArray ());
 				ph.Prop = Outlook.Property.INTERNET_CPID;
 				if (!ph.Exists) {
@@ -343,6 +411,7 @@ namespace NMapi.Utility {
 				msHtml = new MemoryStream (msHtml.ToArray ());
 				issHtml.PutData (msHtml);
 				msHtml.Close ();
+				issHtml.Close ();
 				prRtfFilled = true;
 
 				// If plain text body has not been filled so far, fill it with a dummy.
@@ -358,7 +427,7 @@ namespace NMapi.Utility {
 			} else if (mm.ContentType.ToLower () == ("multipart/alternative") &&
 			           mm.Content != null && 
 			           mm.Content.GetType () == typeof (MimeMultipart)) {
-				Trace.WriteLine ("MimeToMapiAttachments mutlipart/alternative");			
+				Console.WriteLine ("MimeToMapiAttachments mutlipart/alternative");			
 				// allow multiple items to be a main text item.
 				// will allow 
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
@@ -372,12 +441,12 @@ namespace NMapi.Utility {
 			} else if (mm.ContentType.StartsWith ("multipart") &&
 			           mm.Content != null && 
 			           mm.Content.GetType () == typeof (MimeMultipart)) {
-				Trace.WriteLine ("MimeToMapiAttachments nultipart");			
+				Console.WriteLine ("MimeToMapiAttachments nultipart");			
 				MimeMultipart mmp = (MimeMultipart) mm.Content;
 				int mpCount = 0;
 				foreach (MimeBodyPart mp in mmp) {
-					Trace.WriteLine (mp.Content.GetType ().ToString ());
-					Trace.WriteLine (mp.ContentType);
+					Console.WriteLine (mp.Content.GetType ().ToString ());
+					Console.WriteLine (mp.ContentType);
 
 					if (mp.GetType () == typeof (MimeBodyPart)) {
 						// identify main body content if there are multiple attachments
@@ -385,7 +454,7 @@ namespace NMapi.Utility {
 						if (mpCount == 0 &&
 							(mp.ContentType.ToLower () == "text/plain" && !prBodyFilled)||
 							(mp.ContentType.ToLower () == "text/html") && !prRtfFilled) {
-							Trace.WriteLine ("MimeToMapiAttachments multipart, first text/plain or first text/html");
+							Console.WriteLine ("MimeToMapiAttachments multipart, first text/plain or first text/html");
 							MimeToMapiAttachments (mp, im, props);
 
 						// if multipart/alternative appears as first item in the mutlipart
@@ -393,7 +462,7 @@ namespace NMapi.Utility {
 						} else if (mpCount == 0 && !prBodyFilled && !prRtfFilled &&
 							mp.ContentType.ToLower ().StartsWith ("multipart/alternative")) {
 							if (mp.Content != null && mp.Content.GetType () == typeof (MimeMultipart)) {
-								Trace.WriteLine ("MimeToMapiAttachments multipart/alternative");
+								Console.WriteLine ("MimeToMapiAttachments multipart/alternative");
 								MimeToMapiAttachments (mp, im, props);
 							}
 
@@ -401,12 +470,12 @@ namespace NMapi.Utility {
 						// attachments.
 						} else if (mp.ContentType.ToLower ().StartsWith ("multipart")) {
 							if (mp.Content != null && mp.Content.GetType () == typeof (MimeMultipart)) {
-								Trace.WriteLine ("MimeToMapiAttachments multipart/...");
+								Console.WriteLine ("MimeToMapiAttachments multipart/...");
 								MimeToMapiAttachments (mp, im, props);
 							}
 
 						} else if (mp.ContentType.ToLower ().StartsWith ("message")) {
-								Trace.WriteLine ("MimeToMapiAttachments message/...");
+								Console.WriteLine ("MimeToMapiAttachments message/...");
 								MimeToMapiEmbeddedMessages ((MimeMessage) mp.Content, im, props);
 						} else {
 							// handle as trivial attachment
@@ -423,6 +492,7 @@ namespace NMapi.Utility {
 								ms = new MemoryStream ((byte []) mp.Content);
 							iss.PutData (ms);
 							ms.Close ();
+							iss.Close ();
 
 							List<PropertyValue> aprops = new List<PropertyValue> ();
 							
@@ -431,7 +501,7 @@ namespace NMapi.Utility {
 							lprop.Value = (int) Attach.ByValue;
 							aprops.Add (lprop);
 
-							Trace.WriteLine ("MimeToMapiAttachments name");			
+							Console.WriteLine ("MimeToMapiAttachments name");			
 							string name = mp.ContentTypeHeader.GetParam ("name");
 							if (name != null) {
 								uprop = new UnicodeProperty ();
@@ -450,7 +520,7 @@ namespace NMapi.Utility {
 								aprops.Add (uprop);
 							}
 							
-							Trace.WriteLine ("MimeToMapiAttachments content type");			
+							Console.WriteLine ("MimeToMapiAttachments content type");			
 							string extension = MimeUtility.MimeToExt (mp.ContentType);
 							if (extension != null) {
 								uprop = new UnicodeProperty ();
@@ -458,15 +528,15 @@ namespace NMapi.Utility {
 								uprop.Value = "." + extension;
 								aprops.Add (uprop);
 							}
-							Trace.WriteLine (extension);
+							Console.WriteLine (extension);
 
-							Trace.WriteLine ("MimeToMapiAttachments mime tag");
+							Console.WriteLine ("MimeToMapiAttachments mime tag");
 							uprop = new UnicodeProperty ();
 							uprop.PropTag = Property.AttachMimeTag;
 							uprop.Value = mp.ContentType;
 							aprops.Add (uprop);
 
-							Trace.WriteLine ("MimeToMapiAttachments rendering positiion ");			
+							Console.WriteLine ("MimeToMapiAttachments rendering positiion ");			
 							IntProperty iprop = new IntProperty ();
 							iprop.PropTag = Property.RenderingPosition;
 							iprop.Value = -1;
@@ -474,7 +544,7 @@ namespace NMapi.Utility {
 
 							string content_id = mp.GetHeader ("Content-ID", ";");
 							if (content_id != null) {
-								Trace.WriteLine ("MimeToMapiAttachments content-id ");			
+								Console.WriteLine ("MimeToMapiAttachments content-id ");			
 								uprop = new UnicodeProperty ();
 								uprop.PropTag = Outlook.Property_ATTACH_CONTENT_ID_W;
 								content_id = content_id.TrimStart (new char [] {'<'});
@@ -487,7 +557,7 @@ namespace NMapi.Utility {
 								PropertyProblem [] sppa = ia.SetProps (aprops.ToArray ());
 								for (int i = 0; i < sppa.Length; i++)
 									if (sppa [i].SCode != Error.Computed) {
-										Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
+										Console.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
 										throw MapiException.Make (sppa [i].SCode);
 								}
 								ia.SaveChanges (NMAPI.FORCE_SAVE);
@@ -508,7 +578,7 @@ namespace NMapi.Utility {
 			UnicodeProperty uprop = null;
 			String8Property sprop = null;
 			string charset = null;
-			Trace.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
+			Console.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
 
 			// get the subject name here, as the subject header is being removed in the process of StoreMimeMessage
 			string name = mm.GetSubject ();
@@ -528,7 +598,7 @@ namespace NMapi.Utility {
 			lprop.Value = (int) Attach.EmbeddedMsg;
 			aprops.Add (lprop);
 
-			Trace.WriteLine ("MimeToMapiEmbeddedMessages subject--> displayname" + name);			
+			Console.WriteLine ("MimeToMapiEmbeddedMessages subject--> displayname" + name);			
 			uprop = new UnicodeProperty ();
 			uprop.PropTag = Property.DisplayName;
 			uprop.Value = name;
@@ -538,9 +608,9 @@ namespace NMapi.Utility {
 				PropertyProblem [] sppa = ia.SetProps (aprops.ToArray ());
 				for (int i = 0; i < sppa.Length; i++)
 					if (sppa [i].SCode != Error.Computed) {
-						Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
+						Console.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
 						throw MapiException.Make (sppa [i].SCode);
-				}
+					}
 				ia.SaveChanges (NMAPI.FORCE_SAVE);
 			} catch (Exception e) {
 				throw e;

@@ -104,24 +104,24 @@ namespace CompactTeaSharp.Server
 		public event EventHandler<ConnectionClosedEventArgs> ConnectionClosed;
 		
 		/// <summary>
-		//   Create a new instance of a <code>OncRpcTcpServerTransport</code> which
-		//   encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
-		//   particular server transport only waits for incoming connection requests
-		//   and then creates {@link OncRpcTcpConnectionServerTransport} server transports
-		//   to handle individual connections.
-		//   This constructor is a convenience constructor for those transports
-		//   handling only a single ONC/RPC program and version number.
+		///   Create a new instance of a <code>OncRpcTcpServerTransport</code> which
+		///   encapsulates TCP/IP-based XDR streams of an ONC/RPC server. This
+		///   particular server transport only waits for incoming connection requests
+		///   and then creates {@link OncRpcTcpConnectionServerTransport} server transports
+		///   to handle individual connections.
+		///   This constructor is a convenience constructor for those transports
+		///   handling only a single ONC/RPC program and version number.
 		/// </summary>
-		// <param name="dispatcher">Reference to interface of an object capable of
-		//   dispatching (handling) ONC/RPC calls.</param>
-		// <param name="port">Number of port where the server will wait for incoming
-		//   calls.</param>
-		// <param name="program">Number of ONC/RPC program handled by this server
-		//   transport.</param>
-		// <param name="version">Version number of ONC/RPC program handled.</param>
-		// <param name="bufferSize">Size of buffer used when receiving and sending
-		//   chunks of XDR fragments over TCP/IP. The fragments built up to
-		//   form ONC/RPC call and reply messages.</param>
+		/// <param name="dispatcher">Reference to interface of an object capable of
+		///   dispatching (handling) ONC/RPC calls.</param>
+		/// <param name="port">Number of port where the server will wait for incoming
+		///   calls.</param>
+		/// <param name="program">Number of ONC/RPC program handled by this server
+		///   transport.</param>
+		/// <param name="version">Version number of ONC/RPC program handled.</param>
+		/// <param name="bufferSize">Size of buffer used when receiving and sending
+		///   chunks of XDR fragments over TCP/IP. The fragments built up to
+		///   form ONC/RPC call and reply messages.</param>
 		// throws OncRpcException, IOException 
 		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher, int port, 
 			int program, int version, int bufferSize) : this (dispatcher, port, bufferSize)
@@ -156,14 +156,14 @@ namespace CompactTeaSharp.Server
 		///  and then creates {@link OncRpcTcpConnectionServerTransport} server transports
 		///  to handle individual connections.
 		/// </summary>
-		/// <param dispatcher Reference to interface of an object capable of
+		/// <param name="dispatcher">Reference to interface of an object capable of
 		///     dispatching (handling) ONC/RPC calls.</param>
-		/// <param bindAddr The local Internet Address the server will bind to.
-		/// <param port Number of port where the server will wait for incoming
+		/// <param name="bindAddr">The local Internet Address the server will bind to.</param>
+		/// <param name="port">Number of port where the server will wait for incoming
 		///     calls.</param>
-		/// <param info Array of program and version number tuples of the ONC/RPC
+		/// <param name="info">Array of program and version number tuples of the ONC/RPC
 		///     programs and versions handled by this transport.</param>
-		/// <param bufferSize Size of buffer used when receiving and sending
+		/// <param name="bufferSize">Size of buffer used when receiving and sending
 		///     chunks of XDR fragments over TCP/IP. The fragments built up to
 		///     form ONC/RPC call and reply messages.</param>
 		// throws OncRpcException, IOException
@@ -339,7 +339,7 @@ namespace CompactTeaSharp.Server
 						
 					Stream stream = newSocket.GetStream ();
 					if (useSsl)
-						stream = OncNetworkUtility.GetSslStream (stream, certFile, keyFile);
+						stream = OncNetworkUtility.GetSslServerStream (stream, certFile, keyFile);
 					
 					var transport = new OncRpcTcpConnectionServerTransport (
 						dispatcher, newSocket, bufferSize, this, transmissionTimeout, stream);
@@ -361,7 +361,9 @@ namespace CompactTeaSharp.Server
 					// for instance, if a client attempts a connection and resets 
 					// it before it is pulled off by accept ().
 
-					Console.WriteLine (e); // DEBUG
+#if DEBUG
+					Console.WriteLine (e);
+#endif
 
 					// If the socket has been gone away after an IOException 
 					// this means that the transport has been closed, so we end this thread

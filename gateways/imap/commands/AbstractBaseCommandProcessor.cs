@@ -34,6 +34,15 @@ namespace NMapi.Gateways.IMAP {
 			this.state = state;
 		}
 
+		public void Log (string text)
+		{
+			state.Log (text, null);
+		}
+		
+		public void Log (string text, string tag)
+		{
+			state.Log (text, tag);
+		}
 		
 	}
 

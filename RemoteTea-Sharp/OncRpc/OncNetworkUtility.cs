@@ -30,6 +30,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 namespace CompactTeaSharp
@@ -45,34 +46,53 @@ namespace CompactTeaSharp
 		/// <summary>
 		///  Wraps a stream in an SSL stream.
 		/// </summary>
-		public static Stream GetSslStream (Stream stream, string certFile, string keyFile)
+		public static Stream GetSslServerStream (Stream stream, string certFile, string keyFile)
 		{			
 			if (!File.Exists (certFile) || !File.Exists (keyFile))
 				throw new IOException ("Certificate or key file not found!");
 			
 			X509Certificate cert = X509Certificate2.CreateFromCertFile (certFile);
 			
-			#if USE_MONO_SECURITY
 			
-				// This whole thing is required, because Mono doesn't seems to be 
-				// able to deal with the standard way of opening the key file.
+			// This whole thing is required, because Mono doesn't seems to be 
+			// able to deal with the standard way of opening the key file.
 
-				bool ownStream = true;
-				var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
-				sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
-					Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
-				sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
+			bool ownStream = true;
+			var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
+			sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
+				Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
+			sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
 			
-			#else
-			
-				var sslStream = new SslStream (stream, false);
-				sslStream.AuthenticateAsServer (cert, false, SslProtocols.Tls, false);
-			
-			#endif
 			
 			return sslStream;
 		}
 		
+        /// <summary>
+        /// In .NET, the SSL context is cached by default. Therefore, SSL context ID's
+        /// are reused. Unfortunately, TeamExchange (conversations) can't handle
+        /// SSL reconnects with these cached contexts. Therefore, we use
+        /// Mono.Security.Protocol.Tls.SslClientStream which does the same caching by default.
+        /// In Mono's implementation however, the environment variable MONO_TLS_SESSION_CACHE_TIMEOUT
+        /// can be used to adjust the cache timeout. We set this variable to 0, effectively disabling
+        /// the whole caching.
+        /// </summary>
+        public static Stream GetSslClientStream (Stream stream, string host)
+        {
+
+            Environment.SetEnvironmentVariable("MONO_TLS_SESSION_CACHE_TIMEOUT", "0");
+            // We use true for ownsStream, which results in the underlayed network stream to be
+            // automatically closed.
+            var sslStream = new Mono.Security.Protocol.Tls.SslClientStream(stream, host, true);
+            sslStream.ServerCertValidationDelegate += (certificate, errors) => true;
+
+            return sslStream;
+        }
+
+        public static Stream GetSslClientStream (Stream stream, IPAddress host)
+        {
+            return GetSslClientStream(stream, host.ToString());
+        }
+
 		/// <summary>
 		///  
 		/// </summary>

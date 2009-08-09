@@ -75,8 +75,8 @@ namespace NMapi.Format.Mime
 			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Address);
 			Assert.AreEqual ("andreas.huegel@topalis.com", ia.ToString ());
 			ia.Personal = "";
-			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Address);
-			Assert.AreEqual ("andreas.huegel@topalis.com", ia.ToString ());
+			Assert.AreEqual ("<andreas.huegel@topalis.com>", ia.Address);
+			Assert.AreEqual ("<andreas.huegel@topalis.com>", ia.ToString ());
 		
 			ia = new InternetAddress ();
 			ia.Personal = "Andreas Hügel";
@@ -100,11 +100,11 @@ namespace NMapi.Format.Mime
 
 			ia = new InternetAddress ("Andreas Hügel");
 			Assert.AreEqual ("Andreas Hügel", ia.Email);
-			Assert.AreEqual ("", ia.Personal);
+			Assert.IsNull (ia.Personal);
 
 			ia = new InternetAddress ("andreas.huegel@topalis.com");
 			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);
-			Assert.AreEqual ("", ia.Personal);
+			Assert.IsNull (ia.Personal);
 
 			ia = new InternetAddress ("<andreas.huegel@topalis.com>");
 			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);

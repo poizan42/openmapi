@@ -295,10 +295,14 @@ test:
 	/r:bin/NMapi.Provider.TeamXChange.dll /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
 #	/r:bin/NMapi.Provider.WabiSabi.dll \
+	/r:System.Web.dll \
 	`find tests -name "*.cs"` $(TEST_SOURCES)
 
 runtests: test
-	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml
+	-nunit-console2 bin/NMapi.Test.dll -nologo -labels -exclude=Networking -xml=testresults.xml
+
+runalltests: test
+	-nunit-console2 bin/NMapi.Test.dll -nologo -labels -xml=testresults.xml
 
 #
 # Sample
@@ -311,8 +315,6 @@ sample:
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/grid.exe /nowarn:$(NO_WARN) /target:exe \
 		/r:System.Windows.Forms.dll /r:System.Drawing.dll  /r:bin/NMapi.dll \
 		samples/Grid.cs samples/MyTask.xml_Generated.cs
-	cp samples/*.config bin/
-
 
 #
 # Gateways
@@ -357,6 +359,6 @@ clean:
 		NMapi/Code/NMapi_Generated.cs NMapi/Code/RemoteCalls_Generated.cs \
 		NMapi/Data/Data_Generated.cs  server/CommonRpcService_Generated.cs \
 		xml/generated/*.xml
-	-rm -R *~
+	-rm -fR *~
 	-rm -f -R docs xmldocs
 

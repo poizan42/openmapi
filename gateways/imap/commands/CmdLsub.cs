@@ -45,51 +45,52 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			try {
-				IMapiFolder folder = ServCon.FolderHelper.OpenFolder (string.Empty + PathHelper.PathSeparator);
-				if (folder == null)
-					throw new Exception ("internal error");
+				using (IMapiFolder folder = ServCon.FolderHelper.OpenFolder (string.Empty + PathHelper.PathSeparator)) {
+					if (folder == null)
+						throw new Exception ("internal error");
 
-				PropertyValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
-				state.Log ("lsub 1");
-				string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
-				if (subsArray == null)
-					subsArray = new string[] { };
-				List<string> subs = subsArray.ToList ();
-				subs.Sort ();
+					PropertyValue subscriptions = ServCon.GetNamedProp (folder, IMAPGatewayNamedProperty.Subscriptions);
+					Log ("lsub 1");
+					string [] subsArray = (subscriptions != null) ? ((UnicodeArrayProperty) subscriptions).Value : null;
+					if (subsArray == null)
+						subsArray = new string[] { };
+					List<string> subs = subsArray.ToList ();
+					subs.Sort ();
 
-				string path = ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox);
-				path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + path);
-				string path_no_jokers = path.Replace ("*", "").Replace ("%", "");
-				state.Log ("LSUB path: " + path);				
-				int pathLength = PathHelper.Path2Array (path).Length;
+					string path = ConversionHelper.MailboxIMAPToUnicode (command.List_mailbox);
+					path = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + path);
+					string path_no_jokers = path.Replace ("*", "").Replace ("%", "");
+					Log ("LSUB path: " + path);				
+					int pathLength = PathHelper.Path2Array (path).Length;
 				
-				foreach (string s in subs) {
-					state.Log ("lsub 2, s: " + s);
-					if (s.StartsWith (path_no_jokers)) {
-						int sPathLength = (s.Trim () != string.Empty) ? PathHelper.Path2Array (s).Length : 0;
-						state.Log ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
-						if ((path.EndsWith ("%") && sPathLength <= pathLength) ||
-						    (path.EndsWith ("*") && sPathLength >= pathLength) ||
-						    (!path.EndsWith ("%") && !path.EndsWith ("*") && sPathLength == pathLength)) {
-								state.Log ("lsub 4");
-								string sendString = s.TrimStart ('/'); // get rid of leading "/"
-								sendString = state.FolderMappingAgent.MapMAPIToIMAP (sendString);
-								state.ResponseManager.AddResponse (
-								new Response (ResponseState.NONE, Name)
-									.AddResponseItem (new ResponseItemList ())
-									.AddResponseItem (new ResponseItemText("/", ResponseItemMode.QuotedOrLiteral))
-									.AddResponseItem (ConversionHelper.MailboxUnicodeToIMAP(sendString)));
+					foreach (string s in subs) {
+						Log ("lsub 2, s: " + s);
+						if (s.StartsWith (path_no_jokers)) {
+							int sPathLength = (s.Trim () != string.Empty) ? PathHelper.Path2Array (s).Length : 0;
+							Log ("lsub 3  pl:"+pathLength + " spl:" +sPathLength + " path:" + path);
+							if ((path.EndsWith ("%") && sPathLength <= pathLength) ||
+								(path.EndsWith ("*") && sPathLength >= pathLength) ||
+								(!path.EndsWith ("%") && !path.EndsWith ("*") && sPathLength == pathLength)) {
+									Log ("lsub 4");
+									string sendString = s.TrimStart ('/'); // get rid of leading "/"
+									sendString = state.FolderMappingAgent.MapMAPIToIMAP (sendString);
+									state.ResponseManager.AddResponse (
+									new Response (ResponseState.NONE, Name)
+										.AddResponseItem (new ResponseItemList ())
+										.AddResponseItem (new ResponseItemText("/", ResponseItemMode.QuotedOrLiteral))
+										.AddResponseItem (ConversionHelper.MailboxUnicodeToIMAP(sendString)));
+							}
 						}
 					}
+					Log ("lsub 6");
+					state.ResponseManager.AddResponse (
+						new Response (ResponseState.OK, Name, command.Tag)
+							.AddResponseItem ("completed"));
 				}
-				state.Log ("lsub 6");
-				state.ResponseManager.AddResponse (
-					new Response (ResponseState.OK, Name, command.Tag)
-						.AddResponseItem ("completed"));
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		}
 

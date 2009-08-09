@@ -33,6 +33,8 @@ namespace NMapi.Gateways.IMAP {
 		ulong flagStatus = 0;
 		//Additional Flags
 		List<string> additionalFlags = null;
+		//recent flag (stored in memory only)
+		bool recent;
 
 		private static int[] propsFlagProperties = new int[] 
 		{
@@ -81,10 +83,12 @@ namespace NMapi.Gateways.IMAP {
 			flagStatus = snli.FlagStatus;
 			//Additional Flags
 			additionalFlags = (snli.AdditionalFlags != null) ? snli.AdditionalFlags : new List<string> ();
+			//Recent Flag
+			recent = snli.Recent;
 		}
 
 
-		public FlagHelper (PropertyHelper propertyHelper)
+		public FlagHelper (SequenceNumberListItem snli, PropertyHelper propertyHelper)
 		{
 			flags = 0;
 			status = 0;
@@ -113,9 +117,14 @@ namespace NMapi.Gateways.IMAP {
 			if (propertyHelper.Exists) {
 				try {
 					additionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) propertyHelper.PropertyValue).Value);
-				} catch (Exception e) {
+				} catch (Exception)
+				{
+					snli.AdditionalFlags = new List<string> ();
 				}
 			}
+
+			if (snli != null)
+				recent = snli.Recent;
 		}
 
 		public void FillFlagsIntoSNLI (SequenceNumberListItem snli)
@@ -135,10 +144,11 @@ namespace NMapi.Gateways.IMAP {
 			if ((flags & 0x00000008) != 0) //MESSAGE_FLAG_UNSENT
 				ril.AddResponseItem ("\\Draft", ResponseItemMode.ForceAtom);
 
-			if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
-				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
-			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
-				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
+//XXX: cant get msgStatus-Flag to work with conversions
+//			if ((status & NMAPI.MSGSTATUS_DELMARKED) != 0)
+//				ril.AddResponseItem ("\\Deleted", ResponseItemMode.ForceAtom);
+//			if ((status & 0x00000200) != 0) //MSGSTATUS_ANSWERED
+//				ril.AddResponseItem ("\\Answered", ResponseItemMode.ForceAtom);
 //			if ((status & 0x00000002) != 0)  //NMAPI.MSGSTATUS_TAGGED
 //				ril.AddResponseItem ("\\Flagged", ResponseItemMode.ForceAtom);+
 			
@@ -147,6 +157,10 @@ namespace NMapi.Gateways.IMAP {
 
 			foreach (string flag in additionalFlags) {
 				ril.AddResponseItem (flag, ResponseItemMode.ForceAtom);
+			}
+
+			if (recent) {
+				ril.AddResponseItem ("\\Recent", ResponseItemMode.ForceAtom);    
 			}
 			
 			return ril;
@@ -160,9 +174,10 @@ namespace NMapi.Gateways.IMAP {
 			flags = ProcessBit (flags, 0x00000008 /*MESSAGE_FLAG_UNSENT*/, command.Flag_sign, "\\draft", command);
 
 			//PR_MSGSTATUS
-			status = ProcessBit (status, NMAPI.MSGSTATUS_DELMARKED, command.Flag_sign, "\\deleted", command);
-			status = ProcessBit (status, 0x00000200 /*MSGSTATUS_ANSWERED*/, command.Flag_sign, "\\answered", command);
-//				status = ProcessBit (status, 0x00000002/*MSGSTATUS_TAGGED*/, command.Flag_sign, "\\flagged", command);
+//XXX: msgStatus-Flag does not work in Conversions
+//			status = ProcessBit (status, NMAPI.MSGSTATUS_DELMARKED, command.Flag_sign, "\\deleted", command);
+//			status = ProcessBit (status, 0x00000200 /*MSGSTATUS_ANSWERED*/, command.Flag_sign, "\\answered", command);
+//			status = ProcessBit (status, 0x00000002/*MSGSTATUS_TAGGED*/, command.Flag_sign, "\\flagged", command);
 
 			//PR_FLAG_STATUS
 			flagStatus = (ulong) ((flagStatus > 0) ? 2 : 0);
@@ -170,6 +185,7 @@ namespace NMapi.Gateways.IMAP {
 			// update the sequence number list
 
 			// AdditionalFlags
+			// XXX: handling of msgstatus-Flag does not work. We build workaround by handling Deleted as additional Flag!!!
 			ProcessAdditionalFlag (command.Flag_sign, "\\Deleted", command);
 		}
 
@@ -259,8 +275,7 @@ namespace NMapi.Gateways.IMAP {
 				} else {
 					mph.HrDeleteOneProp (FolderHelper.AdditionalFlagsPropTag);
 				}
-				msg.SaveChanges (NMAPI.FORCE_SAVE);
-				Trace.WriteLine ("SaveFlagsIntoIMessage -doene");			
+				Trace.WriteLine ("SaveFlagsIntoIMessage -done");			
 			}
 		}
 
@@ -299,5 +314,57 @@ namespace NMapi.Gateways.IMAP {
 			select toDel.EntryId;
 			return new EntryList (query.ToArray ());
 		}
+
+		public static List<SequenceNumberListItem> DeletableMessagesAsSequenceNumberList (SequenceNumberList snl)
+		{
+			var query = from toDel in snl
+			where (IsDeleteMarked (toDel))
+			select toDel;
+			return new List<SequenceNumberListItem> (query.ToArray ());
+		}
+
+		public static Restriction BuildSearchRestriction (string searchKeyword) 
+		{
+			switch (searchKeyword) {
+			case "UNDELETED": return _BuildAdditionalFlagRestriction (FolderHelper.AdditionalFlagsPropTag, "Deleted", false);
+			case "DELETED": return _BuildAdditionalFlagRestriction (FolderHelper.AdditionalFlagsPropTag, "Deleted", true);
+			case "UNFLAGGED": return _BuildSearchRestriction (Outlook.Property.FLAG_STATUS, 2 /*PR_FLAG_STATUS*/, false);
+			case "FLAGGED": return _BuildSearchRestriction (Outlook.Property.FLAG_STATUS, 2 /*PR_FLAG_STATUS*/, true);
+			}
+			return null;
+		}
+		private static Restriction _BuildSearchRestriction (int propType, int mask, bool setUnset) 
+		{
+
+				BitMaskRestriction entryPropRestr = new BitMaskRestriction ();
+				entryPropRestr.RelBMR = setUnset ? NMAPI.BMR_NEZ : NMAPI.BMR_EQZ;
+				entryPropRestr.Mask = mask;
+				entryPropRestr.PropTag = propType;
+				return entryPropRestr;
+
+		}
+
+		private static Restriction _BuildAdditionalFlagRestriction (int propType, string flag, bool setUnset)
+		{
+			PropertyRestriction entryPropRestr = new PropertyRestriction ();
+			UnicodeProperty uprop = new UnicodeProperty();
+			uprop.PropTag = propType;
+			uprop.Value = "\\"+flag;
+			entryPropRestr.Prop = uprop;
+			entryPropRestr.RelOp = RelOp.Equal;
+			entryPropRestr.PropTag = uprop.PropTag;
+
+			List<Restriction> restrs = new List<Restriction> ();
+			restrs.Add (entryPropRestr);
+			ExistRestriction existRestr = new ExistRestriction ();
+			existRestr.PropTag = propType;
+			restrs.Add (existRestr);
+
+			if (!setUnset) {
+				return new NotRestriction (new AndRestriction (restrs.ToArray ()));
+			}
+			return new AndRestriction (restrs.ToArray ());
+		}
+			
 	}
 }

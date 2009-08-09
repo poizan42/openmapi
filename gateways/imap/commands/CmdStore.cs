@@ -51,7 +51,6 @@ namespace NMapi.Gateways.IMAP {
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			foreach (SequenceNumberListItem snli in slq) {
 				Trace.WriteLine ("Store command loop");			
-
 				FlagHelper fh = new FlagHelper (snli);
 				fh.ProcessFlagChangesStoreCommand (command);
 				fh.FillFlagsIntoSNLI (snli);
@@ -61,15 +60,33 @@ namespace NMapi.Gateways.IMAP {
 			
 				try {
 					// try block, to ignore if an email cannot be found
-					state.Log ("Store uid: " + snli.UID);
+					Log ("Store uid: " + snli.UID);
 					msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Modify);
 				
 				} catch (Exception e) {
-					state.Log ("CmdStore " + e.Message);
-					state.Log (e.StackTrace);
+					Log ("CmdStore " + e.Message);
+					Log (e.StackTrace);
 				}
-				fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
-				
+
+				using (msg) {
+					fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
+					msg.SaveChanges (NMAPI.FORCE_SAVE);
+				}
+
+				if (command.Flag_key != "FLAGS.SILENT") {
+					Response resp = new Response (ResponseState.NONE, "FETCH");
+					resp.Val = new ResponseItemText (ServCon.FolderHelper.SequenceNumberList.IndexOfSNLI(snli).ToString ());
+					ResponseItemList respFlags = new ResponseItemList ();
+					respFlags.AddResponseItem ("FLAGS");
+					respFlags.AddResponseItem (fh.ResponseItemListFromFlags ());
+					if (command.UIDCommand) {
+						// return uids
+						respFlags.AddResponseItem ("UID");
+						respFlags.AddResponseItem (snli.UID.ToString ());
+					}
+					resp.AddResponseItem (respFlags);
+					state.ResponseManager.AddResponse (resp);
+				}				
 			}
 
 			state.AddExistsRequestDummy ();

@@ -111,9 +111,9 @@ namespace NMapi.Gateways.IMAP {
 				commandAnalyser.StateAuthenticated = this.StateAuthenticated;
 				commandAnalyser.StateSelected = this.StateSelected;
 				commandAnalyser.StateLogout = this.StateLogout;
-				commandProcessor = new CommandProcessor (this);
-				responseManager = new ResponseManager(this);
 			}
+			commandProcessor = new CommandProcessor (this);
+			responseManager = new ResponseManager(this);
 			folderMappingAgent = new FolderMappingAgent (this);
 			ResetExpungeRequests ();
 			ResetExistsRequests ();
@@ -228,6 +228,7 @@ namespace NMapi.Gateways.IMAP {
 
 		public void AddExpungeRequest (SequenceNumberListItem snli)
 		{
+Log ("AddExpungeRequest :"+snli.UID);
 			lock (expungeRequests) {
 				expungeRequests.Add (snli);
 			}
@@ -321,9 +322,12 @@ Log ( "ProcessNotificationRespo4");
 				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
 					snliNew = serverConnection.FolderHelper.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
 					if (snliNew != null) {
+						Log ("uid: " + snliNew.UID);								
 						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
 						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
 						Log ("FlagStatus: " + snliNew.FlagStatus + ":" + snliOld.FlagStatus);								
+						Log ("AdditionalFlags: " + 
+							snliNew.GetAdditionalFlagsAsString () + ":" + snliOld.GetAdditionalFlagsAsString ());								
 						if (!FlagHelper.FlagsEqual (snliNew, snliOld)) {
 							r = new Response (ResponseState.NONE, "FETCH");
 							r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
@@ -421,6 +425,14 @@ Log ( "ProcessNotificationRespo6");
 				return cacheObject.Message;
 			}
 			return null;
+		}
+
+		public void ClientConnectionSend (string s)
+		{
+			if (clientConnection != null)
+				clientConnection.Send (s);
+			else
+				Log (s);
 		}
 		
 	}

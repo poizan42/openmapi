@@ -103,7 +103,7 @@ namespace NMapi.Synchronization {
 						res.item.pwszName.value, res.item.ulFolderType);
 					folder.Close ();
 					break;
-					case Common.FolderSyncAction.Delete:
+				case Common.FolderSyncAction.Delete:
 					importer.FolderDeleted (res.item.folderkey.lpb, res.item.oldparentkey.lpb);
 					break;
 				case Common.FolderSyncAction.Modify:

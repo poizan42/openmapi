@@ -102,46 +102,47 @@ namespace NMapi.Gateways.IMAP {
 						depth = 99;
 					}
 
-					folder = ServCon.FolderHelper.OpenFolder (path);
-					if (folder == null) {
-						state.ResponseManager.AddResponse (
-							new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
-						return;
-					}
+					using (folder = ServCon.FolderHelper.OpenFolder (path)) {
+						if (folder == null) {
+							state.ResponseManager.AddResponse (
+								new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("given folder does not exist"));
+							return;
+						}
 
-					path = PathHelper.ResolveAbsolutePath (path) + PathHelper.PathSeparator;
-					if (path == "//")
-						path = "/";
+						path = PathHelper.ResolveAbsolutePath (path) + PathHelper.PathSeparator;
+						if (path == "//")
+							path = "/";
 					
-					List<Response> subDirs;
-					subDirs = FindSubDirs (folder, path, depth, filter);
-/*					if (command.List_mailbox == "*" || command.List_mailbox == "%" || command.List_mailbox == string.Empty + PathHelper.PathSeparator) {
-						subDirs.Insert (0, 
-							new Response (ResponseState.NONE, Name)
-								.AddResponseItem (new ResponseItemList())
-						        .AddResponseItem (new ResponseItemText ("/", ResponseItemMode.QuotedOrLiteral))
-						        .AddResponseItem ("INBOX"));
-					}
-*/					
-					if (path != "/") {
-//						if (subDirs.Count > 0)
-							subDirs.Insert (0, CreateLineResponse (true, "", path.TrimEnd (new char[] {'/'})));
-//						else
-//							subDirs.Add (CreateLineResponse (false, "", path));
-					}
+						List<Response> subDirs;
+						subDirs = FindSubDirs (folder, path, depth, filter);
+	/*					if (command.List_mailbox == "*" || command.List_mailbox == "%" || command.List_mailbox == string.Empty + PathHelper.PathSeparator) {
+							subDirs.Insert (0, 
+								new Response (ResponseState.NONE, Name)
+									.AddResponseItem (new ResponseItemList())
+								    .AddResponseItem (new ResponseItemText ("/", ResponseItemMode.QuotedOrLiteral))
+								    .AddResponseItem ("INBOX"));
+						}
+	*/					
+						if (path != "/") {
+	//						if (subDirs.Count > 0)
+								subDirs.Insert (0, CreateLineResponse (true, "", path.TrimEnd (new char[] {'/'})));
+	//						else
+	//							subDirs.Add (CreateLineResponse (false, "", path));
+						}
 					
-					subDirs.Add (
-						new Response (ResponseState.OK, Name, command.Tag)
-							.AddResponseItem ("completed"));
-						                
-					state.ResponseManager.AddResponses (subDirs);
+						subDirs.Add (
+							new Response (ResponseState.OK, Name, command.Tag)
+								.AddResponseItem ("completed"));
+								            
+						state.ResponseManager.AddResponses (subDirs);
+					}
 				} else {
 					state.ResponseManager.AddResponse ( new Response (ResponseState.NO, Name, command.Tag).AddResponseItem ("internal problem", ResponseItemMode.ForceAtom));
 				}				
 			}
 			catch (Exception e) {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
-				state.Log (e.StackTrace);
+				Log (e.StackTrace);
 			}
 		
 		}
@@ -149,7 +150,7 @@ namespace NMapi.Gateways.IMAP {
 
 		internal List<Response> FindSubDirs (IMapiContainer parent, string path, int depth, string filter)
 		{
-			state.Log ("findsubdirs:"+path+":"+depth+":"+filter);			
+			Log ("findsubdirs:"+path+":"+depth+":"+filter);			
 			List<Response> nameList = new List<Response> ();
 			IMapiTableReader tableReader = null;
 			try {
@@ -159,33 +160,37 @@ namespace NMapi.Gateways.IMAP {
 					throw;
 				return nameList;
 			}
-			
-			while (true) {
-				RowSet rows = tableReader.GetRows (30);
-				if (rows.Count == 0)
-					break;
-				int nameIndex = -1;
-				foreach (Row row in rows) {
-					if (nameIndex == -1)
-						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
 
-					if (filter == null ||
-					    name.Value.StartsWith (filter))
-					{
-						string pathWork = path.Replace ("*", "");
-						List<Response> childNameList = new List<Response> ();
+			using (tableReader) {
+
+				while (true) {
+					RowSet rows = tableReader.GetRows (30);
+					if (rows.Count == 0)
+						break;
+					int nameIndex = -1;
+					foreach (Row row in rows) {
+						if (nameIndex == -1)
+							nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+						UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
+
+						if (filter == null ||
+							name.Value.StartsWith (filter))
+						{
+							string pathWork = path.Replace ("*", "");
+							List<Response> childNameList = new List<Response> ();
 						
-						if (depth > -1) {
-							IMapiContainer childFolder = ServCon.FolderHelper.GetSubDir(parent, name.Value);
-							childNameList = FindSubDirs(childFolder, pathWork + name.Value + "/", depth - 1, null);
+							if (depth > -1) {
+								using (IMapiContainer childFolder = ServCon.FolderHelper.GetSubDir(parent, name.Value)) {
+									childNameList = FindSubDirs(childFolder, pathWork + name.Value + "/", depth - 1, null);
+								}
+							}
+
+							if (!path.EndsWith ("*"))
+								nameList.Add (CreateLineResponse (childNameList.Count > 0, pathWork, name.Value));
+						
+							if (depth > 0)
+								nameList.AddRange (childNameList);
 						}
-
-						if (!path.EndsWith ("*"))
-							nameList.Add (CreateLineResponse (childNameList.Count > 0, pathWork, name.Value));
-						
-						if (depth > 0)
-							nameList.AddRange (childNameList);
 					}
 				}
 			}

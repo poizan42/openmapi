@@ -220,7 +220,7 @@ namespace CompactTeaSharp
 
 		/// <summary>
 		/// End decoding of the current XDR record. The general contract of
-		/// code>endDecoding</code> is that calling it is an indication that
+		/// <code>endDecoding</code> is that calling it is an indication that
 		/// the current record is no more interesting to the caller and any
 		/// allocated data for this record can be freed.
 		/// 

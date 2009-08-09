@@ -47,7 +47,8 @@ namespace NMapi.Utility {
 			Property.Subject, 
 			Property.SenderName,
 			Property.SenderEmailAddress,
-			Property.SenderEntryId,
+			Property.SentRepresentingName,
+			Property.SentRepresentingEmailAddress,
 			Property.DisplayTo,
 			Property.DisplayCc,
 			Property.ClientSubmitTime, 
@@ -131,6 +132,7 @@ namespace NMapi.Utility {
 		
 		public MimeMessage BuildMimeMessageFromMapi (PropertyHelper props, IMessage im, InternetHeaders ih)
 		{
+			Console.WriteLine ("BuildMimeMessageFromMapi");
 			// transfer headers into MimeMessage
 			// TODO: make MimeMessage have a method to consume InternetHeaders objects
 			MimeMessage mm = new MimeMessage();
@@ -143,56 +145,58 @@ namespace NMapi.Utility {
 			RTFParser rtfParser = null;
 			if (propsRTFCompressed.Exists) {
 				try {
-					IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, InterfaceIdentifiers.IStream, 0, 0);
-					MemoryStream ms = new MemoryStream ();
-					x.GetData (ms);
+					using (IStream x = (IStream) im.OpenProperty (Property.RtfCompressed, InterfaceIdentifiers.IStream, 0, 0)) {
+						MemoryStream ms = new MemoryStream ();
+						x.GetData (ms);
 
-					ms = new MemoryStream (Encoding.ASCII.GetBytes (RTFParser.UncompressRTF( ms.ToArray ())));
-					rtfParser = new RTFParser (ms);
+						ms = new MemoryStream (Encoding.ASCII.GetBytes (RTFParser.UncompressRTF( ms.ToArray ())));
+						rtfParser = new RTFParser (ms);
+					}
 				} catch ( MapiException e) {
 				}
 			}
 
-			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
-			RowSet rs = tr.GetRows (1);
-			string charset = mm.CharacterSet; // save charset
+			using (IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0)) {
+				RowSet rs = tr.GetRows (1);
+				string charset = mm.CharacterSet; // save charset
 			
-			if (rs.Count > 0) {
-				/* set multipart header */
-				mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
+				if (rs.Count > 0) {
+					/* set multipart header */
+					mm.SetHeader (MimePart.CONTENT_TYPE_NAME, "multipart/mixed");
 
-				/* generate boundary */
-				MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
-				props.Prop = Property.EntryId;
-				if(props.Exists) {
-					string boundary = "----_bnd_";
-					byte[] hash = md5.ComputeHash(props.Binary.ByteArray);
-					foreach (byte b in hash) {
-						boundary += b.ToString("x2").ToLower();
+					/* generate boundary */
+					MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+					props.Prop = Property.EntryId;
+					if(props.Exists) {
+						string boundary = "----_bnd_";
+						byte[] hash = md5.ComputeHash(props.Binary.ByteArray);
+						foreach (byte b in hash) {
+							boundary += b.ToString("x2").ToLower();
+						}
+						mm.Boundary = boundary;
 					}
-					mm.Boundary = boundary;
-				}
 
-				mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
-				MimeMultipart mmp = new MimeMultipart (mm);
+					mm.RemoveHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME);
+					MimeMultipart mmp = new MimeMultipart (mm);
 
-				// new Body Part for the text part
-				MimeBodyPart mbp = new MimeBodyPart ();
-				CreateTextOrHtml (mbp, rtfParser, ih, props, charset);
-				mmp.AddBodyPart (mbp);
+					// new Body Part for the text part
+					MimeBodyPart mbp = new MimeBodyPart ();
+					CreateTextOrHtml (mbp, rtfParser, ih, props, charset);
+					mmp.AddBodyPart (mbp);
 
-				bool relatedAttachments = false;
-				AppendAttachments (mmp, (IMessage) im, ih, out relatedAttachments);
+					bool relatedAttachments = false;
+					AppendAttachments (mmp, (IMessage) im, ih, out relatedAttachments);
 
-				if (relatedAttachments) {
-					InternetHeader ihLocal = mm.ContentTypeHeader;
-					ihLocal.SetSubtype ("related");
-					mm.SetHeader (ihLocal);
-				}
+					if (relatedAttachments) {
+						InternetHeader ihLocal = mm.ContentTypeHeader;
+						ihLocal.SetSubtype ("related");
+						mm.SetHeader (ihLocal);
+					}
 				
-			} else  {
-				CreateTextOrHtml (mm, rtfParser, ih, props, charset);
-				// Message contains of pure text only
+				} else  {
+					CreateTextOrHtml (mm, rtfParser, ih, props, charset);
+					// Message contains of pure text only
+				}
 			}
 			return mm;
 		}
@@ -200,6 +204,7 @@ namespace NMapi.Utility {
 		private void CreateTextOrHtml (MimePart targetMP, RTFParser rtfParser, InternetHeaders ih, PropertyHelper props, string charset)
 		{
 
+			Console.WriteLine  ("CreateTextOrHtml");
 			PropertyHelper propsBody = new PropertyHelper (props.Props);
 			propsBody.Prop = Property.BodyW;
 			
@@ -262,111 +267,114 @@ namespace NMapi.Utility {
 
 		private void AppendAttachments (MimeMultipart mmp, IMessage im, InternetHeaders ih, out Boolean relatedAttachments)
 		{
+			Console.WriteLine  ("AppendAttachments");
 			int attachCnt = 0;
-			IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0);
-			RowSet rs = tr.GetRows (1);
 			relatedAttachments = false;
+			using (IMapiTableReader tr = ((IMessage) im).GetAttachmentTable(0)) {
+				RowSet rs = tr.GetRows (20);
 			
-			while (rs.Count > 0) {
-				foreach (Row row in rs) {
-					Trace.WriteLine  ("next Attachment");
-					// handle content-type and content-transport-encoding headers
-					PropertyHelper aProps = new PropertyHelper (row.Props);
-					PropertyHelper attachMethProps = new PropertyHelper (row.Props);
-					attachMethProps.Prop = Property.AttachMethod;
+				while (rs.Count > 0) {
+					foreach (Row row in rs) {
+						Console.WriteLine  ("next Attachment");
+						// handle content-type and content-transport-encoding headers
+						PropertyHelper aProps = new PropertyHelper (row.Props);
+						PropertyHelper attachMethProps = new PropertyHelper (row.Props);
+						attachMethProps.Prop = Property.AttachMethod;
 
-					MimeBodyPart mbp = new MimeBodyPart ();
+						MimeBodyPart mbp = new MimeBodyPart ();
 					
-					// embedded Messages
-					if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
-						IAttach ia1 = im.OpenAttach (attachCnt, null, 0);
-						IMessage embeddedIMsg = (IMessage) ia1.OpenProperty (Property.AttachDataObj, InterfaceIdentifiers.IMessage, 0, Mapi.Unicode);
+						// embedded Messages
+						if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
+							using (IAttach ia1 = im.OpenAttach (attachCnt, null, 0))
+							using (IMessage embeddedIMsg = (IMessage) ia1.OpenProperty (Property.AttachDataObj, InterfaceIdentifiers.IMessage, 0, Mapi.Unicode)) {
+								PropertyValue[] props = embeddedIMsg.GetProps (PropertyTag.ArrayFromIntegers (propsAllProperties), Mapi.Unicode);
+								PropertyHelper embeddedPH = new PropertyHelper (props);
 
-						PropertyValue[] props = embeddedIMsg.GetProps (PropertyTag.ArrayFromIntegers (propsAllProperties), Mapi.Unicode);
-						PropertyHelper embeddedPH = new PropertyHelper (props);
-
-						embeddedPH.Prop = Property.MessageClass;
-						if (embeddedPH.Unicode == "IPM.Note") {
-						
-							HeaderGenerator hg = GetHeaderGenerator (embeddedIMsg, embeddedPH);
-
-							MimeMessage embeddedMsg = BuildMimeMessageFromMapi (embeddedPH, embeddedIMsg, hg.InternetHeaders);
-	
-							mbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "message/rfc822");
-							mbp.Content = embeddedMsg;
-						}
-					} else {
-						String mimeType = null;
-						aProps.Prop = Property.AttachMimeTag;
-						if (aProps.Exists && !string.IsNullOrEmpty(aProps.String)) {
-							mimeType = PropertyHelper.Trim0Terminator (aProps.String);
-						} else {
-							aProps.Prop = Property.AttachExtension;
-							if (aProps.Exists  && aProps.String.Length > 1) {
-								mimeType = MimeUtility.ExtToMime (aProps.String.Substring (1).ToLower ());
-							} else {
-								mimeType = MimeUtility.ExtToMime ("dummy");
-							}
-						}
+								embeddedPH.Prop = Property.MessageClass;
+								if (embeddedPH.Unicode == "IPM.Note") {
 					
-						InternetHeader ih_fname = new InternetHeader (MimePart.CONTENT_TYPE_NAME, mimeType);
-						string charset = null;
-						string transferEncoding = "base64";
-						if (mimeType.StartsWith ("text")) {
-							if (mimeType == "text/plain") {
-								charset = ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME).GetParam ("charset");
-								if (charset == null)
-									charset = "utf-8";
-								ih_fname.SetParam ("charset", charset);
-							}
-							transferEncoding = "quoted-printable";
-						}
-						aProps.Prop = Property.DisplayName;
-						if (aProps.Exists) {
-							ih_fname.SetParam ("name", aProps.String);
-						}
-						aProps.Prop = Property.AttachFilename;
-						if (aProps.Exists) {
-							ih_fname.SetParam ("name", PropertyHelper.Trim0Terminator (aProps.String));
-						}
-						aProps.Prop = Property.AttachLongFilename;
-						if (aProps.Exists) {
-							ih_fname.SetParam ("name", PropertyHelper.Trim0Terminator (aProps.String));
-						}
-						mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, transferEncoding);
-						mbp.SetHeader (ih_fname);
+									HeaderGenerator hg = GetHeaderGenerator (embeddedIMsg, embeddedPH);
 
-						aProps.Prop = Outlook.Property_ATTACH_CONTENT_ID_W;
-						if (aProps.Exists) {
-							mbp.SetHeader ("Content-ID", "<"+PropertyHelper.Trim0Terminator (aProps.String)+">");
-							relatedAttachments = true;
-						}
+									MimeMessage embeddedMsg = BuildMimeMessageFromMapi (embeddedPH, embeddedIMsg, hg.InternetHeaders);
 
-						aProps.Prop = Property.AttachNum;
-						if (aProps.Exists) {					
-							Trace.WriteLine ("now comes the contentn:");
-							try {
-								IAttach ia = im.OpenAttach ((int) aProps.LongNum, null, 0);
-								MemoryStream ms = new MemoryStream ();
-								IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
-								if (iss != null) {
-									iss.GetData (ms);
-									if (mimeType.StartsWith ("text")) {
-										mbp.Content = Encoding.Unicode.GetString (ms.ToArray ());
-									} else {
-										mbp.Content = ms.ToArray ();
-									}
+									mbp.SetHeader (MimePart.CONTENT_TYPE_NAME, "message/rfc822");
+									mbp.Content = embeddedMsg;
 								}
-							} catch (Exception e) {
-		//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
+							}
+						} else {
+							String mimeType = null;
+							aProps.Prop = Property.AttachMimeTag;
+							if (aProps.Exists && !string.IsNullOrEmpty(aProps.String)) {
+								mimeType = PropertyHelper.Trim0Terminator (aProps.String);
+							} else {
+								aProps.Prop = Property.AttachExtension;
+								if (aProps.Exists  && aProps.String.Length > 1) {
+									mimeType = MimeUtility.ExtToMime (aProps.String.Substring (1).ToLower ());
+								} else {
+									mimeType = MimeUtility.ExtToMime ("dummy");
+								}
+							}
+					
+							InternetHeader ih_fname = new InternetHeader (MimePart.CONTENT_TYPE_NAME, mimeType);
+							string charset = null;
+							string transferEncoding = "base64";
+							if (mimeType.StartsWith ("text")) {
+								if (mimeType == "text/plain") {
+									charset = ih.GetInternetHeaders (MimePart.CONTENT_TYPE_NAME).GetParam ("charset");
+									if (charset == null)
+										charset = "utf-8";
+									ih_fname.SetParam ("charset", charset);
+								}
+								transferEncoding = "quoted-printable";
+							}
+							aProps.Prop = Property.DisplayName;
+							if (aProps.Exists) {
+								ih_fname.SetParam ("name", aProps.String);
+							}
+							aProps.Prop = Property.AttachFilename;
+							if (aProps.Exists) {
+								ih_fname.SetParam ("name", PropertyHelper.Trim0Terminator (aProps.String));
+							}
+							aProps.Prop = Property.AttachLongFilename;
+							if (aProps.Exists) {
+								ih_fname.SetParam ("name", PropertyHelper.Trim0Terminator (aProps.String));
+							}
+							mbp.SetHeader (MimePart.CONTENT_TRANSFER_ENCODING_NAME, transferEncoding);
+							mbp.SetHeader (ih_fname);
+
+							aProps.Prop = Outlook.Property_ATTACH_CONTENT_ID_W;
+							if (aProps.Exists) {
+								mbp.SetHeader ("Content-ID", "<"+PropertyHelper.Trim0Terminator (aProps.String)+">");
+								relatedAttachments = true;
+							}
+
+							aProps.Prop = Property.AttachNum;
+							if (aProps.Exists) {					
+								Console.WriteLine ("now comes the contentn:");
+								try {
+									using (IAttach ia = im.OpenAttach ((int) aProps.LongNum, null, 0)) {
+										MemoryStream ms = new MemoryStream ();
+										IStream iss = (IStream) ia.OpenProperty (Property.AttachDataBin);
+										if (iss != null) {
+											iss.GetData (ms);
+											if (mimeType.StartsWith ("text")) {
+												mbp.Content = Encoding.Unicode.GetString (ms.ToArray ());
+											} else {
+												mbp.Content = ms.ToArray ();
+											}
+										}
+									}
+								} catch (Exception e) {
+			//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
+								}
 							}
 						}
-					}
-					mmp.AddBodyPart (mbp);
+						mmp.AddBodyPart (mbp);
 					
-					attachCnt ++;
+						attachCnt ++;
+					}
+					rs = tr.GetRows (1);
 				}
-				rs = tr.GetRows (1);
 			}
 		}
 	}

@@ -143,7 +143,6 @@ namespace NMapi {
 				publicmdb  = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, true);
 			} 
 			catch (MapiException e) {
-				Console.WriteLine (e);
 				if (privatemdb != null) {
 					privatemdb.Close2 ();
 					privatemdb = null;
