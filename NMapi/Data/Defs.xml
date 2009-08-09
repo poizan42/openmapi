@@ -342,6 +342,36 @@
 				<boolGate static="true" type="Restriction">lpRes</boolGate>
 			</decode>
 		</class>
+		
+		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
+		<class id="AnnotationRestriction" inherits="Restriction">
+			<declare type="Restriction" privName="lpRes">Res</declare>
+			<declare type="PropertyValue" isArray="true" privName="lpProps">Prop</declare>
+			<encode>
+				<int cast="true">RestrictionType.Annotation</int> <!-- SPECIAL //-->
+				<countedSizeArray static="true" type="PropertyValue">lpProps</countedSizeArray>
+				<boolGate type="Restriction">lpRes</boolGate>
+			</encode>
+			<decode>
+				<countedSizeArray static="true" type="PropertyValue">lpProps</countedSizeArray>
+				<boolGate static="true" type="Restriction">lpRes</boolGate>
+			</decode>
+		</class>
+		
+		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
+		<class id="CountRestriction" inherits="Restriction">
+			<declare type="int" privName="ulCount">Count</declare>			
+			<declare type="Restriction" privName="lpRes">Res</declare>
+			<encode>
+				<int cast="true">RestrictionType.Count</int> <!-- SPECIAL //-->
+				<int>ulCount</int>
+				<boolGate type="Restriction">lpRes</boolGate>
+			</encode>
+			<decode>
+				<int>ulCount</int>
+				<boolGate static="true" type="Restriction">lpRes</boolGate>
+			</decode>
+		</class>
 
 		<class id="SortOrder">
 			<declare type="int" privName="ulPropTag">PropTag</declare>

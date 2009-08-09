@@ -38,6 +38,10 @@ using NMapi.Interop;
 
 namespace NMapi.Properties {
 
+	// TODO:  - Rename this class to "NamedPropertyIdentifier"
+	//		  - rename (generated) derived classes as well.
+	//		  - make the "UlKind" property private or remove it.
+
 	/// <summary>
 	///  The MAPINAMEID structure.
 	/// </summary>

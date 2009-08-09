@@ -57,7 +57,7 @@ namespace NMapi.Properties.Special {
 				fs.Close ();
 			}
 			catch (IOException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			finally {
 				if (fileName != null)
@@ -86,7 +86,7 @@ namespace NMapi.Properties.Special {
 					switch (errProp.Value) {
 						case Error.NotEnoughMemory: MyMsgCopyStream (source, dest, srcTags [i]); break; // the streams.
 						case Error.NotFound: break; // may happen.
-						default: throw new MapiException (errProp.Value); // this is an error.
+						default: throw MapiException.Make (errProp.Value); // this is an error.
 					}
 					srcProps [i].PropTag = (int) PropertyType.Null;
 				}
@@ -95,7 +95,7 @@ namespace NMapi.Properties.Special {
 			PropertyProblem[] problems = dest.SetProps (srcProps);
 			foreach (var problem in problems)
 				if (problem.SCode != Error.Computed)
-					throw new MapiException (problem.SCode);
+					throw MapiException.Make (problem.SCode);
 		}
 
 		/// <exception cref="MapiException">Throws MapiException</exception>

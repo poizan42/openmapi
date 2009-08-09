@@ -20,41 +20,7 @@
 //-->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="text" omit-xml-declaration="yes" />
-
-<xsl:template name="map-type">
-	<xsl:param name="type" />
-	<xsl:choose>
-		<xsl:when test="$type = 'Unspecified'">LongPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Null'">NullPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int16'">ShortPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int32'">IntPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Float'">FloatPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Double'">DoublePropertyTag</xsl:when>
-		<xsl:when test="$type = 'Currency'">CurrencyPropertyTag</xsl:when>
-		<xsl:when test="$type = 'AppTime'">AppTimePropertyTag</xsl:when>
-		<xsl:when test="$type = 'Error'">ErrorPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Boolean'">BooleanPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Object'">ObjectPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int64'">LongPropertyTag</xsl:when>
-		<xsl:when test="$type = 'String8'">String8PropertyTag</xsl:when>
-		<xsl:when test="$type = 'Unicode'">UnicodePropertyTag</xsl:when>
-		<xsl:when test="$type = 'SysTime'">FileTimePropertyTag</xsl:when>
-		<xsl:when test="$type = 'ClsId'">GuidPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Binary'">BinaryPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt16'">ShortArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt32'">LongArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvFloat'">FloatArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvDouble'">DoubleArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvCurrency'">CurrencyArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvAppTime'">AppTimeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvSysTime'">SystimeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvString8'">String8ArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvBinary'">BinaryArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvUnicode'">UnicodeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvClsId'">GuidArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt64'">BinaryArrayPropertyTag</xsl:when>
-	</xsl:choose>
-</xsl:template>
+<xsl:include href="../../../Data/xslt/common.xsl" />
 
 <xsl:template match="/properties">
 //
@@ -65,25 +31,24 @@
 using System;
 using System.IO;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi.Flags {
+namespace <xsl:value-of select="@namespace" /> {
 
 	/// &lt;summary&gt;
 	///  Contains the known property tag constants.
 	/// &lt;/summary&gt;
-	public static class Property
+	public static class <xsl:value-of select="@class" />
 	{
 		/// &lt;summary&gt;
 		///  
 		/// &lt;/summary&gt;
 		public static class Typed
-		{			
+		{
 			<xsl:for-each select="property">
 				/// &lt;summary&gt;
 				///  A strongly-typed '<xsl:value-of select="@name" />' property tag.
@@ -91,7 +56,7 @@ namespace NMapi.Flags {
 				public static 
 					<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template><xsl:text> </xsl:text>
 					<xsl:value-of select="@name" /> = (<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template>) 
-					PropertyTag.CreatePropertyTag (Property.<xsl:value-of select="@name" />);			
+					PropertyTag.CreatePropertyTag (<xsl:value-of select="parent::node()/@class" />.<xsl:value-of select="@name" />);			
 			</xsl:for-each>
 		}
 

@@ -127,7 +127,7 @@ namespace NMapi.Table {
 			int size = lpProps.Length;
 			xdr.XdrEncodeInt (size);
 			for (int i = 0; i < size; i++)
-				((IXdrEncodeable) lpProps [i]).XdrEncode (xdr);
+				((IXdrEncodeable) lpProps [i]).XdrEncode (xdr); // TODO: check for null values!
 		}
 
 		[Obsolete]

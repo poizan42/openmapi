@@ -26,7 +26,7 @@
 <nrpcgen>
 	<!--
 		This file provides additional clues for the generator to allow 
-		transformations on the APIs. This feature is unique to nrpcgen 
+		transformations on the generated APIs. This feature is unique to mlog 
 		and not available in the java remote-tea package.
 	-->
 

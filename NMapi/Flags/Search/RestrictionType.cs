@@ -47,7 +47,9 @@ namespace NMapi.Flags {
 		Size,
 		Exist,
 		SubRestriction,
-		Comment
+		Comment,
+		Count, // new in Outlook 2010. TODO: make sure we support this everywhere in the code.
+		Annotation // new in Outlook 2010. TODO: make sure we support this everywhere in the code.		
 
 	}
 }

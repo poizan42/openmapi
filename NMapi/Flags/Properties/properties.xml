@@ -18,7 +18,7 @@
 // GNU Affero General Public License for more details.
 //
 //-->
-<properties>
+<properties namespace="NMapi.Flags" class="Property">
 	<property name="AcknowledgementMode" type="Int32" id="0x0001" />
 
 	<property name="AlternateRecipientAllowed" type="Boolean" id="0x0002" />
@@ -262,6 +262,8 @@
 	<property name="RtfSyncTrailingCount" type="Int32" id="0x1011" />
 	<property name="OriginallyIntendedRecipEntryId" type="Binary" id="0x1012" />
 
+	<property name="AttributeHidden" type="Boolean" id="0x10F4" />
+
 	<!--
 		Message recipient
 	//-->
@@ -499,7 +501,7 @@
 	<property name="ContainerModifyVersion" type="Int64" id="0x3614" />
 
 	<property name="AbProviderId" type="Binary" id="0x3615" />
-	<property name="DefaultWiewEntryId" type="Binary" id="0x3616" />
+	<property name="DefaultViewEntryId" type="Binary" id="0x3616" />
 	<property name="AssocContentCount" type="Int32" id="0x3617" />
 
 	<!--
@@ -645,13 +647,13 @@
 	<property name="CellularTelephoneNumberW =MobileTelephoneNumberW;
 	<property name="CellularTelephoneNumberA =MobileTelephoneNumberA;
 //-->
-	<property name="RadiotelephoneNumber" type="Unicode" id="0x3A1D" />
-	<property name="RadiotelephoneNumberW" type="Unicode" id="0x3A1D" />
-	<property name="RadiotelephoneNumberA" type="String8" id="0x3A1D" />
+	<property name="RadioTelephoneNumber" type="Unicode" id="0x3A1D" />
+	<property name="RadioTelephoneNumberW" type="Unicode" id="0x3A1D" />
+	<property name="RadioTelephoneNumberA" type="String8" id="0x3A1D" />
 	<property name="CarTelephoneNumber" type="Unicode" id="0x3A1E" />
 	<property name="CarTelephoneNumberW" type="Unicode" id="0x3A1E" />
 	<property name="CarTelephoneNumberA" type="String8" id="0x3A1E" />
-	<property name="OtherTelephone_number" type="Unicode" id="0x3A1F" />
+	<property name="OtherTelephoneNumber" type="Unicode" id="0x3A1F" />
 	<property name="OtherTelephoneNumberW" type="Unicode" id="0x3A1F" />
 	<property name="OtherTelephoneNumberA" type="String8" id="0x3A1F" />
 	<property name="TransmitableDisplayName" type="Unicode" id="0x3A20" />
@@ -766,9 +768,9 @@
 	<property name="ProfessionW" type="Unicode" id="0x3A46" />
 	<property name="ProfessionA" type="String8" id="0x3A46" />
 
-	<property name="PreferredByName" type="Unicode" id="0x3A47" />
-	<property name="PreferredByNameW" type="Unicode" id="0x3A47" />
-	<property name="PreferredByNameA" type="String8" id="0x3A47" />
+	<property name="ReferredByName" type="Unicode" id="0x3A47" />
+	<property name="ReferredByNameW" type="Unicode" id="0x3A47" />
+	<property name="ReferredByNameA" type="String8" id="0x3A47" />
 
 	<property name="SpouseName" type="Unicode" id="0x3A48" />
 	<property name="SpouseNameW" type="Unicode" id="0x3A48" />
@@ -782,13 +784,13 @@
 	<property name="CustomerIdW" type="Unicode" id="0x3A4A" />
 	<property name="CustomerIdA" type="String8" id="0x3A4A" />
 
-	<property name="TtytddPhoneNumber" type="Unicode" id="0x3A4B" />
-	<property name="TtytddPhoneNumberW" type="Unicode" id="0x3A4B" />
-	<property name="TtytddPhoneNumberA" type="String8" id="0x3A4B" />
+	<property name="TtyTddPhoneNumber" type="Unicode" id="0x3A4B" />
+	<property name="TtyTddPhoneNumberW" type="Unicode" id="0x3A4B" />
+	<property name="TtyTddPhoneNumberA" type="String8" id="0x3A4B" />
 
 	<property name="FtpSite" type="Unicode" id="0x3A4C" />
-	<property name="FtpSite_w" type="Unicode" id="0x3A4C" />
-	<property name="FtpSite_a" type="String8" id="0x3A4C" />
+	<property name="FtpSiteW" type="Unicode" id="0x3A4C" />
+	<property name="FtpSiteA" type="String8" id="0x3A4C" />
 
 	<property name="Gender" type="Int16" id="0x3A4D" />
 
@@ -877,6 +879,8 @@
 	<property name="OtherAddressPostOfficeBox" type="Unicode" id="0x3A64" />
 	<property name="OtherAddressPostOfficeBoxW" type="Unicode" id="0x3A64" />
 	<property name="OtherAddressPostOfficeBoxA" type="String8" id="0x3A64" />
+
+	<property name="UserX509Certificate" type="MvBinary" id="0x3A70" />
 
 	<!--
 		Profile section
@@ -973,7 +977,6 @@
 
 	<property name="MessageSynchronizer" type="Object" id="0x678c" />
 	<property name="FolderSynchronizer" type="Object" id="0x678d" />
-
 
 
 

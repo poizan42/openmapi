@@ -153,12 +153,12 @@
 		<extract left="eid" right="eid.ByteArray" />
 		<extract left="eventMask" right="ulEventMask" />
 		<extract left="clientID" right="ulClientID" />
-		<valuedcall params="eid, (NotificationEventType) eventMask, clientID" />
-		<put result="obj" value="new HObject (new LongLong (callResult))" />
+		<valuedcall params="eid, (NotificationEventType) eventMask, new EventConnection (clientID)" />
+		<put result="obj" value="new HObject (new LongLong (callResult.Connection))" />
 	</call>
 	<call name="MsgStore_Unadvise" targetClass="IMsgStore" targetMethod="Unadvise">
 		<extract left="connHObj" right="connObj" />
-		<voidcall params="Convert.ToInt32 (connHObj.Value.Value)" /><!-- Hopefully no problem: we cut off some of the length! //-->
+		<voidcall params="new EventConnection (Convert.ToInt32 (connHObj.Value.Value))" /><!-- Hopefully no problem: we cut off some of the length! //-->
 	</call>
 	<call name="MsgStore_OpenEntry" targetClass="IMsgStore" targetMethod="OpenEntry_3">
 		<extract left="eid" right="eid.ByteArray" />
@@ -181,7 +181,8 @@
 		<extract left="flags" right="ulFlags" />
 		<pre>
 			<![CDATA[
-				string messageClass = msgClassW; // TODO !!
+				bool isUnicode = ((flags & Mapi.Unicode) != 0);
+				string messageClass = (isUnicode) ? msgClassW : msgClassA;
 			]]>
 		</pre>
 		<voidcall params="messageClass, eid, flags" />
@@ -194,19 +195,12 @@
 			<![CDATA[
 				
 				// TODO: DEBUG!!!
-				_response.eid = new SBinary (new byte [] {0});
-				_response.lpszExplicitClassA = new StringAdapter ("");
-				_response.lpszExplicitClassW = new UnicodeAdapter ("");
+				_response.eid = new SBinary (new byte [48]);
+				_response.lpszExplicitClassA = new StringAdapter ((string) null);
+				_response.lpszExplicitClassW = new UnicodeAdapter ((string) null);
 				
-				
-				
-				
-				
-				/// HACK TO FIX WabiSabi BUG. (TODO?)
-				
-				string messageClass = msgClassA;
-				if (messageClass == null)
-					messageClass = msgClassW;
+				bool isUnicode = (flags & Mapi.Unicode) != 0;
+				string messageClass = (isUnicode) ? msgClassW : msgClassA;
 			]]>
 		</pre>
 		<valuedcall params="messageClass, flags" />
@@ -309,6 +303,8 @@
 			<![CDATA[
 				/// HACK TO FIX WabiSabi BUG. (TODO?)
 				
+				// TODO: actually check the flags.
+				
 				string folderComment = folderCommentA;
 				if (folderComment == null)
 					folderComment = folderCommentW;
@@ -390,12 +386,12 @@
 	<call name="MAPITable_Advise" targetClass="IMapiTable" targetMethod="Advise">
 		<extract left="eventMask" right="ulEventMask" />
 		<extract left="clientID" right="ulClientID" /> <!-- UNUSED //-->
-		<valuedcall params="(NotificationEventType) eventMask, clientID" />
-		<put result="obj" value="new HObject (new LongLong (callResult))" />
+		<valuedcall params="(NotificationEventType) eventMask, new EventConnection (clientID)" />
+		<put result="obj" value="new HObject (new LongLong (callResult.Connection))" />
 	</call>
 	<call name="MAPITable_Unadvise" targetClass="IMapiTable" targetMethod="Unadvise">
 		<extract left="connHObj" right="connObj" />
-		<voidcall params="Convert.ToInt32 (connHObj.Value.Value)" /><!-- Hopefully no problem: we cut off some of the length! //-->
+		<voidcall params="new EventConnection (Convert.ToInt32 (connHObj.Value.Value))" /><!-- Hopefully no problem: we cut off some of the length! //-->
 	</call>
 	<call name="MAPITable_GetLastError" targetClass="IMapiTable" targetMethod="GetLastError">
 		<extract left="hresult" right="hResult" />
@@ -518,8 +514,15 @@
 		<extract left="hresult" right="hResult" />
 		<extract left="flags" right="ulFlags" />
 		<valuedcall params="hresult, flags" />
-		<put result="lpMapiErrorA" value="new MapiErrorStringAdapter (callResult)" />
-		<put result="lpMapiErrorW" value="new MapiErrorUnicodeAdapter (callResult)" />
+		
+		<post>
+			// Seems to be just the _wrong_ way around ... -- vgl. jumapi ???
+			MapiErrorStringAdapter strAdapter = ((flags &amp; Mapi.Unicode) != 0) ? new MapiErrorStringAdapter ((MapiError) null) : new MapiErrorStringAdapter (callResult);
+			MapiErrorUnicodeAdapter uniAdapter = ((flags &amp; Mapi.Unicode) != 0) ? new MapiErrorUnicodeAdapter (callResult) : new MapiErrorUnicodeAdapter ((MapiError) null);
+		</post>
+		
+		<put result="lpMapiErrorA" value="strAdapter" />
+		<put result="lpMapiErrorW" value="uniAdapter" />
 	</call>
 	<call name="MAPIProp_SaveChanges" targetClass="IMapiProp" targetMethod="SaveChanges">
 		<extract left="flags" right="ulFlags" />

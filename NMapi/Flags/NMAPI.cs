@@ -33,6 +33,8 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	// TODO: This class must be refactored/killed.
+
 	public sealed class NMAPI
 	{
 		public const int MV_FLAG = 0x1000;
@@ -164,6 +166,11 @@ namespace NMapi.Flags {
 	
 		public static readonly int PROP_ID_SECURE_MIN = 0x67F0;
 		public static readonly int PROP_ID_SECURE_MAX = 0x67FF;
+		
+		
+		
+		
+		public const int SHOW_SOFT_DELETES = 0x00000002;
 	}
 
 }

@@ -34,6 +34,7 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	// TODO:	-  Generate this class from the XML definition.
 	/// <summary>
 	///  
 	/// </summary>

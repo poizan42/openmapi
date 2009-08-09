@@ -21,6 +21,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="text" omit-xml-declaration="yes" />
 
+<xsl:include href="../common.xsl" />
+
 <xsl:template match="/propertyclasses">
 //
 // DO NOT EDIT!
@@ -71,6 +73,35 @@ namespace NMapi.Properties {
 				</xsl:for-each>
 			}
 		}
+		
+		/// &lt;summary&gt;
+		///  DO NOT USE! This method does not provide type-safe access to properties.
+		/// &lt;/summary&gt;
+		public static PropertyValue Make (int propTag, object data)
+		{
+			PropertyValue val = null;
+			PropertyType ptype = PropertyTypeHelper.PROP_TYPE (propTag);
+			switch (ptype) {
+				<xsl:for-each select="class">
+					<xsl:variable name="nativeType"><xsl:call-template name="get-value-native-type"><xsl:with-param name="type" select="@type" /></xsl:call-template></xsl:variable>
+					
+					<xsl:choose>
+						<xsl:when test="@type = 'DEFAULT'">default: val = new <xsl:value-of select="@id" /> ((int) data); break;
+						</xsl:when>
+						<xsl:otherwise>case PropertyType.<xsl:value-of select="@type" />: val = new <xsl:value-of select="@id" /> (
+							<xsl:if test="$nativeType != ''">(<xsl:value-of select="$nativeType" />) data</xsl:if>
+						); break;
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:for-each>
+			}
+			
+			val.ulPropTag = propTag;
+			return val;
+		}
+		
+		
+		
 
 		<xsl:for-each select="class">
 			/// &lt;summary&gt;
@@ -132,12 +163,12 @@ namespace NMapi.Properties {
 				</xsl:when>
 			</xsl:choose>
 		}
-		
+			
 		protected internal override PropertyType GetRequiredPropertyType ()
 		{
 			return 
 			<xsl:choose>
-				<xsl:when test="@type = 'DEFAULT'">PropertyType.Int32</xsl:when>
+				<xsl:when test="@type = 'DEFAULT'">PropertyType.Unspecified</xsl:when>
 				<xsl:otherwise>PropertyType.<xsl:value-of select="@type" /></xsl:otherwise>
 			</xsl:choose>
 			;

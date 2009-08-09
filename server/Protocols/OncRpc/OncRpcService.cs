@@ -130,7 +130,7 @@ namespace NMapi.Server {
 			var session = GetProxySessionForConnection (call);
 			IMsgStore obj = session.ObjectStore.GetIMsgStore (arg1.obj.value.Value);
 			var result = new MsgStore_GetOrigEID_res ();
-			
+			// TODO: try ... catch ....
 			result.eid = new SBinary (obj.OrigEID);
 /*				
 			if (obj is TeamXChangeMsgStore)
@@ -152,29 +152,62 @@ namespace NMapi.Server {
 			OncRpcCallInformation call, SimpleStream_Read_arg arg1)
 		{
 			Trace.WriteLine (" ==> START CALL SimpleStream_Read");
-			var session = GetProxySessionForConnection (call);
-			var result = session.StreamHelper.Read (arg1);
+			SimpleStream_Read_res result = new SimpleStream_Read_res ();
+			try {
+				var session = GetProxySessionForConnection (call);
+				try {
+					var result2 = session.StreamHelper.Read (arg1);
+					result = result2;
+				} catch (MapiException e) {
+					result.hr = e.HResult;
+				}
+			} catch (Exception e) {
+				LogException (e);
+				result.hr = Error.CallFailed;	
+			}
 			Trace.WriteLine (" ==> END CALL SimpleStream_Read");
 			return result;
 		}
 
 		public override SimpleStream_Write_res SimpleStream_Write_1 (
 			OncRpcCallInformation call, SimpleStream_Write_arg arg1)
-		{			
-			Trace.WriteLine (" ==> START CALL SimpleStream_Read");		
-			var session = GetProxySessionForConnection (call);
-			var result = session.StreamHelper.Write (arg1);
-			Trace.WriteLine (" ==> END CALL SimpleStream_Read");
+		{
+			Trace.WriteLine (" ==> START CALL SimpleStream_Write");
+			SimpleStream_Write_res result = new SimpleStream_Write_res ();
+			try {
+				var session = GetProxySessionForConnection (call);
+				try {
+					var result2 = session.StreamHelper.Write (arg1);
+					result = result2;
+				} catch (MapiException e) {
+					result.hr = e.HResult;
+				}
+			} catch (Exception e) {
+				LogException (e);
+				result.hr = Error.CallFailed;	
+			}
+			Trace.WriteLine (" ==> END CALL SimpleStream_Write");
 			return result;
 		}
 		
 		public override SimpleStream_EndWrite_res SimpleStream_EndWrite_1 (
 			OncRpcCallInformation call, SimpleStream_EndWrite_arg arg1)
 		{
-			Trace.WriteLine (" ==> START CALL SimpleStream_EndWrite");		
-			var session = GetProxySessionForConnection (call);
-			session.StreamHelper.EndWrite (arg1);
+			Trace.WriteLine (" ==> START CALL SimpleStream_EndWrite");
 			var result = new SimpleStream_EndWrite_res ();
+			
+			try {
+				var session = GetProxySessionForConnection (call);
+				try {
+					session.StreamHelper.EndWrite (arg1);
+				} catch (MapiException e) {
+					result.hr = e.HResult;
+				}
+			} catch (Exception e) {
+				LogException (e);
+				result.hr = Error.CallFailed;	
+			}
+			
 			Trace.WriteLine (" ==> END CALL SimpleStream_EndWrite");
 			return result;
 		}

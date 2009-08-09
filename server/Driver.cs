@@ -368,7 +368,7 @@ namespace NMapi.Server {
 
 		private void CreateThrowMapiException (ILGenerator methodCode, string message)
 		{
-			Type mapiException = typeof (MapiException);
+			Type mapiException = typeof (MapiCallFailedException);
 			var exceptionConstructor = mapiException.GetConstructor (
 						new Type[] { typeof (string), typeof (Exception) });
 

@@ -173,7 +173,7 @@ namespace NMapi.Linq {
 					table.SeekRow  (Bookmark.Beginning, 0);
 					RowSet rows = table.QueryRows (1, 0);
 					if (rows.Count == 0)
-						throw new MapiException ("No match!", Error.NotFound);
+						throw new MapiNotFoundException ("No match!");
 					result = BuildEntity (rows [0]);					
 				} finally {
 					Reset ();
@@ -192,7 +192,7 @@ namespace NMapi.Linq {
 					table.SeekRow  (Bookmark.End, 0);
 					RowSet rows = table.QueryRows (1, 0);
 					if (rows.Count == 0)
-						throw new MapiException ("No match!", Error.NotFound);
+						throw new MapiNotFoundException ("No match!");
 					result = BuildEntity (rows [0]);
 				} finally {
 					Reset ();
@@ -261,7 +261,7 @@ namespace NMapi.Linq {
 					table.SeekRow  (Bookmark.Beginning, 0); // Ensure correct start.
 					rows = table.QueryRows  (1, 0);
 					if (rows.Count == 0)
-						throw new MapiException ("No match!", Error.NotFound);
+						throw new MapiNotFoundException ("No match!");
 					PropertyType propType = PropertyTypeHelper.PROP_TYPE (state.ScalarQueriedProperty);
 					result = rows [0].Props [0].GetValueObj ();
 

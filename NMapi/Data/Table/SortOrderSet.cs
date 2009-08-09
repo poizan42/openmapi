@@ -34,7 +34,7 @@ using NMapi.Interop;
 namespace NMapi.Table {
 
 	/// <summary>
-	///  The SSortOrderSet structure.
+	///  The SortOrderSet structure.
 	/// </summary>
 	/// <remarks>
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms530988.aspx

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - outlook.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<properties namespace="NMapi.Flags" class="OutlookProperty">
+
+	<property name="IPM_APPOINTMENT_ENTRYID" type="Binary" id="0x36D0" />
+	<property name="IPM_CONTACT_ENTRYID" type="Binary" id="0x36D1" />
+	<property name="IPM_DRAFTS_ENTRYID" type="Binary" id="0x36D7" />
+	<property name="IPM_JOURNAL_ENTRYID" type="Binary" id="0x36D2" />
+	<property name="IPM_NOTE_ENTRYID" type="Binary" id="0x36D3" />
+	<property name="IPM_TASK_ENTRYID" type="Binary" id="0x36D4" />
+
+	<property name="INTERNET_CPID" type="Int32" id="0x3FDE" />
+	<property name="MESSAGE_CODEPAGE" type="Int32" id="0x3FFD" />
+	<property name="INTERNET_MESSAGE_ID_A" type="String8" id="0x1035" />
+	<property name="INTERNET_MESSAGE_ID_W" type="Unicode" id="0x1035" />
+	<property name="IN_REPLY_TO_ID_A" type="String8" id="0x1042" />
+	<property name="IN_REPLY_TO_ID_W" type="Unicode" id="0x1042" />
+	<property name="HTML" type="Binary" id="0x1013" />
+	<property name="BODY_HTML_A" type="String8" id="0x1013" />
+	<property name="BODY_HTML_W" type="Unicode" id="0x1013" />
+	<property name="ICON_INDEX" type="Int32" id="0x1080" />
+	<property name="FLAG_STATUS" type="Int32" id="0x1090" />
+	<property name="RECIPIENT_FLAGS" type="Int32" id="0x5ffd" />
+	<property name="RECIPIENT_TRACKSTATUS" type="Int32" id="0x5fff" />
+</properties>

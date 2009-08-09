@@ -22,14 +22,6 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
@@ -39,9 +31,22 @@ namespace NMapi.Flags {
 	/// </summary>
 	public enum Folder
 	{
+		
+		/// <summary>
+		///  The folder is the root folder of the message store.
+		/// </summary>
 		Root = 0,
+		
+		/// <summary>
+		///  A normal folder.
+		/// </summary>
 		Generic,
+		
+		/// <summary>
+		///  A search folder.
+		/// </summary>
 		Search
+		
 	}
 
 }

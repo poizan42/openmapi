@@ -124,15 +124,15 @@ namespace NMapi.Properties.Special {
 				res = clnt.MAPIFolder_CopyMessages_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			if (Error.CallHasFailed (res.hr)) {
 				if (res.hr == Error.NoSupport) {
 					if ((flags & NMAPI.MAPI_DECLINE_OK) != 0)
-						throw new MapiException (Error.DeclineCopy);
+						throw new MapiDeclineCopyException ();
 					else {
 						CopyMessages2 (msgList,
 							      interFace,
@@ -142,8 +142,8 @@ namespace NMapi.Properties.Special {
 					}
 				}
 				else
-					throw new MapiException(res.hr);
-			}
+					throw MapiException.Make (res.hr);
+			}			
 		}
 
 		public void DeleteMessages (
@@ -189,28 +189,28 @@ namespace NMapi.Properties.Special {
 			IMapiFolder destFolder, string newFolderName,
 			IMapiProgress progress, int flags)
 		{
-				var prms = new MAPIFolder_CopyFolder_arg ();
-				prms.obj = new HObject (obj);
+			var prms = new MAPIFolder_CopyFolder_arg ();
+			prms.obj = new HObject (obj);
 
-				var binProp = (BinaryProperty) new MapiPropHelper (destFolder).
-						HrGetOneProp (Property.EntryId);
-				byte [] destEntryID = binProp.Value.lpb;
+			var binProp = (BinaryProperty) new MapiPropHelper (destFolder).
+					HrGetOneProp (Property.EntryId);
+			byte [] destEntryID = binProp.Value.lpb;
 
-				prms.srceid = new SBinary (entryID);
-				prms.dsteid = new SBinary (destEntryID);
-				prms.lpInterface = new LPGuid (interFace);
-				prms.ulFlags = flags;
-				prms.pBar = new LPProgressBar();
-				if ((prms.ulFlags & Mapi.Unicode) != 0) {
-					prms.pszNewNameW = new UnicodeAdapter (newFolderName);
-					prms.pszNewNameA = new StringAdapter ();
-				} else {
-					prms.pszNewNameA = new StringAdapter (newFolderName);
-					prms.pszNewNameW = new UnicodeAdapter ();
-				}
+			prms.srceid = new SBinary (entryID);
+			prms.dsteid = new SBinary (destEntryID);
+			prms.lpInterface = new LPGuid (interFace);
+			prms.ulFlags = flags;
+			prms.pBar = new LPProgressBar();
+			if ((prms.ulFlags & Mapi.Unicode) != 0) {
+				prms.pszNewNameW = new UnicodeAdapter (newFolderName);
+				prms.pszNewNameA = new StringAdapter ();
+			} else {
+				prms.pszNewNameA = new StringAdapter (newFolderName);
+				prms.pszNewNameW = new UnicodeAdapter ();
+			}
 
-				var res = MakeCall<MAPIFolder_CopyFolder_res, 
-					MAPIFolder_CopyFolder_arg> (clnt.MAPIFolder_CopyFolder_1, prms);
+			var res = MakeCall<MAPIFolder_CopyFolder_res, 
+				MAPIFolder_CopyFolder_arg> (clnt.MAPIFolder_CopyFolder_1, prms);
 		}
 
 		public void DeleteFolder (byte [] entryID, IMapiProgress progress, int flags)

@@ -80,8 +80,8 @@ namespace NMapi.Interop {
 			if (value != null) {
 				xdr.XdrEncodeBoolean (true);
 				xdr.XdrEncodeInt (value.Version);
-				new StringAdapter (value.Error).XdrEncode (xdr);	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
-				new StringAdapter (value.Component).XdrEncode (xdr);	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
+				new UnicodeAdapter (value.Error).XdrEncode (xdr);	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
+				new UnicodeAdapter (value.Component).XdrEncode (xdr);	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
 				xdr.XdrEncodeInt (value.LowLevelError);
 				xdr.XdrEncodeInt (value.Context);
 			} else {
@@ -98,8 +98,8 @@ namespace NMapi.Interop {
 			else {
 				value = new MapiError ();
 				value.Version = xdr.XdrDecodeInt ();
-				value.Error = new StringAdapter (xdr).value;	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
-				value.Component = new StringAdapter (xdr).value;	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
+				value.Error = new UnicodeAdapter (xdr).value;	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
+				value.Component = new UnicodeAdapter (xdr).value;	// TODO: LPStr in jumapi. - bug? Should probably be UnicodeAdapter
 				value.LowLevelError = xdr.XdrDecodeInt ();
 				value.Context = xdr.XdrDecodeInt ();
 			}

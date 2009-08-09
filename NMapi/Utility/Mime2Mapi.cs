@@ -158,7 +158,7 @@ namespace NMapi.Utility {
 			for (int i = 0; i < sppa.Length; i++) 
 				if (sppa [i].SCode != Error.Computed) {
 					Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
-					throw new MapiException (sppa [i].SCode);
+					throw MapiException.Make (sppa [i].SCode);
 			}
 			im.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 			
@@ -488,7 +488,7 @@ namespace NMapi.Utility {
 								for (int i = 0; i < sppa.Length; i++)
 									if (sppa [i].SCode != Error.Computed) {
 										Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
-										throw new MapiException (sppa [i].SCode);
+										throw MapiException.Make (sppa [i].SCode);
 								}
 								ia.SaveChanges (NMAPI.FORCE_SAVE);
 							} catch (Exception e) {
@@ -539,7 +539,7 @@ namespace NMapi.Utility {
 				for (int i = 0; i < sppa.Length; i++)
 					if (sppa [i].SCode != Error.Computed) {
 						Trace.WriteLine ("Property error in position: "+i+" Tag: " + sppa [i].PropTag + " value: "+sppa [i].SCode);
-						throw new MapiException (sppa [i].SCode);
+						throw MapiException.Make (sppa [i].SCode);
 				}
 				ia.SaveChanges (NMAPI.FORCE_SAVE);
 			} catch (Exception e) {

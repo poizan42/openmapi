@@ -50,7 +50,7 @@ namespace NMapi.Server {
 		public int TargetPort {
 			get { return cfg.TargetPort; }
 		}
-		
+				
 		public string Name {
 			get {
 				StringBuilder moduleList = new StringBuilder ();
@@ -128,14 +128,14 @@ namespace NMapi.Server {
 				}
 				
 				if (factory == null)
-					throw new MapiException ("Couldn't create provider from " + 
+					throw MapiException.Make ("Couldn't create provider from " + 
 						"specified backend '"  + typeName + 
 						" (Assembly: " + assemblyName + ")' !");
 				result = request.ProxySession.ObjectStore.MapObject (factory.CreateMapiSession ());
 			} catch (MapiException)  {
 				throw;
 			} catch (Exception e)  {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			sessionOpen = true;
 			DebugEndCall ();return result; } catch (Exception e) { DebugCleanUp (e); throw; }
@@ -154,22 +154,22 @@ namespace NMapi.Server {
 
 		# region hack
 		
-		public virtual int IMsgStore_Advise (Request request, IMsgStore obj, byte [] entryID, NotificationEventType eventMask, int txcOutlookHackConnection)
+		public virtual EventConnection IMsgStore_Advise (Request request, IMsgStore obj, byte [] entryID, NotificationEventType eventMask, EventConnection txcOutlookHackConnection)
 		{
 			DebugStartCall (); try {
-			int result;
+			EventConnection result;
 			try {
 				result = request.ProxySession.EventDispatcher.Register (obj, entryID, eventMask, txcOutlookHackConnection);
 				// TODO: sink will be identified by returned int!
 			} catch (MapiException) {
 				throw;
 			} catch (Exception e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			DebugEndCall ();return result; } catch (Exception e) { DebugCleanUp (e); throw; }
 		}
 		
-		public virtual int IMapiTable_Advise_2 (Request request, IMapiTable obj, byte[] ignored, NotificationEventType eventMask, int txcOutlookHackConnection)
+		public virtual EventConnection IMapiTable_Advise_2 (Request request, IMapiTable obj, byte[] ignored, NotificationEventType eventMask, EventConnection txcOutlookHackConnection)
 		{
 			DebugStartCall (); try {
 			try {
@@ -177,12 +177,12 @@ namespace NMapi.Server {
 			} catch (MapiException) {
 				throw;
 			} catch (Exception e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			DebugEndCall (); } catch (Exception e) { DebugCleanUp (e); throw; }
 		}
 
-		public virtual int IMapiTable_Advise (Request request, IMapiTable obj, NotificationEventType eventMask, int txcOutlookHackConnection)
+		public virtual EventConnection IMapiTable_Advise (Request request, IMapiTable obj, NotificationEventType eventMask, EventConnection txcOutlookHackConnection)
 		{
 			DebugStartCall (); try {
 			try {
@@ -190,7 +190,7 @@ namespace NMapi.Server {
 			} catch (MapiException) {
 				throw;
 			} catch (Exception e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			DebugEndCall (); } catch (Exception e) { DebugCleanUp (e); throw; }
 		}

@@ -33,6 +33,8 @@ using NMapi.Properties;
 using NMapi.Table;
 
 namespace NMapi {
+	
+	// TODO: This class is a legacy from JUMAPI. It has to be rewritten.
 
 	/// <summary>
 	///   MAPI OneOff EntryIds.
@@ -121,7 +123,7 @@ namespace NMapi {
 		public OneOff (byte [] bytes, string charset)
 		{
 			if (!IsOneOffEntryID (bytes))
-				throw new MapiException ("invalid oneoff uid");
+				throw MapiException.Make ("invalid oneoff uid");
 
 			this.bytes = bytes;
 			this.charset = charset;		
@@ -186,7 +188,7 @@ namespace NMapi {
 				bytesMail = Encoding.GetEncoding (charset).GetBytes (emailAddress);
 			}
 			catch (ArgumentException e) {
-				throw new MapiException (new IOException ("Invalid charset!" , e));
+				throw MapiException.Make (new IOException ("Invalid charset!" , e));
 			}
 		
 			len += bytesName.Length + bytesType.Length + bytesMail.Length;
@@ -268,7 +270,7 @@ namespace NMapi {
 			try {
 				return Encoding.GetEncoding (charset).GetString (strbytes);
 			} catch (Exception) {
-				throw new MapiException ("charset is: " + charset, 
+				throw MapiException.Make ("charset is: " + charset, 
 					Error.InvalidParameter);
 			}
 		}

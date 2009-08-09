@@ -32,6 +32,8 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	// TODO: This class should be removed; The methods should be merged elsewhere (property tag?)
+
 	public class PropertyTypeHelper
 	{
 		private const int PROP_TYPE_MASK  = 0x0000FFFF;
@@ -50,7 +52,7 @@ namespace NMapi.Flags {
 
 		public static int PROP_ID (int propTag)
 		{
-			return propTag >> 16;
+			return propTag >> 16 & PROP_TYPE_MASK; // this is a bugfix.
 		}
 
 		public static int CHANGE_PROP_TYPE (int propTag, PropertyType propType)

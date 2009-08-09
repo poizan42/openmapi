@@ -51,13 +51,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_GetLastError_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 
 			if ((flags & Mapi.Unicode) != 0) 
 				return res.lpMapiErrorA.Value;
@@ -76,20 +76,20 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_SaveChanges_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 		}
-
+		
 		public PropertyValue [] GetProps (PropertyTag[] propTagArray, int flags)
 		{
 			var arg = new MAPIProp_GetProps_arg();
 			MAPIProp_GetProps_res res;
-		
+			
 			arg.obj = new HObject (new LongLong (obj));
 			arg.lpPropTagArray = new PropertyTagArrayPtrAdapter (propTagArray);
 			arg.ulFlags = flags;
@@ -97,13 +97,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_GetProps_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 			return res.props;
 		}
 
@@ -118,13 +118,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_GetPropList_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 			return res.lpPropTagArray.Value;
 		}
 
@@ -148,13 +148,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_OpenProperty_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 			return session.CreateObject (this, res.obj.Value.Value, res.ulObjType, interFace, propTag);
 		}
 
@@ -169,10 +169,10 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_SetProps_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			// TODO: The next 2 lines have been commented-out, but this really is not 
 			//       a correct fix. The problem here is, that warnings must be returned 
@@ -180,7 +180,7 @@ namespace NMapi.Properties {
 			//       returned.
 			
 			//if (Error.CallHasFailed (res.hr))
-			//	throw new MapiException (res.hr);
+			//	throw MapiException.Make (res.hr);
 			return res.lpProblems.value;
 		}
 
@@ -195,13 +195,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_DeleteProps_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 			return res.lpProblems.Value;
 		}
 	
@@ -223,13 +223,13 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_GetNamesFromIDs_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 
 			ret.PropTags = res.lpPropTags.Value;
 			ret.PropNames = new MapiNameId [res.names.Length];
@@ -252,16 +252,18 @@ namespace NMapi.Properties {
 				res = clnt.MAPIProp_GetIDsFromNames_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			if (Error.CallHasFailed  (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 			return res.lpPropTags.Value;
+
 		}
 
+/*
 		public PropertyValue HrGetOneProp (int tag)
 		{
 			return helper.HrGetOneProp (tag);
@@ -296,6 +298,7 @@ namespace NMapi.Properties {
 		{
 			return helper.HrGetNamedProp (guid, id);
 		}
+*/
 
 	}
 }

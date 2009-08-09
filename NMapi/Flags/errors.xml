@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - errors.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<errors>
+	<error name="CallFailed" message="MAPI_E_CALL_FAILED: Call failed" />
+	<error name="NotEnoughMemory" message="MAPI_E_NOT_ENOUGH_MEMORY: Out of memory" />
+	<error name="InvalidParameter" message="MAPI_E_INVALID_PARAMETER" />
+	<error name="InterfaceNotSupported" message="MAPI_E_INTERFACE_NOT_SUPPORTED" />
+	<error name="NoAccess" message="MAPI_E_NO_ACCESS: Access denied" />
+	<error name="NoSupport" message="MAPI_E_NO_SUPPORT" />
+	<error name="BadCharWidth" message="MAPI_E_BAD_CHARWITH" />
+	<error name="StringTooLong" message="MAPI_E_STRING_TOO_LONG" />
+	<error name="UnknownFlags" message="MAPI_E_UNKNOWN_FLAGS" />
+	<error name="InvalidEntryid" message="MAPI_E_INVALID_ENTRYID" />
+	<error name="InvalidObject" message="MAPI_E_INVALID_OBJECT" />
+	<error name="ObjectChanged" message="MAPI_E_OBJECT_CHANGED" />
+	<error name="ObjectDeleted" message="MAPI_E_OBJECT_DELETED" />
+	<error name="Busy" message="MAPI_E_BUSY" />
+	<error name="NotEnoughDisk" message="MAPI_E_NOT_ENOUGH_DISK: Out of disk space" />
+	<error name="NotEnoughResources" message="MAPI_E_NOT_ENOUGH_RESOURCES" />
+	<error name="NotFound" message="MAPI_E_NOT_FOUND: Not found" />
+	<error name="Version" message="MAPI_E_VERSION: Invalid version" />
+	<error name="LogonFailed" message="MAPI_E_LOGON_FAILED: Logon failed" />
+	<error name="SessionLimit" message="MAPI_E_SESSION_LIMIT: Session limit" />
+	<error name="UserCancel" message="MAPI_E_USER_CANCEL" />
+	<error name="UnableToAbort" message="MAPI_E_UNABLE_TO_ABORT" />
+	<error name="NetworkError" message="MAPI_E_NETWORK_ERROR: Network error or i/o error" />
+	<error name="DiskError" message="MAPI_E_DISK_ERROR: Disk error" />
+	<error name="TooComplex" message="MAPI_E_TOO_COMPLEX: Too complex" />
+	<error name="BadColumn" message="MAPI_E_BAD_COLUMN" />
+	<error name="ExtendedError" message="MAPI_E_EXTENDED_ERROR" />
+	<error name="Computed" message="MAPI_E_COMPUTED" />
+	<error name="CorruptData" message="MAPI_E_CORRUPT_DATA" />
+	<error name="Unconfigured" message="MAPI_E_UNCONFIGURED: Not configured" />
+	<error name="Failoneprovider" message="MAPI_E_FAILONEPROVIDER" />
+	<error name="UnknownCpid" message="MAPI_E_UNKNOWN_CPID: Unknown client codepage" />
+	<error name="UnknownLcid" message="MAPI_E_UNKNOWN_LCID: Unknown client locale" />
+	<error name="PasswordChangeRequired" message="MAPI_E_PASSWORD_CHANGE_REQUIRED: Please change your password" />
+	<error name="PasswordExpired" message="MAPI_E_PASSWORD_EXPIRED: Your password has expired" />
+	<error name="InvalidWorkstationAccount" message="MAPI_E_INVALID_WORKSTATION_ACCOUNT" />
+	<error name="InvalidAccessTime" message="MAPI_E_INVALID_ACCESS_TIME" />
+	<error name="AccountDisabled" message="MAPI_E_ACCOUNT_DISABLED" />
+	<error name="EndOfSession" message="MAPI_E_END_OF_SESSION" />
+	<error name="UnknownEntryid" message="MAPI_E_UNKNOWN_ENTRYID" />
+	<error name="MissingRequiredColumn" message="MAPI_E_MISSING_REQUIRED_COLUMN" />
+	<error name="BadValue" message="MAPI_E_BAD_VALUE" />
+	<error name="InvalidType" message="MAPI_E_INVALID_TYPE" />
+	<error name="TypeNoSupport" message="MAPIE_TYPE_NO_SUPPORT" />
+	<error name="UnexpectedType" message="MAPI_E_UNEXPECTED_TYPE" />
+	<error name="TooBig" message="MAPI_E_TOO_BIG" />
+	<error name="DeclineCopy" message="MAPI_E_DECLINE_COPY" />
+	<error name="UnexpectedId" message="MAPI_E_UNEXPECTED_ID" />
+	<error name="UnableToComplete" message="MAPI_E_UNABLE_TO_COMPLETE" />
+	<error name="Timeout" message="MAPI_E_TIMEOUT" />
+	<error name="TableEmpty" message="MAPI_E_TABLE_EMPTY" />
+	<error name="TableTooBig" message="MAPI_E_TABLE_TOO_BIG" />
+	<error name="InvalidBookmark" message="MAPI_E_INVALID_BOOKMARK" />
+	<error name="Wait" message="MAPI_E_WAIT" />
+	<error name="Cancel" message="MAPI_E_CANCEL" />
+	<error name="NotMe" message="MAPI_E_NOT_ME" />
+	<error name="CorruptStore" message="MAPI_E_CORRUPT_STORE" />
+	<error name="NotInQueue" message="MAPI_E_NOT_IN_QUEUE" />
+	<error name="NoSuppress" message="MAPI_E_NO_SUPPRESS" />
+	<error name="Collision" message="MAPI_E_COLLISION" />
+	<error name="NotInitialized" message="MAPI_E_NO_INITIALIZED" />
+	<error name="NonStandard" message="MAPI_E_NON_STANDARD" />
+	<error name="NoRecipients" message="MAPI_E_NO_RECIPIENTS" />
+	<error name="Submitted" message="MAPI_E_SUBMITTED" />
+	<error name="HasFolders" message="MAPI_E_HAS_FOLDERS" />
+	<error name="HasMessages" message="MAPI_E_HAS_MESSAGES" />
+	<error name="FolderCycle" message="MAPI_E_FOLDER_CYCLE: The source folder contains the destination." />
+	<error name="AmbiguousRecip" message="MAPI_E_AMBIGOUS_RECIP" />
+	<error name="MapiWPartialCompletion" message="MAPI_W_PARTIAL_COMPLETION: Some operations did not complete." />
+	<error name="UMapiOLDENTRYID" message="UMAPI_E_OLDENTRYID: Old ENTRYID. (Server db was recreated)." />
+	<error name="UMapiNFU" message="UMAPI_E_NFU: Unexpected not found." />
+	<error name="UMapiLDAPERR" message="UMAPI_E_LDAPERR: LDAP execution error" />
+	<error name="UMapiLICENSE_LIMIT" message="UMAPI_E_LICENSE_LIMIT: License limit exceeded" />
+	<error name="UMapiLICENSE_BAD" message="UMAPI_E_LICENSE_BAD: No license" />
+	<error name="UMapiLICENSE_EXPIRED" message="UMAPI_E_LICENSE_EXPIRED: License expired" />
+	<error name="UMapiLICENSE_FEATURE" message="UMAPI_E_LICENSE_FEATURE: Feature not licensed" />
+	<error name="UMapiCONFIGDATA" message="UMAPI_E_CONFIGDATA: No configuration data for this entryid" />
+	<error name="UMapiWRAPEID" message="UMAPI_E_WRAPEID" />
+	<error name="UMapiSIZE_LIMIT" message="UMAPI_E_SIZE_LIMIT: Size limit exceeded (body too large?)" />
+	<error name="UMapiLDAPCFG" message="UMAPI_E_LDAPCFG: LDAP configuration error" />
+	<error name="UMapiSQLERR" message="UMAPI_E_SQLERR: SQL Error. Check umapi-server.log." />
+	<error name="UMapiDIRTY" message="UMAPI_E_DIRTY" />
+	<error name="UMapiOLE_ATTACH" message="UMAPI_E_OLE_ATTACH" />
+	<error name="UMapiREF_ATTACH" message="UMAPI_E_REF_ATTACH" />
+</errors>

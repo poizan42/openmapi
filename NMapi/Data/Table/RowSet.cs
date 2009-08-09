@@ -36,6 +36,9 @@ using NMapi.Interop;
 
 namespace NMapi.Table {
 
+
+	// TODO: refactor this into a RowCollection or something ....
+
 	/// <summary>
 	///  The RowSet structure.
 	/// </summary>

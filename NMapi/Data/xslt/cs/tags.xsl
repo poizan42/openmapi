@@ -21,6 +21,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="text" omit-xml-declaration="yes" />
 
+<xsl:include href="../common.xsl" />
+
 <xsl:template match="/propertyclasses">
 //
 // DO NOT EDIT!
@@ -73,27 +75,40 @@ namespace NMapi {
 </xsl:template>
 
 <xsl:template match="class">
+	<xsl:variable name="nativeType"><xsl:call-template name="get-value-native-type"><xsl:with-param name="type" select="@type" /></xsl:call-template></xsl:variable>
 	
 	/// &lt;summary&gt;
-	///  
+	///  TODO: comment!
 	/// &lt;/summary&gt;
 	public sealed class <xsl:value-of select="@id" />Tag : PropertyTag
 	{
 	
 		/// &lt;summary&gt;
-		///  
+		///  TODO: comment!
 		/// &lt;/summary&gt;
 		public <xsl:value-of select="@id" />Tag (int tag) : base (tag) // TODO: We need to be careful here to avoid that tag with a different type are passed.
 		{
 		}
 		
 		/// &lt;summary&gt;
-		///  
+		///  Creates a <xsl:value-of select="@id" /> from the property tag.
 		/// &lt;/summary&gt;
 		public <xsl:value-of select="@id" /> CreateValue ()
 		{
 			return PropertyValue.CreateFromTag (this);
 		}
+		
+		<xsl:if test="$nativeType != ''">
+			/// &lt;summary&gt;
+			///  Creates a <xsl:value-of select="@id" /> from the property tag and sets the property value.
+			/// &lt;/summary&gt;
+			public <xsl:value-of select="@id" /> CreateValue (<xsl:value-of select="$nativeType" /><xsl:text> </xsl:text> val)
+			{
+				<xsl:value-of select="@id" /> pv = PropertyValue.CreateFromTag (this);
+				pv.Value = val;
+				return pv;
+			}
+		</xsl:if>
 		
 	}
 	

@@ -148,7 +148,7 @@ namespace NMapi.Linq {
 			int propValue = -1;
 			if (typeName == "Property") {
 				Type type = typeof (NMapi.Flags.Property);
-				FieldInfo field = type.GetField (fieldName);
+				System.Reflection.FieldInfo field = type.GetField (fieldName);
 				propValue = (int) field.GetValue (type);
 			}
 			else {

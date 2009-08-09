@@ -35,6 +35,8 @@ using NMapi.Properties;
 using NMapi.Table;
 
 namespace NMapi {
+	
+	// This class must die! It should be replaced by using "EntryId[]" (which can be constructed from an array of SBinary values using OpaqueEntryId)
 
 	public partial class EntryList
 	{

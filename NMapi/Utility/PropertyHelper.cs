@@ -1,18 +1,24 @@
+//
 // openmapi.org - NMapi C# Mapi API - PropertyHelper.cs
 //
 // Copyright 2008 Topalis AG
 //
 // Author: Andreas Huegel <andreas.huegel@topalis.com>
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-// 
-// This program is distributed in the hope that it will be useful,
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Affero General Public License for more details.
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
 using System;
@@ -26,6 +32,9 @@ using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 
 namespace NMapi.Utility {
+	
+	
+	// This class must die.
 	
 	public class PropertyHelper 
 	{
@@ -85,8 +94,7 @@ namespace NMapi.Utility {
 				return "NIL";
 			}
 		}
-										
-
+		
 		public long LongNum {
 			get {
 				if (Index != -1) {
@@ -140,6 +148,7 @@ namespace NMapi.Utility {
 		}
 
 		
+		// fixed in core. TODO: remove this method and any reference to it.
 		public static string Trim0Terminator (string str)
 		{
 			if (str != null) {

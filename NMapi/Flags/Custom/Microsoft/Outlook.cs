@@ -25,7 +25,6 @@
 using System;
 using System.IO;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
@@ -40,6 +39,8 @@ namespace NMapi.Flags {
 	public static class Outlook
 	{
 		public const int STORE_UNICODE_OK = 0x00040000; 
+
+// START REDUNTANT..... REMOVE!!!!		
 
 		/// <summary>
 		///   
@@ -67,6 +68,9 @@ namespace NMapi.Flags {
 			[MapiPropDef] public const int RECIPIENT_FLAGS         = ((int) PropertyType.Int32)    | (0x5ffd << 16);
 			[MapiPropDef] public const int RECIPIENT_TRACKSTATUS   = ((int) PropertyType.Int32)    | (0x5fff << 16);
 		}
+		
+// END REDUNTANT..... REMOVE!!!!		
+		
 		
 		//
 		// also NAMED PROP ReponseStatus
@@ -224,7 +228,7 @@ namespace NMapi.Flags {
 			0x00020329, (short)0x0000, (short)0x0000);
 
 		//
-		// Known MNID_IDs
+		// Known named property names.
 		//
 
 		public const string DispstrSequence   = "urn:schemas:calendar:sequence";

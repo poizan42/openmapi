@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - ValidFolderMask.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -37,6 +37,9 @@ namespace NMapi.Flags {
 
 	// flags for PR_VALID_FOLDER_MASK
 
+	/// <summary>
+	///  
+	/// </summary>
 	[Flags]
 	public enum ValidFolderMask
 	{

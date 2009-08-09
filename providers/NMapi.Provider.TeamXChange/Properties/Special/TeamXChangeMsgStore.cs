@@ -78,13 +78,13 @@ namespace NMapi.Properties.Special {
 			base.Dispose ();
 		}
 
-		public int Advise (byte [] entryID, 
+		public EventConnection Advise (byte [] entryID, 
 			NotificationEventType eventMask, IMapiAdviseSink adviseSink)
 		{
 			return session.EventServer.Advise (this, entryID, eventMask, adviseSink);
 		}
 
-		public void Unadvise (int connection)
+		public void Unadvise (EventConnection connection)
 		{
 			session.EventServer.Unadvise (connection);
 		}
@@ -103,7 +103,7 @@ namespace NMapi.Properties.Special {
 		}
 
 		public int CompareEntryIDs (byte [] entryID1, byte [] entryID2, int flags)
-		{		
+		{
 			var prms = new MsgStore_CompareEntryIDs_arg ();
 			prms.obj = new HObject (obj);
 			prms.eid1 = new SBinary (entryID1);
@@ -160,6 +160,7 @@ namespace NMapi.Properties.Special {
 
 		public GetReceiveFolderResult GetReceiveFolder (string messageClass, int flags)
 		{
+
 			var prms = new MsgStore_GetReceiveFolder_arg ();
 			prms.obj = new HObject (obj);
 			prms.ulFlags = flags;
@@ -170,7 +171,7 @@ namespace NMapi.Properties.Special {
 				prms.lpszMessageClassA = new StringAdapter (messageClass);
 				prms.lpszMessageClassW = new UnicodeAdapter ();
 			}
-						
+
 			var res = MakeCall<MsgStore_GetReceiveFolder_res, 
 				MsgStore_GetReceiveFolder_arg> (
 					clnt.MsgStore_GetReceiveFolder_1, prms);
@@ -183,10 +184,10 @@ namespace NMapi.Properties.Special {
 				ret.ExplicitClass = res.lpszExplicitClassA.value;
 			return ret;
 		}
-		
+
 		public IMapiTableReader GetReceiveFolderTable (int flags)
 		{
-			throw new NotSupportedException ("This call is not supported by the TeamXChange provider.");
+			throw new MapiNoSupportException ("This call is not supported by the TeamXChange provider.");
 		}
 
 		public void StoreLogoff (int flags)
@@ -222,75 +223,7 @@ namespace NMapi.Properties.Special {
 		// NOT IMPLEMENTED: SetLockState()
 		// NOT IMPLEMENTED: FinishedMsg()
 		// NOT IMPLEMENTED: NotifyNewMail()
-
-		public IMapiFolder HrOpenIPMFolder (string path, int flags)
-		{
-			byte [] eidroot;
-			string [] paths;
-			IMapiFolder folder = null;
-			bool found = false;
-
-			var binProp = (BinaryProperty) new MapiPropHelper (this).HrGetOneProp (Property.IpmSubtreeEntryId);
-			eidroot = binProp.Value.lpb;
-			folder  = (IMapiFolder) OpenEntry (eidroot, null, flags);
-			if (path == "/")
-				return folder;
 		
-			paths = path.Split ('/');		
-			try {
-
-				for (int i = 1; i < paths.Length; i++) {
-					IMapiTableReader tableReader = null;
-					bool first = true;
-					int idx_name = -1, idx_eid = -1;
-					string  match = paths[i];
-								
-					try {
-						found = false;
-						tableReader = folder.GetHierarchyTable (Mapi.Unicode);
-						while (!found) {
-							RowSet rows = tableReader.GetRows(10);
-							if (rows.ARow.Length == 0)
-								break;
-
-							for (int idx = 0; idx < rows.ARow.Length; idx++) {
-								PropertyValue [] prps = rows.ARow [idx].lpProps;
-
-								if (first) {
-									first = false;
-									idx_name = PropertyValue.GetArrayIndex (
-										prps, Property.DisplayNameW);
-
-									idx_eid  = PropertyValue.GetArrayIndex (
-										prps, Property.EntryId);
-								}
-							
-								PropertyValue name = PropertyValue.GetArrayProp (prps, idx_name);
-								BinaryProperty eid = (BinaryProperty) PropertyValue.GetArrayProp (prps, idx_eid);
-								if (name != null && ((UnicodeProperty) name).Value == match) {
-									folder = (IMapiFolder) OpenEntry (eid.Value.lpb, null, flags);
-									found = true;
-									break;
-								}
-							}
-						}
-						if (!found)
-							throw new MapiException (Error.NotFound);
-					}
-					finally {
-						if (tableReader != null)
-							tableReader.Close ();
-					}
-				}
-			}
-			finally {
-				if (!found && folder != null) {
-					folder.Close ();
-					folder = null;
-				}
-			}
-			return folder;
-		}
 	}
 
 }

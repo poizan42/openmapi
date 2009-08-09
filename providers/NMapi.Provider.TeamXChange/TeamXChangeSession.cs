@@ -107,14 +107,14 @@ namespace NMapi {
 				this.eventServer = new TeamXChangeEventServer (client, host, port+1, objb);
 			}
 			catch (SocketException e) {
-				throw new MapiException ("unknown host="+host, e);
+				throw MapiException.Make ("unknown host="+host, e);
 			}
 			catch (IOException e) {
-				throw new MapiException ("host="+host, e);
+				throw MapiException.Make ("host="+host, e);
 			
 			}
 			catch (OncRpcException e) {
-				throw new MapiException ("host="+host, e);
+				throw MapiException.Make ("host="+host, e);
 			}
 		}
 		
@@ -133,7 +133,7 @@ namespace NMapi {
 				string msg  = "server version " +  version 
 					+ " does not match  client version " 
 					+ RpcVersionInf.MAPIRPCVERSION;
-				throw new MapiException (msg, Error.Version);
+				throw new MapiVersionException (msg);
 			}
 		}
 
@@ -197,10 +197,7 @@ namespace NMapi {
 				case MapiObjectType.FldImp:
 					return new TeamXChangeFolderImporter2 (obj, (TeamXChangeFolderSynchronizer) parent);
 				default:
-					Console.Write ("unknown type ");
-					Console.Write (objType);
-					Console.WriteLine ();
-					throw new MapiException (Error.BadValue);
+					throw new MapiBadValueException ("unknown type " + objType);
 			}
 		}
 		
@@ -296,13 +293,13 @@ namespace NMapi {
 				res = client.Session_Logon2_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 		}
 
 		/// <summary>
@@ -322,13 +319,13 @@ namespace NMapi {
 				res = client.Session_OpenStore_1 (arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException (res.hr);
+				throw MapiException.Make (res.hr);
 			return new TeamXChangeMsgStore (res.obj.Value.Value, this);
 		}
 
@@ -349,13 +346,13 @@ namespace NMapi {
 				res = client.Session_GetConfig_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 			if ((flags & Mapi.Unicode) != 0)
 				return ((UnicodeProperty) res.pValue.Value).Value;
 			else

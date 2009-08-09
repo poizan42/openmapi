@@ -33,7 +33,7 @@ using NMapi.Table;
 namespace NMapi.Flags {
 	
 	/// <summary>
-	///  
+	///   TODO: docs!
 	/// </summary>
 	public static class FolderClasses
 	{
@@ -46,37 +46,35 @@ namespace NMapi.Flags {
 			///  Indicates that the folder contains appointments.
 			///  Outlook will display this folder in the "Appointment" category.
 			/// </summary>
-			public const string Appointment		  				= "IPF.Appointment";
+			public const string Appointment = "IPF.Appointment";
 
 			/// <summary>
 			///  Indicates that the folder contains appointments.
 			///  Outlook will display this folder in the "Tasks" category.
 			/// </summary>
-			public const string Task			  				= "IPF.Task";
-
+			public const string Task = "IPF.Task";
 
 			/// <summary>
 			///  Indicates that the folder contains appointments.
 			///  Outlook will display this folder in the "Contacts" category.
 			/// </summary>
-			public const string Contact			  				= "IPF.Contact";
-
+			public const string Contact = "IPF.Contact";
 
 			/// <summary>
 			///  
 			/// </summary>
-			public const string Journal			  				= "IPF.Journal";			
+			public const string Journal = "IPF.Journal";			
 
 			/// <summary>
 			///  Indicates that the folder contains mails.
 			///  Outlook will display this folder in the default Mail view.
 			/// </summary>
-			public const string Note			  				= "IPF.Note";
+			public const string Note = "IPF.Note";
 
 			/// <summary>
 			///  
 			/// </summary>
-			public const string StickyNote		  				= "IPF.StickyNote";
+			public const string StickyNote = "IPF.StickyNote";
 		}
 		
 	}

@@ -46,7 +46,7 @@ namespace NMapi.Table {
 			this.folder = folder;
 		}
 
-		public int Advise (byte[] ignored, NotificationEventType eventMask, 
+		public EventConnection Advise (byte[] ignored, NotificationEventType eventMask, 
 			IMapiAdviseSink adviseSink)
 		{
 			return Advise (eventMask, adviseSink);
@@ -60,12 +60,12 @@ namespace NMapi.Table {
 			}
 		}
 
-		public int Advise (NotificationEventType eventMask, IMapiAdviseSink adviseSink)
+		public EventConnection Advise (NotificationEventType eventMask, IMapiAdviseSink adviseSink)
 		{
 			return session.EventServer.Advise (this, eventMask, adviseSink);
 		}
 
-		public void Unadvise (int connection)
+		public void Unadvise (EventConnection connection)
 		{
 			session.EventServer.Unadvise (connection);
 		}

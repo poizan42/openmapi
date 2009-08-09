@@ -31,6 +31,9 @@ using NMapi.Properties;
 
 namespace NMapi.Meta {
 
+	/// <summary>
+	///  
+	/// </summary>
 	public class MsgMailMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 

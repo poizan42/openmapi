@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Store.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,6 +33,9 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	/// <summary>
+	///  
+	/// </summary>
 	[Flags]
 	public enum StoreState
 	{

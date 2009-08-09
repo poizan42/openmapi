@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - ObjectEventSet.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -166,16 +166,16 @@ namespace NMapi.Events {
 
 
 	/// <summary>
-	/// Provides an interface for events as delegates that may be used 
-	/// alternatively to the classic AdviseSink-method. They are actived 
-	/// indirectly through a special AdviseSink-Object.
+	///  Provides an interface for events as delegates that may be used 
+	///  alternatively to the classic AdviseSink-method. They are actived 
+	///  indirectly through a special AdviseSink-Object.
 	/// </summary>
 	public class ObjectEventSet
 	{
 		private SBinary entryID;
 		private IAdvisor advisor;
 		private MapiPseudoAdviseSink adviseSink;
-		private int connection = -1;
+		private EventConnection connection;
 
 		public ObjectEventSet (IAdvisor advisor, SBinary entryID)
 		{

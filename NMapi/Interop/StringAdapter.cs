@@ -1,11 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - StringAdapter.cs
 //
-// Copyright 2008 VipCom AG
 // Copyright 2009 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -71,6 +69,15 @@ namespace NMapi.Interop {
 			XdrDecode (xdr);
 		}
 
+		private Encoding GetSessionStrEncoding (string xdrCharacterEncoding)
+		{
+			if (xdrCharacterEncoding != null) {
+				Console.WriteLine ("CHARACTER ENCODING !!! UNTESTED CODE -- TODO -- BE CAREFUL: " + xdrCharacterEncoding);
+				return Encoding.GetEncoding (xdrCharacterEncoding);
+			}
+			return Encoding.GetEncoding ("windows-1252");
+		}
+		
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
@@ -80,12 +87,13 @@ namespace NMapi.Interop {
 			else {
 				
 				Console.WriteLine ("DEBUG (encoding...): " + value);
-				
-//				Encoding encoding = (characterEncoding != null) ? 
-//					Encoding.GetEncoding (characterEncoding) : Encoding.GetEncoding (0);
-				Encoding encoding = Encoding.GetEncoding ("windows-1252");
+
+				Encoding encoding = GetSessionStrEncoding (xdr.CharacterEncoding);
 					
-				byte[] bytes = encoding.GetBytes (value + '\0');
+				// yes, it just HAS to be NULL-terminated. 
+				// No, it wasn't my idea and we can't fix it because 
+				// non-NMapi-components are depending on this.
+				byte[] bytes = encoding.GetBytes (value + '\0'); 
 				int len = bytes.Length;
 
 				xdr.XdrEncodeInt (len-1);
@@ -102,11 +110,16 @@ namespace NMapi.Interop {
 			if (len == ~0)
 				value = null;
 			else {
-				
-//				Encoding encoding = (characterEncoding != null) ? 
-//					Encoding.GetEncoding (characterEncoding) : Encoding.GetEncoding (0);
-				Encoding encoding = Encoding.GetEncoding ("windows-1252");
-				value = encoding.GetString (xdr.XdrDecodeOpaque(len+1)); // TODO: Potiential BUG: Null terminated strings!
+				Encoding encoding = GetSessionStrEncoding (xdr.CharacterEncoding);
+
+				// Conversations is actually sending null-terminated strings 
+				// _sometimes_ which led to bug when connecting to Outlook that took me _ages_
+				// to reproduce. We fix this here, once and for all!
+				string tmp = value = encoding.GetString (xdr.XdrDecodeOpaque(len+1));
+				int index = tmp.IndexOf ('\0');
+				if (index >= 0)
+					tmp = tmp.Substring (0, index);
+				this.value = tmp;
 			}
 		}
 	}

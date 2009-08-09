@@ -54,6 +54,9 @@ RemoteTeaSharp.dll:
 	$(WITH_MONO_SECURITY) \
 	/out:bin/RemoteTeaSharp.dll $(REMOTETEA_SOURCES)
 
+
+gen_properties = $(XSLTPROC) -o $(1) NMapi/Flags/xslt/cs/properties.xsl $(2)
+
 NMapi.dll:
 	$(XSLTPROC) -o NMapi/Core/NMapi_Generated.cs \
 	NMapi/Core/xslt/mapi_interface_gen.xsl xml/generated/mapi.cs.generated.xml
@@ -67,15 +70,21 @@ NMapi.dll:
 	$(XSLTPROC) -o NMapi/Data/Data_Props_Generated.cs \
 	NMapi/Data/xslt/cs/props.xsl NMapi/Data/Props.xml
 	
+	$(XSLTPROC) -o NMapi/Core/Exceptions_Generated.cs \
+	NMapi/Core/xslt/exceptions.xsl NMapi/Flags/errors.xml
+	
 	$(XSLTPROC) -o NMapi/Data/PropertyTag_Generated.cs \
 	NMapi/Data/xslt/cs/tags.xsl NMapi/Data/Props.xml
 	
-	$(XSLTPROC) -o NMapi/Flags/Properties/Property_Generated.cs \
-	NMapi/Flags/xslt/cs/properties.xsl NMapi/Flags/Properties/properties.xml
+	$(call gen_properties,NMapi/Flags/Properties/Property_Generated.cs,NMapi/Flags/Properties/properties.xml)
+#	$(call gen_properties,NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs,NMapi/Flags/Custom/Microsoft/exchange.xml)
+#	$(call gen_properties,NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs,NMapi/Flags/Custom/Microsoft/outlook.xml)
+#	$(call gen_properties,NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs,NMapi/Flags/Custom/Groupwise/groupwise.xml)
 	
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.dll \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
 	/r:nunit.framework.dll \
+	/r:System.Drawing.dll \
 	/r:System.Data.dll \
 	/r:System.Configuration.dll \
 	/r:System.Web.Services.dll \
@@ -110,24 +119,31 @@ NMapi.Provider.Indigo:
 WABISABI_SPECIAL_PATH = providers/NMapi.Provider.WabiSabi/Properties/Special
 WABISABI_GENERATED_PATH = providers/NMapi.Provider.WabiSabi/Properties/generated
 
-NMapi.Provider.WabiSabi:
-	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MsgStore.mapimap -o $(WABISABI_GENERATED_PATH)/MsgStorePropHandler.generated.cs
-	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MsgPublicStore.mapimap -o $(WABISABI_GENERATED_PATH)/MsgPublicStorePropHandler.generated.cs
-	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/MoxFolder.mapimap -o $(WABISABI_GENERATED_PATH)/MoxFolderPropHandler.generated.cs
-	$(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/VirtualMessage.mapimap -o $(WABISABI_GENERATED_PATH)/VirtualMessagePropHandler.generated.cs
+gen_map = $(MAPIMAP) -map $(WABISABI_SPECIAL_PATH)/$(1).mapimap -o $(WABISABI_GENERATED_PATH)/$(2).generated.cs
 
-	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.WabiSabi.dll \
-	/nowarn:$(NO_WARN) /target:library \
-	/r:System.Configuration.dll \
-	/r:System.Data.dll \
-	/r:Mono.Data.Sqlite.dll \
-	/r:System.Web.Services.dll \
-	/r:System.Xml.Linq.dll \
-	/r:bin/NMapi.dll \
-	/r:System.Runtime.Serialization.dll \
-	/r:System.ServiceModel.dll \
-	/r:bin/NMapi.OX.Http.dll \
-	`find providers/NMapi.Provider.WabiSabi -name "*.cs"`
+NMapi.Provider.WabiSabi:
+#	$(call gen_map,MsgStore,MsgStorePropHandler)
+#	$(call gen_map,MsgPublicStore,MsgPublicStorePropHandler)
+#	$(call gen_map,MoxFolder,MoxFolderPropHandler)
+#	$(call gen_map,VirtualFolder,WabiVirtualFolderPropHandler)
+#	$(call gen_map,Messages/VirtualMessage/VirtualMessage,VirtualMessagePropHandler)
+#	$(call gen_map,Folders/Facebook/FbContactFolder,FbContactPropHandler)
+#	$(call gen_map,Messages/FbContactMessage,FbContactMessagePropHandler)
+#
+#	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Provider.WabiSabi.dll \
+#	/nowarn:$(NO_WARN) /target:library \
+#	/r:System.Configuration.dll \
+#	/r:System.Data.dll \
+#	/r:Mono.Data.Sqlite.dll \
+#	/r:System.Web.Services.dll \
+#	/r:System.Xml.Linq.dll \
+#	/r:bin/NMapi.dll \
+#	/r:System.Runtime.Serialization.dll \
+#	/r:System.ServiceModel.dll \
+#	/r:bin/NMapi.OX.Http.dll \
+#	/r:bin/Mono.Facebook.dll \
+#	/r:bin/NMapi.Provider.TeamXChange.dll \
+#	`find providers/NMapi.Provider.WabiSabi -name "*.cs"`
 
 
 NMapi.Provider.TeamXChange:
@@ -278,8 +294,8 @@ test:
 	/r:nunit.framework.dll /r:bin/NMapi.dll /r:bin/nmapisvr.exe \
 	/r:bin/NMapi.Provider.TeamXChange.dll /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
+#	/r:bin/NMapi.Provider.WabiSabi.dll \
 	`find tests -name "*.cs"` $(TEST_SOURCES)
-# /r:bin/NMapi.Provider.WabiSabi.dll
 
 runtests: test
 	nunit-console2 bin/NMapi.Test.dll -xml=testresults.xml

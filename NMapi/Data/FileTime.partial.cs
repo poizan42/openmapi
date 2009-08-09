@@ -36,6 +36,8 @@ using NMapi.Table;
 
 namespace NMapi {
 
+	// TODO: Refactor this class -- or even better remove it in favor of "DateTime".
+
 	/// <summary>
 	///  
 	/// </summary>

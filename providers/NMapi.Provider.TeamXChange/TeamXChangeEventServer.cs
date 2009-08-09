@@ -128,14 +128,14 @@ namespace NMapi {
 				wrappedStream.Write (objb, 0, objb.Length);
 			}
 			catch (SocketException e) {
-				throw new MapiException ("unknown host="+host, e);
+				throw MapiException.Make ("unknown host="+host, e);
 			}
 			catch (IOException e) {
-				throw new MapiException ("host="+host, e);
+				throw MapiException.Make ("host="+host, e);
 			
 			}
 			catch (OncRpcException e) {
-				throw new MapiException ("host="+host, e);
+				throw MapiException.Make ("host="+host, e);
 			}
 			
 		}
@@ -209,7 +209,7 @@ namespace NMapi {
 			// TODO (This is also marked as "todo" in jumapi.	
 		}
 
-		public int Advise (TeamXChangeMsgStore store, byte [] eid, 
+		public EventConnection Advise (TeamXChangeMsgStore store, byte [] eid, 
 			NotificationEventType mask, IMapiAdviseSink sink)
 		{		
 			lock (eventSubMap) {
@@ -224,10 +224,10 @@ namespace NMapi {
 						});
 				eventSubMap [evuid] = new TeamXChangeEventSubscription (store, sink, res.obj);
 			}
-			return evuid;
+			return new EventConnection (evuid);
 		}
 
-		public int Advise (TeamXChangeMapiTable table, 
+		public EventConnection Advise (TeamXChangeMapiTable table, 
 			NotificationEventType mask, IMapiAdviseSink sink)
 		{		
 			lock (eventSubMap) {
@@ -241,20 +241,20 @@ namespace NMapi {
 						});
 				eventSubMap [evuid] = new TeamXChangeEventSubscription (table, sink, res.obj);
 			}
-			return evuid;
+			return new EventConnection (evuid);
 		}
 
-		public void Unadvise (int connection)
+		public void Unadvise (EventConnection connection)
 		{
 			lock (eventSubMap) {
-				TeamXChangeEventSubscription sub = eventSubMap [connection];
+				TeamXChangeEventSubscription sub = eventSubMap [connection.Connection];
 				try {
 					if (sub != null)
 						sub.Unadvise ();
 				} catch (MapiException e) {
 					// do nothing
 				} finally {
-					eventSubMap.Remove (connection);
+					eventSubMap.Remove (connection.Connection);
 				}
 			}
 		}

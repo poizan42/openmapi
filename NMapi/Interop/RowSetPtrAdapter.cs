@@ -85,7 +85,7 @@ namespace NMapi.Interop {
 			else {
 				xdr.XdrEncodeInt (_value.ARow.Length);
 				for (int idx = 0; idx < _value.ARow.Length; idx++)
-					((IXdrEncodeable) _value.ARow [idx]).XdrEncode (xdr);
+					((IXdrEncodeable) _value.ARow [idx]).XdrEncode (xdr);	// TODO: we need to check for a NULL value here (and throw exceptions!)
 			}
 		}
 

@@ -309,7 +309,7 @@ namespace NMapi.Linq {
 					Type [] cls = asm.GetTypes ();
 					foreach (Type cl in cls) {
 						if (cl.FullName == typeName) {
-							FieldInfo fi = cl.GetField (fieldName);
+							System.Reflection.FieldInfo fi = cl.GetField (fieldName);
 							NMapiGuid guid = (NMapiGuid) fi.GetValue (null);
 							guidBytes = guid.ToByteArray ();
 						}

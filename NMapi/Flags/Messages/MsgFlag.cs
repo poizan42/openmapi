@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - Sensivity.cs
+// openmapi.org - NMapi C# Mapi API - MsgFlag.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -36,14 +36,71 @@ namespace NMapi.Flags {
 	/// <summary>
 	///  
 	/// </summary>
-	public enum Sensivity
+	[Flags]
+	public enum MsgFlag
 	{
-		//  PR_SENSITIVITY values
+		// Flags for PR_MESSAGE_FLAGS
 
-		None = 0,
-		Personal,
-		Private,
-		CompanyConfidential
+		/// <summary>
+		///  
+		/// </summary>
+		Read = 0x00000001,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Unmodified = 0x00000002,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Submit = 0x00000004,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Unsent = 0x00000008,
+
+		/// <summary>
+		///  
+		/// </summary>
+		HasAttach = 0x00000010,
+
+		/// <summary>
+		///  
+		/// </summary>
+		FromMe = 0x00000020,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Associated = 0x00000040,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Resend = 0x00000080,
+
+		/// <summary>
+		///  
+		/// </summary>
+		RnPending = 0x00000100,
+
+		/// <summary>
+		///  
+		/// </summary>
+		NrnPending = 0x00000200,		
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		Internet = 0x00002000,
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		Untrusted = 0x00008000
+
 	}
 
 }

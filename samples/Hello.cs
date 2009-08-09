@@ -47,7 +47,7 @@ namespace Test {
 					Console.WriteLine ("Table was modified!");
 
 				using (IMapiFolder taskFolder = 
-					priv.HrOpenIPMFolder (path, Mapi.Modify))
+					priv.OpenIpmFolder (path, Mapi.Modify))
 				{
 
 					using (MapiContext context = new MapiContext (session)) 	

@@ -50,7 +50,7 @@ namespace NMapi.Properties {
 
 			ErrorProperty errProp = props [0] as ErrorProperty;
 			if (errProp != null)
-				throw new MapiException (errProp.Value);
+				throw MapiException.Make (errProp.Value);
 			return props [0];
 		}
 
@@ -75,13 +75,13 @@ namespace NMapi.Properties {
 		///  A helper to set one property. 
 		/// </summary>
 		/// <param name="prop">The property to set.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>
+		/// <exception cref="MapiException">Throws MapiException</exception>xxxxx
 		public void HrSetOneProp (PropertyValue prop)
 		{
 			PropertyValue [] props = new PropertyValue [] { prop };
 			PropertyProblem[] problems = imapiProp.SetProps (props);
-			if (problems.Length > 0)
-				throw new MapiException (problems [0].SCode);
+			if (problems != null && problems.Length > 0)
+				throw MapiException.Make (problems [0].SCode);
 		}
 
 		/// <summary>
@@ -93,8 +93,8 @@ namespace NMapi.Properties {
 		{
 			PropertyTag [] tags = PropertyTag.ArrayFromIntegers (propTag);
 			var problems = imapiProp.DeleteProps (tags);
-			if (problems.Length > 0)
-				throw new MapiException (problems [0].SCode);
+			if (problems != null && problems.Length > 0)
+				throw MapiException.Make (problems [0].SCode);
 		}
 	
 		/// <summary>
@@ -113,7 +113,7 @@ namespace NMapi.Properties {
 					Mapi.Unicode);			
 			ErrorProperty errProp = props [0] as ErrorProperty;
 			if (errProp != null)
-				throw new MapiException (errProp.Value);
+				throw MapiException.Make (errProp.Value);
 			return props[0];
 		}
 

@@ -91,7 +91,7 @@ namespace NMapi {
 			if (logonResult.hr == Error.NoAccess)
 				return false;
 			if (Error.CallHasFailed (logonResult.hr))
-				throw new MapiException (logonResult.hr);
+				throw MapiException.Make (logonResult.hr);
 
 			return true;
 		}

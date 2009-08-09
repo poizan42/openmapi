@@ -52,7 +52,7 @@ namespace NMapi.Properties.Special {
 				res.obj.Value.Value, res.ulObjType, null);
 		}
 
-		public IMapiTableReader GetHierarchyTable(int flags)
+		public IMapiTableReader GetHierarchyTable (int flags)
 		{
 			var prms = new MAPIContainer_GetHierarchyTable_arg ();
 			prms.obj = new HObject (obj);

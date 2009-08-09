@@ -53,7 +53,7 @@ namespace NMapi.Properties {
 			PropertyValue prop1 = obj1 as PropertyValue;
 			PropertyValue prop2 = obj2 as PropertyValue;
 		
-			if (prop1 == null && prop2 == null)
+			if (prop1 == null && prop2 == null) // TODO: if one object is NOT a property object we should actually fail!
 				return 0;
 			if (prop1 == null && prop2 != null)
 				return -1;
@@ -62,7 +62,7 @@ namespace NMapi.Properties {
 
 			// at this point, both are NOT null.
 			if (PropertyTag.CreatePropertyTag (prop1.PropTag).Type != PropertyTag.CreatePropertyTag (prop2.PropTag).Type)
-				throw new MapiException (Error.InvalidParameter); // TODO: add better error message
+				throw new MapiInvalidParameterException (); // TODO: add better error message
 			return prop1.CompareTo (prop2);
 		}
 

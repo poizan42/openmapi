@@ -33,15 +33,32 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	// TODO: docs!
+
 	/// <summary>
 	///  PR_STATUS
 	/// </summary>
 	[Flags]
 	public enum FldStatus
 	{
+		/// <summary>
+		///  
+		/// </summary>
 		Highlighted = 1,
-		Tagged      = 2,
-		Hidden      = 4,
-		DelMarked   = 8
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Tagged = 2,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Hidden = 4,
+
+		/// <summary>
+		///  
+		/// </summary>
+		DelMarked = 8
 	}
 }

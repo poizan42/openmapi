@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - Exchange.cs
+// openmapi.org - NMapi C# Mapi API - ImageSource.cs
 //
 // Copyright 2009 Topalis AG
 //
@@ -25,18 +25,27 @@ using System;
 using System.IO;
 
 using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
 	/// <summary>
 	///  
 	/// </summary>
-	public static class Exchange
+	/// <remarks>
+	///  Note: This file is based on information published by Microsoft
+	///        [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
+	/// </remarks>
+	public enum ImageSource
 	{
+		/// <summary>
+		///  
+		/// </summary>
+		ContactPhoto,
 		
+		/// <summary>
+		///  
+		/// </summary>
+		CardPictureProperty
 	}
+	
 }

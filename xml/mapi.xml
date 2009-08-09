@@ -130,7 +130,7 @@
 				<remarks>$$MSDN_528406.aspx</remarks>
 			</doc>
 			<returns>^Property^Value []</returns>
-			<param type="^Property^Tag[]">propTagArray</param>
+			<param type="^Property^Tag[]">tags</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Get^Prop^List">
@@ -517,7 +517,7 @@
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>int</returns>
+			<returns>^Event^Connection</returns>
 			<param type="byte[]">entryID</param>
 			<param type="^Notification^Event^Type">eventMask</param>
 			<param type="^I#MAPI^Advise^Sink">sink</param>
@@ -531,7 +531,7 @@
 			<proxyCodeVoid>
 				request.ProxySession.EventDispatcher.Unregister (obj, txcOutlookHackConnection);	<!-- TODO: CODE! //-->
 			</proxyCodeVoid>
-			<param type="int">txcOutlookHackConnection</param>
+			<param type="^Event^Connection">txcOutlookHackConnection</param>
 		</method>
 		<method id="^Compare^Entry^I#Ds">
 			<doc>
@@ -621,14 +621,6 @@
 			</doc>
 			<!-- VOID //-->
 			<param type="byte[]">entryID</param>
-			<param type="int">flags</param>
-		</method>
-		<method id="^Hr^Open^I#P#M^Folder">
-			<doc>
-				<summary>Provides easy access to folder with a known path.</summary>
-			</doc>
-			<returns map="true">^I#MAPI^Folder</returns>
-			<param type="string">path</param>
 			<param type="int">flags</param>
 		</method>
 		<method id="^Get^Receive^Folder^Table" rpcId="GetReceiveFolderTable">
@@ -799,7 +791,7 @@
 				</summary>
 				<remarks>$$MSDN_526773.aspx</remarks>
 			</doc>
-			<returns>int</returns>
+			<returns>^Event^Connection</returns>
 			<param type="byte[]">ignored</param>
 			<param type="^Notification^Event^Type">eventMask</param>
 			<param type="^I#MAPI^Advise^Sink">sink</param>
@@ -812,7 +804,7 @@
 				</summary>
 				<remarks>$$MSDN_526773.aspx</remarks>
 			</doc>
-			<returns>int</returns>
+			<returns>^Event^Connection</returns>
 			<param type="^Notification^Event^Type">eventMask</param>
 			<param type="^I#MAPI^Advise^Sink">sink</param>
 		</method>
@@ -825,7 +817,7 @@
 			<proxyCodeVoid>
 				request.ProxySession.EventDispatcher.Unregister (obj, txcOutlookHackConnection);	<!-- TODO: CODE! //-->
 			</proxyCodeVoid>
-			<param type="int">txcOutlookHackConnection</param>
+			<param type="^Event^Connection">txcOutlookHackConnection</param>
 		</method>
 		<method id="^Get^Last^Error">
 			<doc>
@@ -1139,7 +1131,7 @@
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>int</returns>
+			<returns>^Event^Connection</returns>
 			<param type="byte[]">lpEntryID</param>
 			<param type="^Notification^Event^Type">eventMask</param>
 			<param type="^I#MAPI^Advise^Sink">sink</param>
@@ -1150,7 +1142,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="int">connection</param>
+			<param type="^Event^Connection">connection</param>
 		</method>
 		<method id="^Create^One^Off">
 			<doc>
@@ -1261,7 +1253,7 @@
 				<summary></summary>
 				<remarks></remarks>
 			</doc>
-			<returns>int</returns>
+			<returns>^Event^Connection</returns>
 			<param type="byte[]">lpEntryID</param>
 			<param type="^Notification^Event^Type">eventMask</param>
 			<param type="^I#MAPI^Advise^Sink">sink</param>
@@ -1272,7 +1264,7 @@
 				<remarks></remarks>
 			</doc>
 			<!-- VOID //-->
-			<param type="int">connection</param>
+			<param type="^Event^Connection">connection</param>
 		</method>
 		<method id="^Open^Status^Entry">
 			<doc>

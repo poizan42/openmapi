@@ -33,10 +33,28 @@ using NMapi.Table;
 namespace NMapi.Flags {
 	
 	/// <summary>
-	///  
+	///   TODO: docs!
 	/// </summary>
 	public static class MessageClasses
 	{
+		
+		// Does probably not EXACTLY belong here, does it?
+
+		// todo: what do we return if both values are null? true?
+
+		/// <summary>
+		///  
+		/// </summary>
+		public static bool SoftMatch (string messageClass, string matchWithPrefix)
+		{
+			return (messageClass != null) && messageClass.ToUpper ().StartsWith (matchWithPrefix.ToUpper ());
+		}
+
+
+
+
+		
+		
 		/// <summary>
 		///  
 		/// </summary>

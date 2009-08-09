@@ -131,7 +131,7 @@ namespace NMapi.Properties.Special {
 			if ((flags & (ModRecip.Modify|ModRecip.Remove)) != 0) {
 				for (i = 0; i <mods.AEntries.Length; i++) 
 					if (FindProp (Property.RowId, mods.AEntries[i].PropVals) == null) 
-						throw new MapiException (Error.InvalidParameter);
+						throw MapiException.Make (Error.InvalidParameter);
 			}
 
 			if (bWipe) {
@@ -144,13 +144,13 @@ namespace NMapi.Properties.Special {
 					res = clnt.Message_DeleteRecipient_1(arg);
 				}
 				catch (IOException e) {
-					throw new MapiException(e);
+					throw MapiException.Make(e);
 				}
 				catch (OncRpcException e) {
-					throw new MapiException(e);
+					throw MapiException.Make(e);
 				}
 				if (Error.CallHasFailed (res.hr))
-					throw new MapiException (res.hr);
+					throw MapiException.Make (res.hr);
 			}
 		
 			if (flags == ModRecip.Add)
@@ -167,13 +167,13 @@ namespace NMapi.Properties.Special {
 						res = clnt.Message_AddRecipient_1(arg);
 					}
 					catch (IOException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					catch (OncRpcException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					if (Error.CallHasFailed (res.hr))
-						throw new MapiException (res.hr);
+						throw MapiException.Make (res.hr);
 					rowid = (IntProperty) FindProp (Property.RowId, mods.AEntries[i].PropVals);
 					if (rowid == null) {
 						props = new PropertyValue [mods.AEntries[i].PropVals.Length];
@@ -198,13 +198,13 @@ namespace NMapi.Properties.Special {
 						res = clnt.Message_ModifyRecipient_1 (arg);
 					}
 					catch (IOException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					catch (OncRpcException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					if (Error.CallHasFailed (res.hr))
-						throw new MapiException (res.hr);
+						throw MapiException.Make (res.hr);
 				}
 			}
 			else if (flags == ModRecip.Remove)
@@ -220,13 +220,13 @@ namespace NMapi.Properties.Special {
 						res = clnt.Message_DeleteRecipient_1 (arg);
 					}
 					catch (IOException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					catch (OncRpcException e) {
-						throw new MapiException(e);
+						throw MapiException.Make(e);
 					}
 					if (Error.CallHasFailed (res.hr))
-						throw new MapiException(res.hr);
+						throw MapiException.Make(res.hr);
 				}
 			}
 		}
@@ -240,7 +240,7 @@ namespace NMapi.Properties.Special {
 			else if (parent is IMsgStore)
 				store = (IMsgStore) parent;
 			else
-				throw new MapiException (Error.InvalidParameter);
+				throw MapiException.Make (Error.InvalidParameter);
 			
 			// send it.
 			var arg = new Message_SubmitMessage_arg();
@@ -252,13 +252,13 @@ namespace NMapi.Properties.Special {
 				res = clnt.Message_SubmitMessage_1(arg);
 			}
 			catch (IOException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			catch (OncRpcException e) {
-				throw new MapiException(e);
+				throw MapiException.Make(e);
 			}
 			if (Error.CallHasFailed (res.hr))
-				throw new MapiException(res.hr);
+				throw MapiException.Make(res.hr);
 
 			// see what to do after submit.		
 			TeamXChangeMapiFolder srcfolder = null, dstfolder = null;

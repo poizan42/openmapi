@@ -1,0 +1,71 @@
+
+30.07.2009 -- These 38 properties have been added in Outlook 2010:
+------------------------------------------------------------------
+
+* 15 new named properties:
+
+	(PidLid) FShouldTNEF
+	(PidLid) HeaderItem
+	(PidLid) ImageAttachmentsCompressionLevel
+	(PidLid) ImapDeleted
+	(PidLid) IsInterpersonalFax
+	(PidLid) OfflineStatus
+	(PidLid) RecallTime
+
+	(PidLid) RemoteAttachment
+	(PidLid) RemoteEntryId
+	(PidLid) RemoteMessageClass
+	(PidLid) RemoteSearchKey
+	(PidLid) RemoteTransferSize
+	(PidLid) RemoteTransferTime
+	(PidLid) RemoteTransport
+
+	(PidLid) ResendTime
+
+
+
+
+* 23 new tags:
+
+
+	Property.InReplyTo								String8				0x1042			MIME
+
+	Property.InternetApproved						String8, Unicode	0x1030			MIME
+	Property.InternetControl						String8, Unicode	0x1031			MIME
+	Property.InternetDistribution					String8, Unicode	0x1032			MIME
+	Property.InternetFollowupTo											0x1033			MIME
+	Property.InternetLines							Int32				0x1034			MIME
+	Property.InternetNntpPath						String8, Unicode	0x1038			MIME
+	Property.InternetOrganization					String8, Unicode	0x1037			MIME
+
+	Property.NonDeliveryReportFromEntryId			Binary				0x6904			common
+	Property.NonDeliveryReportFromName				String8				0x6905			common
+	Property.NonDeliveryReportFromSearchKey			Binary				0x6906			common
+
+	Property.PstPath								String8, Unicode	0x6700			.pst stuff
+	Property.PstRememberPassword					Bool				0x6701			.pst stuff
+	Property.PstConfigurationFlags					Int32				0x6770			.pst stuff
+	Property.PstPathHint							String8, Unicode	0x6771			.pst stuff
+	Property.PstPasswordSzOld						String8, Unicode	0x6703			.pst stuff
+	Property.PstPasswordSzNew						String8, Unicode	0x6704			.pst stuff
+
+	Property.ReportDisposition						String8, Unicode	0x0080			MAPI envelope /* see ReportDispositionValues */
+	Property.ReportDispositionMode					String8, Unicode	0x0081			MAPI envelope
+	Property.ReportOriginalSender					String8, Unicode	0x0082			MAPI envelope
+	Property.ReportDispositionToNames				PT_MV_STRING8, PT_UNICODE	0x0083			MAPI envelope
+	Property.ReportDispositionToEmailAddresses		PT_MV_STRING8, PT_UNICODE ???	0x0084			MAPI envelope
+	Property.ReportDispositionOptions				String8, Unicode	0x0085			MAPI envelope
+	
+	
+	
+	public static class ReportDispositionValues
+	{
+		public const string Deleted = "deleted";
+		public const string Processed = "processed";
+		public const string Dispatched = "dispatched";
+		public const string Denied = "denied";
+		public const string Failed = "failed";
+	}
+	
+	
+	

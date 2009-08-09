@@ -38,6 +38,8 @@ using NMapi.Table;
 
 namespace NMapi {
 
+	// TODO: Optimize this class for best performance possible.
+
 	/// <summary>
 	///  The SBinary structure.
 	/// </summary>
@@ -160,7 +162,7 @@ namespace NMapi {
 
 		internal void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+//			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			Trace.WriteLine ("XdrEncode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
 			
 			if (lpb == null)
@@ -171,7 +173,7 @@ namespace NMapi {
 
 		internal void XdrDecode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+//			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			lpb = xdr.XdrDecodeDynamicOpaque ();
 			if (lpb.Length == 0)
 				lpb = null;

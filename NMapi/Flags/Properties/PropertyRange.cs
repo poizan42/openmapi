@@ -44,6 +44,71 @@ namespace NMapi.Flags {
 		/// <summary>
 		///  
 		/// </summary>
+		Core_Envelope,
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Core_PerRecipient,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_NonTransmittable,
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Core_MessageContent,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_CommonProperties,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_MessageStoreObject,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_FolderOrAbContainer,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_Attachment,
+
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_AddressBookObject,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_MailUser,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_DistributionList,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_ProfileSection,
+	
+		/// <summary>
+		///  
+		/// </summary>
+		Core_System_StatusObject,
+	
+		/// <summary>
+		///  
+		/// </summary>
 		CustomTransportEnvelopeTransmitted,
 
 		/// <summary>
@@ -72,7 +137,7 @@ namespace NMapi.Flags {
 		MessageClassNotTransmitted,
 
 		/// <summary>
-		///  
+		///  Indicates that the property tag is a named property.
 		/// </summary>
 		NamedTransmitted,
 

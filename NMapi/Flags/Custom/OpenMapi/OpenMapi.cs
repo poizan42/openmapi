@@ -38,6 +38,7 @@ namespace NMapi.Flags {
 	/// </summary>
 	public static class OpenMapi
 	{
+		
 		public static readonly NMapiGuid Guid = Guids.DefineGuid (0x6ED8DA90, 
 				(short) 0x450B, (short) 0x101B, (byte) 0x98, (byte) 0xDA, (byte) 0x00, 
 				(byte) 0xaa, (byte) 0x00, (byte) 0x3F, (byte) 0x13, (byte) 0x05, 

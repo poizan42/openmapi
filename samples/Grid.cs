@@ -105,7 +105,7 @@ namespace Test {
 				Logon ();
 			if (loggedOn) {
 				var store = session.PrivateStore;
-				taskFolder = store.HrOpenIPMFolder (pathBox.Text, Mapi.Modify);
+				taskFolder = store.OpenIpmFolder (pathBox.Text, Mapi.Modify);
 
 				context = new MapiContext (session);
 				MapiQuery<MyTask> tasks = context.GetQuery<MyTask> (taskFolder);

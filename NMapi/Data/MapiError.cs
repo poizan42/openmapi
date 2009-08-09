@@ -51,7 +51,7 @@ namespace NMapi {
 		private string lpszError;
 		private string lpszComponent;
 		private int    ulLowLevelError;
-		private int    ulContext;
+		private int    ulContext;			// This is really a pointer ... as we can see in Outlook 2010; Should use a platform-independent pointer type.
 
 		[DataMember (Name="Version")]
 		public int Version {

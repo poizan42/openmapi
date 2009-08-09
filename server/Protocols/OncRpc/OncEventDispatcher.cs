@@ -42,8 +42,8 @@ namespace NMapi.Server {
 		public class VirtualAdviseSink : IMapiAdviseSink
 		{
 			private OncEventDispatcher parent;
-			private int backendConnection;
-			private int clientConnection;
+			private EventConnection backendConnection;
+			private EventConnection clientConnection;
 			private SBinary targetEntryID;
 			private NotificationEventType targetMask;
 			
@@ -57,12 +57,12 @@ namespace NMapi.Server {
 				set { targetMask = value; }
 			}
 			
-			public int ClientConnection {
+			public EventConnection ClientConnection {
 				get { return clientConnection; }
 				set { clientConnection = value; }
 			}
 			
-			public int BackendConnection {
+			public EventConnection BackendConnection {
 				get { return backendConnection; }
 				set { backendConnection = value; }
 			}
@@ -86,7 +86,7 @@ namespace NMapi.Server {
 						Trace.WriteLine ("EVENT for connection (sink) '" + 
 							ClientConnection + "' received!");
 						ClEvMapi realEvent = new ClEvMapi ();
-						realEvent.ulConn = ClientConnection;
+						realEvent.ulConn = ClientConnection.Connection;
 						realEvent.notif = notifications;
 						parent.session.ReverseEventConnectionServer.PushEvent (realEvent);
 					}
@@ -102,27 +102,27 @@ namespace NMapi.Server {
 			this.sinks = new Dictionary<int, VirtualAdviseSink> ();
 		}
 
-		public int Register (IAdvisor targetAdvisor, byte[] entryID, 
-			NotificationEventType eventMask, int txcOutlookHack)
+		public EventConnection Register (IAdvisor targetAdvisor, byte[] entryID, 
+			NotificationEventType eventMask, EventConnection txcOutlookHack)
 		{
 			var sink = new VirtualAdviseSink (this);
-			int backendConnection = targetAdvisor.Advise (entryID, eventMask, sink);
+			EventConnection backendConnection = targetAdvisor.Advise (entryID, eventMask, sink);
 			sink.BackendConnection = backendConnection;
 			sink.ClientConnection = txcOutlookHack;
 			sink.TargetEntryID = new SBinary (entryID);
 			sink.TargetEventMask = eventMask;
-			sinks [txcOutlookHack] = sink;
+			sinks [txcOutlookHack.Connection] = sink;
 			Console.WriteLine ("registered SINK '" + txcOutlookHack + "' on server!");
 			if (entryID != null)
 				Console.WriteLine ("--> " + new SBinary (entryID).ToHexString () + "");
 			return txcOutlookHack;
 		}
 
-		public void Unregister (IAdvisor targetAdvisor, int txcOutlookHackConnection)
+		public void Unregister (IAdvisor targetAdvisor, EventConnection txcOutlookHackConnection)
 		{
-			int backendConnection = sinks [txcOutlookHackConnection].BackendConnection;
+			EventConnection backendConnection = sinks [txcOutlookHackConnection.Connection].BackendConnection;
 			targetAdvisor.Unadvise (backendConnection);
-			sinks.Remove (txcOutlookHackConnection);
+			sinks.Remove (txcOutlookHackConnection.Connection);
 			Trace.WriteLine ("unregistered '" + txcOutlookHackConnection + "' sink.");
 		}
 		

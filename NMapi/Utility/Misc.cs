@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - MsgFlag.cs
+// openmapi.org - NMapi C# Mapi API - Misc.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -22,35 +22,34 @@
 //
 
 using System;
-using System.IO;
-
 
 using NMapi;
 using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
 using NMapi.Table;
+using NMapi.Linq;
+using NMapi.Properties;
+using NMapi.Properties.Special;
+using NMapi.Format.Mime;
 
-namespace NMapi.Flags {
-
+namespace NMapi.Utility {
+	
 	/// <summary>
 	///  
 	/// </summary>
-	[Flags]
-	public enum MsgFlag
+	public static class Misc
 	{
-		// Flags for PR_MESSAGE_FLAGS
-
-		Read        = 0x00000001,
-		Unmodified  = 0x00000002,
-		Submit      = 0x00000004,
-		Unsent      = 0x00000008,
-		HasAttach   = 0x00000010,
-		FromMe      = 0x00000020,
-		Associated  = 0x00000040,
-		Resend      = 0x00000080,
-		RnPending   = 0x00000100,
-		NrnPending  = 0x00000200
+		
+		/// <summary>
+		///  
+		/// </summary>
+		public static byte[] ConcatBytes (byte[] data1, byte[] data2)
+		{
+			byte[] result = new byte [data1.Length + data2.Length];
+			Array.Copy (data1, 0, result, 0, data1.Length);
+			Array.Copy (data2, 0, result, data1.Length, data2.Length);
+			return result;
+		}
+		
 	}
-
+	
 }

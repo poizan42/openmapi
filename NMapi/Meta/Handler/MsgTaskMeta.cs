@@ -31,6 +31,9 @@ using NMapi.Properties;
 
 namespace NMapi.Meta {
 
+	/// <summary>
+	///  
+	/// </summary>
 	public class MsgTaskMeta : IMetaHandler
 	{
 		public string GetSummary (IBase obj, 
@@ -40,7 +43,7 @@ namespace NMapi.Meta {
 			if (obj != null) {
 				var tags = PropertyTag.ArrayFromIntegers (Property.Subject);
 				PropertyValue[] values = prop.GetProps (tags, 0); // read-only
-				string subject = ((UnicodeProperty) values [0]).Value; // TODO: check length!
+				string subject = (string) values [0]; // TODO: check length!
 				return "IPM.Task: (Subject: '" + subject + "')";
 			}
 			return null;

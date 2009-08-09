@@ -35,6 +35,20 @@ namespace NMapi {
 	using System.Runtime.Serialization;
 	using System.Security.Permissions;
 
+
+
+	// TODO -- required for server.
+	public partial class MapiCallFailedException
+	{
+		
+		public MapiCallFailedException (string msg, Exception e) : base (msg, e)
+		{
+			this.hresult = Error.CallFailed;
+		}
+
+	}
+
+
 	/// <summary>
 	///  Signals a MAPI error condition. This is equal to a 
 	///  (failed) HRESULT of the C/C++ interface.
@@ -43,9 +57,9 @@ namespace NMapi {
 	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms526450.aspx
 	/// </remarks>
 	[Serializable]
-	public class MapiException : Exception
+	public abstract partial class MapiException : Exception
 	{
-		private int hresult;
+		protected int hresult;
 		private Exception exception             = null;
 		private IOException ioException         = null;
 		private SocketException socketException = null;
@@ -127,6 +141,55 @@ namespace NMapi {
 		}
 
 
+
+		public static MapiException Make (string msg)
+		{
+			return new MapiCallFailedException (msg);
+		}
+
+
+
+
+
+		public static MapiException Make (Exception e)
+		{
+			return new MapiCallFailedException ();
+		}
+
+		public static MapiException Make (string msg, Exception e)
+		{
+			return new MapiCallFailedException (msg);
+		}
+		
+		public static MapiException Make (IOException e)
+		{
+			return new MapiNetworkErrorException ();
+		}
+
+		public static MapiException Make (string msg, IOException e)
+		{
+			return new MapiNetworkErrorException (msg);
+		}
+
+		public static MapiException Make (SocketException e)
+		{
+			return new MapiNetworkErrorException ();
+		}
+
+		public static MapiException Make (string msg, SocketException e)
+		{
+			return new MapiNetworkErrorException (msg);
+		}
+
+		public static MapiException Make (OncRpcException e)
+		{
+			return new MapiNetworkErrorException ();
+		}
+
+		public static MapiException Make (string msg, OncRpcException e)
+		{
+			return new MapiNetworkErrorException (msg);
+		}
 
 
 

@@ -111,11 +111,11 @@ namespace NMapi {
 				res = rpcCall (arg);
 			} catch (IOException e) {
 				Console.WriteLine (e);
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (OncRpcException e) {
 				Console.WriteLine (e);
-				throw new MapiException (e);
+				throw MapiException.Make (e);
 			}
 			catch (Exception e) { // DEBUG
 				Console.WriteLine (e);
@@ -124,7 +124,7 @@ namespace NMapi {
 			if (checkHrField) {
 				int res_hr = (int) typeof (T).GetProperty ("hr").GetValue (res, null); // TODO: evil!
 				if (Error.CallHasFailed  (res_hr))
-					throw new MapiException (res_hr);
+					throw MapiException.Make (res_hr);
 			}
 			return res;
 		}

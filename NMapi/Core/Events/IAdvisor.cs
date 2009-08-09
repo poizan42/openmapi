@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - IAdvisor.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -31,8 +31,15 @@ namespace NMapi.Events {
 	/// </summary>
 	public interface IAdvisor
 	{
-		int Advise (byte[] ignored, NotificationEventType eventMask, IMapiAdviseSink adviseSink);
-		void Unadvise (int connection);
+		/// <summary>
+		///  
+		/// </summary>
+		EventConnection Advise (byte[] ignored, NotificationEventType eventMask, IMapiAdviseSink adviseSink);
+
+		/// <summary>
+		///  
+		/// </summary>
+		void Unadvise (EventConnection connection);
 	}
 
 }
