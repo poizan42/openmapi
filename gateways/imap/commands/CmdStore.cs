@@ -61,7 +61,7 @@ namespace NMapi.Gateways.IMAP {
 				try {
 					// try block, to ignore if an email cannot be found
 					Log ("Store uid: " + snli.UID);
-					msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Modify);
+					msg = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Unicode | Mapi.Modify);
 				
 				} catch (Exception e) {
 					Log ("CmdStore " + e.Message);

@@ -446,7 +446,7 @@ namespace NMapi.Gateways.IMAP {
 		protected IMessage GetMessage (SequenceNumberListItem snli) 
 		{
 			if (currentMessage == null)
-				currentMessage = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, 0);
+				currentMessage = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Unicode);
 			return currentMessage;
 		}
 

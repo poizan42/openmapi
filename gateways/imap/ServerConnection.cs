@@ -234,7 +234,7 @@ state.Log ("Server1");
 				while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
 					state.Log ("setrootdir 2");
 					prevFolder = folder;
-					folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray);
+					folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray, null, Mapi.Unicode);
 					MapiPropHelper folderHelper = new MapiPropHelper (folder);
 					UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
 					string displayName = (propDisplayName != null) ? propDisplayName.Value : null;

@@ -166,7 +166,7 @@ namespace NMapi.Gateways.IMAP {
 				return null;
 			Func<IMapiContainer, SBinary, object> action = (prnt, entryId) => {
 				return (IMapiContainer) prnt.OpenEntry (
-					entryId.ByteArray, null, Mapi.Modify);
+					entryId.ByteArray, null, Mapi.Unicode | Mapi.Modify);
 			};
 
 			return (IMapiContainer) _SharedGetSubDir (parent, match, action);
@@ -518,6 +518,68 @@ servCon.State.Log ("FixUIDsIn");
 		internal int SequenceNumberOf (SequenceNumberListItem snli)
 		{
 			return sequenceNumberList.SequenceNumberOf (snli);
+		}
+
+
+		public static string BuildSequenceSetString<T> (IEnumerable<T> list)
+		{
+			StringBuilder seqStrings = new StringBuilder ();
+			bool isFirst = true;
+
+			List<Pair> sequenceSet = BuildSequenceSet (list);
+
+			foreach (Pair range in sequenceSet) {
+				if (!isFirst) 
+					seqStrings.Append (",");
+				else
+					isFirst = false;
+
+				seqStrings.Append (BuildSequenceRange (range) );
+			}
+
+			return seqStrings.ToString ();
+		}
+
+		private static string BuildSequenceRange (Pair range)
+		{
+			return (range.Second == null) ?
+					( (string) range.First) : ( ( (string) range.First ) + ":" + ( (string) range.Second ) );
+		}
+
+
+		/// compact a list of ids to a sequence set notation. ---> 1,2,3,5,6 to 1:3,5:6 for example
+		/// method will NOT sort the list upfront
+		public static List<Pair> BuildSequenceSet<T> (IEnumerable<T> list)
+		{
+			List<Pair> sequenceSet = new List<Pair> ();
+			IEnumerator<T> listEnum = list.GetEnumerator ();
+			object startId = null;
+			object prevId = null;
+			bool moveNextResult = false;
+
+			while ( (moveNextResult = listEnum.MoveNext () ) || startId != null ) {
+
+				prevId = startId;
+				if (prevId != null) {
+					while (moveNextResult && Convert.ToUInt64 ( (T) prevId) + 1 == Convert.ToUInt64 ( (T) listEnum.Current) ) {
+						prevId = listEnum.Current;
+						moveNextResult = listEnum.MoveNext ();
+					}
+
+					if (prevId != startId) {
+						sequenceSet.Add (new Pair ( startId.ToString (), prevId.ToString () ) );
+					} else {
+						sequenceSet.Add (new Pair ( startId.ToString (), null) );
+					}
+				}
+
+				if (moveNextResult)
+					startId = listEnum.Current;
+				else
+					startId = null;
+			}
+
+			return sequenceSet;
 		}
 
 
