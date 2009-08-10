@@ -50,9 +50,7 @@ namespace NMapi.Test
 				if (index == -1) {
 					using (IMapiFolder contactFolder = rootFolder.CreateFolder (Folder.Generic, "Kontakte", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
 						Assert.That (contactFolder, Is.Not.Null);
-						PropertyTag propTag = PropertyTag.CreatePropertyTag (Property.ContainerClass);
-						Assert.That (propTag, Is.Not.Null);
-						PropertyValue propValue = propTag.CreateValue (FolderClasses.Ipf.Contact);
+						PropertyValue propValue = Property.Typed.ContainerClass.CreateValue (FolderClasses.Ipf.Contact);
 						Assert.That (propValue, Is.Not.Null);
 						propValueArray = new PropertyValue [1];
 						propValueArray [0] = propValue;
@@ -61,7 +59,7 @@ namespace NMapi.Test
 						contactFolder.SaveChanges (0);
 
 						// Set reference from root folder to contact folder
-						propTag = PropertyTag.CreatePropertyTag (Outlook.Property.IPM_CONTACT_ENTRYID);
+						BinaryPropertyTag propTag = new BinaryPropertyTag (Outlook.Property.IPM_CONTACT_ENTRYID);
 						Assert.That (propTag, Is.Not.Null);
 						propTagArray = contactFolder.GetPropList (0);
 						propValueArray = contactFolder.GetProps (propTagArray, 0);
@@ -174,15 +172,11 @@ namespace NMapi.Test
 
 					PropertyValue[] propValueArray = new PropertyValue [2];
 					//GivenName
-					PropertyTag propTag = PropertyTag.CreatePropertyTag (Property.GivenName);
-					Assert.That (propTag, Is.Not.Null);
-					PropertyValue propValue = propTag.CreateValue ("Achim");
+					PropertyValue propValue = Property.Typed.GivenName.CreateValue ("Achim");
 					Assert.That (propValue, Is.Not.Null);
 					propValueArray [0] = propValue;
 					//Surname
-					propTag = PropertyTag.CreatePropertyTag (Property.Surname);
-					Assert.That (propTag, Is.Not.Null);
-					propValue = propTag.CreateValue ("Derigs");
+					propValue = Property.Typed.Surname.CreateValue ("Derigs");
 					Assert.That (propValue, Is.Not.Null);
 					propValueArray [1] = propValue;
 
@@ -258,3 +252,4 @@ namespace NMapi.Test
 	}
 
 }
+
