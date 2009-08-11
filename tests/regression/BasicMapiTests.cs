@@ -107,10 +107,10 @@ namespace NMapi.Test
 					}
 					*/
 
-			using (IMapiFolder lppUnk = GetContactFolder ()) {
-				Assert.That (lppUnk, Is.Not.Null);
+			using (IMapiFolder unknown = GetContactFolder ()) {
+				Assert.That (unknown, Is.Not.Null);
 				IMapiProgress lpProgress = null;
-				lppUnk.EmptyFolder (lpProgress, 0);
+				unknown.EmptyFolder (lpProgress, 0);
 			}
 		}
 
@@ -154,20 +154,20 @@ namespace NMapi.Test
 		[Test]
 		public void CreateContact ()
 		{
-			using (IMapiContainer lppUnk = GetContactFolder ()) {
-				Assert.That (lppUnk, Is.Not.Null);
+			using (IMapiContainer unknown = GetContactFolder ()) {
+				Assert.That (unknown, Is.Not.Null);
 
-				using (IMapiTable lppTable = lppUnk.GetContentsTable (Mapi.Unicode)) {
-					Assert.That (lppTable, Is.Not.Null);
-					Assert.That (lppTable.GetRowCount (0), Is.EqualTo (0));
+				using (IMapiTable table = unknown.GetContentsTable (Mapi.Unicode)) {
+					Assert.That (table, Is.Not.Null);
+					Assert.That (table.GetRowCount (0), Is.EqualTo (0));
 				}
 			}
 
-			using (IMapiFolder lppUnk = GetContactFolder ()) {
-				Assert.That (lppUnk, Is.Not.Null);
+			using (IMapiFolder unknown = GetContactFolder ()) {
+				Assert.That (unknown, Is.Not.Null);
 				NMapiGuid lpInterface = InterfaceIdentifiers.IMessage;
 
-				using (IMessage message = lppUnk.CreateMessage (lpInterface, 0)) {
+				using (IMessage message = unknown.CreateMessage (lpInterface, 0)) {
 					Assert.That (message, Is.Not.Null);
 
 					PropertyValue[] propValueArray = new PropertyValue [2];
@@ -186,12 +186,12 @@ namespace NMapi.Test
 				}
 			}
 
-			using (IMapiContainer lppUnk = GetContactFolder ()) {
-				Assert.That (lppUnk, Is.Not.Null);
+			using (IMapiContainer unknown = GetContactFolder ()) {
+				Assert.That (unknown, Is.Not.Null);
 
-				using (IMapiTable lppTable = lppUnk.GetContentsTable (Mapi.Unicode)) {
-					Assert.That (lppTable, Is.Not.Null);
-					Assert.That (lppTable.GetRowCount (0), Is.EqualTo (1));
+				using (IMapiTable table = unknown.GetContentsTable (Mapi.Unicode)) {
+					Assert.That (table, Is.Not.Null);
+					Assert.That (table.GetRowCount (0), Is.EqualTo (1));
 				}
 			}
 		}
