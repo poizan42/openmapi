@@ -39,7 +39,7 @@ namespace NMapi.Gateways.IMAP
 	public class listener
 	{
 
-		private ClientConnection cc ;
+		private AbstractClientConnection cc ;
 		IMAPConnectionState imapState;
 			
 		public listener() {}

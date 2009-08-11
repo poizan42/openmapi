@@ -81,8 +81,6 @@ namespace NMapi.Gateways.IMAP {
 							newUids.Add (snli.UID);					
 						}
 					}
-ObjectDumper.Write (uids, 3);
-ObjectDumper.Write (newUids, 3);
 					Response r = new Response (ResponseState.OK, Name, command.Tag);
 					r.Val = new ResponseItemList ().SetSigns ("", "")
 							.AddResponseItem ("COPYUID")

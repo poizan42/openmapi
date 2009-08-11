@@ -33,7 +33,7 @@ namespace NMapi.Gateways.IMAP {
 	{
 		
 		private IMAPConnectionStates currentState;
-		private ClientConnection clientConnection;
+		private AbstractClientConnection clientConnection;
 		private ServerConnection serverConnection;
 		private CommandAnalyser commandAnalyser;
 		private CommandProcessor commandProcessor;
@@ -61,7 +61,7 @@ namespace NMapi.Gateways.IMAP {
 			set { currentState = value; }
 		}
 		
-		public ClientConnection ClientConnection {
+		public AbstractClientConnection ClientConnection {
 			get { return clientConnection; }
 		}
 		
@@ -98,12 +98,17 @@ namespace NMapi.Gateways.IMAP {
 			}
 		}
 
-		public IMAPConnectionState (TcpClient tcpClient)
+		public IMAPConnectionState (TcpClient tcpClient) :
+			this (new ClientConnection (tcpClient))
+		{
+		}
+
+		public IMAPConnectionState (AbstractClientConnection clientConn)
 		{
 			id = idLast++;
 			currentState = IMAPConnectionStates.NOT_AUTHENTICATED;
-			if (tcpClient != null) {
-				clientConnection = new ClientConnection (tcpClient);
+			if (clientConn != null) {
+				clientConnection = clientConn;
 				clientConnection.LogInput = this.Log;
 				clientConnection.LogOutput = this.Log;
 				commandAnalyser = new CommandAnalyser (clientConnection);
