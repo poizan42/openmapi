@@ -49,7 +49,7 @@ namespace NMapi.Gateways.IMAP
 		public abstract string ReadLine ();
 	
 		public abstract byte[] ReadBlock (int count);
-}
+	}
 
 	
 	public class ClientConnection : AbstractClientConnection

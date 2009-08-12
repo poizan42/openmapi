@@ -90,7 +90,7 @@ namespace NMapi.Gateways.IMAP {
 				return;
 			}
 
-			using (contentsTable = contentsTable) {
+			using (contentsTable) {
 
 				// set the properties to fetch
 				currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));

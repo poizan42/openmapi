@@ -127,16 +127,6 @@ namespace NMapi.Gateways.IMAP {
 			ResetTimeout ();
 		}
 
-		public void Close ()
-		{
-			Disconnect ();
-			
-			if (clientConnection != null)
-				clientConnection.Close ();
-			
-			loopEnd = true;
-		}
-		
 		private bool StateNotAuthenticated ()
 		{
 			return currentState == IMAPConnectionStates.NOT_AUTHENTICATED;
@@ -165,6 +155,7 @@ namespace NMapi.Gateways.IMAP {
 			folderMappingAgent = new FolderMappingAgent (this);
 		}
 
+		/// Disconnects from store
 		public void Disconnect()
 		{
 			if (notificationHandler != null)
@@ -174,6 +165,17 @@ namespace NMapi.Gateways.IMAP {
 			if (serverConnection != null)
 				serverConnection.Disconnect();
 		 	serverConnection = null;
+		}
+
+		/// shuts down all processing in the object and disconnects/closes store and client connections
+		public void Close ()
+		{
+			Disconnect ();
+
+			if (clientConnection != null)
+				clientConnection.Close ();
+
+			loopEnd = true;
 		}
 
 		public void RunLoop()
