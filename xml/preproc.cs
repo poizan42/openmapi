@@ -226,9 +226,9 @@ namespace NMapi.Tools.PreProc
 		
 		public static void Main (string[] args)
 		{
-			if (args.Length < 3) {
+			if (args.Length < 4) {
 				Console.WriteLine ("ERROR: Not enough arguments.");
-				Console.WriteLine ("usage: preproc [language] [inputFile] [outputFile]");
+				Console.WriteLine ("usage: preproc <language> <schemaFile> <inputFile> <outputFile>");
 				return;
 			}
 			string lang = args [0];
