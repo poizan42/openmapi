@@ -349,6 +349,7 @@ zone=((\+|-){DIGIT}{DIGIT}{DIGIT}{DIGIT})
 <commandsearch> \"({date})\" { return new Symbol(sym.DATE, yytext().Substring(1, yytext().Length-2)); }
 <commandsearch> {date} { return new Symbol(sym.DATE, yytext()); }
 <commandsearch> {number} { yybegin(commandsearchsequence); return new Symbol(sym.NUMBER, yytext()); }
+<commandsearch> "*" { yybegin(commandsearchsequence); return new Symbol(sym.STAR); }
 <commandsearch> {search-keyword-uid} { yybegin(commandsearchuidsequence); return new Symbol(sym.SEARCH_KEYWORD_UID, yytext()); }
 <commandsearch> {SP} { return new Symbol(sym.SP); }
 <commandsearch> {CRLF} { return new Symbol(sym.CRLF); }
