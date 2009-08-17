@@ -45,6 +45,7 @@ RTSDLL = bin/RemoteTeaSharp.dll
 NTSDLL = bin/NMapi.Tools.Shell.dll
 NSIDLL = bin/NMapi.Server.ICalls.dll
 PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
+CUPDLL = bin/cup.dll
 
 all: code
 	
@@ -299,13 +300,13 @@ alltools: bin/mapishell.exe bin/mapiwait.exe
 #mapitool
 #mapimap
 
-bin/cup.dll: $(CUP_SOURCES)
+$(CUPDLL): $(CUP_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/out:$@ $(CUP_SOURCES)
 	
-bin/mapiimap.exe: $(NMAPIDLL) bin/cup.dll $(IMAP_SOURCES)
+bin/mapiimap.exe: $(NMAPIDLL) $(CUPDLL) $(IMAP_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
-	/out:$@  \/r:$(NMAPIDLL) /r:bin/cup.dll \
+	/out:$@  \/r:$(NMAPIDLL) /r:$(CUPDLL) \
 	/r:System.Web.dll /r:System.Data.dll $(IMAP_SOURCES)
 
 tools/mapishell/ShellObject.xml_Generated.cs: bin/mapimetal.exe tools/mapishell/ShellObject.xml
@@ -394,7 +395,7 @@ sample: bin/hello.exe bin/grid.exe
 
 gateways: bin/NMapi.Gateways.IMAP.exe
 
-bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(IMAP_SOURCES)
+bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(CUPDLL) $(IMAP_SOURCES) 
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ /doc:bin/NMapi.Gateways.xmldoc /nowarn:$(NO_WARN) /target:exe \
 	/r:nunit.framework.dll \
 	/r:System.Data.dll \
@@ -407,11 +408,8 @@ bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(IMAP_SOURCES)
 	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(NMAPIDLL) \
-	$(IMAP_SOURCES) \
-	lib/cup/Runtime/Scanner.cs \
-	lib/cup/Runtime/Symbol.cs \
-	lib/cup/Runtime/virtual_parse_stack.cs \
-	lib/cup/Runtime/lr_parser.cs
+	/r:$(CUPDLL) \
+	$(IMAP_SOURCES)
 
 #
 # Docs
