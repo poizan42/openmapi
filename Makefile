@@ -68,10 +68,10 @@ xml/generated/mapi.cs.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.
 	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
 
 xml/generated/mapi.java.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.xsd xml/mapi.xml
-	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
+	$(PREPROC) java xml/schema/mapi.xsd xml/mapi.xml $@
 
 xml/generated/mapi.python.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.xsd xml/mapi.xml
-	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
+	$(PREPROC) python  xml/schema/mapi.xsd xml/mapi.xml $@
 
 bin/preproc.exe: .bindir xml/preproc.cs
 	$(MCS) $(DEBUG) /r:System.Core.dll /r:System.Xml.Linq.dll /out:$@ xml/preproc.cs
