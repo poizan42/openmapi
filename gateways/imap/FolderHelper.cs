@@ -46,6 +46,7 @@ namespace NMapi.Gateways.IMAP {
 		private string currentPath;
 		private SBinary currentFolderEntryId;
 		private SequenceNumberList sequenceNumberList;
+		private IMessage imapFolderAttributesStore;
 		private	long uidNext = 0;
 		private	long uidValidity = 0;
 		private int uidNextTag = 0;
@@ -55,6 +56,13 @@ namespace NMapi.Gateways.IMAP {
 		private static int uidEntryIdPropTag = 0;
 		private static int additionalFlagsPropTag = 0;
 
+		private static int[] propsAssociatedMessages = new int[] 
+		{
+			Property.EntryId,
+			Property.Subject
+		};
+
+		private const string AssociatedMessageIMAPFolderAttributes = "NMapi IMAP Gateway IMAP Folder Attributes";
 
 		public FolderHelper (ServerConnection servCon, string path) {
 			this.servCon = servCon;
@@ -64,6 +72,27 @@ namespace NMapi.Gateways.IMAP {
 
 		}
 
+		public void Dispose () {
+			DisposeFolderRelevantProperties ();
+		}
+		
+		public void DisposeFolderRelevantProperties ()
+		{
+			
+			if (imapFolderAttributesStore != null)
+				imapFolderAttributesStore.Dispose ();
+			imapFolderAttributesStore = null;
+			
+			if (currentFolderTable != null)
+				currentFolderTable.Dispose ();
+			currentFolderTable = null;
+
+			if (currentFolder != null)
+				currentFolder.Dispose ();
+			currentFolder = null;
+		}
+
+		
 		/// <summary>
 		/// 
 		/// </summary>
@@ -90,6 +119,19 @@ namespace NMapi.Gateways.IMAP {
 		/// </summary>
 		public long UIDVALIDITY {
 			get { return uidValidity; }
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public int UIDNEXTTag {
+			get { return uidNextTag; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int UIDVALIDITYTag {
+			get { return uidValidityTag; }
 		}
 
 		public SequenceNumberList SequenceNumberList { 
@@ -224,10 +266,11 @@ servCon.State.Log ("changedir1");
 				servCon.State.Log ("cd: " + path + ": No such folder.");
 				return false;
 			}
+
+			DisposeFolderRelevantProperties ();
 			currentFolder = newFolder;
 			currentPath = path;
-			currentFolderTable = null;
-
+			
 			MapiPropHelper mph = new MapiPropHelper (currentFolder);
 servCon.State.Log ("changedir2");
 			BinaryProperty eid = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
@@ -276,9 +319,12 @@ servCon.State.Log ("changedir almost done");
 		{
 			_uidValidity = 0;
 			_uidNext = 0;
+			
+			SetIMAPFolderAttributesStore ();
+			
 			try {
 				// UIDNEXT
-				IntProperty val = (IntProperty) servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UIDNEXT);
+				IntProperty val = (IntProperty) servCon.GetNamedProp (imapFolderAttributesStore , IMAPGatewayNamedProperty.UIDNEXT);
 				if (val != null) {
 					_uidNext = val.Value;
 					uidNextTag = val.PropTag;
@@ -287,7 +333,7 @@ servCon.State.Log ("changedir almost done");
 				servCon.State.Log ("uidNextTag from folder: "+ uidNextTag);
 				
 				//UIDVALIDITY
-				val = (IntProperty) servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UIDVALIDITY);
+				val = (IntProperty) servCon.GetNamedProp (imapFolderAttributesStore, IMAPGatewayNamedProperty.UIDVALIDITY);
 				if (val != null) {
 					_uidValidity = val.Value;
 					uidValidityTag = val.PropTag;
@@ -341,7 +387,7 @@ servCon.State.Log ("changedir almost done");
 				
 		}
 
-		internal long UpdateNextUid () {
+		public long UpdateNextUid () {
 			// get current UIDNEXT
 			GetFolderProps ();
 			// save current uidnext
@@ -366,9 +412,8 @@ servCon.State.Log ("changedir almost done");
 				servCon.State.Log ("new uidvalidity: "+ longValue.Value);
 			}
 
-			
-			currentFolder.SetProps(lv.ToArray ());
-			currentFolder.SaveChanges (0);
+			imapFolderAttributesStore.SetProps(lv.ToArray ());
+			imapFolderAttributesStore.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
 
 			//re-get UIDNEXT with updated value
 			GetFolderProps ();
@@ -697,13 +742,58 @@ servCon.State.Log ("FixUIDsIn");
 			return 0; // should never be reached
 		}						
 
-		public void Dispose ()
+		
+		public IMessage SetIMAPFolderAttributesStore ()
 		{
-			if (currentFolderTable != null)
-				currentFolderTable.Dispose ();
+			if (imapFolderAttributesStore != null)
+				return imapFolderAttributesStore;
+			
+			return imapFolderAttributesStore = GetIMAPFolderAttributesStore ();
+		}
 
-			if (currentFolder != null)
-				currentFolder.Dispose ();
+		public IMessage GetIMAPFolderAttributesStore ()
+		{
+			IMapiTable currentTable = null;
+			try {
+				currentTable = currentFolder.GetContentsTable (Mapi.Unicode | NMAPI.MAPI_ASSOCIATED);
+			} catch (MapiException e) {
+				if (e.HResult != Error.NoSupport)
+					throw;
+			}
+
+			using (currentTable) {
+				currentTable.SetColumns (PropertyTag.ArrayFromIntegers (propsAssociatedMessages), 0);
+	
+				// search item in Table
+				while (true) {
+					RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
+					if (rows.Count == 0)
+						break;
+					foreach (Row row in rows) {
+						PropertyValue val = PropertyValue.GetArrayProp(row.Props, 1);
+						if (val != null && ( (UnicodeProperty) val).Value == AssociatedMessageIMAPFolderAttributes) {
+							BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(row.Props, 0);
+							servCon.State.Log ("GetIMAPFolderAttributesStore, returning existing AttributesStore");
+							return (IMessage) currentFolder.OpenEntry (entryId.Value.ByteArray , null, Mapi.Unicode | Mapi.Modify);
+						}
+					}
+				}
+			}
+			
+			// not found, so create it
+			servCon.State.Log ("GetIMAPFolderAttributesStore, creating new AttributeStore");
+			try {
+				IMessage imAss = currentFolder.CreateMessage (null, NMAPI.MAPI_ASSOCIATED);
+
+				PropertyValue pv = PropertyValue.CreateFromTag (new UnicodePropertyTag (Property.Subject));
+				( (UnicodeProperty) pv).Value = AssociatedMessageIMAPFolderAttributes;
+				imAss.SetProperty (pv);
+				imAss.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+				return imAss;
+			} catch (Exception e) {
+				throw new Exception ("GetIMAPFolderAttributesStore Error: " + e.ToString () + " in Folder: " + currentFolder);
+			}
+			
 		}
 	}
 }
