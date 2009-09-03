@@ -38,6 +38,7 @@ namespace NMapi {
 		/// <summary>
 		///  Checks if two EntryIds refer to the same object.
 		/// </summary>
+		/// <param name="store">A IMsgStore object.</param>
 		/// <param name="entryId1">The EntryId of the first object.</param>
 		/// <param name="entryId2">The EntryId of the second object.</param>
 		/// <returns>True if both ids refer to the same object, false otherwise.</returns>
@@ -62,6 +63,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+      /// <param name="store">A IMsgStore object.</param>
 		/// <param name="path"></param>
 		/// <param name="flags"></param>
 		/// <returns></returns>
