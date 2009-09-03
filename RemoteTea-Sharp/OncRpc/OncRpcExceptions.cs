@@ -51,7 +51,7 @@ namespace CompactTeaSharp
 	    /// <summary>
 	    ///  Returns the error message string of this ONC/RPC object.
 	    /// </summary>
-	    public string Message {
+	    public override string Message {
 			get { return message; }
 		}
 
