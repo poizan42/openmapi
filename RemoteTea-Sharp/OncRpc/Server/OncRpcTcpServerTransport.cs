@@ -67,8 +67,7 @@ namespace CompactTeaSharp.Server
 	public sealed class OncRpcTcpServerTransport : OncRpcServerTransport
 	{
 		private bool useSsl;
-		private string certFile;
-		private string keyFile;
+		private SslStore sslParams;
 		
 		private TcpListener socket; // TCP socket used for stream-based communication with ONC/RPC clients.
 		private int bufferSize;  // Size of send/receive buffers to use when encoding/decoding XDR data.
@@ -169,17 +168,16 @@ namespace CompactTeaSharp.Server
 		// throws OncRpcException, IOException
 		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
 			IPAddress bindAddr, int port, int bufferSize) : this (dispatcher,
-				bindAddr, port, bufferSize, false, null, null)
+				bindAddr, port, bufferSize, false, null)
 		{
 		}
 		
 		public OncRpcTcpServerTransport (IOncRpcDispatchable dispatcher,
 			IPAddress bindAddr, int port, int bufferSize, bool useSsl, 
-			string certFile, string keyFile) : base (dispatcher, port)
+			SslStore sslParams) : base (dispatcher, port)
 		{
 			this.useSsl = useSsl;
-			this.certFile = certFile;
-			this.keyFile = keyFile;
+			this.sslParams = sslParams;
 			
 			openTransports = new LinkedList<OncRpcTcpConnectionServerTransport> ();
 				
@@ -339,7 +337,7 @@ namespace CompactTeaSharp.Server
 						
 					Stream stream = newSocket.GetStream ();
 					if (useSsl)
-						stream = OncNetworkUtility.GetSslServerStream (stream, certFile, keyFile);
+						stream = OncNetworkUtility.GetSslServerStream (stream, sslParams);
 					
 					var transport = new OncRpcTcpConnectionServerTransport (
 						dispatcher, newSocket, bufferSize, this, transmissionTimeout, stream);

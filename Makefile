@@ -194,6 +194,7 @@ providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	-ns NMapi.Interop.MapiRPC -constName MAPIRPC
 
 NMapi/Data/xslt/cs/xdrgen.xsl: NMapi/Data/xslt/common.xsl NMapi/Data/xslt/cs/xdr_data.xsl NMapi/Data/xslt/cs/xdr_calls.xsl
+	touch $@
 
 providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.cs: NMapi/Data/xslt/cs/xdrgen.xsl providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	$(XSLTPROC) -o $@ $^
