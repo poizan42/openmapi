@@ -71,7 +71,7 @@ namespace NMapi.Flags {
 		public LabelFormat LabelFormat  { get; set; }
 		
 		/// <summary>
-		///  The font size in points. (MUST be >= 3 and <= 32)
+		///  The font size in points. (MUST be &gt;= 3 and &lt;= 32)
 		/// </summary>
 		public int FontSize { get; set; }
 		
