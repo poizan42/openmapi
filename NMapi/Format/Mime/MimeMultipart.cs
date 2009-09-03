@@ -53,9 +53,6 @@ namespace NMapi.Format.Mime
 			Stream inS = mp.ContentStream;
 			Connect(mp);
 			
-			// Access boundary field to check if it is set
-			String boundary = mp.Boundary;
-
 			try {
 				Parse (inS);
 			} catch (MessagingException) { }
