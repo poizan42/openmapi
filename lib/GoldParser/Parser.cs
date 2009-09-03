@@ -517,7 +517,6 @@ namespace GoldParser
 			int lookahead   = m_charIndex;  // Next look ahead char in the input
 			int tokenLength = 0;       
 			Symbol tokenSymbol = null;
-			DfaState[] dfaStateTable = m_grammar.m_dfaStateTable;
 			
 			char ch = m_buffer[lookahead];
 			if (ch == EndOfString)
