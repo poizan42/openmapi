@@ -114,7 +114,10 @@ namespace NMapi {
 		///  the field is a valid property tag field, the PropertyTag that is
 		///  contained in the constant field is returned. If the field exists 
 		///  but is not a valid property tag field, -1 is returned.
-		/// <exception ctype="System.ArgumentException">Thrown if the type of field can't be resolved.</exception>
+		/// </returns>
+		/// <exception ctype="System.ArgumentException">
+      /// Thrown if the type of field can't be resolved.
+      /// </exception>
 		public int GetValue (string typeName, string fieldName)
 		{
 			int propTag = -1;
