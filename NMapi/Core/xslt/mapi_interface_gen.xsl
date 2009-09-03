@@ -76,7 +76,7 @@ using NMapi.Table;
 	namespace <xsl:value-of select="normalize-space ($namespace)" /> {
 
 
-		//// &lt;summary&gt;
+		/// &lt;summary&gt;
 		///  <xsl:call-template name="foldLines">
 				<xsl:with-param name="string" select="node()/doc/summary/text()" />
 			</xsl:call-template>
