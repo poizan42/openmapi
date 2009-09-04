@@ -60,8 +60,9 @@ namespace NMapi.Gateways.IMAP {
 		private SBinary entryId;
 		private SBinary instanceKey;
 		private long uid;
-		private string path;
+		private string creationPath;
 		private SBinary creationEntryId;
+		private long creationUIDValidity;
 		private ulong messageFlags;
 		private ulong msgStatus;
 		private ulong flagStatus;
@@ -84,14 +85,19 @@ namespace NMapi.Gateways.IMAP {
 			set { uid = value; }
 		}
 		
-		public string Path {
-			get { return path; }
-			set { path = value; }
+		public string CreationPath {
+			get { return creationPath; }
+			set { creationPath = value; }
 		}
 		
 		public SBinary CreationEntryId {
 			get { return creationEntryId; }
 			set { creationEntryId = value; }
+		}
+		
+		public long CreationUIDValidity {
+			get { return creationUIDValidity; }
+			set { creationUIDValidity = value; }
 		}
 		
 		public ulong MessageFlags {

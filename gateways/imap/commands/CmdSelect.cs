@@ -74,7 +74,7 @@ namespace NMapi.Gateways.IMAP {
 					
 					// if UIDNEXT/UIDVALIDITY is not set, go fix that and UIDVALIDITY
 					if (ServCon.FolderHelper.UIDNEXT == 0 || ServCon.FolderHelper.UIDVALIDITY == 0)
-						ServCon.FolderHelper.UpdateNextUid ();
+						ServCon.FolderHelper.UpdateUIDNEXT ();
 
 					// build sequence number list
 					int recent = ServCon.FolderHelper.RebuildSequenceNumberListPlusUIDFix ();

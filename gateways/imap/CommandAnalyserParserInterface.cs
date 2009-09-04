@@ -64,15 +64,13 @@ namespace NMapi.Gateways.IMAP
 				Console.WriteLine("pi_3_yylex done");
 				parser_obj = new parser(yy , this);
 				Console.WriteLine("pi_4_parser done");
-				/* open input files, etc. here */
-				TUVienna.CS_CUP.Runtime.Symbol parse_tree = null;
 
 				bool do_debug_parse = true;
 				try {
 					if (do_debug_parse)
-						parse_tree = parser_obj.debug_parse();
+						parser_obj.debug_parse();
 					else
-						parse_tree = parser_obj.parse();
+						parser_obj.parse();
 				} catch (Exception e) {
 					// set error in command. But only, if there hasn't been
 					// an error stored yet. We want to preserve state errors,
@@ -187,7 +185,7 @@ namespace NMapi.Gateways.IMAP
 			set { dt = value; }
 		}
 
-		public string ToString ()
+		public override string ToString ()
 		{
 			return "DateTimeBox " + dt;
 		}

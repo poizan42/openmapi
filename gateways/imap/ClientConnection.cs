@@ -59,7 +59,8 @@ namespace NMapi.Gateways.IMAP
 //		StreamReader inReader;
 		LogDelegate logInput;
 		LogDelegate logOutput;
-		static X509Certificate serverCertificate;
+//		TODO: handle certificates		
+//		static X509Certificate serverCertificate;
 			
 		public ClientConnection (TcpClient tcpClient)
 		{

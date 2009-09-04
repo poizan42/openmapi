@@ -81,7 +81,8 @@ namespace NMapi.Gateways.IMAP
 			}			
 			//c.Close ();
 			// Listener beenden
-			listener.Stop ();
+			// TODO: need to build mechanism to stop server
+			// listener.Stop ();
 
 		}
 		

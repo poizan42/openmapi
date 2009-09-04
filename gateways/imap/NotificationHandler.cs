@@ -48,7 +48,7 @@ namespace NMapi.Gateways.IMAP {
 			Subscribe ();
 			state.NotificationHandler = this;			
 		}
-
+/*
 		private void CriticalErrorHandler (object sender, ErrorEventArgs ea)
 		{
 			imapConnectionState.Log ("An Event has arrived");
@@ -96,7 +96,7 @@ namespace NMapi.Gateways.IMAP {
 		{
 			imapConnectionState.Log ("An Event has arrived");
 		}
-
+*/
 		private void TableModifiedHandler (object sender, TableEventArgs ea)
 		{
 			imapConnectionState.Log ("An Event has arrived: " + ea.EventType + ":" + ea.Notification.TableEvent);

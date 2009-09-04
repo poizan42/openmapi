@@ -27,6 +27,9 @@ using TUVienna;
 using NMapi.Gateways.IMAP;
 /*
 */
+// need to have these pragmas to eliminate warnings caused by generated variables that are not used
+#pragma warning disable 0414
+#pragma warning disable 0169
 
 namespace NMapi.Gateways.IMAP
 {
@@ -145,10 +148,6 @@ public class Yytoken : ICloneable  {
 %{
 		
 	private int tokenbase;
-	private int yytokenbase()
-	{
-		return tokenbase;
-	}
 
 	public void newReader (System.IO.TextReader yy_reader1)
 	{

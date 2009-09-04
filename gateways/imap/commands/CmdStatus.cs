@@ -55,7 +55,7 @@ namespace NMapi.Gateways.IMAP {
 						// build sequence number list
 						SequenceNumberList snl = ServCon.FolderHelper._BuildSequenceNumberList (folder);
 
-						int recent = snl.Count ((x) => x.UID == null);
+						int recent = snl.Count ((x) => x.UID == 0);
 						
 						int unseen = FlagHelper.GetUnseenIDFromSNL (snl);
 
@@ -79,7 +79,7 @@ namespace NMapi.Gateways.IMAP {
 						}
 						if (command.Status_list.Contains ("UIDVALIDITY", mycomp) || command.Status_list.Contains ("UIDNEXT")) {
 							long uidnext, uidvalidity;
-							ServCon.FolderHelper._GetFolderProps (out uidvalidity, out uidnext, folder);
+							ServCon.FolderHelper._GetFolderAttributes (out uidvalidity, out uidnext, folder);
 							if (command.Status_list.Contains ("UIDVALIDITY", mycomp)) {
 								ril.AddResponseItem ("UIDVALIDITY");
 								ril.AddResponseItem (uidvalidity.ToString ());

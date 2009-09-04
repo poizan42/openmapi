@@ -64,7 +64,6 @@ namespace NMapi.Gateways.IMAP {
 				// calculate all necessary path elements
 				string srcPath = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox1));
 				string srcParentPath = PathHelper.GetParent (srcPath);
-				string srcFolderName = PathHelper.GetLast (srcPath);
 
 				string destPath = PathHelper.ResolveAbsolutePath (PathHelper.PathSeparator + ConversionHelper.MailboxIMAPToUnicode (command.Mailbox2));
 				string destParentPath = PathHelper.GetParent (destPath);
