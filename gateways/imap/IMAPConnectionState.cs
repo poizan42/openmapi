@@ -50,11 +50,6 @@ namespace NMapi.Gateways.IMAP {
 		private MimeCacheObject cacheObject;
 		
 		private static int idLast;
-		private static Object lockObject = new Object ();
-
-		public static Object LockObject {
-			get { return lockObject; }
-		}
 		
 		public IMAPConnectionStates CurrentState {
 			get { return currentState; }
@@ -285,8 +280,6 @@ Log ( "ProcessNotificationRespo04");
 
 				// save old SequenceNumberList
 				SequenceNumberList snlOld = serverConnection.FolderHelper.SequenceNumberList;
-				// save size of old list;
-				int snlOldLength = snlOld.Count;
 
 Log ( "ProcessNotificationRespo05" + notificationHandler);
 				if (notificationHandler != null)

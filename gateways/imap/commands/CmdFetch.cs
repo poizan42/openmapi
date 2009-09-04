@@ -80,7 +80,10 @@ namespace NMapi.Gateways.IMAP {
 			Console.WriteLine ("DoFetchLoop");
 
 			int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
+			int countResponses = 0; // count of Responses accumulated. Used to flush ResponseManager in intervalls
+			
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
+			
 			IMapiTable contentsTable = null;
 			try {
 				contentsTable = ServCon.FolderHelper.CurrentFolder.GetContentsTable (Mapi.Unicode);
@@ -125,8 +128,14 @@ namespace NMapi.Gateways.IMAP {
 						if (uid != 0) {
 							SequenceNumberListItem snli;
 							snli = slq.Find ((a) => uid == a.UID);
-							if (snli != null) 
+							if (snli != null) { 
 								BuildFetchResponseRow (command, snli, row);
+								countResponses ++;
+							}
+							if (countResponses > 10) {
+								ServCon.State.ResponseManager.FlushResponses ();
+								countResponses = 0;
+							}
 						}
 					}
 				}
@@ -443,7 +452,7 @@ namespace NMapi.Gateways.IMAP {
 			return r;
 		}
 
-		protected IMessage GetMessage (SequenceNumberListItem snli) 
+		private IMessage GetMessage (SequenceNumberListItem snli) 
 		{
 			if (currentMessage == null)
 				currentMessage = (IMessage) ServCon.Store.OpenEntry (snli.EntryId.ByteArray, null, Mapi.Unicode);

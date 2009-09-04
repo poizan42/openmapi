@@ -36,15 +36,13 @@ namespace NMapi.Gateways.IMAP
 {
 
 	
-	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Path, UID_Creation_EntryId, UIDNEXT, UIDVALIDITY, AdditionalFlags};
+	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Creation_Path, UID_Creation_EntryId, UID_Creation_UIDValidity, AdditionalFlags
+											, UIDNEXT, UIDVALIDITY};
 	
 //	public delegate void LogDelegate(string message);
 	
 	public class ServerConnection
 	{
-		private LogDelegate logInput;
-		private LogDelegate logOutput;
-
 		private IMAPConnectionState state;
 		private IMapiFactory factory;
 		private IMapiSession session;
@@ -206,13 +204,6 @@ state.Log ("Server1");
 			}
 		}
 
-		public LogDelegate LogInput {
-			set { logInput = value; }
-		}
-		public LogDelegate LogOutput {
-			set { logOutput = value; }
-		}
-
 
 		internal void SetRootDir()
 		{
@@ -357,9 +348,9 @@ state.Log ("setrootdir 4");
 				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
-			case IMAPGatewayNamedProperty.UID_Path:
+			case IMAPGatewayNamedProperty.UID_Creation_Path:
 				guid = Guids.PS_PUBLIC_STRINGS;
-				name = "openmapi-message-UID_Path";
+				name = "openmapi-message-UID_CreationPath";
 				type = PropertyType.Unicode;
 				prop = new UnicodeProperty ();
 				break;
@@ -368,6 +359,12 @@ state.Log ("setrootdir 4");
 				name = "openmapi-message-UID_CreationEntryId";
 				type = PropertyType.Binary;
 				prop = new BinaryProperty ();
+				break;
+			case IMAPGatewayNamedProperty.UID_Creation_UIDValidity:
+				guid = Guids.PS_PUBLIC_STRINGS;
+				name = "openmapi-message-UID_CreationUIDValidity";
+				type= PropertyType.Int32;
+				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDNEXT:
 				guid = Guids.PS_PUBLIC_STRINGS;

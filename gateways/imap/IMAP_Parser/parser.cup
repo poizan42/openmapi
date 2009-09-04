@@ -124,13 +124,16 @@ using System.Text;
 using System.Web.UI;
 using System.Diagnostics;
 
-
 /*----------------------------------------------------------------*/ 
 
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 action code {:
+
+  // need to have these pragmas to eliminate warnings caused by generated variables that are not used
+  #pragma warning disable 0219
+
 	private byte[] literalByteParkingSpace;
 	public byte[] LiteralByteParkingSpace {
 		get { return literalByteParkingSpace; }
@@ -143,6 +146,9 @@ action code {:
 :}
 
 parser code {:
+
+  // need to have these pragmas to eliminate warnings caused by generated variables that are not used
+  #pragma warning disable 0219
   
   private CommandAnalyserParserInterface parseInt;
   

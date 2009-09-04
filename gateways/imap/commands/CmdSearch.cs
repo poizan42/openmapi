@@ -49,11 +49,11 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			Response r = null;
-		 	Encoding encoding = null;
 
+			// test for valid characterset
 			if (command.Charset != null) {
 				try {
-					encoding = Encoding.GetEncoding(command.Charset);
+					Encoding.GetEncoding(command.Charset);
 				} catch {
 					state.ResponseManager.AddResponse (new Response (ResponseState.BAD, Name, command.Tag).AddResponseItem ("BADCHARSET"));
 					return;
@@ -74,7 +74,7 @@ namespace NMapi.Gateways.IMAP {
 				}
 
 
-				using (contentsTable = contentsTable) {
+				using (contentsTable) {
 
 					// set the properties to fetch
 					PropertyTag [] currentPropTagArray = PropertyTag.ArrayFromIntegers (new int[] {FolderHelper.UIDPropTag});

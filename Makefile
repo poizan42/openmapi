@@ -38,6 +38,7 @@ NMAPI_GENERATED_SOURCES = \
 #		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
 #		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
 #		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
+TEST_SOURCES = $(shell find tests -name "*.cs")
 
 CECILDLL = bin/Mono.Cecil.dll
 NMAPIDLL = bin/NMapi.dll
@@ -356,13 +357,13 @@ mapitool: $(NMAPIDLL)
 # Tests
 #
 
-bin/NMapi.Test.dll: $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
+bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:$(NMAPIDLL) /r:bin/nmapisvr.exe \
 	/r:$(PTXCDLL) /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
 	/r:System.Web.dll \
-	`find tests -name "*.cs"` $(TEST_SOURCES)
+	$(TEST_SOURCES)
 
 testlib: bin/NMapi.Test.dll
 
