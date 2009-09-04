@@ -46,21 +46,14 @@ namespace CompactTeaSharp
 		/// <summary>
 		///  Wraps a stream in an SSL stream.
 		/// </summary>
-		public static Stream GetSslServerStream (Stream stream, string certFile, string keyFile)
+		public static Stream GetSslServerStream (Stream stream, SslStore sslParams)
 		{			
-			if (!File.Exists (certFile) || !File.Exists (keyFile))
-				throw new IOException ("Certificate or key file not found!");
-			
-			X509Certificate cert = X509Certificate2.CreateFromCertFile (certFile);
-			
-			
 			// This whole thing is required, because Mono doesn't seems to be 
 			// able to deal with the standard way of opening the key file.
 
 			bool ownStream = true;
-			var sslStream = new AutoFlushSslStream (stream, cert, false, ownStream);
-			sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) =>
-				Mono.Security.Authenticode.PrivateKey.CreateFromFile (keyFile).RSA;
+			var sslStream = new AutoFlushSslStream (stream, sslParams.Cert, false, ownStream);
+			sslStream.PrivateKeyCertSelectionDelegate += (certificate, targetHost) => sslParams.PrivateKey;
 			sslStream.ClientCertValidationDelegate += (certificate, errors) => true;
 			
 			
@@ -121,19 +114,16 @@ namespace CompactTeaSharp
 			
 			public override void WriteByte (byte data)
 			{
-				Console.WriteLine ("WriteByte ()");
 				base.WriteByte (data);
 			}
 			
 			public override int ReadByte ()
 			{
-				Console.WriteLine ("ReadByte ()");
 				return base.ReadByte ();
 			}
 			
 			public override int Read (byte[] buffer, int offset, int count)
 			{
-				Console.WriteLine ("Read ()");
 				return base.Read (buffer, offset, count);
 			}	
 			

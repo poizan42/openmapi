@@ -25,7 +25,7 @@ MONO_CECIL = $(shell pkg-config --variable=Libraries cecil)
 GOLDPARSER_SOURCES = $(wildcard lib/GoldParser/*.cs)
 REMOTETEA_SOURCES  = $(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES = $(wildcard mapimetal/*.cs)
-SERVER_SOURCES = $(shell find server/{Modules,Protocols} -name "*.cs") $(wildcard server/*.cs)
+SERVER_SOURCES = $(shell find server/Modules server/Protocols -name "*.cs") $(wildcard server/*.cs)
 MAPIWAIT_SOURCES = $(wildcard tools/mapiwait/*.cs)
 CUP_SOURCES = $(wildcard lib/cup/Runtime/*.cs)
 IMAP_SOURCES = $(shell find gateways/imap -name "*.cs")
@@ -195,6 +195,7 @@ providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	-ns NMapi.Interop.MapiRPC -constName MAPIRPC
 
 NMapi/Data/xslt/cs/xdrgen.xsl: NMapi/Data/xslt/common.xsl NMapi/Data/xslt/cs/xdr_data.xsl NMapi/Data/xslt/cs/xdr_calls.xsl
+	touch $@
 
 providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.cs: NMapi/Data/xslt/cs/xdrgen.xsl providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	$(XSLTPROC) -o $@ $^
