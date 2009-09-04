@@ -40,12 +40,11 @@ namespace NMapi.Server {
 
 		public ReverseEventConnectionServer (
 			BaseOncRpcService service, TcpClient tcpClient, 
-			string certFile, string keyFile)
+			SslStore sslParams)
 		{
 			this.service = service;
 			this.tcpClient = tcpClient;
-			this.stream = OncNetworkUtility.GetSslServerStream (tcpClient.GetStream (), 
-								certFile, keyFile);
+			this.stream = OncNetworkUtility.GetSslServerStream (tcpClient.GetStream (), sslParams);
 		}
 			
 		internal class PseudoClient

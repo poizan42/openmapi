@@ -39,17 +39,15 @@ namespace NMapi.Server {
 		protected Dictionary <string, OncProxySession> sessions;
 		protected int eventPort;
 		
-		private string certFile;
-		private string keyFile;
+		private SslStore sslParams;
 		
 		public BaseOncRpcService (CommonRpcService service, 
 			SessionManager sman, IPAddress ip, int port, 
-			string certFile, string keyFile) : base (ip, port, true, certFile, keyFile)
+			SslStore sslParams) : base (ip, port, true, sslParams)
 		{
 			this.sessionManager = sman;
 			this.commonRpcService = service;
-			this.certFile = certFile;
-			this.keyFile = keyFile;
+			this.sslParams = sslParams;
 			
 			var transport = transports [0] as OncRpcTcpServerTransport;
 			if (transport == null)
@@ -81,7 +79,7 @@ namespace NMapi.Server {
 				if (tcpClient.SendBufferSize < bufferSize)
 					tcpClient.SendBufferSize = bufferSize;
 				
-				var evServer = new ReverseEventConnectionServer (this, tcpClient, certFile, keyFile);
+				var evServer = new ReverseEventConnectionServer (this, tcpClient, sslParams);
 				var eventHandlerThread = new Thread (new ThreadStart (evServer.Handle));
 				eventHandlerThread.Start ();
 			}

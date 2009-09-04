@@ -172,6 +172,9 @@ namespace NMapi.Server {
 			try {	
 				Console.Write ("Loading 'web <-> proxy remoting' ... ");
 
+                CompactTeaSharp.SslStore sslParams =
+                    new CompactTeaSharp.SslStore(cfg.X509CertificateCertFile, cfg.X509CertificateKeyFile);
+
 				InternalCallServer.Driver = this;
 
 				InternalCallServer icall = new InternalCallServer ();
@@ -187,10 +190,9 @@ namespace NMapi.Server {
 				CommonRpcService decoratedRpc = GenerateAssembly ();
 
 				Console.Write ("Loading 'onc server' ... ");
-			
+		
 				OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, 
-											cfg.ListenAddress, cfg.ListenPort,
-											cfg.X509CertificateCertFile, cfg.X509CertificateKeyFile);
+											cfg.ListenAddress, cfg.ListenPort, sslParams);
 				Thread oncThread = new Thread (new ThreadStart (oncService.Run));
 				oncThread.Start ();
 
