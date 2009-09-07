@@ -339,7 +339,6 @@ namespace NMapi.Utility {
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<PropertyValue> props) 
 		{
 			UnicodeProperty uprop = null;
-			String8Property sprop = null;
 			string charset = null;
 			Console.WriteLine ("MimeToMapiAttachments ct = " + mm.ContentType);		
 
@@ -576,9 +575,8 @@ namespace NMapi.Utility {
 		private void MimeToMapiEmbeddedMessages (MimeMessage mm, IMessage im, List<PropertyValue> props) 
 		{
 			UnicodeProperty uprop = null;
-			String8Property sprop = null;
-			string charset = null;
-			Console.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
+			
+         Console.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
 
 			// get the subject name here, as the subject header is being removed in the process of StoreMimeMessage
 			string name = mm.GetSubject ();
