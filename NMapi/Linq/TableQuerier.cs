@@ -340,7 +340,6 @@ namespace NMapi.Linq {
 		//  so "state.ReadBackwards" is ignored.
 		internal object Average {
 			get {
-				int total;
 				
 				//return SumCount (out total) / total;
 				throw new Exception ("UNCOMMENT LINE ABOVE AND FIX!"); // TODO
