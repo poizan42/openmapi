@@ -981,6 +981,10 @@ AP///wCAAAAAQAAAAAA=
 			MimeMessage mm = new MimeMessage();
 			mm.SetHeader ("Content-Type", "multipart/related");
 			new MimeMultipart(mm);
+			#pragma warning disable 0219
+			string x = mm.Boundary;
+			#pragma warning restore 0219
+			
 		}
 
 		/// <summary>
