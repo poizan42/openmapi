@@ -402,6 +402,10 @@ servCon.State.Log ("changedir1");
 							throw new Exception ("SetUID: could not update UIDNEXT: " + e.ToString ());
 						}
 	
+						// if we fail in setting the UID due to concurrent access to that email
+						// we need to reload the message and see if it is supplied with a valid UID now.
+						// Another process might have done that in the meantime. In that case we should not
+						// overwrite that UID. See _SetUID.
 						servCon.State.Log ("SetUID: failed to store new values. Retries left: " + countRetriesLeft);
 						--countRetriesLeft;
 						
@@ -418,6 +422,10 @@ servCon.State.Log ("changedir1");
 			
 				SequenceNumberListItem snliLocal = new SequenceNumberListItem ();
 				
+				// it is important, that we increase UIDNEXT every time we try to set an UID to a message
+				// Once a UIDNEXT is communicated to a client, any new message must have an UID >= that UIDNEXT
+				// So, in any conflict situation that might appear while setting an UID that causes a retry
+				// we need to fetch a new UID.
 				snliLocal.UID = UpdateUIDNEXT();
 				snliLocal.CreationPath = currentPath;
 				snliLocal.CreationEntryId = snli.EntryId;
@@ -469,7 +477,6 @@ servCon.State.Log ("changedir1");
 				// save current uidnext
 				luidNext = uidNext;
 				luidValidity = uidValidity;
-
 	
 				// update uidnext value in memory and attributes store
 				List<PropertyValue> lv = new List<PropertyValue> ();
@@ -510,7 +517,9 @@ servCon.State.Log ("changedir1");
 					servCon.State.Log ("UpdateUIDNEXT: failed to store new values. Retries left: " + countRetrysLeft);
 					--countRetrysLeft;
 
-					// now reset attribute store and start over. GetFolderProps will reload the attribute store
+					// now reset attribute store and start over. GetFolderProps will reload the attribute store.
+					// That is required, as we want to keep it with NMAPI.KEEP_OPEN_READWRITE to save reloading
+					// it for any updates until we encounter another conflict.
 					imapFolderAttributesStore.Dispose ();
 					imapFolderAttributesStore = null;
 				}
@@ -665,19 +674,23 @@ servCon.State.Log ("changedir1");
 		/// </returns>
 		internal int FixUIDsInSequenceNumberList ()
 		{
-			
+			int cnt = 0;
 			var query = from snli in sequenceNumberList
 						where !TestSNLIUID (snli)
 						select snli;
-			int cnt = query.Count();
+
+			servCon.State.Log ("FixUIDsInSequenceNumberList 1");
 			
 			foreach (SequenceNumberListItem snli in query) {
 				servCon.State.Log ("FixUIDsInSequenceNumberList Loop");
 				SetUID (snli);
 				snli.Recent = true;
+				cnt ++;
 			}
+			servCon.State.Log ("FixUIDsInSequenceNumberList 2");
 
 			sequenceNumberList.Sort ();
+			servCon.State.Log ("FixUIDsInSequenceNumberList 3");
 			return cnt;
 		}
 		
@@ -877,6 +890,7 @@ servCon.State.Log ("changedir1");
 					// fix UIDS in Messagesif missing or broken
 					servCon.State.Log ("fixUIDs");
 					int recent = FixUIDsInSequenceNumberList ();
+					servCon.State.Log ("fixUIDs done");
 					return recent;
 				} catch (MapiException e) {
 					servCon.State.Log ("RebuildSequenceNumberListPlusUIDFix, Exception: " + e.Message);
