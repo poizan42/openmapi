@@ -375,10 +375,10 @@ bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/
 testlib: bin/NMapi.Test.dll
 
 runtests: bin/NMapi.Test.dll
-	-nunit-console2 $^ -nologo -labels -exclude=Networking -xml=testresults.xml
+	-LANG=en_US.UTF-8 nunit-console2 $^ -nologo -labels -exclude=Networking -xml=testresults.xml
 
 runalltests: bin/NMapi.Test.dll
-	-nunit-console2 $^ -nologo -labels -xml=testresults.xml
+	-LANG=en_US.UTF-8 nunit-console2 $^ -nologo -labels -xml=testresults.xml
 
 #
 # Sample
