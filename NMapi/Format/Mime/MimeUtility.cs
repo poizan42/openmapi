@@ -610,7 +610,7 @@ namespace NMapi.Format.Mime
 		public static string ExtToMime (string extension) {
 			try {
 				return extToMime[extension];
-			} catch (Exception e) {
+			} catch {
 				return "application/octet-stream";
 			}
 		}
@@ -619,7 +619,7 @@ namespace NMapi.Format.Mime
 			try {
 				foreach (KeyValuePair<string,string> x in extToMime)
 					if (x.Value == extension.ToLower ()) return x.Key;
-			} catch (Exception e) {	}
+			} catch {	}
 			return "";
 		}
 		
