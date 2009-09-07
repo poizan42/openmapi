@@ -16,22 +16,22 @@
 // GNU Affero General Public License for more details.
 //
 
+////
+//// Parses a outlook-rtf data.
+////
+
+
 using System;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
 
-/**
- * Parses a outlook-rtf data. 
- *
- */
 
 namespace NMapi.Utility {
 
-/**
- * Generates outlook-rtf. 
- *
- */
+   ////
+   //// Generates outlook-rtf.
+   ////
 
 	public class RTFWriter 
 	{
