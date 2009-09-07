@@ -1,7 +1,11 @@
 #!/usr/bin/make
 
 MONO = mono
-MCS = gmcs
+
+# Ignore warnings:
+# - if a sourcefile is specified multiple times (CS2002)
+MCS = gmcs -nowarn:2002
+
 MLOG = $(MONO) bin/mlog.exe
 XSLTPROC = xsltproc
 MONODOCER = monodocer
@@ -49,6 +53,9 @@ PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
 CUPDLL = bin/cup.dll
 
 all: code
+
+check-warnings: clean
+	$(MAKE) all 2>&1| awk ' BEGIN{a=0}{print $$0} /^Compilation succeeded - ..* warning/{a = a + $$4;} END{printf("\n\n"); print "TOTAL NUMBER OF WARNINGS: " a;}'
 	
 allwithdocs: code docs
 
