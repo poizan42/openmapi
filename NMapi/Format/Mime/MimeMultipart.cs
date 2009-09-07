@@ -110,7 +110,9 @@ namespace NMapi.Format.Mime
 							throw new MessagingException ("No correct line break after boundary sign");
 						if ((b = bs.ReadByte ()) != '\n')
 							throw new MessagingException ("No correct line break after boundary sign");
+#pragma warning disable 0168
 					} catch (EndOfStreamException e) { }
+#pragma warning restore 0168
 				}
 
 				bs.Close ();
