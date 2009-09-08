@@ -3,10 +3,7 @@
 LANG=en_US.UTF-8
 
 MONO = mono
-
-# Ignore warnings:
-# - if a sourcefile is specified multiple times (CS2002)
-MCS = gmcs -nowarn:2002
+MCS = gmcs 
 
 MLOG = $(MONO) bin/mlog.exe
 XSLTPROC = xsltproc
@@ -15,8 +12,11 @@ MONODOCS2HTML = monodocs2html
 PREPROC = $(MONO) bin/preproc.exe
 MAPIMAP = $(MONO) --debug bin/mapimap.exe
 
-#0612,0618
-NO_WARN=1591
+# Ignore warnings:
+# - if a sourcefile is specified multiple times (CS2002)
+# - if missing XML comment for publicly visible type or member 'Type_or_Member'
+# 0612,0618
+NO_WARN=2002,1591
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
