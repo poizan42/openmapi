@@ -50,7 +50,6 @@ namespace NMapi {
 		private MAPIRPCClient client;
 		private string host;
 		private int port;
-		private HObject sessionObj;
 		private int evuid;
 		private TcpClient eventSock;
 		private OncRpcTcpConnectionServerTransport eventServ; 
@@ -200,7 +199,7 @@ namespace NMapi {
 				try {
 					if (sub != null)
 						sub.Unadvise ();
-				} catch (MapiException e) {
+				} catch {
 					// do nothing
 				} finally {
 					eventSubMap.Remove (connection.Connection);

@@ -1,5 +1,7 @@
 #!/usr/bin/make
 
+LANG=en_US.UTF-8
+
 MONO = mono
 
 # Ignore warnings:

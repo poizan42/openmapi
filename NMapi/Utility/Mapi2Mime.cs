@@ -114,7 +114,6 @@ namespace NMapi.Utility {
 			props.Props = props1.Props;
 			
 			props.Prop = Property.EntryId;
-			SBinary entryId = props.Binary;
 
 			// set headers
 			headerGenerator.DoAll ();
@@ -152,7 +151,8 @@ namespace NMapi.Utility {
 						ms = new MemoryStream (Encoding.ASCII.GetBytes (RTFParser.UncompressRTF( ms.ToArray ())));
 						rtfParser = new RTFParser (ms);
 					}
-				} catch ( MapiException e) {
+				} catch {
+               // NOTE: this is what we want, suppress the exception
 				}
 			}
 
@@ -364,8 +364,9 @@ namespace NMapi.Utility {
 											}
 										}
 									}
-								} catch (Exception e) {
-			//								mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
+								} catch {
+			                        //	mbp.Content = "Internal Error, content could not be retrieved: " + e.Message;
+                                 // NOTE: this is what we want, suppress the exception
 								}
 							}
 						}

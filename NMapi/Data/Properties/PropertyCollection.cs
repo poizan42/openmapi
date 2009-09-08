@@ -47,7 +47,6 @@ namespace NMapi.Properties {
 	/// </summary>
 	public sealed class PropertyCollection
 	{
-		private PropertyValue[] props;
 		
 		
 		
@@ -57,7 +56,7 @@ namespace NMapi.Properties {
 		/// </summary>
 		public PropertyCollection (PropertyValue[] props)
 		{
-			this.props = props;
+
 		}
 		
 		
