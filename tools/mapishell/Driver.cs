@@ -265,7 +265,7 @@ namespace NMapi.Tools.Shell {
 				});
 			List<string> rest;
 			try {
-				rest = p.Parse (args);
+				p.Parse (args);
 			} catch (OptionException e) {
 				WriteLine ("ERROR: " + e.Message);
 				return;
@@ -434,6 +434,9 @@ namespace NMapi.Tools.Shell {
 		internal void PrintHelp ()
 		{
 			Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
+			WriteLine ("\nOpenMapi.org - MapiShell " +  
+						Version.Major + "."  + Version.Minor);
 			WriteLine ("For more information see: http://www.openmapi.org\n");
 			WriteLine ("Usage: mapishell [OPTION] ...  [FILE]\n");
 			WriteLine ("-s, -script            execute batch script");
