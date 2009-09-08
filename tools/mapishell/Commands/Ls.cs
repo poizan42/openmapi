@@ -89,9 +89,8 @@ namespace NMapi.Tools.Shell {
 					driver.WriteLine ("-class  TODO");
 					return; // TODO: break!
 				});
-			List<string> rest;
 			try {
-				rest = p.Parse (ShellUtil.SplitParams (context.Param));
+				p.Parse (ShellUtil.SplitParams (context.Param));
 			} catch (OptionException e) {
 				driver.WriteLine ("ERROR: " + e.Message);
 				return;
