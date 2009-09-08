@@ -400,7 +400,7 @@ Log ( "ProcessNotificationRespo6");
 		public void Log (string text, string tag)
 		{
 			DateTime now = DateTime.Now;
-			Console.Out.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
+			Trace.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
 			                 now.Month.ToString ().PadLeft (2,'0') + 
 			                 now.Day.ToString ().PadLeft (2,'0') + 
 			                 "-" + 

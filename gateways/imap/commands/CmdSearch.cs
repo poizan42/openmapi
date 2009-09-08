@@ -19,6 +19,7 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using NMapi;
 using NMapi.Flags;
@@ -29,6 +30,7 @@ using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
 using NMapi.Utility;
+
 
 namespace NMapi.Gateways.IMAP {
 
@@ -81,13 +83,13 @@ namespace NMapi.Gateways.IMAP {
 					contentsTable.SetColumns(currentPropTagArray, 0);
 					contentsTable.Restrict (restr, 0);
 					// get rows
-					Console.WriteLine ("DoFetchLoop Query Rows");
+					Trace.WriteLine ("DoFetchLoop Query Rows");
 					RowSet rows = null;
 					while ((rows = contentsTable.QueryRows (querySize, Mapi.Unicode)).Count > 0) {
-						Console.WriteLine ("DoFetchLoop Query Rows Fetch");
+						Trace.WriteLine ("DoFetchLoop Query Rows Fetch");
 						r = new Response (ResponseState.NONE, Name);
 						foreach (Row row in rows) {
-							Console.WriteLine ("DoFetchLoop Query Rows Fetch Process Row");
+							Trace.WriteLine ("DoFetchLoop Query Rows Fetch Process Row");
 							uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 0)).Value;
 							if (uid != 0) {
 								if (command.UIDCommand) {

@@ -380,6 +380,8 @@ servCon.State.Log ("changedir1");
 			
 			while (true) {
 			
+				// we first (reread) the email, so we can test, if the UID-info has still
+				// not changed.
 				try {
 					message = GetMessageFromSequenceNumberListItem (snli);
 				} catch (MapiException e) {
@@ -416,8 +418,10 @@ servCon.State.Log ("changedir1");
 
 		private void _SetUID (SequenceNumberListItem snli, IMessage message) {
 			
+			// refill snli with the values of the passed messages
 			SequenceNumberListItemFromIMessage (snli, message);
 			
+			// do changes only, if new values do not pass test for valid UID information
 			if (!TestSNLIUID (snli)) {
 			
 				SequenceNumberListItem snliLocal = new SequenceNumberListItem ();

@@ -50,20 +50,20 @@ namespace NMapi.Gateways.IMAP
 			
 			if (clientConnection.DataAvailable()) {
 
-				Console.WriteLine("pi_1");
+				Trace.WriteLine("pi_1");
 				NewCommand();
 				SetupStreamReader();
 				if(_inSR == null) return null;
-				Console.WriteLine("pi_2_streamreader done");
+				Trace.WriteLine("pi_2_streamreader done");
 				if (yy == null) {
 					yy = new Yylex (_inSR);
 				} else {
 					yy.ReInit (_inSR);
 				}
 
-				Console.WriteLine("pi_3_yylex done");
+				Trace.WriteLine("pi_3_yylex done");
 				parser_obj = new parser(yy , this);
-				Console.WriteLine("pi_4_parser done");
+				Trace.WriteLine("pi_4_parser done");
 
 				bool do_debug_parse = true;
 				try {
@@ -80,7 +80,7 @@ namespace NMapi.Gateways.IMAP
 				} finally {
 					/* do close out here */
 				}
-				Console.WriteLine("pi_5");
+				Trace.WriteLine("pi_5");
 				return _command;
 		    }
 			return null;
@@ -111,7 +111,7 @@ namespace NMapi.Gateways.IMAP
 		public byte[] ReadLiteral (int count)
 		{
 			byte [] s = null;
-			Console.WriteLine("rCommandAnalyserParserInterfaceeadLiteral: "+count);
+			Trace.WriteLine("rCommandAnalyserParserInterfaceeadLiteral: "+count);
 
 			// only read a literal, if no formal or state error has been
 			// identified so far.
@@ -122,7 +122,7 @@ namespace NMapi.Gateways.IMAP
 				
 				// read literal data
 				s = clientConnection.ReadBlock(count);
-				Console.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
+				Trace.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
 	
 				/* read the rest of the command and set the parser up with the new stream reader*/
 				SetupStreamReader();

@@ -161,7 +161,7 @@ namespace NMapi.Gateways.IMAP
 				int count2 = count;
 				int offset = 0;
 				while (count2 > 0) {
-//Console.WriteLine (read + " X " + count2 + " x " + offset);
+//Trace.WriteLine (read + " X " + count2 + " x " + offset);
 					read = inOut.Read (ba, offset, count2);
 					if(read < 0) return null;
 					count2 = count2 - read;

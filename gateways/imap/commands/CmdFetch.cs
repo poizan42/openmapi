@@ -77,7 +77,7 @@ namespace NMapi.Gateways.IMAP {
 
 		public void DoFetchLoop (Command command) 
 		{
-			Console.WriteLine ("DoFetchLoop");
+			Trace.WriteLine ("DoFetchLoop");
 
 			int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
 			int countResponses = 0; // count of Responses accumulated. Used to flush ResponseManager in intervalls
@@ -116,10 +116,10 @@ namespace NMapi.Gateways.IMAP {
 					}
 					// create head restriction, append the single restrictions and add head restriction to contentsTable
 					OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
-					Console.WriteLine ("DoFetchLoop Restrict");
+					Trace.WriteLine ("DoFetchLoop Restrict");
 					contentsTable.Restrict (orRestr, 0);
 					// get rows
-					Console.WriteLine ("DoFetchLoop Query Rows");
+					Trace.WriteLine ("DoFetchLoop Query Rows");
 					RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
 					if (rows.Count == 0)
 						break;
@@ -146,7 +146,7 @@ namespace NMapi.Gateways.IMAP {
 				
 		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, Row rowProperties) 
 		{
-			Console.WriteLine ("BuildFetchResponseRow");
+			Trace.WriteLine ("BuildFetchResponseRow");
 
 			currentMessage = null; //reset currentMessage
 			currentSNLI = snli;
@@ -487,7 +487,7 @@ namespace NMapi.Gateways.IMAP {
 
 		public int[] PropertyListFromCommand (Command command)
 		{
-			Console.WriteLine ("PropertyListFromCommand");
+			Trace.WriteLine ("PropertyListFromCommand");
 
 			List<int> propList = new List<int> ();
 
@@ -635,7 +635,7 @@ namespace NMapi.Gateways.IMAP {
 					}
 				}
 			}
-			Console.WriteLine ("PropertyListFromCommand Finished");
+			Trace.WriteLine ("PropertyListFromCommand Finished");
 			return propList.Distinct ().ToArray ();
 		}
 
