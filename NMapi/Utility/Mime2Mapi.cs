@@ -45,7 +45,6 @@ namespace NMapi.Utility {
 		public const string MimeMapi_Constant_HTML_only_Text_content = 
 			"OpenMAPI IMAPGateway, default Text when Mime representation didn't provide any text/plain component but only text/html. This is to make sure this text will not be detected by accident: e82948746629f0589bba8bd8bdec93f2e781d9423";
 
-		IMsgStore store;
 		bool prBodyFilled;
 		bool prRtfFilled;
 
