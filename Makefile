@@ -14,7 +14,7 @@ MAPIMAP = $(MONO) --debug bin/mapimap.exe
 
 # Ignore warnings:
 # - if a sourcefile is specified multiple times (CS2002)
-# - if missing XML comment for publicly visible type or member 'Type_or_Member'
+# - if missing XML comment for publicly visible type or member 'Type_or_Member' (CS1591)
 # 0612,0618
 NO_WARN=2002,1591
 DEBUG= /debug -d:DEBUG 
