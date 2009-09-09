@@ -68,7 +68,7 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (r);
 			}
 			catch (Exception e) {
-				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 				Log (e.StackTrace);
 			}
 			return;
@@ -81,62 +81,97 @@ namespace NMapi.Gateways.IMAP {
 
 			int querySize = 50; //so many rows are requested for the contentsTable in each acces to MAPI
 			int countResponses = 0; // count of Responses accumulated. Used to flush ResponseManager in intervalls
-			
+
+			// set the properties to fetch
+			currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));
+
+			// if last required property is the flag-Property, we dont need the DB at all
+			// checks, if only data is required, that is already present in the SequenceNumberList
+			bool readRequired = currentPropTagArray [currentPropTagArray.Length - 1].Tag != FolderHelper.AdditionalFlagsPropTag;
+
+			// get all snli's
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			
-			IMapiTable contentsTable = null;
-			try {
-				contentsTable = ServCon.FolderHelper.CurrentFolder.GetContentsTable (Mapi.Unicode);
-			} catch (MapiException e) {
-				if (e.HResult != Error.NoSupport)
-					throw;
-				return;
-			}
+			if ( (!ScanForBodyRequest (command) || slq.Count () > 10) && readRequired)
+			// use contents table if entry does not have to be loaded and many items are read
+			{ 
+				IMapiTable contentsTable = null;
+				try {
+					contentsTable = ServCon.FolderHelper.CurrentFolder.GetContentsTable (Mapi.Unicode);
+				} catch (MapiException e) {
+					if (e.HResult != Error.NoSupport)
+						throw;
+					return;
+				}
+	
+				using (contentsTable) {
+	
+					// set the properties to fetch
+					contentsTable.SetColumns(currentPropTagArray, 0);
 
-			using (contentsTable) {
-
-				// set the properties to fetch
-				currentPropTagArray = PropertyTag.ArrayFromIntegers (PropertyListFromCommand (command));
-				contentsTable.SetColumns(currentPropTagArray, 0);
-
-				// Loop the items in Sequence-Set
-				for (int msgno = 0; msgno < slq.Count; msgno += querySize) {
-					// build restriction list
-					List<Restriction> entryRestrictions = new List<Restriction> ();
-					int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
-					for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
-						PropertyRestriction entryPropRestr = new PropertyRestriction ();
-						BinaryProperty eId = new BinaryProperty();
-						eId.PropTag = Property.EntryId;
-						eId.Value = slq[msgno2].EntryId;
-						entryPropRestr.Prop = eId;
-						entryPropRestr.PropTag = Property.EntryId;
-						entryPropRestr.RelOp = RelOp.Equal;
-						entryRestrictions.Add (entryPropRestr);
-					}
-					// create head restriction, append the single restrictions and add head restriction to contentsTable
-					OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
-					Trace.WriteLine ("DoFetchLoop Restrict");
-					contentsTable.Restrict (orRestr, 0);
-					// get rows
-					Trace.WriteLine ("DoFetchLoop Query Rows");
-					RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
-					if (rows.Count == 0)
-						break;
-					foreach (Row row in rows) {
-						uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 1)).Value;
-						if (uid != 0) {
-							SequenceNumberListItem snli;
-							snli = slq.Find ((a) => uid == a.UID);
-							if (snli != null) { 
-								BuildFetchResponseRow (command, snli, row);
-								countResponses ++;
-							}
-							if (countResponses > 10) {
-								ServCon.State.ResponseManager.FlushResponses ();
-								countResponses = 0;
+					// Loop the items in Sequence-Set
+					for (int msgno = 0; msgno < slq.Count; msgno += querySize) {
+						// build restriction list
+						List<Restriction> entryRestrictions = new List<Restriction> ();
+						int maxMsgno = Math.Min (msgno + querySize, slq.Count); //Messages per MAPI-Table-Request
+						for (int msgno2 = msgno ;msgno2 < maxMsgno; msgno2++) {
+							PropertyRestriction entryPropRestr = new PropertyRestriction ();
+							BinaryProperty eId = new BinaryProperty();
+							eId.PropTag = Property.EntryId;
+							eId.Value = slq[msgno2].EntryId;
+							entryPropRestr.Prop = eId;
+							entryPropRestr.PropTag = Property.EntryId;
+							entryPropRestr.RelOp = RelOp.Equal;
+							entryRestrictions.Add (entryPropRestr);
+						}
+						// create head restriction, append the single restrictions and add head restriction to contentsTable
+						OrRestriction orRestr = new OrRestriction (entryRestrictions.ToArray ());
+						Trace.WriteLine ("DoFetchLoop Restrict");
+						contentsTable.Restrict (orRestr, 0);
+						// get rows
+						Trace.WriteLine ("DoFetchLoop Query Rows");
+						RowSet rows = contentsTable.QueryRows (querySize, Mapi.Unicode);
+						if (rows.Count == 0)
+							break;
+						foreach (Row row in rows) {
+							uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 1)).Value;
+							if (uid != 0) {
+								SequenceNumberListItem snli;
+								snli = slq.Find ((a) => uid == a.UID);
+								if (snli != null) { 
+									currentMessage = null; //reset currentMessage
+									currentSNLI = snli;
+									
+									BuildFetchResponseRow (command, snli, row.Props);
+									countResponses ++;
+								}
+								if (countResponses > 10) {
+									ServCon.State.ResponseManager.FlushResponses ();
+									countResponses = 0;
+								}
 							}
 						}
+					}
+				}
+			} else {
+				// read each item
+				PropertyValue [] pv = null;
+				foreach (SequenceNumberListItem snli in slq) {
+					currentMessage = null; //reset currentMessage
+					currentSNLI = snli;
+
+					if (readRequired) {
+						IMessage im = GetMessage (snli);
+						pv = im.GetProperties (currentPropTagArray);
+					} else {
+						pv = null;
+					}
+					BuildFetchResponseRow (command, snli, pv);
+					countResponses ++;
+
+					if (countResponses > 50) {
+						ServCon.State.ResponseManager.FlushResponses ();
+						countResponses = 0;
 					}
 				}
 			}
@@ -144,18 +179,16 @@ namespace NMapi.Gateways.IMAP {
 
 
 				
-		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, Row rowProperties) 
+		public Response BuildFetchResponseRow (Command command, SequenceNumberListItem snli, PropertyValue[] rowProperties) 
 		{
 			Trace.WriteLine ("BuildFetchResponseRow");
 
-			currentMessage = null; //reset currentMessage
-			currentSNLI = snli;
 			Response r = null;
 			bool uidSupplied = false;
 			r = new Response (ResponseState.NONE, Name);
 			r.Val = new ResponseItemText (ServCon.FolderHelper.SequenceNumberList.IndexOfSNLI(snli).ToString ());
 			ResponseItemList fetchItems = new ResponseItemList ();
-			PropertyHelper props = new PropertyHelper (rowProperties.Props);
+			PropertyHelper props = new PropertyHelper (rowProperties);
 			
 			foreach (CommandFetchItem cfi in command.Fetch_item_list) {
 				string Fetch_att_key = cfi.Fetch_att_key.ToUpper ();
@@ -466,7 +499,8 @@ namespace NMapi.Gateways.IMAP {
 		
 		public ResponseItemList Flags (SequenceNumberListItem snli, PropertyHelper propertyHelper)
 		{
-			return new FlagHelper (snli, propertyHelper).ResponseItemListFromFlags ();
+//			return new FlagHelper (snli, propertyHelper).ResponseItemListFromFlags ();
+			return new FlagHelper (snli).ResponseItemListFromFlags ();
 		}
 		
 

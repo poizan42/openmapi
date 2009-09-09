@@ -87,6 +87,9 @@ namespace NMapi.Gateways.IMAP {
 				imapFolderAttributesStore.Dispose ();
 			imapFolderAttributesStore = null;
 			
+			
+			servCon.State.NotificationHandler = null;
+				
 			if (currentFolderTable != null)
 				currentFolderTable.Dispose ();
 			currentFolderTable = null;
@@ -560,6 +563,7 @@ servCon.State.Log ("changedir1");
 			
 			servCon.State.Log ("Select1");
 			while (true) {
+				servCon.State.Log ("Select batch");
 				RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
 				if (rows.Count == 0)
 					break;
@@ -623,13 +627,10 @@ servCon.State.Log ("changedir1");
 		internal SequenceNumberListItem _UpdateSequenceNumberListItem (SequenceNumberListItem snli, PropertyValue[] props)
 		{
 			
-			servCon.State.Log ("Select5");
 			BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(props, 0);
 			
-			servCon.State.Log ("Select5a");
 			if (entryId != null) 
 				snli.EntryId = entryId.Value;
-			servCon.State.Log ("Select5b");
 			
 			PropertyValue val = PropertyValue.GetArrayProp(props, 1);
 			if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
@@ -648,7 +649,7 @@ servCon.State.Log ("changedir1");
 			
 			val = PropertyValue.GetArrayProp(props, 7);
 			if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
-			servCon.State.Log ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
+//			servCon.State.Log ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 			
 			val = PropertyValue.GetArrayProp(props, 8);
 			if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
@@ -723,7 +724,7 @@ servCon.State.Log ("changedir1");
 						servCon.CompareEntryIDs (snli.CreationEntryId.ByteArray, snli.EntryId.ByteArray) &&
 						snli.CreationUIDValidity == uidValidity;
 			
-			servCon.State.Log ("TestSNLIUID, UID: " + snli.UID + " Testresult: " + result);
+//			servCon.State.Log ("TestSNLIUID, UID: " + snli.UID + " Testresult: " + result);
 			
 			return result;
 		}
