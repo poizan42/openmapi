@@ -41,7 +41,7 @@ namespace NMapi.Tools.Shell {
 
 		private ShellState state;
 		private MetaManager metaMan;
-		private bool isClosed;
+		private bool isClosed = false;
 
 		private Version Version {
 			get {
@@ -263,7 +263,6 @@ namespace NMapi.Tools.Shell {
 					PrintHelp ();
 					Environment.Exit (1);
 				});
-			List<string> rest;
 			try {
 				p.Parse (args);
 			} catch (OptionException e) {
@@ -433,8 +432,6 @@ namespace NMapi.Tools.Shell {
 
 		internal void PrintHelp ()
 		{
-			Version version = Assembly.GetExecutingAssembly().GetName().Version;
-
 			WriteLine ("\nOpenMapi.org - MapiShell " +  
 						Version.Major + "."  + Version.Minor);
 			WriteLine ("For more information see: http://www.openmapi.org\n");
