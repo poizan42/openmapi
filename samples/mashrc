@@ -1,0 +1,13 @@
+###############################################
+### This is an example for a .mashrc 
+###
+
+# Select a suitable provider 
+# (e.g. Teamexchange, see grep -r '\[MapiFactory ("..*")\]' ./providers )
+ 
+use org.openmapi.txc
+# Logon to the store
+logon 192.168.3.247 mapi mapi
+
+openstore priv
+cd "Mailbox - mapi"
