@@ -175,7 +175,7 @@ namespace NMapi.Server {
 
 				Console.Write ("Loading 'web <-> proxy remoting' ... ");
 
-                CompactTeaSharp.SslStore sslParams =
+            CompactTeaSharp.SslStore sslParams =
                     new CompactTeaSharp.SslStore(cfg.X509CertificateCertFile, cfg.X509CertificateKeyFile);
 
 				InternalCallServer.Driver = this;
@@ -324,7 +324,7 @@ namespace NMapi.Server {
 			List<ServerModuleCall> methods)
 		{
 			// Catch exceptions ...
-			var label = methodCode.BeginExceptionBlock ();
+			methodCode.BeginExceptionBlock ();
 
 			for (int i=0; i< methods.Count;i++) {
 				ServerModuleCall call = methods [i];
