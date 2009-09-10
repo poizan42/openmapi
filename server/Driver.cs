@@ -170,6 +170,9 @@ namespace NMapi.Server {
 		public void Run ()
 		{
 			try {	
+
+            Console.Write(cfg.GetConfigurationString());
+
 				Console.Write ("Loading 'web <-> proxy remoting' ... ");
 
                 CompactTeaSharp.SslStore sslParams =
@@ -190,7 +193,6 @@ namespace NMapi.Server {
 				CommonRpcService decoratedRpc = GenerateAssembly ();
 
 				Console.Write ("Loading 'onc server' ... ");
-		
 				OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, 
 											cfg.ListenAddress, cfg.ListenPort, sslParams);
 				Thread oncThread = new Thread (new ThreadStart (oncService.Run));
