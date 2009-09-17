@@ -35,6 +35,7 @@ namespace NMapi.Gateways.IMAP
 		public abstract void Close ();
 		public abstract LogDelegate LogInput { set; get; } 
 		public abstract LogDelegate LogOutput { set; get; }
+		public const string INPUT_STREAM_BROKEN_TOKEN = "IMAP-Gateway: Input Stream broken";
 		
 		/// <summary>
 		/// does the data source have data waiting
@@ -61,6 +62,7 @@ namespace NMapi.Gateways.IMAP
 		LogDelegate logOutput;
 //		TODO: handle certificates		
 //		static X509Certificate serverCertificate;
+		
 			
 		public ClientConnection (TcpClient tcpClient)
 		{
@@ -125,6 +127,13 @@ namespace NMapi.Gateways.IMAP
 		
 		public override string ReadLine ()
 		{
+			// the timeout will halt the thread for a period of time in the ReadByte call, if
+			// nothing is sent by the client. Once the timeout is over (IOException is catched), 
+			// the method is left returning null (see exception handling).
+			// This allows loops outside to handle session timeouts, etc.
+			// Keep the load and frequency requirements of these processes in mind when
+			// adjusting this timeout
+			((NetworkStream) inOut).ReadTimeout = 10000;
 			string s = null;
 			MemoryStream ms = new MemoryStream ();
 			try {
@@ -135,15 +144,18 @@ namespace NMapi.Gateways.IMAP
 //Console.Write (Convert.ToString ((byte) c1));
 					c3 = c2;
 					c2 = c1;
-					c1 = inOut.ReadByte ();
-					if (c1 == -1) return null;
+					c1 = ((NetworkStream) inOut).ReadByte ();
+					if (c1 == -1) throw new Exception (INPUT_STREAM_BROKEN_TOKEN);
 					if (c3 != -1)
 						ms.WriteByte ((byte) c3);
 				}
 				s = Encoding.ASCII.GetString (ms.ToArray ());
-//				s = inReader.ReadLine ();
-			} catch (SocketException) {
-				return null;
+			} catch (IOException e) {
+				// In case of an timeout, leave the method to allow session timeout handling
+				if (e.InnerException.GetType () == typeof (SocketException) && 
+				    ( (SocketException) e.InnerException).SocketErrorCode == SocketError.WouldBlock) {
+					return null;
+				}
 			}
 			
 			if (logInput != null)
@@ -160,18 +172,38 @@ namespace NMapi.Gateways.IMAP
 				int read = 0;
 				int count2 = count;
 				int offset = 0;
+				int timeoutCount = -1;
+				
 				while (count2 > 0) {
-//Trace.WriteLine (read + " X " + count2 + " x " + offset);
+					// Trace.WriteLine (read + " X " + count2 + " x " + offset);
 					read = inOut.Read (ba, offset, count2);
-					if(read < 0) return null;
+					
+					// error handling
+					if (read < 0) 
+						return null;
+					
+					// timeout handling
+					if (read == 0 && !( (NetworkStream) inOut).DataAvailable) {
+						if (timeoutCount == -1)
+							timeoutCount = 100;
+						else if (timeoutCount == 0) {
+							Trace.WriteLine ("ClientConnection.ReadBlock Error: Connection timed out");
+							return null;
+						} else 
+							timeoutCount --;
+						Thread.Sleep (100);
+					} else {
+						timeoutCount = -1;
+					}
+					
+					// loop control
 					count2 = count2 - read;
 					offset = offset + read;
 				}
 				Trace.WriteLine( Encoding.ASCII.GetString (ba));
-			} catch (SocketException) {
-				return null;
 			} catch (Exception e) {
-				Trace.WriteLine(e.ToString());
+				Trace.WriteLine ("ClientConnection.ReadBlock Error: " + e.ToString());
+				return null;
 			}
 			return ba;
 		}

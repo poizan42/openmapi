@@ -153,13 +153,23 @@ namespace NMapi.Gateways.IMAP {
 		/// Disconnects from store
 		public void Disconnect()
 		{
-			if (notificationHandler != null)
-				notificationHandler.Dispose ();
-			notificationHandler = null;
+			try {
+				if (notificationHandler != null)
+					notificationHandler.Dispose ();
+				notificationHandler = null;
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Disconnect (): Fatal exception disposing notificationHandler : " + e.Message );
+				Log (e.StackTrace);
+			}
 			
-			if (serverConnection != null)
-				serverConnection.Disconnect();
-		 	serverConnection = null;
+			try {
+				if (serverConnection != null)
+					serverConnection.Disconnect();
+			 	serverConnection = null;
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Disconnect (): Fatal exception disconnection serverConnection : " + e.Message );
+				Log (e.StackTrace);
+			}
 		}
 
 		/// shuts down all processing in the object and disconnects/closes store and client connections
@@ -167,29 +177,36 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Disconnect ();
 
-			if (clientConnection != null)
+			try {
+				if (clientConnection != null)
 				clientConnection.Close ();
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Close (): Fatal exception closing clientConnection : " + e.Message );
+				Log (e.StackTrace);
+			}
 
 			loopEnd = true;
 		}
 
 		public void RunLoop()
 		{
-			if (!loopEnd && clientConnection.DataAvailable ()) {
-				ResetTimeout ();
-				Log ("sldkfj");
+			if (!loopEnd) {
+				ProcessTimeout ();
+
 				commandAnalyser.CheckCommand ();
-				if(commandAnalyser == null) loopEnd = true;
+				
+				if(commandAnalyser == null) 
+					loopEnd = true;
 				else {
 					Queue q = commandAnalyser.CommandQueue;
 					while (q.Count > 0) {
 						Command cmd = (Command) q.Dequeue();
 						Log ("command processing: \""+cmd.Command_name+"\"");						
 						commandProcessor.ProcessCommand(cmd);
+						ResetTimeout ();
 					}
 				}
 			}
-			ProcessTimeout ();
 		}
 
 		public void AddExistsRequestDummy ()
@@ -356,17 +373,28 @@ Log ( "ProcessNotificationRespo6");
 
 		public void DoWork () 
 		{
-			while (!loopEnd) {
-				Thread.Sleep(5);
-				
-				// lock execution against the execution of a notification request (see NotificationHandler)
-//				lock (this){
-				try {
-					RunLoop();
-				} catch (Exception e) {
-					Log ("IMAPConnectionState.DoWork (): Exception occured: " + e.Message);
-					Log (e.StackTrace);
+			try {
+				while (!loopEnd) {
+					Thread.Sleep(5);
+					
+					// lock execution against the execution of a notification request (see NotificationHandler)
+					try {
+						RunLoop();
+					} catch (Exception e) {
+						if (e.Message == AbstractClientConnection.INPUT_STREAM_BROKEN_TOKEN)
+						{
+							Log ("IMAPConnectionState.DoWork (): Connection broken" );
+							Close ();
+							return;
+						}
+						Log ("IMAPConnectionState.DoWork (): Exception occured: " + e.Message);
+						Log (e.StackTrace);
+					}
 				}
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.DoWork (): Fatal exception, : " + e.Message );
+				Log (e.StackTrace);
+				Close ();
 			}
 		}
 
