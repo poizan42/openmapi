@@ -46,7 +46,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return  "Print username (used for logon)";
+				return  "Print working directory";
 			}
 		}
 
