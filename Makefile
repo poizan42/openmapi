@@ -36,6 +36,7 @@ MAPIWAIT_SOURCES = $(wildcard tools/mapiwait/*.cs)
 CUP_SOURCES = $(wildcard lib/cup/Runtime/*.cs)
 IMAP_SOURCES = $(shell find gateways/imap -name "*.cs")
 NMAPI_SOURCES = $(shell find NMapi -name "*.cs")
+SHELL_SOURCES = $(shell find tools/mapishell -name "*.cs")
 NMAPI_GENERATED_SOURCES = \
 		NMapi/Core/NMapi_Generated.cs NMapi/Core/RemoteCall_Generated.cs \
 		NMapi/Data/Data_Generated.cs NMapi/Data/Data_Props_Generated.cs \
@@ -323,13 +324,13 @@ bin/mapiimap.exe: $(NMAPIDLL) $(CUPDLL) $(IMAP_SOURCES)
 tools/mapishell/ShellObject.xml_Generated.cs: bin/mapimetal.exe tools/mapishell/ShellObject.xml
 	$(MONO) bin/mapimetal.exe tools/mapishell/ShellObject.xml
 
-$(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.xml_Generated.cs $(NDESK_OPTIONS)
+$(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.xml_Generated.cs $(NDESK_OPTIONS) $(SHELL_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/resource:tools/mapishell/default.mss,default.mss \
 	/out:$@  \
 	/r:$(NMAPIDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
 	
-bin/mapishell.exe: $(NTSDLL)
+bin/mapishell.exe: $(NTSDLL) tools/mapishell/DefaultTTY.cs
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
 	/out:$@  \
 	/r:$(NTSDLL) tools/mapishell/DefaultTTY.cs
