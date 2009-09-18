@@ -431,6 +431,11 @@ namespace CompactTeaSharp.Server
 				// close the file and leave the stage.
 				Close ();
 				return false;
+			} catch (SocketException) {
+				// In case of I/O Exceptions (especially socket exceptions) 
+				// close the file and leave the stage.
+				Close ();
+				return false;
 			} catch (OncRpcException) {
 				Close (); // In case of ONC/RPC exceptions at this stage kill the connection.
 				return false;
