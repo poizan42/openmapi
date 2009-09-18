@@ -190,8 +190,8 @@ namespace NMapi.Gateways.IMAP {
 
 		public void RunLoop()
 		{
+			ProcessTimeout ();
 			if (!loopEnd) {
-				ProcessTimeout ();
 
 				commandAnalyser.CheckCommand ();
 				
@@ -375,9 +375,7 @@ Log ( "ProcessNotificationRespo6");
 		{
 			try {
 				while (!loopEnd) {
-					Thread.Sleep(5);
 					
-					// lock execution against the execution of a notification request (see NotificationHandler)
 					try {
 						RunLoop();
 					} catch (Exception e) {

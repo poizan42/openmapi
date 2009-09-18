@@ -87,7 +87,6 @@ namespace NMapi.Gateways.IMAP {
 				imapFolderAttributesStore.Dispose ();
 			imapFolderAttributesStore = null;
 			
-			
 			servCon.State.NotificationHandler = null;
 				
 			if (currentFolderTable != null)
@@ -192,26 +191,28 @@ namespace NMapi.Gateways.IMAP {
 				throw;
 			}
 			
-			while (true) {
-				servCon.State.Log ("_SharedGetSubDir getRows");
-				RowSet rows = tableReader.GetRows (50);
-				servCon.State.Log ("_SharedGetSubDir getRows done");
-				if (rows.Count == 0)
-					break;
-
-				int nameIndex = -1;
-				int entryIdIndex = -1;
-				foreach (Row row in rows) {
-					if (nameIndex == -1) {
-						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-						entryIdIndex  = PropertyValue.GetArrayIndex (row.Props, Property.EntryId);
+			using (tableReader) {
+				while (true) {
+					servCon.State.Log ("_SharedGetSubDir getRows");
+					RowSet rows = tableReader.GetRows (50);
+					servCon.State.Log ("_SharedGetSubDir getRows done");
+					if (rows.Count == 0)
+						break;
+	
+					int nameIndex = -1;
+					int entryIdIndex = -1;
+					foreach (Row row in rows) {
+						if (nameIndex == -1) {
+							nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+							entryIdIndex  = PropertyValue.GetArrayIndex (row.Props, Property.EntryId);
+						}
+					
+						UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
+						BinaryProperty eid  = (BinaryProperty) PropertyValue.GetArrayProp (row.Props, entryIdIndex);
+	
+						if (name != null && name.Value == match)
+							return action (parent, eid.Value);
 					}
-				
-					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
-					BinaryProperty eid  = (BinaryProperty) PropertyValue.GetArrayProp (row.Props, entryIdIndex);
-
-					if (name != null && name.Value == match)
-						return action (parent, eid.Value);
 				}
 			}
 			return null;
@@ -248,11 +249,14 @@ namespace NMapi.Gateways.IMAP {
 				return (IMapiFolder) servCon.Store.Root;
 
 			IMapiContainer container = (IMapiContainer) servCon.Store.Root;
-
+			IMapiContainer container2 = null;
+			
 			foreach (string part in parts) {
 				if (container == null)
 					break;
+				container2 = container;
 				container = GetSubDir (container, part);
+				container2.Dispose ();
 			}
 			return (IMapiFolder) container; // TODO: Container? Folder?
 		}
@@ -299,7 +303,7 @@ servCon.State.Log ("changedir1");
 		}
 
 		
-		public string[] GetSubDirNames (IMapiContainer parent)
+		public string[] GetSubDgirNames (IMapiContainer parent)
 		{
 			List<string>  names = new List<string> ();
 			IMapiTableReader tableReader = null;
@@ -544,7 +548,9 @@ servCon.State.Log ("changedir1");
 		public SequenceNumberList _BuildSequenceNumberList (IMapiFolder folder)
 		{
 			IMapiTable dummyTable;
-			return _BuildSequenceNumberList (out dummyTable, folder);
+			SequenceNumberList snl = _BuildSequenceNumberList (out dummyTable, folder);
+			dummyTable.Dispose ();
+			return snl;
 		}
 
 		public SequenceNumberList _BuildSequenceNumberList (out IMapiTable currentTable, IMapiFolder folder)
