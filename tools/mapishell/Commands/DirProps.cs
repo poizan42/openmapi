@@ -69,8 +69,8 @@ namespace NMapi.Tools.Shell {
 
 			string keyName = ShellUtil.SplitParams (context.Param) [0];
 
-			using (IMapiProp obj = state.OpenFolder (keyName)) {
-				if (obj == null) {
+			using (IMapiProp obj = state.OpenFolder (state.Input2AbsolutePath (keyName))) {
+				if (obj == null) { 
 					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
