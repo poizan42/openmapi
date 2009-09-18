@@ -46,14 +46,16 @@ namespace NMapi.Gateways.IMAP
 
 		public Command CheckCommand()
 		{
-
 			
-			if (clientConnection.DataAvailable()) {
+			// if (clientConnection.DataAvailable()) {
 
 				Trace.WriteLine("pi_1");
 				NewCommand();
 				SetupStreamReader();
-				if(_inSR == null) return null;
+			
+				if(_inSR == null) 
+					return null;
+			
 				Trace.WriteLine("pi_2_streamreader done");
 				if (yy == null) {
 					yy = new Yylex (_inSR);
@@ -82,8 +84,8 @@ namespace NMapi.Gateways.IMAP
 				}
 				Trace.WriteLine("pi_5");
 				return _command;
-		    }
-			return null;
+//		    }
+//			return null;
 		}
 
 		public Encoding Encoding {

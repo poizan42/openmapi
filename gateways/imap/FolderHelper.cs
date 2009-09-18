@@ -191,9 +191,11 @@ namespace NMapi.Gateways.IMAP {
 					return null;
 				throw;
 			}
-
+			
 			while (true) {
+				servCon.State.Log ("_SharedGetSubDir getRows");
 				RowSet rows = tableReader.GetRows (50);
+				servCon.State.Log ("_SharedGetSubDir getRows done");
 				if (rows.Count == 0)
 					break;
 
@@ -565,6 +567,7 @@ servCon.State.Log ("changedir1");
 			while (true) {
 				servCon.State.Log ("Select batch");
 				RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
+				servCon.State.Log ("Select batch done");
 				if (rows.Count == 0)
 					break;
 				foreach (Row row in rows) {

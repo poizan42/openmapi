@@ -68,7 +68,7 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (r);
 			}
 			catch (Exception e) {
-throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
+				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 				Log (e.StackTrace);
 			}
 			return;
@@ -92,7 +92,7 @@ throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO,
 			// get all snli's
 			var slq = ServCon.FolderHelper.BuildSequenceSetQuery(command);
 			
-			if ( (!ScanForBodyRequest (command) || slq.Count () > 10) && readRequired)
+			if ( (!ScanForBodyRequest (command, true) || slq.Count () > 10) && readRequired)
 			// use contents table if entry does not have to be loaded and many items are read
 			{ 
 				IMapiTable contentsTable = null;
@@ -223,7 +223,7 @@ throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO,
 					// opening the email. Also it adjusts itself to the size provided in that situation. Thus,
 					// Thunderbird will read the whole content in sections (trace the use of Section_number1/
 					// Section_number2), if the real size is greater than the rough value provided in the first scan.
-					if (config.ComputeRFC822_SIZE || (ScanForBodyRequest (command))) {
+					if (config.ComputeRFC822_SIZE || (ScanForBodyRequest (command, false))) {
 						StringBuilder tmpMsg = new StringBuilder();
 	
 						// XXX get full message to calculate MIME size
@@ -674,7 +674,7 @@ throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO,
 		}
 
 		// scans all fetch items to see if the mail body will need to be retrieved (via Mapi2Mime) in the course of this request
-		static private bool ScanForBodyRequest (Command cmd)
+		static private bool ScanForBodyRequest (Command cmd, bool checkSizeConfig)
 		{
 			if (cmd == null)
 				return false;
@@ -686,6 +686,11 @@ throw ; //				state.ResponseManager.AddResponse (new Response (ResponseState.NO,
 				if ("BODY FULL".Contains(Fetch_att_key)) {
 					return true;
 				}
+
+				if (checkSizeConfig && Fetch_att_key == "RFC822.SIZE") {
+					return config.ComputeRFC822_SIZE;
+				}
+				
 				if (Fetch_att_key == "BODY.PEEK") {
 					if (section_text == null || "HEADER TEXT MIME".Contains (section_text)) {
 						return true;
