@@ -46,33 +46,33 @@ namespace NMapi.Gateways.IMAP
 
 		public Command CheckCommand()
 		{
-
 			
-			if (clientConnection.DataAvailable()) {
+			// if (clientConnection.DataAvailable()) {
 
-				Console.WriteLine("pi_1");
+				Trace.WriteLine("pi_1");
 				NewCommand();
 				SetupStreamReader();
-				if(_inSR == null) return null;
-				Console.WriteLine("pi_2_streamreader done");
+			
+				if(_inSR == null) 
+					return null;
+			
+				Trace.WriteLine("pi_2_streamreader done");
 				if (yy == null) {
 					yy = new Yylex (_inSR);
 				} else {
 					yy.ReInit (_inSR);
 				}
 
-				Console.WriteLine("pi_3_yylex done");
+				Trace.WriteLine("pi_3_yylex done");
 				parser_obj = new parser(yy , this);
-				Console.WriteLine("pi_4_parser done");
-				/* open input files, etc. here */
-				TUVienna.CS_CUP.Runtime.Symbol parse_tree = null;
+				Trace.WriteLine("pi_4_parser done");
 
 				bool do_debug_parse = true;
 				try {
 					if (do_debug_parse)
-						parse_tree = parser_obj.debug_parse();
+						parser_obj.debug_parse();
 					else
-						parse_tree = parser_obj.parse();
+						parser_obj.parse();
 				} catch (Exception e) {
 					// set error in command. But only, if there hasn't been
 					// an error stored yet. We want to preserve state errors,
@@ -82,10 +82,10 @@ namespace NMapi.Gateways.IMAP
 				} finally {
 					/* do close out here */
 				}
-				Console.WriteLine("pi_5");
+				Trace.WriteLine("pi_5");
 				return _command;
-		    }
-			return null;
+//		    }
+//			return null;
 		}
 
 		public Encoding Encoding {
@@ -113,7 +113,7 @@ namespace NMapi.Gateways.IMAP
 		public byte[] ReadLiteral (int count)
 		{
 			byte [] s = null;
-			Console.WriteLine("rCommandAnalyserParserInterfaceeadLiteral: "+count);
+			Trace.WriteLine("rCommandAnalyserParserInterfaceeadLiteral: "+count);
 
 			// only read a literal, if no formal or state error has been
 			// identified so far.
@@ -124,7 +124,7 @@ namespace NMapi.Gateways.IMAP
 				
 				// read literal data
 				s = clientConnection.ReadBlock(count);
-				Console.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
+				Trace.WriteLine("readLiteral: "+s.Length+" \""+s+"\"");
 	
 				/* read the rest of the command and set the parser up with the new stream reader*/
 				SetupStreamReader();
@@ -187,7 +187,7 @@ namespace NMapi.Gateways.IMAP
 			set { dt = value; }
 		}
 
-		public string ToString ()
+		public override string ToString ()
 		{
 			return "DateTimeBox " + dt;
 		}

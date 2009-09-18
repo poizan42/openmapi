@@ -145,7 +145,7 @@ namespace CompactTeaSharp.Server
 	  	///   the reply to be serialized after the reply message header.</param>
 	  	/// @see OncRpcCallInformation
 	  	/// @see IOncRpcDispatchable
-	  	////
+	  	///
 		/// OncRpcException, IOException
 		public abstract void Reply (OncRpcCallInformation callInfo,
 			  OncRpcServerReplyMessage state, IXdrAble reply);

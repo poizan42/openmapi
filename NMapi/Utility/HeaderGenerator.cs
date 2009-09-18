@@ -106,7 +106,6 @@ namespace NMapi.Utility {
 
 			// if sender and sentrepresenting are equal, fill in only from
 			InternetAddress iaFrom = null;
-			InternetAddress iaSender = null;
 
 			if (props2.Exists && props4.Exists) {
 				if (props2.Unicode == props4.Unicode) {
@@ -144,7 +143,6 @@ namespace NMapi.Utility {
 			props4.Prop = Property.SentRepresentingEmailAddress;
 
 			// if sender and sentrepresenting are equal, fill in only from
-			InternetAddress iaFrom = null;
 			InternetAddress iaSender = null;
 
 			if (props2.Exists && props4.Exists) {

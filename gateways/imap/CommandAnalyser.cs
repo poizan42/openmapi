@@ -17,6 +17,8 @@
 
 using System;
 using System.Collections;
+using System.IO;
+using System.Net.Sockets;
 
 namespace NMapi.Gateways.IMAP
 {
@@ -58,7 +60,10 @@ namespace NMapi.Gateways.IMAP
 
 		public void CheckCommand()
 		{
-			Command cmd = parseInt.CheckCommand ();
+			Command cmd = null;
+			
+			cmd = parseInt.CheckCommand ();
+			
 			if (cmd != null)
 			{
 				commandQueue.Enqueue(cmd);

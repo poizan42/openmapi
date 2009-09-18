@@ -53,9 +53,6 @@ namespace NMapi.Format.Mime
 			Stream inS = mp.ContentStream;
 			Connect(mp);
 			
-			// Access boundary field to check if it is set
-			String boundary = mp.Boundary;
-
 			try {
 				Parse (inS);
 			} catch (MessagingException) { }
@@ -113,7 +110,9 @@ namespace NMapi.Format.Mime
 							throw new MessagingException ("No correct line break after boundary sign");
 						if ((b = bs.ReadByte ()) != '\n')
 							throw new MessagingException ("No correct line break after boundary sign");
+#pragma warning disable 0168
 					} catch (EndOfStreamException e) { }
+#pragma warning restore 0168
 				}
 
 				bs.Close ();

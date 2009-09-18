@@ -63,7 +63,7 @@ namespace NMapi.Properties {
 		
 		/// <summary>
 		///  Provides weak-typed access to Value field.
-		/// /summary>
+		/// </summary>
 		public abstract object GetValueObj ();
 		
 		

@@ -58,6 +58,7 @@ namespace NMapi {
 		///  Get a set of properties for the current object.
 		/// In case of string properties the data is returned as unicode.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tags">Property tags of the requested properties.</param>
 		/// <returns>An array of property values, which correspond to the requested tags.</returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -69,6 +70,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns>The property value of the requested tag.</returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -80,6 +82,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -94,6 +97,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="values"></param>
 		/// <returns></returns>
 		public static PropertyProblem[] SetProperties (this IMapiProp prop, params PropertyValue[] values)
@@ -106,6 +110,7 @@ namespace NMapi {
 		///  If the operation succeeds null is returned. Otherwise an object of 
 		///  type PropertyProblem is returned, that described the problem. 
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="value">An object that identifies the property and also contains the value to be set.</param>
 		/// <returns>
 		///  If the property has been set successfully, null is returned.
@@ -121,6 +126,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tags"></param>
 		/// <returns></returns>
 		public static PropertyProblem[] DeleteProperties (this IMapiProp prop, params PropertyTag[] tags)
@@ -131,6 +137,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		public static PropertyProblem DeleteProperty (this IMapiProp prop, PropertyTag tag)
@@ -142,6 +149,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="mnid"></param>
 		/// <returns></returns>
 		public static PropertyValue GetNamedProperty (this IMapiProp prop, MapiNameId mnid)
@@ -153,6 +161,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="guid"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -165,6 +174,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="guid"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -173,8 +183,6 @@ namespace NMapi {
 			// TODO!
 			throw new NotImplementedException ("Not yet impleemnted!");
 		}
-		
-		
 		
 		
 		/*
@@ -237,6 +245,7 @@ namespace NMapi {
 		/// <summary>
 		///  Open a property as an object for readonly access.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <exception cref="MapiInterfaceNotSupportedException"></exception>
 		/// <exception cref="MapiNoAccessException"></exception>
@@ -251,6 +260,7 @@ namespace NMapi {
 		/// <summary>
 		///  Open a property as an object using the specified access permissions.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <param name="mode"></param>
 		/// <exception cref="MapiInterfaceNotSupportedException"></exception>
@@ -268,6 +278,7 @@ namespace NMapi {
 		///  If "create" is set to true, create the property if it does not exist 
 		///  (and update it if it does).
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <param name="mode"></param>
 		/// <param name="create"></param>

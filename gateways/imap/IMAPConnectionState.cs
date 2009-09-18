@@ -50,11 +50,6 @@ namespace NMapi.Gateways.IMAP {
 		private MimeCacheObject cacheObject;
 		
 		private static int idLast;
-		private static Object lockObject = new Object ();
-
-		public static Object LockObject {
-			get { return lockObject; }
-		}
 		
 		public IMAPConnectionStates CurrentState {
 			get { return currentState; }
@@ -158,13 +153,23 @@ namespace NMapi.Gateways.IMAP {
 		/// Disconnects from store
 		public void Disconnect()
 		{
-			if (notificationHandler != null)
-				notificationHandler.Dispose ();
-			notificationHandler = null;
+			try {
+				if (notificationHandler != null)
+					notificationHandler.Dispose ();
+				notificationHandler = null;
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Disconnect (): Fatal exception disposing notificationHandler : " + e.Message );
+				Log (e.StackTrace);
+			}
 			
-			if (serverConnection != null)
-				serverConnection.Disconnect();
-		 	serverConnection = null;
+			try {
+				if (serverConnection != null)
+					serverConnection.Disconnect();
+			 	serverConnection = null;
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Disconnect (): Fatal exception disconnection serverConnection : " + e.Message );
+				Log (e.StackTrace);
+			}
 		}
 
 		/// shuts down all processing in the object and disconnects/closes store and client connections
@@ -172,29 +177,36 @@ namespace NMapi.Gateways.IMAP {
 		{
 			Disconnect ();
 
-			if (clientConnection != null)
+			try {
+				if (clientConnection != null)
 				clientConnection.Close ();
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.Close (): Fatal exception closing clientConnection : " + e.Message );
+				Log (e.StackTrace);
+			}
 
 			loopEnd = true;
 		}
 
 		public void RunLoop()
 		{
-			if (!loopEnd && clientConnection.DataAvailable ()) {
-				ResetTimeout ();
-				Log ("sldkfj");
+			if (!loopEnd) {
+				ProcessTimeout ();
+
 				commandAnalyser.CheckCommand ();
-				if(commandAnalyser == null) loopEnd = true;
+				
+				if(commandAnalyser == null) 
+					loopEnd = true;
 				else {
 					Queue q = commandAnalyser.CommandQueue;
 					while (q.Count > 0) {
 						Command cmd = (Command) q.Dequeue();
 						Log ("command processing: \""+cmd.Command_name+"\"");						
 						commandProcessor.ProcessCommand(cmd);
+						ResetTimeout ();
 					}
 				}
 			}
-			ProcessTimeout ();
 		}
 
 		public void AddExistsRequestDummy ()
@@ -285,8 +297,6 @@ Log ( "ProcessNotificationRespo04");
 
 				// save old SequenceNumberList
 				SequenceNumberList snlOld = serverConnection.FolderHelper.SequenceNumberList;
-				// save size of old list;
-				int snlOldLength = snlOld.Count;
 
 Log ( "ProcessNotificationRespo05" + notificationHandler);
 				if (notificationHandler != null)
@@ -329,12 +339,12 @@ Log ( "ProcessNotificationRespo4");
 				foreach (SequenceNumberListItem snliOld in snlOld.ToArray ()) {
 					snliNew = serverConnection.FolderHelper.SequenceNumberList.Find ((x)=>x.UID == snliOld.UID);
 					if (snliNew != null) {
-						Log ("uid: " + snliNew.UID);								
-						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
-						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
-						Log ("FlagStatus: " + snliNew.FlagStatus + ":" + snliOld.FlagStatus);								
-						Log ("AdditionalFlags: " + 
-							snliNew.GetAdditionalFlagsAsString () + ":" + snliOld.GetAdditionalFlagsAsString ());								
+//						Log ("uid: " + snliNew.UID);								
+//						Log ("checkFlags: " + snliNew.MessageFlags + ":" + snliOld.MessageFlags);								
+//						Log ("MsgStatus: " + snliNew.MsgStatus + ":" + snliOld.MsgStatus);								
+//						Log ("FlagStatus: " + snliNew.FlagStatus + ":" + snliOld.FlagStatus);								
+//						Log ("AdditionalFlags: " + 
+//							snliNew.GetAdditionalFlagsAsString () + ":" + snliOld.GetAdditionalFlagsAsString ());								
 						if (!FlagHelper.FlagsEqual (snliNew, snliOld)) {
 							r = new Response (ResponseState.NONE, "FETCH");
 							r.Val = new ResponseItemText (snlOld.IndexOfSNLI (snliOld).ToString ());
@@ -363,17 +373,28 @@ Log ( "ProcessNotificationRespo6");
 
 		public void DoWork () 
 		{
-			while (!loopEnd) {
-				Thread.Sleep(5);
-				
-				// lock execution against the execution of a notification request (see NotificationHandler)
-//				lock (this){
-				try {
-					RunLoop();
-				} catch (Exception e) {
-					Log ("IMAPConnectionState.DoWork (): Exception occured: " + e.Message);
-					Log (e.StackTrace);
+			try {
+				while (!loopEnd) {
+					Thread.Sleep(5);
+					
+					// lock execution against the execution of a notification request (see NotificationHandler)
+					try {
+						RunLoop();
+					} catch (Exception e) {
+						if (e.Message == AbstractClientConnection.INPUT_STREAM_BROKEN_TOKEN)
+						{
+							Log ("IMAPConnectionState.DoWork (): Connection broken" );
+							Close ();
+							return;
+						}
+						Log ("IMAPConnectionState.DoWork (): Exception occured: " + e.Message);
+						Log (e.StackTrace);
+					}
 				}
+			} catch (Exception e) {
+				Log ("IMAPConnectionState.DoWork (): Fatal exception, : " + e.Message );
+				Log (e.StackTrace);
+				Close ();
 			}
 		}
 
@@ -407,7 +428,7 @@ Log ( "ProcessNotificationRespo6");
 		public void Log (string text, string tag)
 		{
 			DateTime now = DateTime.Now;
-			Console.Out.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
+			Trace.WriteLine (now.Year.ToString ().PadLeft (2,'0') + 
 			                 now.Month.ToString ().PadLeft (2,'0') + 
 			                 now.Day.ToString ().PadLeft (2,'0') + 
 			                 "-" + 

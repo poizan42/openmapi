@@ -184,8 +184,7 @@ namespace NMapi.Format.Mime
 		public void MimeUtility_Decode2 ()
 		{
 			Stream x = new MemoryStream (new Byte[] {1,2,3,4});
-			Stream y;
-			y = NMapi.Format.Mime.MimeUtility.Decode (x, "testdummy");
+			NMapi.Format.Mime.MimeUtility.Decode (x, "testdummy");
 		}
 		
 		/// <summary>
@@ -222,8 +221,7 @@ namespace NMapi.Format.Mime
 		public void MimeUtility_Encode2 ()
 		{
 			Stream x = new MemoryStream (new Byte[] {1,2,3,4});
-			Stream y;
-			y = NMapi.Format.Mime.MimeUtility.Encode (x, "testdummy");
+			NMapi.Format.Mime.MimeUtility.Encode (x, "testdummy");
 		}
 		
 
@@ -970,7 +968,7 @@ AP///wCAAAAAQAAAAAA=
 		public void MimeMultipart_New_Message_Test_Headers()
 		{
 			MimeMessage mm = new MimeMessage();
-			MimeMultipart mp = new MimeMultipart(mm);
+			new MimeMultipart(mm);
 		}
 
 		/// <summary>
@@ -982,7 +980,11 @@ AP///wCAAAAAQAAAAAA=
 		{
 			MimeMessage mm = new MimeMessage();
 			mm.SetHeader ("Content-Type", "multipart/related");
-			MimeMultipart mp = new MimeMultipart(mm);
+			new MimeMultipart(mm);
+			#pragma warning disable 0219
+			string x = mm.Boundary;
+			#pragma warning restore 0219
+			
 		}
 
 		/// <summary>
@@ -1076,11 +1078,13 @@ AP///wCAAAAAQAAAAAA=
 		{
 			MimeMessage mm = new MimeMessage (inS);
 			//((MimeMultipart)mm.Content)[0].Content = "Ja das ist jetzt mein Text ÄÄÄÄÄÄÄtsch";
+			#pragma warning disable 0219
 			Object x = ((MimeMessage)((MimeMultipart)mm.Content)[1].Content).Content;
+			#pragma warning restore 0219
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			StreamReader sr = new StreamReader (new MemoryStream (os.ToArray ()), Encoding.ASCII);
-			String line = sr.ReadToEnd ();
+			sr.ReadToEnd ();
 
 		}
 
@@ -1094,7 +1098,7 @@ AP///wCAAAAAQAAAAAA=
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			StreamReader sr = new StreamReader (new MemoryStream (os.ToArray ()), Encoding.ASCII);
-			String line = sr.ReadToEnd ();
+			sr.ReadToEnd ();
 
 		}
 
@@ -1103,12 +1107,11 @@ AP///wCAAAAAQAAAAAA=
 		{
 			MimeMessage mm = new MimeMessage (inS);
 			MimeBodyPart mp = ((MimeMultipart)mm.Content)[1];
-			Stream xxx = inPicture;
 			mp.ContentStream = inPicture;
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			StreamReader sr = new StreamReader (new MemoryStream (os.ToArray ()), Encoding.ASCII);
-			String line = sr.ReadToEnd ();
+			sr.ReadToEnd ();
 
 		}
 
@@ -1187,7 +1190,9 @@ AP///wCAAAAAQAAAAAA=
 				MemoryStream os1 = new MemoryStream ();
 				mm.WriteTo (os1);
 				StreamReader sr = new StreamReader (new MemoryStream (os1.ToArray ()), Encoding.ASCII);
+				#pragma warning disable 0219
 				String line = sr.ReadToEnd ();
+				#pragma warning restore 0219
 			}
 			return mm;
 		}
@@ -1255,7 +1260,9 @@ AP///wCAAAAAQAAAAAA=
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			StreamReader sr = new StreamReader (new MemoryStream (os.ToArray ()), Encoding.ASCII);
+			#pragma warning disable 0219
 			String line = sr.ReadToEnd ();
+			#pragma warning restore 0219
 			return mm;
 		}
 
@@ -1392,7 +1399,9 @@ AP///wCAAAAAQAAAAAA=
 			MemoryStream os = new MemoryStream ();
 			mm.WriteTo (os);
 			StreamReader sr = new StreamReader (new MemoryStream (os.ToArray ()), Encoding.ASCII);
+			#pragma warning disable 0219
 			String line = sr.ReadToEnd ();
+			#pragma warning restore 0219
 			return mm;
 		}
 
@@ -1652,7 +1661,9 @@ Console.Write(mp2.GetHeader("Content-Transfer-Encoding", ";"));
 				MemoryStream mos = new MemoryStream ();
 				mm.WriteTo (mos);
 				StreamReader sr = new StreamReader (new MemoryStream (mos.ToArray ()), Encoding.ASCII);
+				#pragma warning disable 0219
 				String line = sr.ReadToEnd ();
+				#pragma warning restore 0219
 			}
 			else
 			{

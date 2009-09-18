@@ -36,10 +36,10 @@ namespace NMapi.Gateways.IMAP {
 
 		public void AddResponse (Response response)
 		{
-imapConnectionState.Log( response.Tag + " Response1");
+imapConnectionState.Log( response.Tag + "Add Response 1");
 
 imapConnectionState.Log( response.Tag + " Response2");
-			// if it is a tagged response or a BYE response, send all pending Responses
+			// if it is a taggedAdd Response  or a BYE response, send all pending Responses
 			if (response.Tag != null || response.Name == "BYE" || response.State == ResponseState.BAD) {
 				
 				// regular responses
@@ -47,23 +47,23 @@ imapConnectionState.Log( response.Tag + " Response2");
 					imapConnectionState.ClientConnectionSend (r.ToString());
 				}
 
-imapConnectionState.Log( response.Tag + " Response3");
+imapConnectionState.Log( response.Tag + "Add Response 3");
 				// Expunge/exists/fetch responses to update the client
 				if (response.State == ResponseState.OK) {
-imapConnectionState.Log( response.Tag + " Response4");
-					if (!"FETCH STORE SEARCH".Contains (response.Name) || response.UIDResponse) {
-imapConnectionState.Log( response.Tag + " Response5");
+imapConnectionState.Log( response.Tag + "Add Response 4");
+					if (!"FETCH STORE SEARCH NOOP".Contains (response.Name) || response.UIDResponse) {
+imapConnectionState.Log( response.Tag + "Add Response 5");
 						foreach (Response r in imapConnectionState.ProcessNotificationResponses ()) {
-imapConnectionState.Log( response.Tag + " Response6 " + r.ToString ());
+imapConnectionState.Log( response.Tag + "Add Response 6 " + r.ToString ());
 							imapConnectionState.ClientConnectionSend (r.ToString());
 						}
 					}
 				}
-imapConnectionState.Log( response.Tag + " Response7");
+imapConnectionState.Log( response.Tag + "Add Response 7");
 				
 				imapConnectionState.ClientConnectionSend (response.ToString());
 				
-imapConnectionState.Log( response.Tag + " Response8");
+imapConnectionState.Log( response.Tag + "Add Response 8");
 				responses = new List<Response> ();
 				return;
 			}
@@ -76,6 +76,18 @@ imapConnectionState.Log( response.Tag + " Response8");
 		{
 			foreach (Response r in responses)
 				AddResponse (r);
+		}
+		
+		/// <summary>
+		/// Method to send responses prior to the final tagged response.
+		/// To be used for large outputs as in FETCH command
+		/// </summary>
+		public void FlushResponses ()
+		{
+			foreach (Response r in responses) {
+				imapConnectionState.ClientConnectionSend (r.ToString());
+			}
+			responses = new List<Response> ();
 		}
 
 	}

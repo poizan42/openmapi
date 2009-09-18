@@ -47,12 +47,12 @@ namespace CompactTeaSharp
 		/// <summary>
 		///  Constructs and initialises a new ONC/RPC call message header.
 		/// </summary>
-		//// <param name="messageId">An identifier choosen by an ONC/RPC client to uniquely
+		/// <param name="messageId">An identifier choosen by an ONC/RPC client to uniquely
 		///    identify matching call and reply messages.</param>
-		//// <param name="program"> Program number of the remote procedure to call.</param>
-		//// <param name="version"> Program version number of the remote procedure to call.</param>
-		//// <param name="procedure"> Procedure number (identifier) of the procedure to call.</param>
-		//// <param name="auth"> Authentication protocol handling object.</param>
+		/// <param name="program"> Program number of the remote procedure to call.</param>
+		/// <param name="version"> Program version number of the remote procedure to call.</param>
+		/// <param name="procedure"> Procedure number (identifier) of the procedure to call.</param>
+		/// <param name="auth"> Authentication protocol handling object.</param>
 		public OncRpcClientCallMessage (int messageId, int program, int version, 
 			int procedure, OncRpcClientAuth auth) : 
 			base (messageId, program, version, procedure)

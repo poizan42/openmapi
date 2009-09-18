@@ -217,8 +217,6 @@ namespace NMapi.Server {
 		public override Session_ABGetChangeTime_res Session_ABGetChangeTime_1 (
 			OncRpcCallInformation call, Session_ABGetChangeTime_arg arg1)
 		{
-			int flags = arg1.ulFlags;
-
 			Trace.WriteLine (" ==> Session_ABGetChangeTime_1 - NOT IMPLEMENTED!");
 			var res = new Session_ABGetChangeTime_res ();
 			res.ft = new FileTime (DateTime.Today); // TODO: STUB!
@@ -229,8 +227,6 @@ namespace NMapi.Server {
 		public override Session_ABGetUserList_res Session_ABGetUserList_1 (
 			OncRpcCallInformation call, Session_ABGetUserList_arg arg1)
 		{
-			int flags = arg1.ulFlags;
-
 			Trace.WriteLine (" ==> Session_ABGetUserList_1 - NOT IMPLEMENTED!");
 			var res = new Session_ABGetUserList_res (); // STUB
 			

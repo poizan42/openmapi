@@ -76,7 +76,6 @@ namespace NMapi.Server {
 			
 			internal void ProcessEvent ()
 			{
-				XdrVoid result = new XdrVoid ();
 				ClientEvent ev = null;
 				lock (queue) {
 					if (queue.Count != 0)

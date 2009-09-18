@@ -71,7 +71,7 @@ namespace CompactTeaSharp.Mlog
 				.Add ("ns=|namespace=", ns => { namespaceName = ns; })
 				.Add ("constName=", cs => { constName = cs; });
 				
-			List<string> rest = p.Parse (args);
+			p.Parse (args);
 
 			this.clientName = constName + "Client";
 			this.serverName = constName + "ServerStub";

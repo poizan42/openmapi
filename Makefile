@@ -1,7 +1,10 @@
 #!/usr/bin/make
 
+LANG=en_US.UTF-8
+
 MONO = mono
-MCS = gmcs
+MCS = gmcs 
+
 MLOG = $(MONO) bin/mlog.exe
 XSLTPROC = xsltproc
 MONODOCER = monodocer
@@ -9,8 +12,11 @@ MONODOCS2HTML = monodocs2html
 PREPROC = $(MONO) bin/preproc.exe
 MAPIMAP = $(MONO) --debug bin/mapimap.exe
 
-#0612,0618
-NO_WARN=1591
+# Ignore warnings:
+# - if a sourcefile is specified multiple times (CS2002)
+# - if missing XML comment for publicly visible type or member 'Type_or_Member' (CS1591)
+# 0612,0618
+NO_WARN=2002,1591
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
@@ -39,6 +45,7 @@ NMAPI_GENERATED_SOURCES = \
 #		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
 #		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
 #		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
+TEST_SOURCES = $(shell find tests -name "*.cs")
 
 CECILDLL = bin/Mono.Cecil.dll
 NMAPIDLL = bin/NMapi.dll
@@ -49,6 +56,9 @@ PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
 CUPDLL = bin/cup.dll
 
 all: code
+
+check-warnings: clean
+	$(MAKE) all 2>&1| awk ' BEGIN{a=0}{print $$0} /^Compilation succeeded - ..* warning/{a = a + $$4;} END{printf("\n\n"); print "TOTAL NUMBER OF WARNINGS: " a;}'
 	
 allwithdocs: code docs
 
@@ -357,13 +367,13 @@ mapitool: $(NMAPIDLL)
 # Tests
 #
 
-bin/NMapi.Test.dll: $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
+bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:$(NMAPIDLL) /r:bin/nmapisvr.exe \
 	/r:$(PTXCDLL) /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
 	/r:System.Web.dll \
-	`find tests -name "*.cs"` $(TEST_SOURCES)
+	$(TEST_SOURCES)
 
 testlib: bin/NMapi.Test.dll
 

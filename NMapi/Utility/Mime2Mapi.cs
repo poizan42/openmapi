@@ -45,7 +45,6 @@ namespace NMapi.Utility {
 		public const string MimeMapi_Constant_HTML_only_Text_content = 
 			"OpenMAPI IMAPGateway, default Text when Mime representation didn't provide any text/plain component but only text/html. This is to make sure this text will not be detected by accident: e82948746629f0589bba8bd8bdec93f2e781d9423";
 
-		IMsgStore store;
 		bool prBodyFilled;
 		bool prRtfFilled;
 
@@ -339,7 +338,6 @@ namespace NMapi.Utility {
 		private void MimeToMapiAttachments (MimePart mm, IMessage im, List<PropertyValue> props) 
 		{
 			UnicodeProperty uprop = null;
-			String8Property sprop = null;
 			string charset = null;
 			Console.WriteLine ("MimeToMapiAttachments ct = " + mm.ContentType);		
 
@@ -576,9 +574,8 @@ namespace NMapi.Utility {
 		private void MimeToMapiEmbeddedMessages (MimeMessage mm, IMessage im, List<PropertyValue> props) 
 		{
 			UnicodeProperty uprop = null;
-			String8Property sprop = null;
-			string charset = null;
-			Console.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
+			
+         Console.WriteLine ("MimeToMapiEmbeddedMessages ct = " + mm.ContentType);		
 
 			// get the subject name here, as the subject header is being removed in the process of StoreMimeMessage
 			string name = mm.GetSubject ();

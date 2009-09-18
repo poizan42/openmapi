@@ -85,7 +85,7 @@ namespace NMapi.Tools.Shell {
 						string fieldName = tmp [1];
 						propTag = state.PropertyLookup.GetValue (typeName, fieldName);
 					}
-				} catch (Exception e) {
+				} catch {
 					driver.WriteLine ("Invalid/unregistered Property!");
 					return;
 				}

@@ -170,7 +170,7 @@ namespace NMapi {
 						if (current.PropTag == Property.EntryId)
 							return (SBinary) current;
 				}
-			} catch (Exception e) {
+			} catch {
 				// suppress exception...
 			}
 			return null;		

@@ -187,7 +187,7 @@ namespace NMapi.Format.Mime
 		/// Get the type of a parameter, e.g. "multipart" in "Content-Type: multipart/mixed"
 		/// </summary>
 		/// <returns></returns>
-		public String GetType ()
+		public new String GetType ()
 		{
 			HeaderTokenizer ht = new HeaderTokenizer (value, HeaderTokenizer.MIME);
 			HeaderTokenizer.Token token;
