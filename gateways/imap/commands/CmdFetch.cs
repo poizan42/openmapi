@@ -71,6 +71,9 @@ namespace NMapi.Gateways.IMAP {
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 				Log (e.StackTrace);
 			}
+			finally {
+				ResetCurrentMessage ();
+			}
 			return;
 		}
 
@@ -139,7 +142,7 @@ namespace NMapi.Gateways.IMAP {
 								SequenceNumberListItem snli;
 								snli = slq.Find ((a) => uid == a.UID);
 								if (snli != null) { 
-									currentMessage = null; //reset currentMessage
+									ResetCurrentMessage ();
 									currentSNLI = snli;
 									
 									BuildFetchResponseRow (command, snli, row.Props);
@@ -157,7 +160,7 @@ namespace NMapi.Gateways.IMAP {
 				// read each item
 				PropertyValue [] pv = null;
 				foreach (SequenceNumberListItem snli in slq) {
-					currentMessage = null; //reset currentMessage
+					ResetCurrentMessage ();
 					currentSNLI = snli;
 
 					if (readRequired) {
@@ -480,7 +483,7 @@ namespace NMapi.Gateways.IMAP {
 			r.AddResponseItem (fetchItems);
 			state.ResponseManager.AddResponse (r);
 
-			if (currentMessage != null) currentMessage.Dispose ();
+			ResetCurrentMessage ();
 
 			return r;
 		}
@@ -497,6 +500,13 @@ namespace NMapi.Gateways.IMAP {
 			return GetMessage (currentSNLI);
 		}
 		
+		private void ResetCurrentMessage () {
+			if (currentMessage != null)
+				currentMessage.Dispose ();
+			currentMessage = null; //reset currentMessage
+			currentSNLI = null;
+		}
+
 		public ResponseItemList Flags (SequenceNumberListItem snli, PropertyHelper propertyHelper)
 		{
 //			return new FlagHelper (snli, propertyHelper).ResponseItemListFromFlags ();
