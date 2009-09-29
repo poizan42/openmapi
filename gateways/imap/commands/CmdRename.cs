@@ -46,6 +46,9 @@ namespace NMapi.Gateways.IMAP {
 
 		public override void Run (Command command)
 		{
+			IMapiFolder destFolder = null;
+			IMapiFolder parent = null;
+
 			try {
 				// check arguments
 				if (command.Mailbox1 == command.Mailbox2) {
@@ -70,10 +73,7 @@ namespace NMapi.Gateways.IMAP {
 				string destFolderName = PathHelper.GetLast (destPath);
 
 				// try to open folders
-				IMapiFolder destFolder = null;
 				destFolder = ServCon.FolderHelper.OpenFolder (destParentPath);
-
-				IMapiFolder parent = null;
 				parent = ServCon.FolderHelper.OpenFolder (srcPath);
 
 				SBinary entryId = null;
@@ -85,7 +85,7 @@ namespace NMapi.Gateways.IMAP {
 					entryId = ((BinaryProperty) prop).Value;
 
 					// close parent (which in fact was source) and open source parent
-					parent.Close ();
+					parent.Dispose ();
 					parent = ServCon.FolderHelper.OpenFolder (srcParentPath);
 
 					// move folder to destination, use unicode-flag to make sure the name doesn't get garbled
@@ -105,6 +105,10 @@ namespace NMapi.Gateways.IMAP {
 				// XXX better error handling would be nice
 				state.ResponseManager.AddResponse (new Response (ResponseState.NO, Name, command.Tag).AddResponseItem (e.Message, ResponseItemMode.ForceAtom));
 				Log (e.StackTrace);
+			}
+			finally {
+				if (destFolder != null) destFolder.Dispose ();
+				if (parent != null) parent.Dispose ();
 			}
 		}
 	}

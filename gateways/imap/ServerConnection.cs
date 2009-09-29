@@ -218,34 +218,44 @@ state.Log ("Server1");
 				IMapiFolder folder = null;
 				IMapiFolder prevFolder = null;
 
-				byte[] prevEId = new byte[0];
-				List<string> inboxPathEls = new List<string> ();
-				state.Log ("setrootdir 1");
-				
-				while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
-					state.Log ("setrootdir 2");
-					prevFolder = folder;
-					folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray, null, Mapi.Unicode);
-					MapiPropHelper folderHelper = new MapiPropHelper (folder);
-					UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
-					string displayName = (propDisplayName != null) ? propDisplayName.Value : null;
-						
-					state.Log (folder.GetType ().ToString ());
-					state.Log (displayName);
-					state.Log ("setrootdir 3");
+					try {
+
+					byte[] prevEId = new byte[0];
+					List<string> inboxPathEls = new List<string> ();
+					state.Log ("setrootdir 1");
 					
-					prevEId = eId.Value.ByteArray;
-					if (folder != null) {
-						inboxPathEls.Add (displayName);
-						eId = (BinaryProperty) folderHelper.HrGetOnePropNull (Property.ParentEntryId);
-state.Log ("setrootdir 4");
+					while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
+						state.Log ("setrootdir 2");
+						if (prevFolder != null)
+							prevFolder.Dispose ();
+						prevFolder = folder;
+						folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray, null, Mapi.Unicode);
+						MapiPropHelper folderHelper = new MapiPropHelper (folder);
+						UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
+						string displayName = (propDisplayName != null) ? propDisplayName.Value : null;
+							
+						state.Log (folder.GetType ().ToString ());
+						state.Log (displayName);
+						state.Log ("setrootdir 3");
+						
+						prevEId = eId.Value.ByteArray;
+						if (folder != null) {
+							inboxPathEls.Add (displayName);
+							eId = (BinaryProperty) folderHelper.HrGetOnePropNull (Property.ParentEntryId);
+	state.Log ("setrootdir 4");
+						}
 					}
-				}
-				if (prevFolder != null) {
-					PropertyValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
-					rootDir = PathHelper.PathSeparator + ((UnicodeProperty) dir).Value;
-					inboxPath = PathHelper.Array2Path (inboxPathEls.Take (inboxPathEls.Count - 2).Reverse ().ToArray ());
-					return;
+					if (prevFolder != null) {
+						PropertyValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
+						rootDir = PathHelper.PathSeparator + ((UnicodeProperty) dir).Value;
+						inboxPath = PathHelper.Array2Path (inboxPathEls.Take (inboxPathEls.Count - 2).Reverse ().ToArray ());
+						return;
+					}
+				} finally {
+					if (prevFolder != null)
+						prevFolder.Dispose ();
+					if (folder != null)
+						folder.Dispose ();
 				}
 			}
 			rootDir = "";

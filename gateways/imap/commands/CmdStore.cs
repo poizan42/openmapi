@@ -68,25 +68,27 @@ namespace NMapi.Gateways.IMAP {
 					Log (e.StackTrace);
 				}
 
-				using (msg) {
-					fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
-					msg.SaveChanges (NMAPI.FORCE_SAVE);
-				}
-
-				if (command.Flag_key != "FLAGS.SILENT") {
-					Response resp = new Response (ResponseState.NONE, "FETCH");
-					resp.Val = new ResponseItemText (ServCon.FolderHelper.SequenceNumberList.IndexOfSNLI(snli).ToString ());
-					ResponseItemList respFlags = new ResponseItemList ();
-					respFlags.AddResponseItem ("FLAGS");
-					respFlags.AddResponseItem (fh.ResponseItemListFromFlags ());
-					if (command.UIDCommand) {
-						// return uids
-						respFlags.AddResponseItem ("UID");
-						respFlags.AddResponseItem (snli.UID.ToString ());
+				if (msg != null) {
+					using (msg) {
+						fh.SaveFlagsIntoIMessage (msg, state.ServerConnection);
+						msg.SaveChanges (NMAPI.FORCE_SAVE);
 					}
-					resp.AddResponseItem (respFlags);
-					state.ResponseManager.AddResponse (resp);
-				}				
+	
+					if (command.Flag_key != "FLAGS.SILENT") {
+						Response resp = new Response (ResponseState.NONE, "FETCH");
+						resp.Val = new ResponseItemText (ServCon.FolderHelper.SequenceNumberList.IndexOfSNLI(snli).ToString ());
+						ResponseItemList respFlags = new ResponseItemList ();
+						respFlags.AddResponseItem ("FLAGS");
+						respFlags.AddResponseItem (fh.ResponseItemListFromFlags ());
+						if (command.UIDCommand) {
+							// return uids
+							respFlags.AddResponseItem ("UID");
+							respFlags.AddResponseItem (snli.UID.ToString ());
+						}
+						resp.AddResponseItem (respFlags);
+						state.ResponseManager.AddResponse (resp);
+					}				
+				}
 			}
 
 			state.AddExistsRequestDummy ();

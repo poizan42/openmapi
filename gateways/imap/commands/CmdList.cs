@@ -164,10 +164,13 @@ namespace NMapi.Gateways.IMAP {
 			using (tableReader) {
 
 				while (true) {
+					
 					RowSet rows = tableReader.GetRows (30);
 					if (rows.Count == 0)
 						break;
+					
 					int nameIndex = -1;
+					
 					foreach (Row row in rows) {
 						if (nameIndex == -1)
 							nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);

@@ -166,7 +166,11 @@ namespace NMapi.Test
 		[Test]
 		public void FileTimePropertyTest ()
 		{
-			// TODO
+			var p1 = new FileTimeProperty ();
+			p1.Value = new FileTime (new DateTime (1970, 1, 1, 0, 0, 0, 0));
+			var p2 = new FileTimeProperty ();
+			p2.Value = new FileTime (new DateTime (1971, 1, 1, 0, 0, 0, 0));
+			AssertFirstSmaller (p1, p2);
 		}
 		
 		[Test]

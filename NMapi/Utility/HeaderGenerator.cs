@@ -191,13 +191,23 @@ namespace NMapi.Utility {
 			}
 			return true;
 		}
+		
+		
+		private IMapiTableReader GetRecipientTable () {
+			IMessage msg = GetMessage();
+			IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode);
+
+			// !! Dispose msg if required
+			if (msg != this.msg)
+				msg.Dispose ();
+				
+			return mtr;			
+		}
 
 		public bool DoRecipients ()
 		{
 			Trace.WriteLine ("doRecipients ");				
-			IMessage msg = GetMessage();
-			using (IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode)) {
-	//			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
+			using (IMapiTableReader mtr = GetRecipientTable()) {
 				RowSet rs = mtr.GetRows (20);
 				while (rs.Count () > 0) {
 					Trace.WriteLine ("doRecipients 1");
