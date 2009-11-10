@@ -139,6 +139,10 @@ namespace NMapi.Flags {
 		public const int DispidCCAttendeesString  = 0x823C;
 		public const int DispidNetMeeting         = 0x8241;
 
+		// by froth
+		//
+		public const int DispidReminderMinutesBeforeStart = 0x8501;
+
 		// by r. doering
 		public const int DispidRecurringEventTimezone = 0x8233;
 
