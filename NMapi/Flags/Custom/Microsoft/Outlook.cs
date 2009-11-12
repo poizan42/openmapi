@@ -158,6 +158,7 @@ namespace NMapi.Flags {
 		public const int DispidTaskActualEffort    = 0x8110;
 		public const int DispidTaskEstimatedEffort = 0x8111;
 		public const int DispidTaskFRecur          = 0x8126;
+		public const int DispidTaskComplete        = 0x811C;
 
 		public static readonly NMapiGuid PSETID_Address = Guids.DefineOleGuid (
 					0x00062004, (short) 0x0000, (short) 0x0000);
