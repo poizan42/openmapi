@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - Sensivity.cs
+// openmapi.org - NMapi C# Mapi API - Sensitivity.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -36,7 +36,7 @@ namespace NMapi.Flags {
 	/// <summary>
 	///  
 	/// </summary>
-	public enum Sensivity
+	public enum Sensitivity
 	{
 		//  PR_SENSITIVITY values
 
