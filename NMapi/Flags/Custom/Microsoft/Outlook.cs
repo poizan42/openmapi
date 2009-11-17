@@ -139,6 +139,11 @@ namespace NMapi.Flags {
 		public const int DispidCCAttendeesString  = 0x823C;
 		public const int DispidNetMeeting         = 0x8241;
 
+		// by froth
+		//
+		public const int DispidReminderMinutesBeforeStart = 0x8501;
+		public const int DispidReminderTime = 0x8502;
+
 		// by r. doering
 		public const int DispidRecurringEventTimezone = 0x8233;
 
@@ -154,6 +159,7 @@ namespace NMapi.Flags {
 		public const int DispidTaskActualEffort    = 0x8110;
 		public const int DispidTaskEstimatedEffort = 0x8111;
 		public const int DispidTaskFRecur          = 0x8126;
+		public const int DispidTaskComplete        = 0x811C;
 
 		public static readonly NMapiGuid PSETID_Address = Guids.DefineOleGuid (
 					0x00062004, (short) 0x0000, (short) 0x0000);
