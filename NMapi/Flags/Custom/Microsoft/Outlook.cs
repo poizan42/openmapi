@@ -142,6 +142,7 @@ namespace NMapi.Flags {
 		// by froth
 		//
 		public const int DispidReminderMinutesBeforeStart = 0x8501;
+		public const int DispidReminderTime = 0x8502
 
 		// by r. doering
 		public const int DispidRecurringEventTimezone = 0x8233;
