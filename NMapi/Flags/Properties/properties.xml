@@ -263,6 +263,7 @@
 	<property name="OriginallyIntendedRecipEntryId" type="Binary" id="0x1012" />
 
 	<property name="AttributeHidden" type="Boolean" id="0x10F4" />
+	<property name="IconIndex" type="Int32" id="0x1080" />
 
 	<!--
 		Message recipient
