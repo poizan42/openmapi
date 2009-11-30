@@ -36,35 +36,33 @@ using NMapi.Table;
 
 namespace NMapi {
 
-	// TODO: Refactor this class -- or even better remove it in favor of "DateTime".
-
 	/// <summary>
 	///  
 	/// </summary>
 	public partial class FileTime : IComparable
 	{
-		private const long TICKSPERSEC = 10000000L;
-		private const long SECSPERDAY = 86400;
-		// 1601 to 1970 is 369 years plus 89 leap days
-		private const long SECS_1601_TO_1970 = ((369 * 365 + 89) * SECSPERDAY);
-		private const long TICKS_1601_TO_1970 = (SECS_1601_TO_1970 * TICKSPERSEC);
-		private const long l32 = 0x100000000L;
-
 		/// <summary>
 		///
 		/// </summary>
 		public FileTime (DateTime d)
 		{
-			// this can be done with more precision ...
-			DateTime origin = new DateTime (1970, 1, 1, 0, 0, 0, 0);
-			TimeSpan diff = d - origin;
-			long timestamp = Convert.ToInt64 (Math.Floor (diff.TotalSeconds));
-
-			long l = timestamp * TICKSPERSEC + TICKS_1601_TO_1970;
-
-			dwHighDateTime = (int) (l >> 32);
-			dwLowDateTime  = (int) (l & 0xffffffffL);
+            LongValue = d.ToFileTime();
 		}
+
+		/// <summary>
+		///  Get/Set the 64bit long value
+		/// </summary>
+        public long LongValue
+        {
+			get {
+                return (((long)dwHighDateTime << 32) | (long) dwLowDateTime & 0xffffffffL);
+            }
+
+            set {
+                dwHighDateTime = (int) (value >> 32);
+                dwLowDateTime  = (int) (value & 0xffffffffL);
+            }
+        }
 
 		/// <summary>
 		///  Gets a DateTime structure from a FileTime.
@@ -72,15 +70,9 @@ namespace NMapi {
 		public DateTime DateTime
 		{
 			get {
-				// this can be done with more precision ...
-				long l = ((((long)dwHighDateTime << 32) | 
-						(long) dwLowDateTime & 0xffffffffL) - 
-						TICKS_1601_TO_1970)/TICKSPERSEC;
-				DateTime origin = new DateTime (1970, 1, 1, 0, 0, 0, 0);
-				return origin.AddSeconds (l);
+                return DateTime.FromFileTime (LongValue);
 			}
 		}
-		
 		
 		/// <summary>
 		///  Implementation of the IComparable interface.
@@ -89,7 +81,9 @@ namespace NMapi {
 		{
 			if (!(obj is FileTime))
 				throw new ArgumentException ("Not a FileTime object.");
-			return DateTime.CompareTo (((FileTime) obj).DateTime);
+            FileTime other = (FileTime) obj;
+            return (dwHighDateTime == other.dwHighDateTime) ?
+                (dwLowDateTime - other.dwLowDateTime) : (dwHighDateTime - other.dwHighDateTime);
 		}
 		
 		
