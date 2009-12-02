@@ -21,7 +21,7 @@
 // License along with this software; if not, write to the Free
 // Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-//	
+//
 //-->
 
 <definitions>
@@ -70,21 +70,21 @@
 				<boolGate type="RowEntry">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPMapiNameId">
 			<declare type="MapiNameId" constrarg="true">Value</declare>
 			<both>
 				<boolGate static="true" type="MapiNameId">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPSPropValue">
 			<declare type="PropertyValue" constrarg="true">Value</declare>
 			<both>
 				<boolGate static="true" type="PropertyValue">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPNotification">
 			<declare type="Notification" constrarg="true">Value</declare>
 			<both>
@@ -92,7 +92,7 @@
 			</both>
 		</class>
 	</namespace>
-	
+
 	<namespace name="NMapi">
 		<class id="AdrEntry">
 			<declare type="int">Reserved1</declare>
@@ -147,13 +147,13 @@
 				<opaque length="8">Data4</opaque>
 			</both>
 		</class>
-	
+
 		<class id="LongLong">
 			<declare type="long" privName="value" constrarg="true">Value</declare>
 			<both>
 				<long>value</long>
 			</both>
-		</class>	
+		</class>
 	</namespace>
 
 
@@ -217,7 +217,7 @@
 				<int>ulPropTag2</int>
 			</decode>
 		</class>
-	
+
 		<class id="ContentRestriction" inherits="Restriction">
 			<declare type="FuzzyLevel" privName="ulFuzzyLevel">FuzzyLevel</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
@@ -281,7 +281,7 @@
 			<declare type="Restriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.Or</int> <!-- SPECIAL //-->
-				<countedSizeArray type="Restriction">lpRes</countedSizeArray>			
+				<countedSizeArray type="Restriction">lpRes</countedSizeArray>
 			</encode>
 			<decode>
 				<code>
@@ -342,7 +342,7 @@
 				<boolGate static="true" type="Restriction">lpRes</boolGate>
 			</decode>
 		</class>
-		
+
 		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
 		<class id="AnnotationRestriction" inherits="Restriction">
 			<declare type="Restriction" privName="lpRes">Res</declare>
@@ -357,10 +357,10 @@
 				<boolGate static="true" type="Restriction">lpRes</boolGate>
 			</decode>
 		</class>
-		
+
 		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
 		<class id="CountRestriction" inherits="Restriction">
-			<declare type="int" privName="ulCount">Count</declare>			
+			<declare type="int" privName="ulCount">Count</declare>
 			<declare type="Restriction" privName="lpRes">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.Count</int> <!-- SPECIAL //-->
@@ -381,7 +381,7 @@
 				<int cast="true" castTo="TableSort">ulOrder</int>
 			</both>
 		</class>
-		
+
 	</namespace>
 
 	<namespace name="NMapi.Properties">
@@ -393,7 +393,7 @@
 			</both>
 		</class>
 
-		<class id="IntProperty" inherits="PropertyValue">
+		<class id="IntProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="l" constrarg="true">Value</declare>
 			<both>
 				<int>l</int>
@@ -413,21 +413,21 @@
 				<double>dbl</double>
 			</both>
 		</class>
-	
+
 		<class id="CurrencyProperty" inherits="PropertyValue">
 			<declare type="long" privName="cur" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LongLong">cur</wrapped>
 			</both>
 		</class>
-	
+
 		<class id="AppTimeProperty" inherits="PropertyValue">
 			<declare type="double" privName="at" constrarg="true">Value</declare>
 			<both>
 				<double>at</double>
 			</both>
 		</class>
-	
+
 		<class id="ErrorProperty" inherits="PropertyValue">
 			<declare type="int" privName="err" constrarg="true">Value</declare>
 			<both>
@@ -435,7 +435,7 @@
 			</both>
 		</class>
 
-		<class id="BooleanProperty" inherits="PropertyValue">
+		<class id="BooleanProperty" inherits="PropertyValue, IPropertyValue &lt;short&gt;">
 			<declare type="short" privName="b" constrarg="true">Value</declare>
 			<both>
 				<short>b</short>
@@ -463,14 +463,14 @@
 			</both>
 		</class>
 
-		<class id="UnicodeProperty" inherits="PropertyValue">
+		<class id="UnicodeProperty" inherits="PropertyValue, IPropertyValue &lt;string&gt;">
 			<declare type="string" privName="lpszW" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="UnicodeAdapter">lpszW</wrapped>
 			</both>
 		</class>
-	
-		<class id="FileTimeProperty" inherits="PropertyValue">
+
+		<class id="FileTimeProperty" inherits="PropertyValue, IPropertyValue &lt;FileTime&gt;">
 			<declare type="FileTime" privName="ft" constrarg="true">Value</declare>
 			<both>
 				<complex type="FileTime">ft</complex>
@@ -483,8 +483,8 @@
 				<wrapped in="LPGuid">lpguid</wrapped>
 			</both>
 		</class>
-	
-		<class id="BinaryProperty" inherits="PropertyValue">
+
+		<class id="BinaryProperty" inherits="PropertyValue, IPropertyValue &lt;SBinary&gt;">
 			<declare type="SBinary" privName="bin" constrarg="true">Value</declare>
 			<both>
 				<complex type="SBinary">bin</complex>
@@ -553,7 +553,7 @@
 				<wrappedCountedSizeArray type="string" in="StringAdapter">MVsza</wrappedCountedSizeArray>
 			</both>
 		</class>
-	
+
 		<class id="UnicodeArrayProperty" inherits="PropertyValue">
 			<declare type="string" isArray="true" privName="MVszW" constrarg="true">Value</declare>
 			<both>
@@ -574,7 +574,7 @@
 				<wrappedCountedSizeArray type="long" in="LongLong">MVli</wrappedCountedSizeArray>
 			</both>
 		</class>
-	
+
 		<class id="XProperty" inherits="PropertyValue">
 			<declare type="int" privName="x" constrarg="true">Value</declare>
 			<both>
@@ -595,14 +595,14 @@
 				<int>lID</int>
 			</both>
 		</class>
-		
+
 		<class id="StringMapiNameId" inherits="MapiNameId">
 			<declare type="string" privName="lpwstrName" constrarg="true">StrName</declare>
 			<both>
 				<wrapped in="UnicodeAdapter">lpwstrName</wrapped>
 			</both>
 		</class>
-		
+
 		<class id="PropertyProblem">
 			<declare type="int" privName="ulIndex">Index</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
@@ -614,10 +614,10 @@
 			</both>
 		</class>
 	</namespace>
-	
-	
+
+
 	<namespace name="NMapi.Events">
-			
+
 		<class id="ErrorNotification" inherits="Notification">
 			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
 			<declare type="int" privName="scode">SCode</declare>
@@ -650,7 +650,7 @@
 				</code>
 			</decode>
 		</class>
-		
+
 		<class id="ExtendedNotification" inherits="Notification">
 			<declare type="int" privName="ulEvent">Event</declare>
 			<declare type="byte" isArray="true" privName="pbEventParameters">EventParameters</declare>
@@ -695,7 +695,7 @@
 				<int>ulMessageFlags</int>
 			</decode>
 		</class>
-		
+
 		<class id="ObjectNotification" inherits="Notification">
 			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
 			<declare type="int" privName="ulObjType">ObjType</declare>
@@ -721,7 +721,7 @@
 				<countedSizeArray static="true" type="PropertyValue">lpPropVals</countedSizeArray>
 			</both>
 		</class>
-		
+
 		<class id="TableNotification" inherits="Notification">
 			<declare type="TableNotificationType" privName="ulTableEvent">TableEvent</declare>
 			<declare type="int" privName="hResult">HResult</declare>
@@ -736,6 +736,8 @@
 				<complex type="Row">row</complex>
 			</both>
 		</class>
-		
+
 	</namespace>
 </definitions>
+
+<!-- vi:set noexpandtab: -->
