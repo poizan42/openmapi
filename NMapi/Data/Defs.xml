@@ -386,7 +386,7 @@
 
 	<namespace name="NMapi.Properties">
 
-		<class id="ShortProperty" inherits="PropertyValue">
+		<class id="ShortProperty" inherits="PropertyValue, IPropertyValue &lt;short&gt;">
 			<declare type="short" privName="i" constrarg="true">Value</declare>
 			<both>
 				<short>i</short>
@@ -400,35 +400,35 @@
 			</both>
 		</class>
 
-		<class id="FloatProperty" inherits="PropertyValue">
+		<class id="FloatProperty" inherits="PropertyValue, IPropertyValue &lt;float&gt;">
 			<declare type="float" privName="flt" constrarg="true">Value</declare>
 			<both>
 				<float>flt</float>
 			</both>
 		</class>
 
-		<class id="DoubleProperty" inherits="PropertyValue">
+		<class id="DoubleProperty" inherits="PropertyValue, IPropertyValue &lt;double&gt;">
 			<declare type="double" privName="dbl" constrarg="true">Value</declare>
 			<both>
 				<double>dbl</double>
 			</both>
 		</class>
 
-		<class id="CurrencyProperty" inherits="PropertyValue">
+		<class id="CurrencyProperty" inherits="PropertyValue, IPropertyValue &lt;long&gt;">
 			<declare type="long" privName="cur" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LongLong">cur</wrapped>
 			</both>
 		</class>
 
-		<class id="AppTimeProperty" inherits="PropertyValue">
+		<class id="AppTimeProperty" inherits="PropertyValue, IPropertyValue &lt;double&gt;">
 			<declare type="double" privName="at" constrarg="true">Value</declare>
 			<both>
 				<double>at</double>
 			</both>
 		</class>
 
-		<class id="ErrorProperty" inherits="PropertyValue">
+		<class id="ErrorProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="err" constrarg="true">Value</declare>
 			<both>
 				<int>err</int>
@@ -442,21 +442,21 @@
 			</both>
 		</class>
 
-		<class id="ObjectProperty" inherits="PropertyValue">
+		<class id="ObjectProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="x" constrarg="true">Value</declare>
 			<both>
 				<int>x</int>
 			</both>
 		</class>
 
-		<class id="LongProperty" inherits="PropertyValue">
+		<class id="LongProperty" inherits="PropertyValue, IPropertyValue &lt;long&gt;">
 			<declare type="long" privName="li" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LongLong">li</wrapped>
 			</both>
 		</class>
 
-		<class id="String8Property" inherits="PropertyValue">
+		<class id="String8Property" inherits="PropertyValue, IPropertyValue &lt;string&gt;">
 			<declare type="string" privName="lpszA" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="StringAdapter">lpszA</wrapped>
@@ -477,7 +477,7 @@
 			</both>
 		</class>
 
-		<class id="GuidProperty" inherits="PropertyValue">
+		<class id="GuidProperty" inherits="PropertyValue, IPropertyValue &lt;NMapiGuid&gt;">
 			<declare type="NMapiGuid" privName="lpguid" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LPGuid">lpguid</wrapped>
@@ -491,91 +491,91 @@
 			</both>
 		</class>
 
-		<class id="ShortArrayProperty" inherits="PropertyValue">
+		<class id="ShortArrayProperty" inherits="PropertyValue, IPropertyValue &lt;short []&gt;">
 			<declare type="short" isArray="true" privName="MVi" constrarg="true">Value</declare>
 			<both>
 				<shortVector>MVi</shortVector>
 			</both>
 		</class>
 
-		<class id="IntArrayProperty" inherits="PropertyValue">
+		<class id="IntArrayProperty" inherits="PropertyValue, IPropertyValue &lt;int []&gt;">
 			<declare type="int" isArray="true" privName="MVl" constrarg="true">Value</declare>
 			<both>
 				<intVector>MVl</intVector>
 			</both>
 		</class>
 
-		<class id="FloatArrayProperty" inherits="PropertyValue">
+		<class id="FloatArrayProperty" inherits="PropertyValue, IPropertyValue &lt;float []&gt;">
 			<declare type="float" isArray="true" privName="MVflt" constrarg="true">Value</declare>
 			<both>
 				<floatVector>MVflt</floatVector>
 			</both>
 		</class>
 
-		<class id="DoubleArrayProperty" inherits="PropertyValue">
+		<class id="DoubleArrayProperty" inherits="PropertyValue, IPropertyValue &lt;double []&gt;">
 			<declare type="double" isArray="true" privName="MVdbl" constrarg="true">Value</declare>
 			<both>
 				<doubleVector>MVdbl</doubleVector>
 			</both>
 		</class>
 
-		<class id="CurrencyArrayProperty" inherits="PropertyValue">
+		<class id="CurrencyArrayProperty" inherits="PropertyValue, IPropertyValue &lt;long []&gt;">
 			<declare type="long" isArray="true" privName="MVcur" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="long" in="LongLong">MVcur</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="AppTimeArrayProperty" inherits="PropertyValue">
+		<class id="AppTimeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;double []&gt;">
 			<declare type="double" isArray="true" privName="MVat" constrarg="true">Value</declare>
 			<both>
 				<doubleVector>MVat</doubleVector>
 			</both>
 		</class>
 
-		<class id="FileTimeArrayProperty" inherits="PropertyValue">
+		<class id="FileTimeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;FileTime []&gt;">
 			<declare type="FileTime" isArray="true" privName="MVft" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="FileTime">MVft</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="BinaryArrayProperty" inherits="PropertyValue">
+		<class id="BinaryArrayProperty" inherits="PropertyValue, IPropertyValue &lt;SBinary []&gt;">
 			<declare type="SBinary" isArray="true" privName="MVbin" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="SBinary">MVbin</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="String8ArrayProperty" inherits="PropertyValue">
+		<class id="String8ArrayProperty" inherits="PropertyValue, IPropertyValue &lt;string []&gt;">
 			<declare type="string" isArray="true" privName="MVsza" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="string" in="StringAdapter">MVsza</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="UnicodeArrayProperty" inherits="PropertyValue">
+		<class id="UnicodeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;string []&gt;">
 			<declare type="string" isArray="true" privName="MVszW" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="string" in="UnicodeAdapter">MVszW</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="GuidArrayProperty" inherits="PropertyValue">
+		<class id="GuidArrayProperty" inherits="PropertyValue, IPropertyValue &lt;NMapiGuid []&gt;">
 			<declare type="NMapiGuid" isArray="true" privName="MVguid" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="NMapiGuid">MVguid</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="LongArrayProperty" inherits="PropertyValue">
+		<class id="LongArrayProperty" inherits="PropertyValue, IPropertyValue &lt;long []&gt;">
 			<declare type="long" isArray="true" privName="MVli" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="long" in="LongLong">MVli</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="XProperty" inherits="PropertyValue">
+		<class id="XProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="x" constrarg="true">Value</declare>
 			<both>
 				<int>x</int>
