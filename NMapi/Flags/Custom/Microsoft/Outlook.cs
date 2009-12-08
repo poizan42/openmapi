@@ -144,6 +144,7 @@ namespace NMapi.Flags {
 		public const int DispidReminderMinutesBeforeStart = 0x8501;
 		public const int DispidReminderTime = 0x8502;
 		public const int DispidPrivate = 0x8506;
+		public const int DispidDateCompleted = 0x810f;
 
 		// by r. doering
 		public const int DispidRecurringEventTimezone = 0x8233;
