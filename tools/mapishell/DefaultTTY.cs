@@ -32,7 +32,7 @@ namespace NMapi.Tools.Shell {
 	{
 		public static void Main (string[] args)
 		{
-			LineEditor editor = new LineEditor ("MapiShell");
+			LineEditor editor = new LineEditor ("MapiShell", 300);
 
 			Driver driver = new Driver (args);
 			Thread driverThread = new Thread (new ThreadStart (driver.Start));
@@ -40,9 +40,11 @@ namespace NMapi.Tools.Shell {
 
 			driver.WaitUntilInput ();
 
-			string input = String.Empty;
+			string input = null;
 			while (true) {
 				input = editor.Edit (driver.CurrentPrefix, String.Empty);
+				if (input == null) // Exit on EOF
+					input = "quit";
 				driver.PutInputAndWait (input);
 			}
 
