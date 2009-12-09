@@ -142,7 +142,6 @@ namespace NMapi.Flags {
 		// by froth
 		//
 		public const int DispidReminderMinutesBeforeStart = 0x8501;
-		public const int DispidReminderTime = 0x8502;
 		public const int DispidPrivate = 0x8506;
 		public const int DispidDateCompleted = 0x810f;
 
@@ -208,14 +207,14 @@ namespace NMapi.Flags {
 		// Known MNID_IDs
 		//
 
-		public const int DispidReminderSet      = 0x8503;
 		public const int DispidSmartNoAttach    = 0x8514;
 		public const int DispidCommonStart      = 0x8516;
 		public const int DispidCommonEnd        = 0x8517;
 		public const int DispidRequest          = 0x8530;
 		public const int DispidCompanies        = 0x8539;
 		public const int DispidReminderNextTime = 0x8560;
-
+		public const int DispidReminderSet      = 0x8503;
+		public const int DispidReminderTime     = 0x8502;
 		// by r.doering
 		public const int DispidRecurringMsgType = 0x8510;
 
