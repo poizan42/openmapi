@@ -41,7 +41,7 @@ namespace NMapi.Tools.Shell {
 		private Driver driver;
 
 		private KeyList keyList;
-		private Dictionary<string, AbstractBaseCommand> commands;
+		private SortedDictionary<string, AbstractBaseCommand> commands;
 		private TypeResolver resolver;
 		private PropertyLookup propertyLookup;
 
@@ -91,7 +91,7 @@ namespace NMapi.Tools.Shell {
 		/// <summary>
 		/// 
 		/// </summary>
-		internal Dictionary<string, AbstractBaseCommand> Commands {
+		internal SortedDictionary<string, AbstractBaseCommand> Commands {
 			get { return commands; }
 		}
 
@@ -270,7 +270,7 @@ namespace NMapi.Tools.Shell {
 
 		internal string FullPath {
 			get {
-				if (storeStr == null || storeStr == String.Empty)
+				if (store == null || storeStr == null || storeStr == String.Empty)
 					return "";
 
 				string colon = ":";
@@ -294,7 +294,7 @@ namespace NMapi.Tools.Shell {
 
 			this.resolver = new TypeResolver ();
 			this.propertyLookup = new PropertyLookup (resolver);
-			this.commands = new Dictionary<string, AbstractBaseCommand> ();
+			this.commands = new SortedDictionary<string, AbstractBaseCommand> ();
 
 			this.keyList = new KeyList (this);
 			this.variables = new Variables (this);

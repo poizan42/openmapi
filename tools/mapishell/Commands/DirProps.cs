@@ -46,7 +46,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return " List the Properties of an directory";
+				return "List the Properties of an directory";
 			}
 		}
 
