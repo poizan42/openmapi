@@ -3,7 +3,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Props.xml
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -127,6 +127,30 @@
 	<class id="NullProperty" type="Null">
 		<compare type="fixed">0</compare>
 		<getobj>null</getobj>
+	</class>
+	
+	<class id="ActionsProperty" type="Actions">
+		<compare type="code">
+		<![CDATA[
+			if (Value.Equals (((ActionsProperty) obj).Value))
+				return 0;
+			return 1; // TODO: correct?
+		]]>
+		</compare>
+		<getobj>Value</getobj>
+		<autocast>Actions</autocast>
+	</class>
+	
+	<class id="RestrictionProperty" type="Restriction">
+		<compare type="code">
+		<![CDATA[
+			if (Value.Equals (((RestrictionProperty) obj).Value))
+				return 0;
+			return 1; // TODO: correct?
+		]]>
+		</compare>
+		<getobj>Value</getobj>
+		<autocast>Restriction</autocast>
 	</class>
 
 	<class id="ShortArrayProperty" type="MvInt16">

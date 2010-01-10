@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PropertyValue.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -188,7 +188,8 @@ namespace NMapi.Properties {
 		// throws OncRpcException, IOException 
 		public static PropertyValue Decode (XdrDecodingStream xdr) 
 		{
-			Trace.WriteLine ("XdrDecode called: PropertyValue");
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: PropertyValue");
 
 			int ptag = xdr.XdrDecodeInt ();
 			Trace.WriteLine ("DEBUG (ptag): " + ptag.ToString ("X"));
@@ -198,7 +199,13 @@ namespace NMapi.Properties {
 			return prop;
 		}
 		
-		
+		public static ErrorProperty MakeErrorProperty (PropertyTag tag, int errorCode)
+		{
+			var errorProp = new ErrorProperty ();
+			errorProp.PropTag = tag.AsType (PropertyType.Error).Tag;
+			errorProp.Value = errorCode;
+			return errorProp;
+		}
 		
 		
 		
@@ -335,6 +342,21 @@ namespace NMapi.Properties {
 		
 		
 		/// <summary>
+		///  Valid for FileTimeProperty
+		/// </summary>
+		public static explicit operator DateTime (PropertyValue p)
+		{
+			if (p is FileTimeProperty) {
+				if (p.GetValueObj () == null)
+					return new DateTime (1970, 1, 1); // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! THIS IS PROBABLY NOT OK !!!!!!!!!!!
+				return ((FileTime) p.GetValueObj ()).DateTime;
+			}
+			throw new InvalidCastException ("Only properties with type " + 
+			"'FileTimeProperty' can be casted to DateTime.");
+		}
+		
+		
+		/// <summary>
 		///  Valid for BooleanProperty
 		/// </summary>
 		public static explicit operator bool (PropertyValue p)
@@ -459,6 +481,40 @@ namespace NMapi.Properties {
 			string8Prop.PropTag = PropertyTag.CreatePropertyTag (PropTag).AsType (PropertyType.String8).Tag;
 			string8Prop.Value = this.Value;						
 			return string8Prop;
+		}
+		
+	}	
+	
+	public partial class String8ArrayProperty : PropertyValue
+	{
+		
+		/// <summary>
+		///  Converts a string8-array-property to an unicode-array-property 
+		//   with the same property id.
+		/// </summary>
+		public UnicodeArrayProperty ToUnicodeArrayProperty ()
+		{
+			UnicodeArrayProperty uniArrProp = new UnicodeArrayProperty ();
+			uniArrProp.PropTag = PropertyTag.CreatePropertyTag (PropTag).AsType (PropertyType.MvUnicode).Tag;
+			uniArrProp.Value = this.Value;						
+			return uniArrProp;
+		}
+
+	}
+	
+	public partial class UnicodeArrayProperty : PropertyValue
+	{
+
+		/// <summary>
+		///  Converts a unicode-array-property to a string8-array-property 
+		//   with the same property id.
+		/// </summary>
+		public String8ArrayProperty ToString8ArrayProperty ()
+		{
+			String8ArrayProperty string8ArrProp = new String8ArrayProperty ();
+			string8ArrProp.PropTag = PropertyTag.CreatePropertyTag (PropTag).AsType (PropertyType.MvString8).Tag;
+			string8ArrProp.Value = this.Value;						
+			return string8ArrProp;
 		}
 		
 	}

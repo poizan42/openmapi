@@ -226,7 +226,37 @@ namespace NMapi {
 			}
 		}
 		
-			
+		
+		
+		
+		public Address[] AbGetUserList (int flags)
+		{
+			throw new MapiNoSupportException (); // TODO!
+		}
+		
+		public Address AbGetUserData (byte[] entryId)
+		{
+			throw new MapiNoSupportException (); // TODO!
+		}
+		
+		public DateTime AbGetChangeTime (int flags)
+		{
+			throw new MapiNoSupportException (); // TODO!
+		}
+		
+		public Address AbGetUserDataBySmtpAddress (string smtpAddress)
+		{
+			throw new MapiNoSupportException (); // TODO!
+		}
+		
+		public Address AbGetUserDataByInternalAddress (string internalAddress)
+		{
+			throw new MapiNoSupportException (); // TODO!
+		}
+		
+		
+		
+		
 		public Address ResolveEntryID (byte [] eid)
 		{
 			return session.ResolveEntryID (eid);

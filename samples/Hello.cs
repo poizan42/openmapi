@@ -40,14 +40,12 @@ namespace Test {
 			using (IMapiSession session = factory.CreateMapiSession ())
 			{
 				session.Logon  ("localhost", "jroith", "");
-				string path = "Mailbox - jroith/Tasks";
 				var priv = session.PrivateStore;
 
 				priv.Events [null].TableModified += (sender, ea) =>
 					Console.WriteLine ("Table was modified!");
 
-				using (IMapiFolder taskFolder = 
-					priv.OpenIpmFolder (path, Mapi.Modify))
+				using (IMapiFolder taskFolder = priv.OpenTaskFolder ())
 				{
 
 					using (MapiContext context = new MapiContext (session)) 	

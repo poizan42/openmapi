@@ -123,7 +123,8 @@ namespace NMapi.Table {
 		[Obsolete]
 		private void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			int size = lpProps.Length;
 			xdr.XdrEncodeInt (size);
 			for (int i = 0; i < size; i++)
@@ -133,7 +134,8 @@ namespace NMapi.Table {
 		[Obsolete]
 		private void XdrDecode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int size = xdr.XdrDecodeInt ();
 			lpProps = new PropertyValue [size];
 			for (int i = 0; i < size; i++)

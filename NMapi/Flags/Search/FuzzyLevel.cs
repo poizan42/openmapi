@@ -24,7 +24,6 @@
 using System;
 using System.IO;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
@@ -34,7 +33,7 @@ using NMapi.Table;
 namespace NMapi.Flags {
 
 	/// <summary>
-	///  Indicates the fuzzy level to be used with SContentRestrictions.
+	///  Indicates the fuzzy level to be used with ContentRestrictions.
 	/// </summary>
 	[Flags]
 	public enum FuzzyLevel
@@ -46,6 +45,5 @@ namespace NMapi.Flags {
 		IgnoreCase     = 0x00010000,
 		IgnoreNonSpace = 0x00020000, // ignore non-spacing characters!
 		Loose          = 0x00040000  // ignore case + nonspacing, etc.
-
 	}
 }

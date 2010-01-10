@@ -140,6 +140,7 @@ namespace NMapi {
 
 		public override int GetHashCode ()
 		{
+			/*
 			byte[] flat = ToByteArray (); // TODO: This is VERY slow !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -> Maybe we should save the byte[] instead of numbers and/or use the native MS Guid type.
 			int hash = 0;
 			if (flat != null) {
@@ -147,6 +148,21 @@ namespace NMapi {
 					hash = 31 * hash + flat [i];
 			}
 			return hash;
+			*/
+			
+			// algo from System.Guid.cs (Mono).
+			int res;
+			res = (int) Data1; 
+			res = res ^ ((int) Data2 << 16 | Data3);
+			res = res ^ ((int) Data4 [0] << 24);
+			res = res ^ ((int) Data4 [1] << 16);
+			res = res ^ ((int) Data4 [2] << 8);
+			res = res ^ ((int) Data4 [3]);
+			res = res ^ ((int) Data4 [4] << 24);
+			res = res ^ ((int) Data4 [5] << 16);
+			res = res ^ ((int) Data4 [6] << 8);
+			res = res ^ ((int) Data4 [7]);
+			return res;			
 		}
 		
 		/// <summary>

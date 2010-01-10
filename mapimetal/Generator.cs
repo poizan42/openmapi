@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Generator.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -325,9 +325,9 @@ namespace NMapi.Linq {
 			}
 
 			var name = Driver.MAPI_LINQ_NS + ".MapiProperty";
-			string namedProp = "NamedProperty.No";
+			string namedProp = "NMapi.Linq.NamedProperty.No";
 			if (pdesc.NamedProperty)
-				namedProp = "NamedProperty.Yes";
+				namedProp = "NMapi.Linq.NamedProperty.Yes";
 
 			var namedPropertyArgument = new CodeAttributeArgument (
 					new CodeTypeReferenceExpression (namedProp));

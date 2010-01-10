@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - groupwise.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<properties namespace="NMapi.Flags.Groupwise" class="GroupwiseProperty">
+	
+	<!-- Attachment properties //-->
+
+	<property name="AttachLastMod" type="SysTime" id="0x604A" />
+
+	<!-- ENUM: AttachType //-->
+	<property name="AttachType" type="Int16" id="0x604B" />
+
+
+
+	<!--  Folder properties //-->
+
+
+
+	<!-- ENUM: FolderFlags //-->
+	<!-- Read-only   //-->
+	<property name="FolderFlags" type="Int16" id="0x6F00" />
+
+	<!-- Read-only  //-->
+	<property name="VersionNumber" type="Int32" id="0x6F01" />
+
+	<!-- ENUM: FolderType //-->
+	<!-- 	Read-only  //-->
+	<property name="UwType " type="Int16" id="0x604B" />
+
+
+
+	<!-- Message properties //-->
+
+
+
+	<!-- ENUM: AcceptLevel //-->
+	<property name="AcceptLevel" type="Int16" id="0x6F02" />
+
+	<!-- Sets the beginning date of an Auto-Date item.  //-->
+	<property name="AdtBeginRange " type="SysTime" id="0x6F04" />
+
+	<!-- Sets the beginning time of an Auto-Date item. //-->
+	<property name="AdtBeginSecs" type="MvSysTime" id="0x6F05" />
+
+	<!-- Describes an Auto-Date item. //-->
+	<property name="AdtDscription" type="Unicode" id="0x6F06" />
+	<property name="AdtDscriptionA" type="String8" id="0x6F06" />
+	<property name="AdtDscriptionW" type="Unicode" id="0x6F06" />
+
+	<!-- Specifies the duration of an Auto-Date item. //-->
+	<property name="AdtDuration" type="Int32" id="0x6F07" />
+
+	<!-- ENUM: EndMode //-->
+	<!-- Specifies an Auto-Date item. //-->
+	<property name="AdtEndMode" type="Int16" id="0x6F08" />
+
+	<!-- Specifies the ending date of an Auto-Date item. //-->
+	<property name="AdtEndRange" type="SysTime" id="0x6F09" />
+
+	<!-- Specifies the formula text for an Auto-Date item, such as On or Before. //-->
+	<property name="AdtFormula " type="Unicode" id="0x6F0A" />
+	<property name="AdtFormulaA " type="String8" id="0x6F0A" />
+	<property name="AdtFormulaW " type="Unicode" id="0x6F0A" />
+
+	<!-- Specifies the formula for an Auto-Date item. //-->
+	<property name="AdtFormulaMode " type="Int16" id="0x6F0B" />
+
+	<!-- Specifies the offset (in days) for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGDayOffset" type="Int16" id="0x6F0C" />
+
+	<!-- Specifies the day for an Auto-date item that is displayed as a graph. //-->
+	<property name="AdtGDayRelate " type="Int16" id="0x6F0D" />
+
+	<!-- Specifies the days for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGMonthDays " type="Int32" id="0x6F0E" />
+
+	<!-- Specifies the months for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGMonths " type="Int16" id="0x6F0F" />
+
+	<!-- Specifies the period for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGPeriodAmt " type="Int16" id="0x6F10" />
+
+	<!-- Specifies the time period for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGPeriodNum" type="Int16" id="0x6F11" />
+
+	<!-- ENUM: SubMode //-->
+	<!-- Specifies the secondary mode for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGSubmode" type="Int16" id="0x6F12" />
+
+	<!-- Specifies the weekdays for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGWeekdays" type="Int16" id="0x6F13" />
+
+	<!-- Specifies the weekdays for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGWDayInst " type="Int16" id="0x6F14" />
+
+	<!-- Specifies the weekdays for an Auto-Date item that is displayed as a graph. //-->
+	<property name="AdtGWKDayOfs " type="Int16" id="0x6F15" />
+
+	<!-- Specifies the key. //-->
+	<property name="AdtKey " type="Int32" id="0x6F16" />
+
+	<!-- ENUM: AdtMode //-->
+	<!-- Specifies the mode for an Auto-Date item. //-->
+	<property name="AdtMode " type="Int16" id="0x6F17" />
+
+	<!-- Specifies the total number of occurrences of an Auto-Date item. //-->
+	<property name="AdtNumOccurs " type="Int16" id="0x6F18" />
+
+	<!-- Specifies the occurrence mode for an Auto-Date item. //-->
+	<property name="AdtOccursMode " type="Int16" id="0x6F19" />
+
+	<!-- Specifies the time for an Auto-Date item. //-->
+	<property name="AdtTime " type="Int32" id="0x6F1A" />
+
+	<!-- Specifies the alarm period. //-->
+	<property name="AlarmPeriod " type="Int32" id="0x6F1B" />
+
+	<!-- Specifies the entry ID of an attachment. //-->
+	<property name="AttachEntryIds " type="MvBinary" id="0x6F1C" />				
+
+	<!-- Specifies the type of attachment. //-->
+	<property name="AttachTypesLin " type="Int16" id="0x6F1D" />
+
+	<!-- Specifies the user types of the attachment. //-->
+	<property name="AttachTypesUser " type="Int16" id="0x6F1E" />
+
+	<!-- Specifies the number of times to automatically forward an item. It is typically used to prevent looping.  //-->
+	<property name="AutoForwardLim " type="Int16" id="0x6F1F" />
+
+	<!-- Specifies the beginning time of an item. //-->
+	<property name="BeginSecs " type="SysTime" id="0x6F21" />
+
+	<!-- ENUM: BoxType //-->
+	<!-- Specifies the type of box the item will appear in. //-->
+	<property name="BoxType " type="Int16" id="0x6F22" />
+
+	<!-- Specifies the company of a caller who leaves a phone message. //-->
+	<property name="CallerCompany " type="Unicode" id="0x6F23" />
+	<property name="CallerCompanyA " type="String8" id="0x6F23" />
+	<property name="CallerCompanyW " type="Unicode" id="0x6F23" />
+
+	<!-- Specifies the first and last names of a caller who leaves a phone message. //-->
+	<property name="CallerFullName " type="Unicode" id="0x6F24" />
+	<property name="CallerFullNameA " type="String8" id="0x6F24" />
+	<property name="CallerFullNameW " type="Unicode" id="0x6F24" />
+
+	<!-- Specifies the phone number of a caller who leaves a phone message. //-->
+	<property name="CallerNumber " type="Unicode" id="0x6F25" />
+	<property name="CallerNumberA " type="String8" id="0x6F25" />
+	<property name="CallerNumberW " type="Unicode" id="0x6F25" />
+
+	<!-- ENUM: CopyType //-->
+	<!-- 	Read-only  //-->
+	<!-- Specifies the copy received with an In Box message. //-->
+	<property name="CopyType " type="Int16" id="0x6F27" />
+
+	<!-- Specifies the ending time of an item. //-->
+	<property name="EndSecs " type="SysTime" id="0x6F29" />
+
+	<!-- 	Read-only  //-->
+	<!-- Specifies the related folders. //-->
+	<property name="Folders " type="MvBinary" id="0x6F2A" />
+
+	<!-- ENUM: ItemType //-->
+	<!-- Specifies the item type. //-->
+	<property name="ItemType " type="Int32" id="0x6F2C" />
+
+	<!-- ENUM: MessageType //-->
+	<!-- Specifies the message type. //-->
+	<property name="MessageType " type="Int16" id="0x6F30" />
+
+	<!-- Specifies the ODMA reference. //-->
+	<property name="OdmaReference " type="Binary" id="0x6F31" />
+
+	<!-- ENUM: PhoneFlags //-->
+	<!-- Specifies a phone message. //-->
+	<property name="Phone " type="Int32" id="0x6F32" />
+
+	<!-- Specifies the location of an appointment. //-->
+	<property name="PlaceText " type="Unicode" id="0x6F33" />
+	<property name="PlaceTextA " type="String8" id="0x6F33" />
+	<property name="PlaceTextW " type="Unicode" id="0x6F33" />
+
+	<!-- Read-only  //-->
+	<!-- Specifies the reply thread used to sort by conversation. //-->
+	<property name="Thread " type="String8" id="0x6F35" />
+
+	<!-- ENUM: SendOptions //-->
+	<!-- Controls the send options. //-->
+	<property name="SendOptions " type="Int32" id="0x6F36" />
+
+	<!-- Specifies the account ID of the sender. //-->
+	<property name="SenderAcctId " type="Unicode" id="0x6F37" />
+	<property name="SenderAcctIdA " type="String8" id="0x6F37" />
+	<property name="SenderAcctIdW " type="Unicode" id="0x6F37" />
+
+	<!-- Specifies the route of the sender. //-->
+	<property name="SenderRoute " type="Binary" id="0x6F38" />
+
+	<!-- Specifies the sender date. //-->
+	<property name="SenderDPDate " type="SysTime" id="0x6F39" />
+
+	<!-- Specifies the domain of the sender. //-->
+	<property name="SenderDomainId " type="Unicode" id="0x6F3A" />
+	<property name="SenderDomainIdA " type="String8" id="0x6F3A" />
+	<property name="SenderDomainIdW " type="Unicode" id="0x6F3A" />					 
+
+	<!-- Specifies the post office of the sender. //-->
+	<property name="SenderHostId " type="Unicode" id="0x6F3B" />
+	<property name="SenderHostIdA " type="String8" id="0x6F3B" />
+	<property name="SenderHostIdW " type="Unicode" id="0x6F3B" />
+
+	<!-- ENUM: SenderStatus //-->
+	<!-- Specifies the status of the sender’s Out Box item. //-->
+	<property name="SenderStatus " type="Int32" id="0x6F3C" />
+
+	<!-- Specifies the user ID of the sender. //-->
+	<property name="SenderUserId " type="Unicode" id="0x603D" />
+	<property name="SenderUserIdA " type="String8" id="0x603D" />
+	<property name="SenderUserIdW " type="Unicode" id="0x603D" />
+
+	<!-- ENUM: StatusTracking //-->
+	<!-- Specifies the desired status tracking level (with NONE being the lowest and FULL being the  //-->
+	<!-- highest). Each level includes attributes of all levels below it. //-->
+	<property name="StatusTracking " type="Int16" id="0x603E" />
+
+	<!-- Specifies the date a task should begin appearing. //-->
+	<property name="TodoDate " type="SysTime" id="0x6040" />
+
+	<!-- Specifies the category of a task. //-->
+	<property name="TodoCategory " type="Int16" id="0x6041" />
+
+	<!-- Specifies the estimated time a task will take to complete. //-->
+	<property name="TodoEstTime " type="Int32" id="0x6042" />
+
+	<!-- Specifies the priority of a task. //-->
+	<property name="TodoPriority " type="Int16" id="0x6043" />
+
+	<!-- ENUM: UserStatus //-->
+	<!-- 	Read-only  //-->
+	<!-- Specifies the status of an In Box item. //-->
+	<property name="UserStatus " type="Int32" id="0x6047" />
+
+	<!-- Specifies the name of a view. //-->
+	<property name="ViewName " type="Unicode" id="0x6048" />
+	<property name="ViewNameA " type="String8" id="0x6048" />
+	<property name="ViewNameW " type="Unicode" id="0x6048" />
+		
+</properties>

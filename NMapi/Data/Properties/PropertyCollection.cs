@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PropertyCollection.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -38,23 +38,17 @@ using NMapi.Interop;
 
 namespace NMapi.Properties {
 
-
-	// TODO: implement this -- and use it everywhere instead of plain arrays.
-				// (as a fixed size collection.)
-	
 	/// <summary>
 	///  
 	/// </summary>
 	public sealed class PropertyCollection
-	{
-		private PropertyValue[] props;
-		
-		
-		
+	{	
+		private PropertyValue[] props;		
 		
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="props"></param>
 		public PropertyCollection (PropertyValue[] props)
 		{
 			this.props = props;
@@ -62,35 +56,90 @@ namespace NMapi.Properties {
 		
 		
 		
+		/// <summary>Returns a the index of the property matching the specified property or -1, if not found.</summary>
+		/// <remarks></remarks>
+		/// <param name="val"></param>
+		public int IndexByValue (PropertyValue val)
+		{
+			if (val == null)
+				return -1;
+			if (props == null || props.Length == 0)
+				return -1;
+			for (int i=0; i<props.Length; i++) {
+				var prop = props [i];
+				if (prop.PropTag == val.PropTag)
+					if (prop.CompareTo (val) == 0)
+						return i;
+			}
+			return -1;
+		}
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="tag"></param>
+		public int IndexByTag (PropertyTag tag)
+		{
+			if (tag == null)
+				return -1;
+			if (props == null || props.Length == 0)
+				return -1;
+			for (int i=0; i<props.Length; i++)
+				if (props [i].PropTag == tag.Tag)
+					return i;
+			return -1;
+		}
+		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="tag"></param>
+		public PropertyValue FindByTagOrNull (PropertyTag tag)
+		{
+			int index = IndexByTag (tag);
+			if (index < 0)
+				return null;
+			return props [index];
+		}
+		
+		// TODO: FindById
+		// TODO: FindByIdOrNull
+		
+		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="props"></param>
+		/// <returns></returns>
 		public static PropertyValue[] EnforceUnicodeProperties (PropertyValue [] props)
 		{
 			if (props == null)
 				return null;
+			
 			PropertyValue[] result = new PropertyValue [props.Length];
 			for (int i=0; i < props.Length; i++) {
 				if (props [i] is String8Property)
 					result [i] = ((String8Property) props [i]).ToUnicodeProperty ();
+				else if (props [i] is String8ArrayProperty)
+					result [i] = ((String8ArrayProperty) props [i]).ToUnicodeArrayProperty ();
 				else
 					result [i] = props [i];				
 			}
 			return result;
 		}
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="props"></param>
+		/// <returns></returns>
 		public static PropertyValue[] EnforceString8Properties (PropertyValue [] props)
 		{
 			if (props == null)
 				return null;
+				
 			PropertyValue[] result = new PropertyValue [props.Length];
 			for (int i=0; i < props.Length; i++) {
 				if (props [i] is UnicodeProperty)
 					result [i] = ((UnicodeProperty) props [i]).ToString8Property ();
+				else if (props [i] is UnicodeArrayProperty)
+					result [i] = ((UnicodeArrayProperty) props [i]).ToString8ArrayProperty ();
 				else
 					result [i] = props [i];				
 			}
@@ -99,5 +148,4 @@ namespace NMapi.Properties {
 		
 	}
 	
-
 }

@@ -32,12 +32,19 @@ using CompactTeaSharp.Server;
 
 namespace NMapi.Server {
 
-	public abstract class BaseOncRpcService : MAPIRPCServerStub
+	public abstract class BaseOncRpcService : MAPIRPCServerStub, IDisposable
 	{
+		protected static BooleanSwitch oncServerTrace = new BooleanSwitch ("oncServerTrace", 
+												"configured in application config file!");
+		
 		protected CommonRpcService commonRpcService;
 		protected SessionManager sessionManager;
 		protected Dictionary <string, OncProxySession> sessions;
 		protected int eventPort;
+		
+		protected bool disposed;
+		private TcpListener listener;
+		private Thread listenerThread;
 		
 		private string certFile;
 		private string keyFile;
@@ -53,20 +60,63 @@ namespace NMapi.Server {
 			
 			var transport = transports [0] as OncRpcTcpServerTransport;
 			if (transport == null)
-				throw new Exception ("Transport is null!");
+				throw new ArgumentNullException ("transport");
 			transport.ConnectionClosed += ClientConnectionClosedHandler;
 			
 			this.sessions = new Dictionary <string, OncProxySession> ();
 			this.eventPort = port+1;
 			
 			// Run listener on a new thread ...
-			var listenerThread = new Thread (new ThreadStart (StartEventListener));
-			listenerThread.Start ();
+			this.listenerThread = new Thread (new ThreadStart (StartEventListener));
+			this.listenerThread.Start ();
+		}
+		
+		/// <summary></summary>
+		public virtual void Dispose ()
+		{
+			Dispose (true);
+			GC.SuppressFinalize (this);
+		}
+
+		/// <summary></summary>
+		protected virtual void Dispose (bool disposing)
+		{
+			if (disposed)
+				return;
+	
+			if (listenerThread != null) {
+
+				try {
+		
+					if (listenerThread != null && listener != null) {
+						
+						try {
+							listener.Stop ();
+						} catch (SocketException) {
+							throw; // TODO!
+						}
+						
+						// we must wait until the listener is done ...  TODO !!!!
+						listenerThread.Join ();
+
+					}
+				} catch (ThreadStateException) {
+					// ignore.
+				}
+			}
+			
+			disposed = true;
+		}
+		
+		~BaseOncRpcService ()
+		{
+			if (!disposed)
+				Dispose (false);
 		}
 
 		private void StartEventListener ()
 		{
-			TcpListener listener = new TcpListener (IPAddress.Any, eventPort);
+			this.listener = new TcpListener (IPAddress.Any, eventPort);
 			listener.Start ();
 			while (true) {
 				var tcpClient = listener.AcceptTcpClient ();
@@ -89,7 +139,8 @@ namespace NMapi.Server {
 
 		private void ClientConnectionClosedHandler (object sender, ConnectionClosedEventArgs ea)
 		{
-			Trace.WriteLine ("Client closed connection!");
+			if (oncServerTrace.Enabled)
+				Trace.WriteLine ("Client closed connection!");
 			string key = GetSessionKey (ea.IPAddress.ToString (), ea.Port);
 			if (sessions.ContainsKey (key)) {
 				var session = sessions [key];
@@ -101,7 +152,8 @@ namespace NMapi.Server {
 						session.ReverseEventConnectionServer.Close ();
 					sessionManager.UnregisterSession (session);
 					sessions.Remove (key);			
-					Trace.WriteLine ("Session removed!!!");
+					if (oncServerTrace.Enabled)
+						Trace.WriteLine ("Session removed!!!");
 				}
 			}
 		}

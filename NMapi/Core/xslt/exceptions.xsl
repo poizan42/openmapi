@@ -55,7 +55,7 @@ namespace NMapi {
 			}
 		}
 		
-		// TODO: we should call n xslt-function here.
+		// TODO: we should call an xslt-function here.
 		
 		public static MapiException Make (int error)
 		{

@@ -33,7 +33,24 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
+	// TBLTYPE
+	/// <summary></summary>
+	public enum TableType
+	{
+		/// <summary></summary>
+		Snapshot = 0,
+		
+		/// <summary></summary>
+		KeySet,
+		
+		/// <summary></summary>
+		Dynamic
+	}
+
+
+
 	// TODO: This class must be refactored/killed.
+
 
 	public sealed class NMAPI
 	{
@@ -41,7 +58,8 @@ namespace NMapi.Flags {
 
 		public const int MV_INSTANCE = 0x2000;
 		public const int MVI_FLAG    = (MV_FLAG | MV_INSTANCE);
-		public int MVI_PROP(int ulTag) {
+		
+		public int MVI_PROP (int ulTag) {
 			return ulTag | MVI_FLAG;
 		}
 
@@ -64,17 +82,12 @@ namespace NMapi.Flags {
 		public const int MAPI_DIALOG      = 0x00000008;
 		public const int MAPI_USE_DEFAULT = 0x00000040;
 
-		public const int TBLTYPE_SNAPSHOT = 0;
-		public const int TBLTYPE_KEYSET   = 1;
-		public const int TBLTYPE_DYNAMIC  = 2;
-
 		public const int TBL_ALL_COLUMNS = 0x00000001;
 
 		public const int TBL_LEAF_ROW           = 1;
 		public const int TBL_EMPTY_CATEGORY     = 2;
 		public const int TBL_EXPANDED_CATEGORY  = 3;
 		public const int TBL_COLLAPSED_CATEGORY = 4;
-
 
 		public const int TBL_NOWAIT = 0x00000001;
 

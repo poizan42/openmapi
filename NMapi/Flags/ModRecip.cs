@@ -38,8 +38,13 @@ namespace NMapi.Flags {
 	/// </summary>
 	public static class ModRecip
 	{
+		/// <summary></summary>
 		public const int Add    = 0x00000002;
+
+		/// <summary></summary>
 		public const int Modify = 0x00000004;
+
+		/// <summary></summary>
 		public const int Remove = 0x00000008;
 	}
 

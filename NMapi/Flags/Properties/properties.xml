@@ -19,9 +19,37 @@
 //
 //-->
 <properties namespace="NMapi.Flags" class="Property">
-	<property name="AcknowledgementMode" type="Int32" id="0x0001" />
 
-	<property name="AlternateRecipientAllowed" type="Boolean" id="0x0002" />
+	<property name="AcknowledgementMode" type="Int32" id="0x0001">
+		<docs>
+			<summary>The acknowledgement mode.</summary>
+			<remarks>
+				A value of "0" means that the message acknowledgement-mode is manual. 
+				"1" means that the message acknowledgment-mode is automatic. 
+			</remarks>
+			<classic>PidTagAcknowledgementMode</classic>
+			<classic>PR_ACKNOWLEDGEMENT_MODE</classic>
+		</docs>
+		<meta>
+			<Component>Server</Component>
+			<IsBitmask>false</IsBitmask>
+			<ShouldIndex>false</ShouldIndex>
+			<Range From="0" To="1" />
+		</meta>
+	</property>
+
+	<property name="AlternateRecipientAllowed" type="Boolean" id="0x0002">
+		<docs>
+			<summary></summary>
+			<remarks></remarks>
+		</docs>
+		<meta>
+			<Component>Contact</Component>
+			<ExpectedBy optional="true">Ipm.Contact</ExpectedBy>
+			<!-- ExpectedBy optional="true"> todo .... others are possible as well.    </ExpectedBy //-->
+		</meta>
+	</property>
+	
 	<property name="AuthorizingUsers" type="Binary" id="0x0003" />
 	<property name="AutoForwardComment" type="Unicode" id="0x0004" />
 	<property name="AutoForwardCommentW" type="Unicode" id="0x0004" />
@@ -999,4 +1027,5 @@
 	<property name="LocalCommitTimeMax" type="SysTime" id="0x670A" /> <!-- correct? //-->
 	<property name="SourceKey" type="Binary" id="0x65E0" /> <!-- 22 bytes lenghth (storeid + some id) ... //-->
 	<property name="ParentSourceKey" type="Binary" id="0x65E1" /> 
+	
 </properties>

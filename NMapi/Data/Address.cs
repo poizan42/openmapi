@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - SBinary.cs
+// openmapi.org - NMapi C# Mapi API - Address.cs
 //
 // Copyright 2008 VipCom AG
 //
@@ -24,17 +24,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using System.IO;
-
-using System.Diagnostics;
-using CompactTeaSharp;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi {
 
@@ -44,12 +33,16 @@ namespace NMapi {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public sealed class Address
 	{
-		public byte [] EID { get; set; }
-		public string  DisplayName { get; set; }
-		public string  InternalAddress { get; set; }
-		public string  AddrType { get; set; }
-		public string  SmtpAddress { get; set; }
-		public byte [] SearchKey { get; set; }
+		
+		// string id.
+		public string UserId { get; set; }
+		
+		public byte[] EID { get; set; }
+		public string DisplayName { get; set; }
+		public string InternalAddress { get; set; }
+		public string AddrType { get; set; }
+		public string SmtpAddress { get; set; }
+		public byte[] SearchKey { get; set; }
 	}
 	
 }

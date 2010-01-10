@@ -76,7 +76,8 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (_value == null)
 				xdr.XdrEncodeInt(~0);
 			else {
@@ -91,7 +92,8 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			int len = xdr.XdrDecodeInt();
 			if (len == ~0)
 				_value = null;

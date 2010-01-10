@@ -34,6 +34,8 @@ namespace NMapi.Properties.Special {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public class GetReceiveFolderResult
 	{	
+		// TODO: replace byte[] with EntryId type. (-> initialize from OpaqueEntryId).
+		
 		/// <summary>
 		///  TODO
 		/// </summary>

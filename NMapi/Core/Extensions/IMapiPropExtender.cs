@@ -41,11 +41,13 @@ namespace NMapi {
 	 *   - only support unicode. ANSI is not supported!
 	 *   - Arrays as "params"
 	 *   - more readable method names.
-	 *   - add helper methods for working with sinle properties etc.
+	 *   - add helper methods for working with single properties etc.
 	 *   - merge helper methods
 	 *   - add new useful methods.
 	 *   - make more robust.
 	 *
+	 *   - add a cached mode, where named properties, entry identifiers, etc. are cached.
+	 * 
 	 */
 
 	/// <summary>
@@ -144,10 +146,21 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="mnid"></param>
 		/// <returns></returns>
+		public static PropertyValue GetNamedProperty (this IMapiProp prop, NamedPropertyDef namedDef)
+		{
+			// TODO!
+			throw new NotImplementedException ("Not yet implemented!");
+		}
+		
+		/// <summary>
+		///  
+		/// </summary>
+		/// <param name="mnid"></param>
+		/// <returns></returns>
 		public static PropertyValue GetNamedProperty (this IMapiProp prop, MapiNameId mnid)
 		{
 			// TODO!
-			throw new NotImplementedException ("Not yet impleemnted!");
+			throw new NotImplementedException ("Not yet implemented!");
 		}
 
 		/// <summary>
@@ -159,7 +172,7 @@ namespace NMapi {
 		public static PropertyValue GetNamedProperty (this IMapiProp prop, NMapiGuid guid, string name)
 		{
 			// TODO!
-			throw new NotImplementedException ("Not yet impleemnted!");
+			throw new NotImplementedException ("Not yet implemented!");
 		}
 		
 		/// <summary>
@@ -171,8 +184,45 @@ namespace NMapi {
 		public static PropertyValue GetNamedProperty (this IMapiProp prop, NMapiGuid guid, int id)
 		{
 			// TODO!
-			throw new NotImplementedException ("Not yet impleemnted!");
+			throw new NotImplementedException ("Not yet implemented!");
 		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/// <summary>
+		///  The new recommended way to resolve named properties ...
+		/// </summary>
+		/// <returns>A NamedPropertyResolver that can resolve appropriate PropertyTags for the requested named properties.</returns>
+		public static NamedPropertyResolver ResolveNamedProperties (this IMapiProp prop, params NamedPropertyDef[] namedPropDefinitions)
+		{
+			MapiNameId[] names = new MapiNameId [namedPropDefinitions.Length];
+			for (int i=0; i < names.Length; i++)
+				names [i] = namedPropDefinitions [i].NameDefinition;			
+			return prop.ResolveNamedProperties (names);
+		}
+		
+		
+		
+		
+		/// <summary>
+		///  The new recommended way to resolve named properties ...
+		/// </summary>
+		/// <returns>A NamedPropertyResolver that can resolve appropriate PropertyTags for the requested named properties.</returns>
+		public static NamedPropertyResolver ResolveNamedProperties (this IMapiProp prop, params MapiNameId[] names)
+		{
+			PropertyTag[] tags = prop.GetIDsFromNames (names, Mapi.Create);
+			return new NamedPropertyResolver (names, tags);
+		}
+		
+		
+		
 		
 		
 		
@@ -243,32 +293,34 @@ namespace NMapi {
 		/// <exception cref="MapiNoSupportException"></exception>
 		/// <exception cref="MapiNotFoundException"></exception>
 		/// <exception cref="MapiInvalidParameterException"></exception>
-		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag)
+		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, NMapiGuid interFace)
 		{
-			return prop.OpenProperty (tag, AccessMode.Read);
+			return prop.OpenProperty (tag, interFace, AccessMode.Read);
 		}
 		
 		/// <summary>
 		///  Open a property as an object using the specified access permissions.
 		/// </summary>
 		/// <param name="tag">The property tag of the property to be opened.</param>
+		/// <param name="interFace"></param>
 		/// <param name="mode"></param>
 		/// <exception cref="MapiInterfaceNotSupportedException"></exception>
 		/// <exception cref="MapiNoAccessException"></exception>
 		/// <exception cref="MapiNoSupportException"></exception>
 		/// <exception cref="MapiNotFoundException"></exception>
 		/// <exception cref="MapiInvalidParameterException"></exception>
-		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, AccessMode mode)
+		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, NMapiGuid interFace, AccessMode mode)
 		{
-			return prop.OpenProperty (tag, mode, false);
+			return prop.OpenProperty (tag, interFace, mode, false);
 		}
-				
+
 		/// <summary>
 		///  Open a property as an object using the specified access permissions.
 		///  If "create" is set to true, create the property if it does not exist 
 		///  (and update it if it does).
 		/// </summary>
 		/// <param name="tag">The property tag of the property to be opened.</param>
+		/// <param name="interFace"></param>
 		/// <param name="mode"></param>
 		/// <param name="create"></param>
 		/// <exception cref="MapiInterfaceNotSupportedException"></exception>
@@ -276,11 +328,11 @@ namespace NMapi {
 		/// <exception cref="MapiNoSupportException"></exception>
 		/// <exception cref="MapiNotFoundException"></exception>
 		/// <exception cref="MapiInvalidParameterException"></exception>
-		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, AccessMode mode, bool create)
+		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, NMapiGuid interFace, AccessMode mode, bool create)
 		{
 			int flags = ((create) ? Mapi.Create : 0) | 
 						((create || mode == AccessMode.ReadWrite) ? Mapi.Modify : 0);
-			return prop.OpenProperty (tag.Tag, null, 0, flags);
+			return prop.OpenProperty (tag.Tag, interFace, 0, flags);
 		}
 		
 		

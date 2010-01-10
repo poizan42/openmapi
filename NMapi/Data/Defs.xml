@@ -91,6 +91,13 @@
 				<boolGate static="true" type="Notification">Value</boolGate>
 			</both>
 		</class>
+		
+		<class id="LPACTIONS">
+			<declare type="Actions" constrarg="true">Value</declare>
+			<both>
+				<boolGate type="Actions">Value</boolGate>
+			</both>
+		</class>
 	</namespace>
 	
 	<namespace name="NMapi">
@@ -153,7 +160,96 @@
 			<both>
 				<long>value</long>
 			</both>
-		</class>	
+		</class>
+		
+		<class id="Actions">
+			<declare type="Action" isArray="true" privName="actions" constrarg="true">Values</declare>
+			<declare type="int">_internal</declare>
+			<both>
+				<int>_internal</int> <!-- txc does want to send this ... //-->
+				<countedSizeArray static="true" type="Action">actions</countedSizeArray>
+			</both>
+		</class>
+
+		<class id="CopyAction" inherits="Action">
+			<declare type="byte" isArray="true" privName="lpStoreEntryId">StoreEntryID</declare>
+			<declare type="byte" isArray="true" privName="lpFldEntryId">FldEntryId</declare>
+			<both>
+				<dynamicOpaque>lpStoreEntryId</dynamicOpaque>
+				<dynamicOpaque>lpFldEntryId</dynamicOpaque>
+			</both>
+		</class>
+
+		<class id="MoveAction" inherits="Action">
+			<declare type="byte" isArray="true" privName="lpStoreEntryId">StoreEntryID</declare>
+			<declare type="byte" isArray="true" privName="lpFldEntryId">FldEntryId</declare>
+			<both>
+				<dynamicOpaque>lpStoreEntryId</dynamicOpaque>
+				<dynamicOpaque>lpFldEntryId</dynamicOpaque>
+			</both>
+		</class>
+	
+		<class id="ReplyAction" inherits="Action">
+			<declare type="byte" isArray="true" privName="lpEntryId">EntryId</declare>
+			<declare type="NMapiGuid" privName="guidReplyTemplate">GuidReplyTemplate</declare>
+			<both>
+				<dynamicOpaque>lpEntryId</dynamicOpaque>
+				<complex type="NMapiGuid">guidReplyTemplate</complex>
+			</both>
+		</class>
+
+		<class id="OofReplyAction" inherits="Action">
+			<declare type="byte" isArray="true" privName="lpEntryId">EntryId</declare>
+			<declare type="NMapiGuid" privName="guidReplyTemplate">GuidReplyTemplate</declare>
+			<both>
+				<dynamicOpaque>lpEntryId</dynamicOpaque>
+				<complex type="NMapiGuid">guidReplyTemplate</complex>
+			</both>
+		</class>
+
+		<class id="DeferAction" inherits="Action">
+			<declare type="byte" isArray="true" privName="actionData">ActionData</declare>
+			<both>
+				<dynamicOpaque>actionData</dynamicOpaque>
+			</both>
+		</class>
+		
+		<class id="BounceAction" inherits="Action">
+			<declare type="int" privName="scBounceCode">BounceCode</declare>
+			<both>
+				<int>scBounceCode</int>
+			</both>
+		</class>
+		
+		<class id="ForwardAction" inherits="Action">
+			<declare type="AdrList" privName="lpadrlist">AdrList</declare>
+			<both>
+				<wrapped in="LPAdrList">lpadrlist</wrapped>
+			</both>
+		</class>
+		
+		<class id="DelegateAction" inherits="Action">
+			<declare type="AdrList" privName="lpadrlist">AdrList</declare>
+			<both>
+				<wrapped in="LPAdrList">lpadrlist</wrapped>
+			</both>
+		</class>
+		
+		<class id="TagAction" inherits="Action">
+			<declare type="PropertyValue" privName="prop">Prop</declare>
+			<both>
+				<complex static="true" type="PropertyValue">prop</complex>
+			</both>
+		</class>
+		
+		<class id="DeleteAction" inherits="Action">
+			<!-- do nothing //-->
+		</class>
+		
+		<class id="MarkAsReadAction" inherits="Action">
+			<!-- do nothing //-->
+		</class>
+		
 	</namespace>
 
 
@@ -490,7 +586,21 @@
 				<complex type="SBinary">bin</complex>
 			</both>
 		</class>
-
+		
+		<class id="ActionsProperty" inherits="PropertyValue">
+			<declare type="Actions" privName="actions" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LPACTIONS">actions</wrapped>
+			</both>
+		</class>
+		
+		<class id="RestrictionProperty" inherits="PropertyValue">
+			<declare type="Restriction" privName="restriction" constrarg="true">Value</declare>
+			<both>
+				<wrapped in="LPSRestriction">restriction</wrapped>
+			</both>
+		</class>
+		
 		<class id="ShortArrayProperty" inherits="PropertyValue">
 			<declare type="short" isArray="true" privName="MVi" constrarg="true">Value</declare>
 			<both>

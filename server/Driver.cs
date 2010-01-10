@@ -196,12 +196,29 @@ namespace NMapi.Server {
 
 				Console.WriteLine ("done.");
 
+
+/*				Shutdown.RegisterHandler ((ignored) => {
+					// TODO: close stuff properly ...
+					
+					// oncService.Close ();
+					
+					Console.WriteLine ("Server stopped!");
+					
+				});
+
+				Shutdown.BlockUntilShutdown ();				
+
+*/
+				
 				Console.WriteLine ("Press ENTER to stop server.");
 				Console.ReadLine ();
-			
+				
+				oncService.Dispose ();
+				
 			} finally {
 				
 				// cleanup if required ....
+			
 				
 			}
 			Environment.Exit (1);

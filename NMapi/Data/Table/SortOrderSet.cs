@@ -22,6 +22,7 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
+using System;
 using System.Runtime.Serialization;
 
 using NMapi;
@@ -33,6 +34,36 @@ using NMapi.Interop;
 
 namespace NMapi.Table {
 
+
+	/// <summary></summary>
+	public sealed class CategorySortInfo
+	{
+		private SortOrder sortOrder;
+		private bool isExpanded;
+		
+		/// <summary></summary>
+		public bool IsExpanded {
+			get { return isExpanded; }
+		}
+		
+		/// <summary></summary>
+		public SortOrder SortOrder {
+			get { return sortOrder; }
+		}
+		
+		/// <summary></summary>
+		internal CategorySortInfo (SortOrder so, bool isExpanded)
+		{
+			this.sortOrder = so;
+			this.isExpanded = isExpanded;
+		}
+		
+		// TODO: equality & co.
+		
+	}
+
+
+
 	/// <summary>
 	///  The SortOrderSet structure.
 	/// </summary>
@@ -43,41 +74,70 @@ namespace NMapi.Table {
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public class SortOrderSet
 	{
-	
 		private int cCategories;
 		private int cExpanded;
 		private SortOrder [] aSort;
-	
-		#region C#-ification
 
-		/// <summary>
-		///   
-		/// </summary>
+
+		/// <summary></summary>
+		public bool HasCategories {
+			get { return cCategories > 0; }
+		}
+		
+		/// <summary>If not categorized, null is returned.</summary>
+		public CategorySortInfo[] GetCategorySort ()
+		{
+			if (!HasCategories || aSort == null)
+				return null;
+
+			int length = Math.Min (cCategories, aSort.Length);
+			
+			CategorySortInfo[] result = new CategorySortInfo [length];
+			for (int i=0; i < length; i++) {
+				bool isExpanded = (cExpanded >= (i+1));
+				result [i] = new CategorySortInfo (aSort [i], isExpanded);
+			}
+			return result;			
+		}
+		
+		
+		public SortOrderSet ()
+		{
+			// uninitialized case ... -- remove ?
+			// (currently used by NMapi/Linq/TableQuerier.cs)
+		}
+		
+		
+		
+		public SortOrderSet (int numberOfCategories, int numberOfExpanded, SortOrder[] so)
+		{
+			this.cCategories = numberOfCategories;
+			this.cExpanded = numberOfExpanded;
+			this.aSort = so;
+		}
+		
+		
+		/// <summary></summary>
 		[DataMember (Name="CCategories")]
 		public int CCategories {
 			get { return cCategories; }
 			set { cCategories = value; }
 		}
 
-		/// <summary>
-		///   
-		/// </summary>
+		/// <summary></summary>
 		[DataMember (Name="CExpanded")]
 		public int CExpanded {
 			get { return cExpanded; }
 			set { cExpanded = value; }
 		}
 
-		/// <summary>
-		///   
-		/// </summary>
+		/// <summary></summary>
 		[DataMember (Name="ASort")]
 		public SortOrder [] ASort {
 			get { return aSort; }
 			set { aSort = value; }
 		}
-
-		#endregion
+		
 
 	}
 

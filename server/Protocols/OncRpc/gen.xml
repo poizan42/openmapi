@@ -26,9 +26,6 @@
 	//-->
 
 	<!-- TODO //-->
-	<dummy name="Session_ABGetUserDataBySmtpAddress" />
-	<dummy name="Session_ABGetUserDataByInternalAddress" />
-
 	<dummy name="MsgStore_SetLockState" />
 	<dummy name="MsgStore_FinishedMsg" />
 	<dummy name="MsgStore_NotifyNewMail" />
@@ -145,6 +142,34 @@
 		<valuedcall params="(Mdb) flags, storeUser, isPublicStore" />
 		<putmap result="obj" />
 	</call>
+	<!-- BEGIN: AB-methods on Session object. //-->
+	<call name="Session_ABGetUserList" targetClass="IMapiSession" targetMethod="AbGetUserList">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="pList" value="ConvertAddressObjects (callResult)" />
+	</call>
+	<call name="Session_ABGetUserData" targetClass="IMapiSession" targetMethod="AbGetUserData">
+		<extract left="entryId" right="eid.ByteArray" />
+		<valuedcall params="entryId" />
+		<put result="pData" value="ConvertAddressObject (callResult)" />
+	</call>
+	<call name="Session_ABGetChangeTime" targetClass="IMapiSession" targetMethod="AbGetChangeTime">
+		<extract left="flags" right="ulFlags" />
+		<valuedcall params="flags" />
+		<put result="ft" value="new FileTime (callResult)" />
+	</call>
+	<call name="Session_ABGetUserDataBySmtpAddress" targetClass="IMapiSession" targetMethod="AbGetUserDataBySmtpAddress">
+		<extract left="smtpAddress" right="pwszSmtpAddress.Value" />
+		<valuedcall params="smtpAddress" />
+		<put result="pData" value="ConvertAddressObject (callResult)" />
+	</call>
+	<call name="Session_ABGetUserDataByInternalAddress" targetClass="IMapiSession" targetMethod="AbGetUserDataByInternalAddress">
+		<extract left="internalAddress" right="pwszInternalAddress.Value" />
+		<valuedcall params="internalAddress" />
+		<put result="pData" value="ConvertAddressObject (callResult)" />
+	</call>
+	<!-- END: AB-methods on Session object. //-->
+	
 
 	<!--	
 		IMsgStore

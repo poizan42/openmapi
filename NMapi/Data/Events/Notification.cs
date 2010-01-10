@@ -22,6 +22,7 @@
 //
 
 using System;
+using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 
@@ -81,7 +82,8 @@ namespace NMapi.Events {
 		[Obsolete]
 		public static Notification Decode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: Notification");
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: Notification");
 			Notification notify = null;
 			var eventType = (NotificationEventType) xdr.XdrDecodeInt ();
 			switch (eventType) {
@@ -105,5 +107,70 @@ namespace NMapi.Events {
 		public abstract object Clone ();
 	
 	}
+	
+	
+	public partial class ErrorNotification
+	{
+		public override string ToString ()
+		{
+			return "{ErrorNotification: TODO !}";
+		}
+	}
+	
+	
+	public partial class NewMailNotification
+	{
+		public override string ToString ()
+		{
+			return "{NewMailNotification: TODO !}";
+		}
+	}
+	
+	
+	public partial class ObjectNotification
+	{
+		public override string ToString ()
+		{
+			return "{ObjectNotification: TODO !}";
+		}
+	}
+	
+	
+	public partial class TableNotification
+	{
+		public override string ToString ()
+		{
+			StringBuilder builder = new StringBuilder ();
+			
+			builder.Append ("{TableNotification: ");
+			builder.Append (TableEvent);
+			builder.Append (", HResult: ");
+			builder.Append (HResult);
+			builder.Append (", PropIndex: ");
+			builder.Append (PropIndex);
+			builder.Append (", PropPrior:");
+			builder.Append (PropPrior);
+			builder.Append ("}");
+			return builder.ToString ();
+		}
+	}
+	
+	
+	public partial class ExtendedNotification
+	{
+		public override string ToString ()
+		{
+			return "{ExtendedNotification: TODO !}";
+		}
+	}
+	
+	
+	public partial class StatusObjectNotification
+	{
+		public override string ToString ()
+		{
+			return "{StatusObjectNotification: TODO !}";
+		}
+	}	
 
 }

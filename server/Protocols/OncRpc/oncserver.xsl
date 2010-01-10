@@ -62,7 +62,8 @@ namespace NMapi.Server {
 		public override <xsl:value-of select="@name" />_res <xsl:value-of select="@name" />_1 (
 			OncRpcCallInformation _call, <xsl:value-of select="@name" />_arg _arg1)
 		{
-			Trace.WriteLine (" ==> START CALL <xsl:value-of select="@name" />");
+			if (oncServerTrace.Enabled)
+				Trace.WriteLine (" ==> START CALL <xsl:value-of select="@name" />");
 			var _response = new <xsl:value-of select="@name" />_res ();
 			try {<xsl:apply-templates select="extract" />
 				<xsl:value-of select="pre" />
@@ -88,7 +89,8 @@ namespace NMapi.Server {
 					_response.obj = new HObject (0); // avoid not-null exception.
 				</xsl:if>
 			}
-			Trace.WriteLine (" ==> END CALL <xsl:value-of select="@name" />");
+			if (oncServerTrace.Enabled)
+				Trace.WriteLine (" ==> END CALL <xsl:value-of select="@name" />");
 			return _response;
 		}
 
@@ -97,9 +99,11 @@ namespace NMapi.Server {
 	public override <xsl:value-of select="@name" />_res <xsl:value-of select="@name" />_1 (
 		OncRpcCallInformation _call, <xsl:value-of select="@name" />_arg _arg1)
 	{
-		Trace.WriteLine (" ==> START DUMMY CALL <xsl:value-of select="@name" />");
+		if (oncServerTrace.Enabled)
+			Trace.WriteLine (" ==> START DUMMY CALL <xsl:value-of select="@name" />");
 		var _response = new <xsl:value-of select="@name" />_res ();
-		Trace.WriteLine (" ==> END DUMMY CALL <xsl:value-of select="@name" />");		
+		if (oncServerTrace.Enabled)
+			Trace.WriteLine (" ==> END DUMMY CALL <xsl:value-of select="@name" />");		
 		return _response;
 	}
 	

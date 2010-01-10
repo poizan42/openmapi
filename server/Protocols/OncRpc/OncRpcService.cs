@@ -214,43 +214,48 @@ namespace NMapi.Server {
 
 
 
-		public override Session_ABGetChangeTime_res Session_ABGetChangeTime_1 (
-			OncRpcCallInformation call, Session_ABGetChangeTime_arg arg1)
-		{
-			int flags = arg1.ulFlags;
 
-			Trace.WriteLine (" ==> Session_ABGetChangeTime_1 - NOT IMPLEMENTED!");
-			var res = new Session_ABGetChangeTime_res ();
-			res.ft = new FileTime (DateTime.Today); // TODO: STUB!
-			return res;
+
+
+
+		////////////// ////////////// AB METHODS ////////////// //////////////
+
+		
+		private ABUSERLIST ConvertAddressObjects (Address[] addresses)
+		{
+			return ConvertAddressObjects (addresses, 0);
 		}
 		
-		
-		public override Session_ABGetUserList_res Session_ABGetUserList_1 (
-			OncRpcCallInformation call, Session_ABGetUserList_arg arg1)
+		private ABUSERLIST ConvertAddressObjects (Address[] addresses, int index)
 		{
-			int flags = arg1.ulFlags;
-
-			Trace.WriteLine (" ==> Session_ABGetUserList_1 - NOT IMPLEMENTED!");
-			var res = new Session_ABGetUserList_res (); // STUB
+			var result = new ABUSERLIST ();
+			result.pData = ConvertAddressObject (addresses [index]);
+				result.pNext = null;
+			if (addresses.Length-1 != index)
+				result.pNext = ConvertAddressObjects (addresses, index+1);
+			return result;
+		}
 			
-			res.pList = new ABUSERLIST (); // TODO: STUB!
-			res.pList.pData = MakeStubData ();
-			res.pList.pNext = null;
-
-			return res;
+		private ABUSERDATA ConvertAddressObject (Address address)
+		{
+			var ud = new ABUSERDATA ();
+			ud.pwszId = new UnicodeAdapter (address.UserId);
+			ud.pwszDisplay = new UnicodeAdapter (address.DisplayName);
+			ud.pwszAdrType = new UnicodeAdapter (address.AddrType);
+			ud.pwszSmtpAdr = new UnicodeAdapter (address.SmtpAddress);
+			ud.pwszIntAdr = new UnicodeAdapter (address.InternalAddress);
+			ud.eid = new SBinary (address.EID);
+			ud.searchKey = new SBinary (address.SearchKey);
+			return ud;
 		}
 		
+		
+		
+		/*
+		
+		
+		
 
-		// TODO: stubbed !!!!!!!!!!!
-		public override Session_ABGetUserData_res Session_ABGetUserData_1 (
-			OncRpcCallInformation call, Session_ABGetUserData_arg arg1)
-		{
-			Trace.WriteLine (" ==> Session_ABGetUserData_1 - NOT IMPLEMENTED!");
-			var res = new Session_ABGetUserData_res (); // STUB
-			res.pData = MakeStubData ();
-			return res;
-		}
 		
 		// debug
 		private ABUSERDATA MakeStubData ()
@@ -276,6 +281,13 @@ namespace NMapi.Server {
 			ud.searchKey = new SBinary (searchKey);
 			return ud;
 		}
+		
+		
+		
+		*/
+		
+		
+		
 		
 	}
 

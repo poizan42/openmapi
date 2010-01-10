@@ -22,42 +22,57 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 	
 	/// <summary>
-	///  
+	///  Valid characters are only the letters a-z and 0-9. Uppercase should be used.
 	/// </summary>
 	public static class AddressTypes
 	{
-		
+
 		/// <summary>
-		///  
+		///  Checks if two types match; They do if the strings are the same, 
+		///  ignoring upper/lower case.
 		/// </summary>
+		/// <returns>Returns true if the address types match.</returns>
+		/// <param name="adrType1">First address to be compared.</param>
+		/// <param name="adrType2">Second address to be compared.</param>
+		public static bool Match (string adrType1, string adrType2)
+		{
+			if (adrType1 == null || adrType2 == null)
+				return (adrType1 == adrType2);
+			return adrType1.ToUpper () == adrType2.ToUpper ();
+		}
+		
+		
+		/// <summary>Internet E-Mail/SMTP address type identifier.</summary>
 		public const string Smtp = "SMTP";
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Exchange (Mapi-Store-Internal) address type identifier.</summary>
 		public const string Ex = "EX";
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		public const string X400 = "X400";
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		public const string LotusNotes = "NOTES";
+
+		/// <summary></summary>
+		public const string MSPeer = "MSPEER"; // really?
+		
+		/// <summary></summary>
+		public const string PROFS = "PROFS"; // really?
+		
+		/// <summary></summary>
+		public const string MHS = "MHS"; // really?
+		
+		/// <summary>Fax address type identifier.</summary>
+		public const string Fax = "FAX";
+		
+		/// <summary>MAPI Personal distribution list addresstype identifier.</summary>
+		public const string MapiPDL = "MAPIPDL";
+
 	}
 	
 }

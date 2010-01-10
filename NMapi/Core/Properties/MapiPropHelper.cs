@@ -75,7 +75,7 @@ namespace NMapi.Properties {
 		///  A helper to set one property. 
 		/// </summary>
 		/// <param name="prop">The property to set.</param>
-		/// <exception cref="MapiException">Throws MapiException</exception>xxxxx
+		/// <exception cref="MapiException">Throws MapiException</exception>
 		public void HrSetOneProp (PropertyValue prop)
 		{
 			PropertyValue [] props = new PropertyValue [] { prop };

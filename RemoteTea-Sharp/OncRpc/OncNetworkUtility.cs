@@ -29,6 +29,7 @@
 //
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -121,19 +122,19 @@ namespace CompactTeaSharp
 			
 			public override void WriteByte (byte data)
 			{
-				Console.WriteLine ("WriteByte ()");
+				Trace.WriteLine ("onc-rpc: WriteByte ()");
 				base.WriteByte (data);
 			}
 			
 			public override int ReadByte ()
 			{
-				Console.WriteLine ("ReadByte ()");
+				Trace.WriteLine ("onc-rpc: ReadByte ()");
 				return base.ReadByte ();
 			}
 			
 			public override int Read (byte[] buffer, int offset, int count)
 			{
-				Console.WriteLine ("Read ()");
+				Trace.WriteLine ("onc-rpc: Read ()");
 				return base.Read (buffer, offset, count);
 			}	
 			

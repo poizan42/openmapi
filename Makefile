@@ -34,10 +34,11 @@ NMAPI_GENERATED_SOURCES = \
 		NMapi/Core/NMapi_Generated.cs NMapi/Core/RemoteCall_Generated.cs \
 		NMapi/Data/Data_Generated.cs NMapi/Data/Data_Props_Generated.cs \
 		NMapi/Core/Exceptions_Generated.cs NMapi/Data/PropertyTag_Generated.cs \
-		NMapi/Flags/Properties/Property_Generated.cs
-#		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
-#		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
-#		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
+		NMapi/Data/NamedPropDef_Generated.cs NMapi/Flags/Properties/Named_Generated.cs \
+		NMapi/Flags/Properties/Property_Generated.cs \
+		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
+		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
+		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
 
 CECILDLL = bin/Mono.Cecil.dll
 NMAPIDLL = bin/NMapi.dll
@@ -103,7 +104,13 @@ NMapi/Core/Exceptions_Generated.cs: NMapi/Core/xslt/exceptions.xsl NMapi/Flags/e
 NMapi/Data/PropertyTag_Generated.cs: NMapi/Data/xslt/cs/tags.xsl NMapi/Data/Props.xml
 	$(XSLTPROC) -o $@ $^
 
+NMapi/Data/NamedPropDef_Generated.cs: NMapi/Data/xslt/cs/named.xsl NMapi/Data/Props.xml
+	$(XSLTPROC) -o $@ $^
+
 NMapi/Flags/Properties/Property_Generated.cs: NMapi/Flags/xslt/cs/properties.xsl NMapi/Flags/Properties/properties.xml
+	$(XSLTPROC) -o $@ $^
+
+NMapi/Flags/Properties/Named_Generated.cs: NMapi/Flags/xslt/cs/named.xsl NMapi/Flags/Properties/named.xml
 	$(XSLTPROC) -o $@ $^
 
 NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs: NMapi/Flags/xslt/cs/properties.xsl NMapi/Flags/Custom/Microsoft/exchange.xml

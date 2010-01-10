@@ -53,6 +53,8 @@ namespace NMapi {
 			this.connection = connection;
 		}
 		
+		// TODO: add equality comparison!!!, etc. ..
+		
 		public override string ToString ()
 		{
 			return "" + connection;

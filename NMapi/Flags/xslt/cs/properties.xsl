@@ -53,9 +53,9 @@ namespace <xsl:value-of select="@namespace" /> {
 				/// &lt;summary&gt;
 				///  A strongly-typed '<xsl:value-of select="@name" />' property tag.
 				/// &lt;/summary&gt;
-				public static 
-					<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template><xsl:text> </xsl:text>
-					<xsl:value-of select="@name" /> = (<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template>) 
+				public static readonly 
+					<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template><xsl:text>PropertyTag </xsl:text>
+					<xsl:value-of select="@name" /> = (<xsl:call-template name="map-type"><xsl:with-param name="type" select="@type" /></xsl:call-template>PropertyTag) 
 					PropertyTag.CreatePropertyTag (<xsl:value-of select="parent::node()/@class" />.<xsl:value-of select="@name" />);			
 			</xsl:for-each>
 		}

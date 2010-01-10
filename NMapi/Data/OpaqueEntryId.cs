@@ -50,7 +50,7 @@ namespace NMapi {
 		/// </summary>
 		protected override byte[] StoreData (byte[] result)
 		{
-			Array.Copy (rest, BaseOffset, rest, 0, rest.Length);
+			Array.Copy (rest, 0, result, BaseOffset, rest.Length);
 			result = base.StoreData (result);
 			return result;
 		}

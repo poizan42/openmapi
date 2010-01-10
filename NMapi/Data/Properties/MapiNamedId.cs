@@ -94,7 +94,8 @@ namespace NMapi.Properties {
 		[Obsolete]
 		public static MapiNameId Decode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: MapiNameId");
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: MapiNameId");
 			
 			NMapiGuid guid = new LPGuid (xdr).Value;
 			MnId ulKind = (MnId) xdr.XdrDecodeInt ();
@@ -109,7 +110,8 @@ namespace NMapi.Properties {
 		
 		internal virtual void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: MapiNameId");
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrEncode called: MapiNameId");
 			// must be called by derived classes!
 			((IXdrEncodeable) new LPGuid (lpguid)).XdrEncode (xdr);
 			xdr.XdrEncodeInt ((int) UlKind);
@@ -117,6 +119,26 @@ namespace NMapi.Properties {
 		
 		internal virtual void XdrDecode (XdrDecodingStream xdr)
 		{
+		}
+
+		/// <summary>
+		///  
+		/// </summary>		
+		public bool LogicallyEquals (MapiNameId named)
+		{
+			if (named == null)
+				return false;
+			if (UlKind != named.UlKind)
+				return false;
+			
+			if (named.Guid.Equals (Guid)) {
+				if (this is StringMapiNameId)
+					return (((StringMapiNameId) this).StrName == ((StringMapiNameId) named).StrName);
+				else if (this is NumericMapiNameId)
+					return (((NumericMapiNameId) this).ID == ((NumericMapiNameId) named).ID);
+			}
+			
+			return false;
 		}
 		
 		/// <summary>

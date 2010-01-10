@@ -22,18 +22,19 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
+using System;
+
+using System.IO;
+using System.Net.Sockets;
+using CompactTeaSharp;
+using NMapi.Flags;
+
+using System.ServiceModel;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+
+
 namespace NMapi {
-
-	using System;
-
-	using System.IO;
-	using System.Net.Sockets;
-	using CompactTeaSharp;
-	using NMapi.Flags;
-
-	using System.ServiceModel;
-	using System.Runtime.Serialization;
-	using System.Security.Permissions;
 
 
 
@@ -60,6 +61,13 @@ namespace NMapi {
 	public abstract partial class MapiException : Exception
 	{
 		protected int hresult;
+		
+		private string dbgLogId;
+		private string component;
+		private int lowLevelError;
+		private int context;
+		
+		
 		private Exception exception             = null;
 		private IOException ioException         = null;
 		private SocketException socketException = null;
@@ -112,11 +120,43 @@ namespace NMapi {
 			get { return rpcException; }
 		}
 
+
+
+
+		/// <summary></summary>
+		public string Component {
+			get { return (component != null) ? component : String.Empty; }
+		}
+		
+		/// <summary></summary>
+		public int LowLevelError {
+			get { return lowLevelError; }
+		}
+		
+		/// <summary></summary>
+		public int Context {
+			get { return context; }
+		}
+		
+		/// <summary>
+		///  An ID that can be used to match debugging info (logged somewhere) 
+		///  to an exception and, in particular, to a VMAPI error message, when 
+		///  displayed by Outlook, when running a Debug-Build.
+		/// </summary>
+		public string DebuggingLogIdentifier {
+			get { return (dbgLogId != null) ? dbgLogId : String.Empty; }
+		}
+		
+		/// <summary></summary>
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		protected MapiException (SerializationInfo info, 
 			StreamingContext context) : base(info, context)
 		{
 			this.hresult = info.GetInt32 ("hresult");
+			this.component = info.GetString ("component");
+			this.lowLevelError = info.GetInt32 ("lowLevelError");
+			this.context = info.GetInt32 ("context");
+			this.dbgLogId = info.GetString ("dbgLogId");
 
 			this.exception = (Exception) info.GetValue ("exception", typeof (Exception));			// TODO!
 			this.ioException = (IOException) info.GetValue ("ioException", typeof (IOException));			// TODO!
@@ -124,6 +164,7 @@ namespace NMapi {
 			this.rpcException = (OncRpcException) info.GetValue ("rpcException", typeof (OncRpcException));			// TODO!
 		}
 
+		/// <summary></summary>
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
@@ -131,6 +172,10 @@ namespace NMapi {
 				throw new ArgumentNullException ("info");
 
 			info.AddValue ("hresult", this.hresult);
+			info.AddValue ("component", this.component);
+			info.AddValue ("lowLevelError", this.lowLevelError);
+			info.AddValue ("context", this.context);
+			info.AddValue ("dbgLogId", this.dbgLogId);
 
 			info.AddValue ("exception", this.exception);			// TODO!
 			info.AddValue ("ioException", this.ioException);			// TODO!
@@ -139,17 +184,42 @@ namespace NMapi {
 
 			base.GetObjectData (info, context);
 		}
-
-
+		
+		/// <summary>Creates an extended error from an exception.</summary>
+		/// <remarks>
+		///  Classic MAPI provides a method on each object (GetLastError) to 
+		///  retrieve extended information about an error condition, since to 
+		///  error codes returned (the HRESULT) can only contain very little info. 
+		///  OpenMapi, however, has an Exception-based error model. That means, 
+		///  that the extended info may be available directly from the exception thrown, 
+		///  IF, AND ONLY IF, it has not been transported over the network in between. 
+		///  For this case, as well as for backards-compatibility, providers MUST 
+		///  still implement GetLastError (). The "CreateExtendedError" method 
+		///  can be used by providers to construct the MapiError returned from 
+		///  that method from an exception; When you throw an exception, you should 
+		///  provide the information needed to build a meaningful extended error.
+		/// </remarks>
+		public MapiError CreateExtendedError ()
+		{
+			MapiError result = new MapiError ();
+			result.Version = 0;
+			result.Error = Error.GetErrorName (this.hresult);
+			string str = String.Empty;
+			if (dbgLogId != null) {
+				str += "[";
+				str += dbgLogId;
+				str += "] ";
+			}
+			result.Component = str + Component;
+			result.LowLevelError = LowLevelError;
+			result.Context =  Context;
+			return result;
+		}
 
 		public static MapiException Make (string msg)
 		{
 			return new MapiCallFailedException (msg);
 		}
-
-
-
-
 
 		public static MapiException Make (Exception e)
 		{

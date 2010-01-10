@@ -120,7 +120,8 @@
 		
 		internal <xsl:value-of select="$override" /> void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrEncode (xdr);</xsl:if><!-- a little hack-ish //-->
 			<xsl:apply-templates mode="encode" />
 		}
@@ -136,7 +137,8 @@
 	
 		internal <xsl:value-of select="$override" /> void XdrDecode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			<xsl:if test="parent::node()/@inherits != ''">base.XdrDecode (xdr);</xsl:if><!-- a little hack-ish //-->
 			<xsl:apply-templates mode="decode" />
 		}

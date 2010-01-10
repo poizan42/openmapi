@@ -51,6 +51,10 @@ namespace NMapi.Server {
 			request.ProxySession.LoginName = user;
 			host = request.ProxySession.Rpc.TargetHost;
 			int targetPort = request.ProxySession.Rpc.TargetPort;
+			
+			// TODO: Detect if TargetPort is the same as running port ....
+			//       => exception!
+			
 			if (targetPort > 0)
 				host +=  ":" + targetPort;
 		}

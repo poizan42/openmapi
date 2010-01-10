@@ -37,6 +37,26 @@ using NMapi.Table;
 
 namespace NMapi {
 
+	/// <summary></summary>
+	/// <remarks></remarks>
+	public static class RowEntryFlags
+	{
+		/// <summary>The row should be removed from the table.</summary>
+		public const int Add = 0x1; // ok?
+
+		/// <summary>The row should be modified in the table.</summary>
+		public const int Modify = 0x2; // ok?
+
+		/// <summary>The row should be removed from the table.</summary>
+		public const int Remove = 0x4; // ok?
+
+		/// <summary>The row should NOT be added to the table.</summary>
+		public const int Empty = 0x5;
+	}
+
+
+	// TODO: refactor !
+
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public sealed class RowEntry : IXdrAble
 	{
@@ -45,11 +65,11 @@ namespace NMapi {
 
 		[DataMember (Name="PropVals")]
 		public PropertyValue [] rgPropVals;
+		
 	
-		private const int EMPTY = 5;
-
-		public RowEntry () {
-			ulRowFlags = EMPTY;
+		public RowEntry ()
+		{
+			ulRowFlags = RowEntryFlags.Empty;
 		}
 
 		public RowEntry (XdrDecodingStream xdr)
@@ -73,7 +93,7 @@ namespace NMapi {
 		{
 			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			xdr.XdrEncodeInt (ulRowFlags);
-			if (ulRowFlags != EMPTY) {
+			if (ulRowFlags != RowEntryFlags.Empty) {
 				int i, len = rgPropVals.Length;
 				xdr.XdrEncodeInt (len);
 				for (i = 0; i < len; i++)
@@ -85,7 +105,7 @@ namespace NMapi {
 		{
 			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			ulRowFlags = xdr.XdrDecodeInt ();
-			if (ulRowFlags == EMPTY) 
+			if (ulRowFlags == RowEntryFlags.Empty) 
 				rgPropVals = null;
 			else {
 				int i, len = xdr.XdrDecodeInt ();

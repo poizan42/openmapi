@@ -105,7 +105,7 @@ namespace NMapi.Properties.Special {
 		
 			try {
 				MyMsgCopyProps (attachSource, attachDest);
-				IntProperty propVal = new MapiPropHelper (attachSource).HrGetOneProp (Property.AttachMethod) as IntProperty;
+				IntProperty propVal = attachSource.GetProperty (Property.Typed.AttachMethod) as IntProperty;
 				if (propVal.Value == ((int) Attach.EmbeddedMsg)) {
 					msgsrc = (IMessage) attachSource.OpenProperty (Property.AttachDataObj, 
 						InterfaceIdentifiers.IMessage, 0, 0);

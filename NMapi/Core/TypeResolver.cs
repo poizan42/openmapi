@@ -21,7 +21,6 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,9 +44,12 @@ using NMapi.Properties.Special;
 namespace NMapi {
 
 	/// <summary>
-	///  A helper method used to resolve C# types from assemblies 
+	///  A helper class used to resolve C# types from assemblies 
 	///  (without loading the assemblies into the current application domain.)
 	/// </summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	public sealed class TypeResolver
 	{
 		private IAssemblyResolver resolver;
@@ -61,17 +63,17 @@ namespace NMapi {
 			resolver = new DefaultAssemblyResolver ();
 		}
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name="name"></param>
+		/// <param name="version"></param>
 		public void AddAssembly (string name, string version)
 		{
 			AddAssembly (name, new Version (version));
 		}
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name="name">The name of the assembly.</param>
+		/// <param name="version">The assembly version as a string (Format: "a.b.c.d") to be loaded.</param>
 		public void AddAssembly (string name, Version version)
 		{
 			AssemblyNameReference asm = new AssemblyNameReference ();
@@ -83,15 +85,13 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="asmRef"></param>
 		public void AddAssembly (AssemblyNameReference asmRef)
 		{
 			deferredResolution.Enqueue (asmRef);
 		}
 
-		/// <summary>
-		///  
-		/// </summary>
-		public void ProcessQueue ()
+		private void ProcessQueue ()
 		{
 			while (deferredResolution.Count > 0) {
 				AssemblyNameReference asmRef = deferredResolution.Dequeue ();
@@ -101,7 +101,7 @@ namespace NMapi {
 					if (asmDef != null)
 						map [name] = asmDef;
 					else {
-						// TODO: Driver.WriteWarning 
+						// TODO: Driver.WriteWarning -- exception ?
 						Console.WriteLine ("Assembly '" + 
 							asmRef.Name + "' can't be loaded.");
 					}
@@ -109,11 +109,14 @@ namespace NMapi {
 			}
 		}
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public static string[] SplitTypeNameAndProperty (string name)
 		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
 			int index = name.LastIndexOf ('.');
 			if (index < 0)
 				throw new NotSupportedException ("Full typename required.");
@@ -123,11 +126,14 @@ namespace NMapi {
 			return result;
 		}
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name="typeName"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public TypeDefinition ResolveDefinition (string typeName)
 		{
+			if (typeName == null)
+				throw new ArgumentNullException ("typeName");
 			ProcessQueue ();
 			TypeDefinition td = null;
 			foreach (AssemblyDefinition asmDef in map.Values)
@@ -142,6 +148,8 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="typeRef"></param>
+		/// <returns></returns>
 		public TypeDefinition ResolveDefinition (TypeReference typeRef)
 		{
 			Console.WriteLine (typeRef.FullName);

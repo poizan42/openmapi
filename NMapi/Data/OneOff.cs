@@ -35,10 +35,13 @@ using NMapi.Table;
 namespace NMapi {
 	
 	// TODO: This class is a legacy from JUMAPI. It has to be rewritten.
+	// TODO: Should instead derive from the EntryId class !
 
 	/// <summary>
-	///   MAPI OneOff EntryIds.
-	/// </summary> 
+	///  Mapi One-off EntryIDs contain information about recipients that can 
+	///  not be found in the Addressbook. The data is stored directly in the 
+	///  EntryId itself.
+	/// </summary>
 	public sealed class OneOff
 	{
 		private static readonly byte[] ONE_OFF_UID = { 0x81, 0x2b, 0x1f, 0xa4, 0xbe, 
@@ -57,27 +60,29 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="bytes"></param>
 		public static bool IsOneOffEntryID (byte [] bytes)
 		{
+			if (bytes == null)
+				return false;
 			if (bytes.Length < ONE_OFF_UID.Length + 4)
 				return false;
-			for (int i = 0; i < ONE_OFF_UID.Length; i++) {
+			for (int i = 0; i < ONE_OFF_UID.Length; i++)
 				if (bytes [i+4] != ONE_OFF_UID [i])
 					return false;
-			}
 			return true;
 		}
 
 
 		/// <summary>
-		///  Get the entryid representing this OneOff.
+		///  Get the EntryId representing this OneOff.
 		/// </summary>
-		public byte [] EntryID {
+		public byte[] EntryID {
 			get { return bytes; }
 		}
 
 		/// <summary>
-		///  Get display name (PR_DISPLAY_NAME)
+		///  Get display name (Property.DisplayName)
 		/// </summary>
 		public string DisplayName {
 			get {
@@ -86,7 +91,7 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  Get the address type (PR_ADDRTYPE)
+		///  Get the address type (Property.AddrType)
 		/// </summary>
 		public string AddressType {
 			get {
@@ -95,7 +100,7 @@ namespace NMapi {
 		}
 
 		/// <summary>
-		///  Get the email address (PR_EMAIL_ADDRESS)
+		///  Get the email address (Property.EmailAddress)
 		/// </summary>
 		public string EmailAddress {
 			get {
@@ -103,13 +108,25 @@ namespace NMapi {
 			}
 		}
 
+		/// <summary>
+		///  
+		/// </summary>
+		public int Flags {
+			get {
+			    int flags = ((IsUnicode) ? Mapi.Unicode : 0) | 
+							((IsSendNoRichInfo) ? NMAPI.MAPI_SEND_NO_RICH_INFO : 0);
+				return flags;
+			}
+		}
+
+
 
 
 		/// <summary>
 		///  Create a OneOff from entryid. Assumes charset utf-8 if OneOff is not unicode.
 		/// </summary>
 		/// <param name="bytes">The entryid</param>
-		public OneOff (byte [] bytes): this (bytes, "utf-8")
+		public OneOff (byte [] bytes) : this (bytes, "utf-8")
 		{
 		}
 
@@ -123,7 +140,7 @@ namespace NMapi {
 		public OneOff (byte [] bytes, string charset)
 		{
 			if (!IsOneOffEntryID (bytes))
-				throw MapiException.Make ("invalid oneoff uid");
+				throw new MapiCallFailedException ("invalid oneoff uid");
 
 			this.bytes = bytes;
 			this.charset = charset;		
@@ -159,8 +176,8 @@ namespace NMapi {
 		/// <summary>
 		///  Create a OneOff from address information. Uses charset if MAPI_UNICODE is not specified.
 		/// </summary>
-		/// <param name="displayName"> The display name (PR_DISPLAY_NAME)</param>
-		/// <param name="addressType"> The address type (PR_ADDRESS_TYPE)</param>
+		/// <param name="displayName">The display name (PR_DISPLAY_NAME)</param>
+		/// <param name="addressType">The address type (PR_ADDRESS_TYPE)</param>
 		/// <param name="emailAddress"> The amail address (PR_EMAIL_ADDRESS)</param>
 		/// <param name="ulFlags"> (MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
 
@@ -186,8 +203,7 @@ namespace NMapi {
 				bytesName = Encoding.GetEncoding (charset).GetBytes (displayName);
 				bytesType = Encoding.GetEncoding (charset).GetBytes (addressType);
 				bytesMail = Encoding.GetEncoding (charset).GetBytes (emailAddress);
-			}
-			catch (ArgumentException e) {
+			} catch (ArgumentException e) {
 				throw MapiException.Make (new IOException ("Invalid charset!" , e));
 			}
 		
@@ -219,15 +235,22 @@ namespace NMapi {
 			len = bytesMail.Length;
 			Array.Copy (bytesMail, 0, bytes, pos, len);
 		}
-	
-		private bool IsUnicode {
+
+		public bool IsSendNoRichInfo {
+			get {
+				return (bytes[22] & 0x01) != 0;
+			}
+		}
+		
+		public bool IsUnicode {
 			get {
 				return (bytes[23] & 0x80) != 0;
 			}
 		}
-	
+		
 		private int DisplayNameOffset {
-			get {				return OFFSET_NAME;
+			get {
+				return OFFSET_NAME;
 			}
 		}
 	
@@ -270,8 +293,7 @@ namespace NMapi {
 			try {
 				return Encoding.GetEncoding (charset).GetString (strbytes);
 			} catch (Exception) {
-				throw MapiException.Make ("charset is: " + charset, 
-					Error.InvalidParameter);
+				throw new MapiInvalidParameterException ("charset is: " + charset);
 			}
 		}
 	

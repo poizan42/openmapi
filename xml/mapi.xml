@@ -724,6 +724,49 @@
 			<param type="string">id</param>
 			<param type="int">flags</param>
 		</method>
+		
+		<!-- BEGIN: AB-methods on Session object. //-->
+		
+		<method id="^Ab^Get^User^List">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^ADDRESS[]</returns>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Ab^Get^User^Data">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^ADDRESS</returns>
+			<param type="byte[]">entryId</param>
+		</method>
+		<method id="^Ab^Get^Change^Time">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^Date^Time</returns>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Ab^Get^User^Data^By^Smtp^Address">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^ADDRESS</returns>
+			<param type="string">smtpAddress</param>
+		</method>
+		<method id="^Ab^Get^User^Data^By^Internal^Address">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^ADDRESS</returns>
+			<param type="string">internalAddress</param>
+		</method>		
 	</interface>
 
 	<interface id="^I#Modify^Table" implements="^I#Base">

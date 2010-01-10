@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - JavaBeanDataSource.cs
+// openmapi.org - NMapi C# Mapi API - Debug.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -21,20 +21,23 @@
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
 //
 
-
 using System;
-using System.IO;
+using System.Diagnostics;
 
-namespace NMapi {
-
-	public interface JavaBeanDataSource
+namespace NMapi.Utility {
+	
+	/// <summary>
+	///  
+	/// </summary>
+	public static class Debug
 	{
-		string 	ContentType  { get; }
-		string Name { get; }
-		StreamReader 	InputStream  { get; }
-		StreamWriter 	OutputStream { get; }
+		
+		/// <summary>
+		///  
+		/// </summary>
+		public static readonly BooleanSwitch XdrTrace = new BooleanSwitch ("xdrTrace", 
+										"configured in application config file!");
+		
 	}
-
+	
 }
-
-

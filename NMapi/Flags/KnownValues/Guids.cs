@@ -70,6 +70,24 @@ namespace NMapi.Flags {
 		//  NamedProperty Set: The name of MAPI's property set
 		public static readonly NMapiGuid PS_MAPI = DefineOleGuid (0x00020328, 0, 0);
 
+		/// <summary>Named-Property Namespace Guid for calendar-related properties.</summary>
+		public static readonly NMapiGuid PSETID_Appointment = DefineOleGuid (0x00062002, 0, 0);
+
+		/// <summary>Named-Property Namespace Guid for task-related properties.</summary>
+		public static readonly NMapiGuid PSETID_Task = DefineOleGuid (0x00062003, 0, 0);
+
+		/// <summary>Named-Property Namespace Guid for contact-related properties.</summary>
+		public static readonly NMapiGuid PSETID_Address = DefineOleGuid (0x00062004, 0, 0);
+
+		/// <summary></summary>
+		public static readonly NMapiGuid PSETID_Common = DefineOleGuid (0x00062008, 0, 0);
+
+		/// <summary></summary>
+		public static readonly NMapiGuid PSETID_Log = DefineOleGuid (0x0006200A, 0, 0);
+
+		/// <summary>Presumably the space for arbitrary Internet-EMail-Headers ...</summary>
+		public static readonly NMapiGuid PS_INTERNET_HEADERS = DefineOleGuid (0x00020386, 0, 0);
+
 		//  NamedProperty Set: TThe name of the set of public strings
 		public static readonly NMapiGuid PS_PUBLIC_STRINGS = DefineOleGuid (0x00020329, 0, 0);
 

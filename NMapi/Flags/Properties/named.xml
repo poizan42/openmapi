@@ -1,0 +1,478 @@
+<?xml version="1.0"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - named.xml
+//
+// Copyright 2009 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+//-->
+<properties namespace="NMapi.Flags" class="NamedProperty">
+
+	<!-- 
+		Xml-Definition of named properties in the PSETID_Address property set.
+		Most of these properties are related to contact objects.
+		
+	///-->
+	<guid name="Guids.PSETID_Address">
+		
+		<named name="YomiFirstName" type="Unicode" id="0x802C">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="YomiLastName" type="Unicode" id="0x802D">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="FileUnder" type="Unicode" id="0x8005">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="FileUnderId" type="Int32" id="0x8006">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="FileUnderList" type="MvInt32" id="0x8026">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="Email1DisplayName" type="Unicode" id="0x8080">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email1AddressType" type="Unicode" id="0x8082">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email1EmailAddress" type="Unicode" id="0x8083">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email1OriginalDisplayName" type="Unicode" id="0x8084">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email1OriginalEntryId" type="Binary" id="0x8085">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+
+		
+		<named name="Email2DisplayName" type="Unicode" id="0x8090">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email2AddressType" type="Unicode" id="0x8092">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email2EmailAddress" type="Unicode" id="0x8093">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email2OriginalDisplayName" type="Unicode" id="0x8094">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email2OriginalEntryId" type="Binary" id="0x8095">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="Email3DisplayName" type="Unicode" id="0x80A0">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email3AddressType" type="Unicode" id="0x80A2">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email3EmailAddress" type="Unicode" id="0x80A3">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email3OriginalDisplayName" type="Unicode" id="0x80A4">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Email3OriginalEntryId" type="Binary" id="0x80A5">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="Fax1DisplayName" type="Unicode" id="0x80B0">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1AddressType" type="Unicode" id="0x80B2">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1EmailAddress" type="Unicode" id="0x80B3">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1EmailType" type="Unicode" id="0x80B7">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1EntryId" type="Binary" id="0x80B1">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1OriginalDisplayName" type="Unicode" id="0x80B4">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1OriginalEntryId" type="Binary" id="0x80B5">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax1RichTextFormat" type="Boolean" id="0x80B6">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="Fax2DisplayName" type="Unicode" id="0x80C0">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2AddressType" type="Unicode" id="0x80C2">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2EmailAddress" type="Unicode" id="0x80C3">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2EmailType" type="Unicode" id="0x80C7">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2EntryId" type="Binary" id="0x80C1">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2OriginalDisplayName" type="Unicode" id="0x80C4">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2OriginalEntryId" type="Binary" id="0x80C5">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax2RichTextFormat" type="Boolean" id="0x80C6">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="Fax3DisplayName" type="Unicode" id="0x80D0">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3AddressType" type="Unicode" id="0x80D2">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3EmailAddress" type="Unicode" id="0x80D3">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3EmailType" type="Unicode" id="0x80D7">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3EntryId" type="Binary" id="0x80D1">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3OriginalDisplayName" type="Unicode" id="0x80D4">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3OriginalEntryId" type="Binary" id="0x80D5">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Fax3RichTextFormat" type="Boolean" id="0x80D6">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="AddressBookProviderArrayType" type="Int32" id="0x8029">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="AddressBookProviderEmailList" type="MvInt32" id="0x8028">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		
+		
+		<named name="HomeAddressCountryCode" type="Unicode" id="0x80DA">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="HomeAddress" type="Unicode" id="0x801A">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		
+		
+		
+		<named name="WorkAddressStreet" type="Unicode" id="0x8045">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressCity" type="Unicode" id="0x8046">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressState" type="Unicode" id="0x8047">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressPostalCode" type="Unicode" id="0x8048">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressCountry" type="Unicode" id="0x8049">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressCountryCode" type="Unicode" id="0x80DB">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddress" type="Unicode" id="0x801B">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="WorkAddressPostOfficeBox" type="Unicode" id="0x804A">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+
+
+		<named name="OtherAddressCountryCode" type="Unicode" id="0x80DC">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="OtherAddress" type="Unicode" id="0x801C">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="AddressCountryCode" type="Unicode" id="0x80DD">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		
+		
+		<!-- see 	PostalAddressId.cs //-->
+		<named name="PostalAddressId" type="Int32" id="0x8022">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+
+
+		<named name="BirthdayLocal" type="SysTime" id="0x80DE">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+
+		<named name="BirthdayEventEntryId" type="Binary" id="0x804D">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="WeddingAnniversaryLocal" type="SysTime" id="0x80DF">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="AnniversaryEventEntryId" type="Binary" id="0x804E">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="YomiCompanyName" type="Unicode" id="0x802E">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="BusinessCardDisplayDefinition" type="Binary" id="0x8040">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="BusinessCardCardPicture" type="Binary" id="0x8041">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="ContactUserField1" type="Unicode" id="0x804F">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ContactUserField2" type="Unicode" id="0x8050">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ContactUserField3" type="Unicode" id="0x8051">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ContactUserField4" type="Unicode" id="0x8052">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+
+		<named name="HasPicture" type="Boolean" id="0x8015">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ReferenceEntryId" type="Binary" id="0x85BD">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="InstantMessagingAddress" type="Unicode" id="0x8062">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="FreeBusyLocation" type="Unicode" id="0x80D8">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Html" type="Unicode" id="0x802B">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ContactCharacterSet" type="Int32" id="0x8023">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="AutoLog" type="Boolean" id="0x8025">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ContactItemData" type="MvBinary" id="0x8007">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="Billing" type="Unicode" id="0x8535">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+		<named name="ReferredBy" type="Unicode" id="0x800E">
+			<summary></summary>
+			<expected-by optional="true">Ipm.Contact</expected-by>
+		</named>
+		
+	</guid>
+	
+	<guid name="Guids.PSETID_Appointment">
+		
+	</guid>
+	
+	<guid name="Guids.PSETID_Task">
+		
+	</guid>
+	
+	<guid name="Guids.PSETID_Common">
+		
+	</guid>
+	
+</properties>

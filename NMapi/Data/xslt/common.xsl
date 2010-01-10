@@ -3,7 +3,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - common.xsl
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -49,6 +49,8 @@
 		<xsl:when test="$type = 'SysTime'">FileTime</xsl:when>
 		<xsl:when test="$type = 'ClsId'">NMapiGuid</xsl:when>
 		<xsl:when test="$type = 'Binary'">SBinary</xsl:when>
+		<xsl:when test="$type = 'Restriction'">Restriction</xsl:when>
+		<xsl:when test="$type = 'Actions'">Actions</xsl:when>
 		<xsl:when test="$type = 'MvInt16'">short[]</xsl:when>
 		<xsl:when test="$type = 'MvInt32'">int[]</xsl:when>
 		<xsl:when test="$type = 'MvFloat'">float[]</xsl:when>
@@ -72,35 +74,37 @@
 <xsl:template name="map-type">
 	<xsl:param name="type" />
 	<xsl:choose>
-		<xsl:when test="$type = 'Unspecified'">XPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Null'">NullPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int16'">ShortPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int32'">IntPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Float'">FloatPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Double'">DoublePropertyTag</xsl:when>
-		<xsl:when test="$type = 'Currency'">CurrencyPropertyTag</xsl:when>
-		<xsl:when test="$type = 'AppTime'">AppTimePropertyTag</xsl:when>
-		<xsl:when test="$type = 'Error'">ErrorPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Boolean'">BooleanPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Object'">ObjectPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Int64'">LongPropertyTag</xsl:when>
-		<xsl:when test="$type = 'String8'">String8PropertyTag</xsl:when>
-		<xsl:when test="$type = 'Unicode'">UnicodePropertyTag</xsl:when>
-		<xsl:when test="$type = 'SysTime'">FileTimePropertyTag</xsl:when>
-		<xsl:when test="$type = 'ClsId'">GuidPropertyTag</xsl:when>
-		<xsl:when test="$type = 'Binary'">BinaryPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt16'">ShortArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt32'">IntArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvFloat'">FloatArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvDouble'">DoubleArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvCurrency'">CurrencyArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvAppTime'">AppTimeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvSysTime'">FileTimeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvString8'">String8ArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvBinary'">BinaryArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvUnicode'">UnicodeArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvClsId'">GuidArrayPropertyTag</xsl:when>
-		<xsl:when test="$type = 'MvInt64'">LongArrayPropertyTag</xsl:when>
+		<xsl:when test="$type = 'Unspecified'">X</xsl:when>
+		<xsl:when test="$type = 'Null'">Null</xsl:when>
+		<xsl:when test="$type = 'Int16'">Short</xsl:when>
+		<xsl:when test="$type = 'Int32'">Int</xsl:when>
+		<xsl:when test="$type = 'Float'">Float</xsl:when>
+		<xsl:when test="$type = 'Double'">Double</xsl:when>
+		<xsl:when test="$type = 'Currency'">Currency</xsl:when>
+		<xsl:when test="$type = 'AppTime'">AppTime</xsl:when>
+		<xsl:when test="$type = 'Error'">Error</xsl:when>
+		<xsl:when test="$type = 'Boolean'">Boolean</xsl:when>
+		<xsl:when test="$type = 'Object'">Object</xsl:when>
+		<xsl:when test="$type = 'Int64'">Long</xsl:when>
+		<xsl:when test="$type = 'String8'">String8</xsl:when>
+		<xsl:when test="$type = 'Unicode'">Unicode</xsl:when>
+		<xsl:when test="$type = 'SysTime'">FileTime</xsl:when>
+		<xsl:when test="$type = 'ClsId'">Guid</xsl:when>
+		<xsl:when test="$type = 'Binary'">Binary</xsl:when>
+		<xsl:when test="$type = 'Restriction'">Restriction</xsl:when>
+		<xsl:when test="$type = 'Actions'">Actions</xsl:when>
+		<xsl:when test="$type = 'MvInt16'">ShortArray</xsl:when>
+		<xsl:when test="$type = 'MvInt32'">IntArray</xsl:when>
+		<xsl:when test="$type = 'MvFloat'">FloatArray</xsl:when>
+		<xsl:when test="$type = 'MvDouble'">DoubleArray</xsl:when>
+		<xsl:when test="$type = 'MvCurrency'">CurrencyArray</xsl:when>
+		<xsl:when test="$type = 'MvAppTime'">AppTimeArray</xsl:when>
+		<xsl:when test="$type = 'MvSysTime'">FileTimeArray</xsl:when>
+		<xsl:when test="$type = 'MvString8'">String8Array</xsl:when>
+		<xsl:when test="$type = 'MvBinary'">BinaryArray</xsl:when>
+		<xsl:when test="$type = 'MvUnicode'">UnicodeArray</xsl:when>
+		<xsl:when test="$type = 'MvClsId'">GuidArray</xsl:when>
+		<xsl:when test="$type = 'MvInt64'">LongArray</xsl:when>
 	</xsl:choose>
 </xsl:template>
 

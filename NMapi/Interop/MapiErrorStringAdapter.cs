@@ -81,7 +81,8 @@ namespace NMapi.Interop {
 		// throws OncRpcException, IOException 
 		public void XdrEncode (XdrEncodingStream xdr)
 		{
-			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
 			if (value != null) {
 				xdr.XdrEncodeBoolean (true);
 				xdr.XdrEncodeInt (value.Version);
@@ -97,7 +98,8 @@ namespace NMapi.Interop {
 		[Obsolete]
 		public void XdrDecode (XdrDecodingStream xdr)
 		{
-			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			if (!xdr.XdrDecodeBoolean ())
 				value = null;
 			else {

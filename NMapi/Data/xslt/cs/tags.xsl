@@ -86,7 +86,7 @@ namespace NMapi {
 		/// &lt;summary&gt;
 		///  TODO: comment!
 		/// &lt;/summary&gt;
-		public <xsl:value-of select="@id" />Tag (int tag) : base (tag) // TODO: We need to be careful here to avoid that tag with a different type are passed.
+		public <xsl:value-of select="@id" />Tag (int tag) : base (tag) // TODO: We need to be careful here to avoid that tags with a different type are passed.
 		{
 		}
 		

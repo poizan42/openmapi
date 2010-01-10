@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PropertyTag.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -105,6 +105,15 @@ namespace NMapi {
 				return (range == PropertyRange.CustomTransportEnvelopeTransmitted || 
 						range == PropertyRange.MessageClassTransmitted || 
 						range == PropertyRange.NamedTransmitted);
+			}
+		}
+		
+		/// <summary>
+		///  Returns true if the PropertyTyper of this tag is a multi-value property-type.
+		/// </summary>
+		public bool IsMultiValue {
+			get {
+				return ((int) Type & NMAPI.MV_FLAG) != 0;
 			}
 		}
 		

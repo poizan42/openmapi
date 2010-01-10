@@ -122,16 +122,24 @@ namespace NMapi {
 			if (hexString != null)
 				return hexString;
 			string ret = "";
-			for (int i = 0; i < lpb.Length; i++) {
-				int    c = ((int) lpb[i]) & 0xff;
-				string num = c.ToString ("x");;
-				if (num.Length < 2)
-					num = "0" + num;
-				ret += num;
+			if (lpb != null) {
+				for (int i = 0; i < lpb.Length; i++) {
+					int c = ((int) lpb[i]) & 0xff;
+					string num = c.ToString ("x");;
+					if (num.Length < 2)
+						num = "0" + num;
+					ret += num;
+				}
+				hexString = ret;
 			}
-			hexString = ret;
 			return ret;
 		}
+		
+		public override string ToString ()
+		{
+			return "{SBinary: " + ToHexString () + "}";
+		}
+		
 
 		public override int GetHashCode ()
 		{
@@ -162,9 +170,10 @@ namespace NMapi {
 
 		internal void XdrEncode (XdrEncodingStream xdr)
 		{
-//			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
-			Trace.WriteLine ("XdrEncode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
-			
+			if (NMapi.Utility.Debug.XdrTrace.Enabled) {
+			//			Trace.WriteLine ("XdrEncode called: " + this.GetType ().Name);
+				Trace.WriteLine ("XdrEncode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
+			}
 			if (lpb == null)
 				xdr.XdrEncodeDynamicOpaque (new byte[0]);
 			else
@@ -173,11 +182,13 @@ namespace NMapi {
 
 		internal void XdrDecode (XdrDecodingStream xdr)
 		{
-//			Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
+//			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+//				Trace.WriteLine ("XdrDecode called: " + this.GetType ().Name);
 			lpb = xdr.XdrDecodeDynamicOpaque ();
 			if (lpb.Length == 0)
 				lpb = null;
-			Trace.WriteLine ("XdrDecode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
+			if (NMapi.Utility.Debug.XdrTrace.Enabled)
+				Trace.WriteLine ("XdrDecode-DEBUG: " + ((lpb == null) ? " NULL " : new SBinary (lpb).ToHexString ()));
 		}
 		
 		/// <summary>
