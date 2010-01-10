@@ -51,7 +51,7 @@ namespace NMapi.Properties {
 		/// <param name="props"></param>
 		public PropertyCollection (PropertyValue[] props)
 		{
-			this.props = props;
+
 		}
 		
 		
@@ -148,4 +148,3 @@ namespace NMapi.Properties {
 		
 	}
 	
-}

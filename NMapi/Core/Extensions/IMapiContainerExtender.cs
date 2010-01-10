@@ -72,6 +72,7 @@ namespace NMapi {
 		///  Returns the (unicode) contents table.
 		/// </summary>
 		/// <param name="showSoftDeletes">If true, include items that are marked as soft-deleted.</param>
+		/// <param name="prop">An IMapiContainer object.</param>
 		/// <returns>The contents table of the current container.</returns>
 		/// <exception cref="MapiNoSupportException">The container does not support the contents table.</exception>
 		public static IMapiTable GetNormalContentsTable (this IMapiContainer prop, bool showSoftDeletes)
@@ -96,6 +97,7 @@ namespace NMapi {
 		///  Returns the associated (unicode) contents table.
 		/// </summary>
 		/// <param name="showSoftDeletes">If true, include items that are marked as soft-deleted.</param>
+		/// <param name="prop">An IMapiContainer object.</param>
 		/// <returns>The associated (!) contents table of the current container.</returns>
 		/// <exception cref="MapiNoSupportException">The container does not support the contents table.</exception>
 		public static IMapiTable GetAssociatedContentsTable (this IMapiContainer prop, bool showSoftDeletes)
@@ -123,6 +125,7 @@ namespace NMapi {
 		///  Returns the (unicode) hierarchy table.
 		/// </summary>		
 		/// <param name="convenientDepth">If true the hierarchy table may contain multiple levels (or not, depending on the provider).</param>		
+		/// <param name="prop">An IMapiContainer object.</param>
 		/// <returns>An IMapiTableReader object that provides access to the child containers of the current container.</returns>
 		/// <exception cref="MapiBadCharWidthException">The OpenMapi provider does not support Unicode.</exception>
 		/// <exception cref="MapiNoSupportException">The object does not support the hierarchy table.</exception>
@@ -134,6 +137,7 @@ namespace NMapi {
 		/// <summary>
 		///  Returns the (unicode) hierarchy table.
 		/// </summary>		
+		/// <param name="prop">An IMapiContainer object.</param>
 		/// <param name="convenientDepth">If true the hierarchy table may contain multiple levels (or not, depending on the provider).</param>		
 		/// <param name="showSoftDeletes">If true, objects that have been soft-deleted will be shown.</param>
 		/// <returns>An IMapiTableReader object that provides access to the child containers of the current container.</returns>

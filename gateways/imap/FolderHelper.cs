@@ -46,22 +46,63 @@ namespace NMapi.Gateways.IMAP {
 		private string currentPath;
 		private SBinary currentFolderEntryId;
 		private SequenceNumberList sequenceNumberList;
+		private IMessage imapFolderAttributesStore;
 		private	long uidNext = 0;
 		private	long uidValidity = 0;
 		private int uidNextTag = 0;
 		private int uidValidityTag = 0;
 		private static int uidPropTag = 0;
-		private static int uidPathPropTag = 0;
-		private static int uidEntryIdPropTag = 0;
+		private static int uidCreationPathPropTag = 0;
+		private static int uidCreationEntryIdPropTag = 0;
+		private static int uidCreationUIDValidityPropTag = 0;
 		private static int additionalFlagsPropTag = 0;
 
+		private static int[] propsAssociatedMessages = new int[] 
+		{
+			Property.EntryId,
+			Property.Subject
+		};
 
+		private const string ASSOCIATED_MESSAGE_IMAP_FOLDER_ATTRIBUTES = "NMapi IMAP Gateway IMAP Folder Attributes";
+
+		// this object is used as lock object for testing of SetUID method only
+		private object setUIDTestLockObject = new Object ();
+		
 		public FolderHelper (ServerConnection servCon, string path) {
 			this.servCon = servCon;
 
 			ChangeDir (path); // Change to root dir
 			sequenceNumberList = new SequenceNumberList ();
 
+		}
+
+		public void Dispose () {
+			DisposeFolderRelevantProperties ();
+		}
+		
+		public void DisposeFolderRelevantProperties ()
+		{
+			
+			if (imapFolderAttributesStore != null)
+				imapFolderAttributesStore.Dispose ();
+			imapFolderAttributesStore = null;
+			
+			servCon.State.NotificationHandler = null;
+				
+			if (currentFolderTable != null)
+				currentFolderTable.Dispose ();
+			currentFolderTable = null;
+
+			if (currentFolder != null)
+				currentFolder.Dispose ();
+			currentFolder = null;
+		}
+
+		/// <value>
+		/// use to retrieve lock object for testing of SetUID method 
+		/// </value>
+		public Object SetUIDTestLockObject {
+			get { return setUIDTestLockObject; }
 		}
 
 		/// <summary>
@@ -90,6 +131,19 @@ namespace NMapi.Gateways.IMAP {
 		/// </summary>
 		public long UIDVALIDITY {
 			get { return uidValidity; }
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		public int UIDNEXTTag {
+			get { return uidNextTag; }
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public int UIDVALIDITYTag {
+			get { return uidValidityTag; }
 		}
 
 		public SequenceNumberList SequenceNumberList { 
@@ -136,25 +190,29 @@ namespace NMapi.Gateways.IMAP {
 					return null;
 				throw;
 			}
-
-			while (true) {
-				RowSet rows = tableReader.GetRows (50);
-				if (rows.Count == 0)
-					break;
-
-				int nameIndex = -1;
-				int entryIdIndex = -1;
-				foreach (Row row in rows) {
-					if (nameIndex == -1) {
-						nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
-						entryIdIndex  = PropertyValue.GetArrayIndex (row.Props, Property.EntryId);
+			
+			using (tableReader) {
+				while (true) {
+					servCon.State.Log ("_SharedGetSubDir getRows");
+					RowSet rows = tableReader.GetRows (50);
+					servCon.State.Log ("_SharedGetSubDir getRows done");
+					if (rows.Count == 0)
+						break;
+	
+					int nameIndex = -1;
+					int entryIdIndex = -1;
+					foreach (Row row in rows) {
+						if (nameIndex == -1) {
+							nameIndex = PropertyValue.GetArrayIndex (row.Props, Property.DisplayNameW);
+							entryIdIndex  = PropertyValue.GetArrayIndex (row.Props, Property.EntryId);
+						}
+					
+						UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
+						BinaryProperty eid  = (BinaryProperty) PropertyValue.GetArrayProp (row.Props, entryIdIndex);
+	
+						if (name != null && name.Value == match)
+							return action (parent, eid.Value);
 					}
-				
-					UnicodeProperty name = (UnicodeProperty) PropertyValue.GetArrayProp (row.Props, nameIndex);
-					BinaryProperty eid  = (BinaryProperty) PropertyValue.GetArrayProp (row.Props, entryIdIndex);
-
-					if (name != null && name.Value == match)
-						return action (parent, eid.Value);
 				}
 			}
 			return null;
@@ -191,11 +249,14 @@ namespace NMapi.Gateways.IMAP {
 				return (IMapiFolder) servCon.Store.Root;
 
 			IMapiContainer container = (IMapiContainer) servCon.Store.Root;
-
+			IMapiContainer container2 = null;
+			
 			foreach (string part in parts) {
 				if (container == null)
 					break;
+				container2 = container;
 				container = GetSubDir (container, part);
+				container2.Dispose ();
 			}
 			return (IMapiFolder) container; // TODO: Container? Folder?
 		}
@@ -224,24 +285,25 @@ servCon.State.Log ("changedir1");
 				servCon.State.Log ("cd: " + path + ": No such folder.");
 				return false;
 			}
+
+			// now reset and refill variables and objects
+			DisposeFolderRelevantProperties ();
 			currentFolder = newFolder;
 			currentPath = path;
-			currentFolderTable = null;
+			uidValidity = 0;
+			uidNext = 0;
 
 			MapiPropHelper mph = new MapiPropHelper (currentFolder);
-servCon.State.Log ("changedir2");
 			BinaryProperty eid = (BinaryProperty) mph.HrGetOneProp (Property.EntryId);
-servCon.State.Log ("changedir3");
 			currentFolderEntryId = (eid != null) ? eid.Value : null;
 
 			if (currentFolderEntryId == null)
 				throw new Exception ("ServerConnection.ChangeDir: could not prepare currentFolderEntryId");
-servCon.State.Log ("changedir almost done");
-			return GetFolderProps ();
+			return GetFolderAttributes ();
 		}
 
 		
-		public string[] GetSubDirNames (IMapiContainer parent)
+		public string[] GetSubDgirNames (IMapiContainer parent)
 		{
 			List<string>  names = new List<string> ();
 			IMapiTableReader tableReader = null;
@@ -267,18 +329,26 @@ servCon.State.Log ("changedir almost done");
 			return names.ToArray ();
 		}
 
-		public bool GetFolderProps ()
+		public bool GetFolderAttributes ()
 		{
-			return _GetFolderProps (out uidValidity, out uidNext, currentFolder);
+			servCon.State.Log ("GetFolderAttributes  uidvalidity:" + uidValidity);
+			if (uidValidity > 0 && imapFolderAttributesStore != null)
+				return true;
+			
+			return _GetFolderAttributes (out uidValidity, out uidNext, currentFolder);
 		}
 
-		public bool _GetFolderProps (out long _uidValidity, out long _uidNext, IMapiFolder folder)
+		public bool _GetFolderAttributes (out long _uidValidity, out long _uidNext, IMapiFolder folder)
 		{
+			servCon.State.Log ("_GetFolderAttributes");
 			_uidValidity = 0;
 			_uidNext = 0;
+			
+			SetIMAPFolderAttributesStore ();
+			
 			try {
 				// UIDNEXT
-				IntProperty val = (IntProperty) servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UIDNEXT);
+				IntProperty val = (IntProperty) servCon.GetNamedProp (imapFolderAttributesStore , IMAPGatewayNamedProperty.UIDNEXT);
 				if (val != null) {
 					_uidNext = val.Value;
 					uidNextTag = val.PropTag;
@@ -287,7 +357,7 @@ servCon.State.Log ("changedir almost done");
 				servCon.State.Log ("uidNextTag from folder: "+ uidNextTag);
 				
 				//UIDVALIDITY
-				val = (IntProperty) servCon.GetNamedProp (folder, IMAPGatewayNamedProperty.UIDVALIDITY);
+				val = (IntProperty) servCon.GetNamedProp (imapFolderAttributesStore, IMAPGatewayNamedProperty.UIDVALIDITY);
 				if (val != null) {
 					_uidValidity = val.Value;
 					uidValidityTag = val.PropTag;
@@ -302,78 +372,171 @@ servCon.State.Log ("changedir almost done");
 			}
 		}			
 
-		private void SetUID (SequenceNumberListItem snli)
+		/// <summary>
+		/// helper method to test SetUIDTest
+		/// </summary>
+		/// <param name="snli">
+		/// A <see cref="System.Object"/>
+		/// </param>
+		public void SetUIDTest (Object snli) {
+			SetUID ((SequenceNumberListItem) snli);
+		}
+		
+		public void SetUID (SequenceNumberListItem snli)
 		{
+			IMessage message = null;
+			int countRetriesLeft = 3;
 			
-			snli.UID = UpdateNextUid();
-			snli.Path = currentPath;
-			snli.CreationEntryId = snli.EntryId;
-
-			IMapiProp message = null;
-			try {
-				message = (IMapiProp) currentFolder.OpenEntry(snli.EntryId.ByteArray, null, Mapi.Modify);
-			} catch (MapiException e) {
-				servCon.State.Log ("SetUID: uid " + snli.UID + " error: "+ e.Message  );
-				throw;
-			}
+			while (true) {
 			
-			List<PropertyValue> lv = new List<PropertyValue> ();
-			IntProperty longValue = (IntProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID);
-			longValue.Value = (int) snli.UID;
-			lv.Add (longValue);
-			
-			UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Path);
-			unicodeValue.Value = snli.Path;
-			lv.Add (unicodeValue);
-
-			BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
-			binaryValue.Value = snli.CreationEntryId;
-			lv.Add (binaryValue);
-
-			
-			servCon.State.Log ("Select: Message loaded");
-			((IMapiProp) message).SetProps(lv.ToArray ());
-
-			servCon.State.Log ("setUID");
-			
-			servCon.State.Log ("Select: Props set");
-			((IMapiProp) message).SaveChanges (0);
+				// we first (reread) the email, so we can test, if the UID-info has still
+				// not changed.
+				try {
+					message = GetMessageFromSequenceNumberListItem (snli);
+				} catch (MapiException e) {
+					servCon.State.Log ("SetUID: uid " + snli.UID + " error: "+ e.Message  );
+					throw;
+				}
 				
+				// when method is being tested, it will wait until lock of setUIDTestLockObject is
+				// released by caller
+				lock (setUIDTestLockObject) { 
+				};
+				
+				using (message) {
+					try {
+						_SetUID (snli, message);
+						return;
+					} catch (Exception e) {
+						if (countRetriesLeft == 0) {
+							servCon.State.Log ("SetUID: failed on last retry");
+							throw new Exception ("SetUID: could not update UIDNEXT: " + e.ToString ());
+						}
+	
+						// if we fail in setting the UID due to concurrent access to that email
+						// we need to reload the message and see if it is supplied with a valid UID now.
+						// Another process might have done that in the meantime. In that case we should not
+						// overwrite that UID. See _SetUID.
+						servCon.State.Log ("SetUID: failed to store new values. Retries left: " + countRetriesLeft);
+						--countRetriesLeft;
+						
+					}
+				}
+			}
 		}
 
-		internal long UpdateNextUid () {
-			// get current UIDNEXT
-			GetFolderProps ();
-			// save current uidnext
-			long luidNext = uidNext;
-
-			// update uidnext value in the store
-			List<PropertyValue> lv = new List<PropertyValue> ();
-			IntProperty longValue = new IntProperty();
-			longValue.PropTag = uidNextTag;
-			longValue.Value = (int) luidNext + 1;
-			lv.Add (longValue);
-			servCon.State.Log ("new uidnext: "+ longValue.Value);
-
-			// if not available, set UIDVALIDITY
-			if (uidValidity == 0) {
-				longValue = new IntProperty ();
-				longValue.PropTag = uidValidityTag;
-				DateTime dt = DateTime.Now;
-				// this gives us UIDVALIDITYs that are about 1 second sharp for 130 years starting from Nov. 2008
-				longValue.Value = (int) ((dt.Ticks >> 22) & 0xFFFFFFFF) - 2^29;
+		private void _SetUID (SequenceNumberListItem snli, IMessage message) {
+			
+			// refill snli with the values of the passed messages
+			SequenceNumberListItemFromIMessage (snli, message);
+			
+			// do changes only, if new values do not pass test for valid UID information
+			if (!TestSNLIUID (snli)) {
+			
+				SequenceNumberListItem snliLocal = new SequenceNumberListItem ();
+				
+				// it is important, that we increase UIDNEXT every time we try to set an UID to a message
+				// Once a UIDNEXT is communicated to a client, any new message must have an UID >= that UIDNEXT
+				// So, in any conflict situation that might appear while setting an UID that causes a retry
+				// we need to fetch a new UID.
+				snliLocal.UID = UpdateUIDNEXT();
+				snliLocal.CreationPath = currentPath;
+				snliLocal.CreationEntryId = snli.EntryId;
+				snliLocal.CreationUIDValidity = uidValidity;
+	
+				List<PropertyValue> lv = new List<PropertyValue> ();
+				IntProperty longValue = (IntProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID);
+				longValue.Value = (int) snliLocal.UID;
 				lv.Add (longValue);
-				servCon.State.Log ("new uidvalidity: "+ longValue.Value);
+				
+				UnicodeProperty unicodeValue = (UnicodeProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_Path);
+				unicodeValue.Value = snliLocal.CreationPath;
+				lv.Add (unicodeValue);
+	
+				BinaryProperty binaryValue = (BinaryProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_EntryId);
+				binaryValue.Value = snliLocal.CreationEntryId;
+				lv.Add (binaryValue);
+	
+				longValue = (IntProperty) servCon.GetNamedPropFrame (currentFolder, IMAPGatewayNamedProperty.UID_Creation_UIDValidity);
+				longValue.Value = (int) snliLocal.CreationUIDValidity;
+				lv.Add (longValue);
+	
+				
+				servCon.State.Log ("SetUID: Message loaded");
+				message.SetProps(lv.ToArray ());
+	
+				servCon.State.Log ("setUID");
+
+				servCon.State.Log ("SetUID: Props set");
+				message.SaveChanges (0);
+				
+				// now update snli, as saving to the store has succeeded
+				snli.UID = snliLocal.UID;
+				snli.CreationPath = snliLocal.CreationPath;
+				snli.CreationEntryId = snliLocal.CreationEntryId;
+				snli.CreationUIDValidity = snliLocal.CreationUIDValidity;
+				
 			}
-
+		}
+		
+		public long UpdateUIDNEXT () {
+			int countRetrysLeft = 3;
+			long luidNext = 0;
+			long luidValidity = 0;
 			
-			currentFolder.SetProps(lv.ToArray ());
-			currentFolder.SaveChanges (0);
+			while (true) {
+				// get folder
+				GetFolderAttributes ();
+				// save current uidnext
+				luidNext = uidNext;
+				luidValidity = uidValidity;
+	
+				// update uidnext value in memory and attributes store
+				List<PropertyValue> lv = new List<PropertyValue> ();
+				IntProperty longValue = new IntProperty();
+				longValue.PropTag = uidNextTag;
+				longValue.Value = (int) uidNext + 1;
+				lv.Add (longValue);
+				servCon.State.Log ("UpdateUIDNEXT: new uidnext: "+ longValue.Value);
+	
+				// if not available, set UIDVALIDITY
+				if (uidValidity == 0) {
+					// this gives us UIDVALIDITYs that are about 1 second sharp for 130 years starting from Nov. 2008
+					DateTime dt = DateTime.Now;
+					luidValidity = ((dt.Ticks >> 22) & 0xFFFFFFFF) - 2^29;
+					
+					longValue = new IntProperty ();
+					longValue.PropTag = uidValidityTag;
+					longValue.Value = (int) luidValidity;
+					lv.Add (longValue);
+					servCon.State.Log ("UpdateUIDNEXT: new uidvalidity: "+ longValue.Value);
+				}
+	
+				try {
+					imapFolderAttributesStore.SetProps(lv.ToArray ());
+					imapFolderAttributesStore.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+					
+					uidNext ++;
+					uidValidity = luidValidity;
+					
+					return luidNext;
+					
+				} catch (Exception e) {
+					if (countRetrysLeft == 0) {
+						servCon.State.Log ("UpdateUIDNEXT: failed on last retry");
+						throw new Exception ("UpdateUIDNEXT: could not update UIDNEXT: " + e.ToString ());
+					}
 
-			//re-get UIDNEXT with updated value
-			GetFolderProps ();
-			
-			return luidNext;
+					servCon.State.Log ("UpdateUIDNEXT: failed to store new values. Retries left: " + countRetrysLeft);
+					--countRetrysLeft;
+
+					// now reset attribute store and start over. GetFolderProps will reload the attribute store.
+					// That is required, as we want to keep it with NMAPI.KEEP_OPEN_READWRITE to save reloading
+					// it for any updates until we encounter another conflict.
+					imapFolderAttributesStore.Dispose ();
+					imapFolderAttributesStore = null;
+				}
+			}
 		}
 		
 
@@ -385,26 +548,9 @@ servCon.State.Log ("changedir almost done");
 		public SequenceNumberList _BuildSequenceNumberList (IMapiFolder folder)
 		{
 			IMapiTable dummyTable;
-			return _BuildSequenceNumberList (out dummyTable, folder);
-		}
-
-		public PropertyTag[] PropTagsForSequenceNumberList (IMapiProp iMapiProp)
-		{
-			if (uidPropTag == 0 || uidPathPropTag == 0 || uidEntryIdPropTag == 0 || additionalFlagsPropTag == 0) {
-				uidPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID).PropTag;
-				uidPathPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Path).PropTag;
-				uidEntryIdPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
-				additionalFlagsPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
-			}
-
-			int [] propTags = new int[] 
-			{ 
-				Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag,
-				uidPathPropTag, uidEntryIdPropTag
-			}
-			.Union (FlagHelper.PropsFlagProperties).ToArray ();
-
-			return PropertyTag.ArrayFromIntegers (propTags);
+			SequenceNumberList snl = _BuildSequenceNumberList (out dummyTable, folder);
+			dummyTable.Dispose ();
+			return snl;
 		}
 
 		public SequenceNumberList _BuildSequenceNumberList (out IMapiTable currentTable, IMapiFolder folder)
@@ -425,7 +571,9 @@ servCon.State.Log ("changedir almost done");
 			
 			servCon.State.Log ("Select1");
 			while (true) {
+				servCon.State.Log ("Select batch");
 				RowSet rows = currentTable.QueryRows (50, Mapi.Unicode);
+				servCon.State.Log ("Select batch done");
 				if (rows.Count == 0)
 					break;
 				foreach (Row row in rows) {
@@ -435,10 +583,37 @@ servCon.State.Log ("changedir almost done");
 			return snl;
 		}
 
-		internal SequenceNumberListItem SequenceNumberListItemFromIMessage (IMessage im)
+		public PropertyTag[] PropTagsForSequenceNumberList (IMapiProp iMapiProp)
+		{
+			if (uidPropTag == 0 || uidCreationPathPropTag == 0 || uidCreationEntryIdPropTag == 0 || uidCreationUIDValidityPropTag == 0
+			    || additionalFlagsPropTag == 0) {
+				uidPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID).PropTag;
+				uidCreationPathPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Creation_Path).PropTag;
+				uidCreationEntryIdPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Creation_EntryId).PropTag;
+				uidCreationUIDValidityPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.UID_Creation_UIDValidity).PropTag;
+				additionalFlagsPropTag = servCon.GetNamedPropFrame (iMapiProp, IMAPGatewayNamedProperty.AdditionalFlags).PropTag;
+			}
+
+			int [] propTags = new int[] 
+			{ 
+				Property.EntryId, Property.InstanceKey, Property.Subject, uidPropTag,
+				uidCreationPathPropTag, uidCreationEntryIdPropTag, uidCreationUIDValidityPropTag
+			}
+			.Union (FlagHelper.PropsFlagProperties).ToArray ();
+
+			return PropertyTag.ArrayFromIntegers (propTags);
+		}
+
+		public SequenceNumberListItem SequenceNumberListItemFromIMessage (IMessage im)
 		{
 			PropertyValue[] props = im.GetProps (PropTagsForSequenceNumberList (im), Mapi.Unicode);
 			return _BuildSequenceNumberListItem (props);
+		}
+
+		public SequenceNumberListItem SequenceNumberListItemFromIMessage (SequenceNumberListItem snli, IMessage im)
+		{
+			PropertyValue[] props = im.GetProps (PropTagsForSequenceNumberList (im), Mapi.Unicode);
+			return _UpdateSequenceNumberListItem (snli, props);
 		}
 
 		public SequenceNumberListItem AppendAndFixNewMessage (IMessage im)
@@ -448,17 +623,23 @@ servCon.State.Log ("changedir almost done");
 			sequenceNumberList.Add (snli);
 			return snli;
 		}
+		
+		public IMessage GetMessageFromSequenceNumberListItem (SequenceNumberListItem snli) {
+			return (IMessage) currentFolder.OpenEntry(snli.EntryId.ByteArray, null, Mapi.Modify);
+		}
 
 		internal SequenceNumberListItem _BuildSequenceNumberListItem (PropertyValue[] props)
 		{
-			servCon.State.Log ("Select5");
-			SequenceNumberListItem snli = new SequenceNumberListItem ();
+			return _UpdateSequenceNumberListItem (new SequenceNumberListItem (), props);
+		}
+		
+		internal SequenceNumberListItem _UpdateSequenceNumberListItem (SequenceNumberListItem snli, PropertyValue[] props)
+		{
+			
 			BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(props, 0);
 			
-			servCon.State.Log ("Select5a");
 			if (entryId != null) 
 				snli.EntryId = entryId.Value;
-			servCon.State.Log ("Select5b");
 			
 			PropertyValue val = PropertyValue.GetArrayProp(props, 1);
 			if (val != null) snli.InstanceKey = ((BinaryProperty) val).Value;
@@ -467,22 +648,25 @@ servCon.State.Log ("changedir almost done");
 			if (val != null) snli.UID = ((IntProperty) val).Value;
 			
 			val = PropertyValue.GetArrayProp(props, 4);
-			if (val != null) snli.Path = ((UnicodeProperty) val).Value;
+			if (val != null) snli.CreationPath = ((UnicodeProperty) val).Value;
 			
 			val = PropertyValue.GetArrayProp(props, 5);
 			if (val != null) snli.CreationEntryId = ((BinaryProperty) val).Value;
 			
 			val = PropertyValue.GetArrayProp(props, 6);
-			if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
-Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
+			if (val != null) snli.CreationUIDValidity = ((IntProperty) val).Value;
 			
 			val = PropertyValue.GetArrayProp(props, 7);
+			if (val != null) snli.MsgStatus = (ulong) ((IntProperty) val).Value;
+//			servCon.State.Log ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
+			
+			val = PropertyValue.GetArrayProp(props, 8);
 			if (val != null) snli.MessageFlags = (ulong) ((IntProperty) val).Value;
 
-			val = PropertyValue.GetArrayProp(props, 8);
+			val = PropertyValue.GetArrayProp(props, 9);
 			if (val != null) snli.FlagStatus = (ulong) ((IntProperty) val).Value;
 
-			val = PropertyValue.GetArrayProp(props, 9);
+			val = PropertyValue.GetArrayProp(props, 10);
 			try {
 				if (val != null) 
 					snli.AdditionalFlags = new List<string> ((string []) ((UnicodeArrayProperty) val).Value);
@@ -496,23 +680,62 @@ Console.WriteLine ("MsgStatus: " + snli.MsgStatus + "UID: " + snli.UID);
 			return snli;
 		}
 
+		/// <summary>
+		/// search for mails, that need to get a new UID
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.Int32"/>
+		/// </returns>
 		internal int FixUIDsInSequenceNumberList ()
 		{
-			var query = from snl in sequenceNumberList
-						where snl.UID == 0 || 
-								snl.Path != currentPath ||
-								!servCon.CompareEntryIDs (snl.CreationEntryId.ByteArray, snl.EntryId.ByteArray)
-						select snl;
-			int cnt = query.Count();
+			int cnt = 0;
+			var query = from snli in sequenceNumberList
+						where !TestSNLIUID (snli)
+						select snli;
+
+			servCon.State.Log ("FixUIDsInSequenceNumberList 1");
 			
 			foreach (SequenceNumberListItem snli in query) {
-servCon.State.Log ("FixUIDsIn");
+				servCon.State.Log ("FixUIDsInSequenceNumberList Loop");
 				SetUID (snli);
 				snli.Recent = true;
+				cnt ++;
 			}
+			servCon.State.Log ("FixUIDsInSequenceNumberList 2");
 
 			sequenceNumberList.Sort ();
+			servCon.State.Log ("FixUIDsInSequenceNumberList 3");
 			return cnt;
+		}
+		
+		/// <summary>
+ 		/// * check UID=0 for emails without UID
+		/// * check CreationPath being different from the path of the folder for emails 
+		/// which have been moved into this folder by a MAPI tool. An existing UID must
+		/// be replaced in that case
+		/// * check CreationEntryId being different from existing entry id for mails
+		/// which have been copied inside this folder by a MAPI tool. An existing UID must 
+		/// be replaced in that case
+		/// * check CreationUIDValidity being different from current UIDVALIDITY of folder
+		/// for the case that UIDVALIDITY has been lost and needed to be recreated. An 
+		/// existing UID must be replaced in that case
+		/// </summary>
+		/// <param name="snli">
+		/// A <see cref="SequenceNumberListItem"/>
+		/// </param>
+		/// <returns>
+		/// A <see cref="System.Boolean"/>
+		/// </returns>
+		internal bool TestSNLIUID (SequenceNumberListItem snli) {
+			
+			bool result =  snli.UID != 0 && 
+						snli.CreationPath == currentPath &&
+						servCon.CompareEntryIDs (snli.CreationEntryId.ByteArray, snli.EntryId.ByteArray) &&
+						snli.CreationUIDValidity == uidValidity;
+			
+//			servCon.State.Log ("TestSNLIUID, UID: " + snli.UID + " Testresult: " + result);
+			
+			return result;
 		}
 
 		internal int SequenceNumberOf (SequenceNumberListItem snli)
@@ -669,10 +892,6 @@ servCon.State.Log ("FixUIDsIn");
 
 		public int RebuildSequenceNumberListPlusUIDFix ()
 		{
-			// lock this part against any other Session, that wants to execute this as well 
-			// (in case they try to update their table of the same mailbox and conflicts occur)
-			//lock (IMAPConnectionState.LockObject) 
-				{
 			int retrys = 2;
 			while (retrys > 0) {
 
@@ -685,6 +904,7 @@ servCon.State.Log ("FixUIDsIn");
 					// fix UIDS in Messagesif missing or broken
 					servCon.State.Log ("fixUIDs");
 					int recent = FixUIDsInSequenceNumberList ();
+					servCon.State.Log ("fixUIDs done");
 					return recent;
 				} catch (MapiException e) {
 					servCon.State.Log ("RebuildSequenceNumberListPlusUIDFix, Exception: " + e.Message);
@@ -693,17 +913,64 @@ servCon.State.Log ("FixUIDsIn");
 					Thread.Sleep(500);
 				}
 			}
-				}
 			return 0; // should never be reached
 		}						
 
-		public void Dispose ()
+		
+		public IMessage SetIMAPFolderAttributesStore ()
 		{
-			if (currentFolderTable != null)
-				currentFolderTable.Dispose ();
+			if (imapFolderAttributesStore != null)
+				return imapFolderAttributesStore;
+			
+			return imapFolderAttributesStore = GetIMAPFolderAttributesStore ();
+		}
 
-			if (currentFolder != null)
-				currentFolder.Dispose ();
+		public IMessage GetIMAPFolderAttributesStore ()
+		{
+			IMapiTable localTable = null;
+			try {
+				// !!! need to use independent version of folder. Otherwise unexpected influences appear
+				// !!! e.g. Notifications might fail
+//				IMapiFolder localFolder = OpenFolder (currentPath);
+				localTable = currentFolder.GetContentsTable (Mapi.Unicode | NMAPI.MAPI_ASSOCIATED);
+			} catch (MapiException e) {
+				if (e.HResult != Error.NoSupport)
+					throw;
+			}
+
+			using (localTable) {
+				localTable.SetColumns (PropertyTag.ArrayFromIntegers (propsAssociatedMessages), 0);
+	
+				// search item in Table
+				while (true) {
+					RowSet rows = localTable.QueryRows (50, Mapi.Unicode);
+					if (rows.Count == 0)
+						break;
+					foreach (Row row in rows) {
+						PropertyValue val = PropertyValue.GetArrayProp(row.Props, 1);
+						if (val != null && ( (UnicodeProperty) val).Value == ASSOCIATED_MESSAGE_IMAP_FOLDER_ATTRIBUTES) {
+							BinaryProperty entryId = (BinaryProperty) PropertyValue.GetArrayProp(row.Props, 0);
+							servCon.State.Log ("GetIMAPFolderAttributesStore, returning existing AttributesStore");
+							return (IMessage) currentFolder.OpenEntry (entryId.Value.ByteArray , null, Mapi.Unicode | Mapi.Modify);
+						}
+					}
+				}
+			}
+			
+			// not found, so create it
+			servCon.State.Log ("GetIMAPFolderAttributesStore, creating new AttributeStore");
+			try {
+				IMessage imAss = currentFolder.CreateMessage (null, NMAPI.MAPI_ASSOCIATED);
+
+				PropertyValue pv = PropertyValue.CreateFromTag (new UnicodePropertyTag (Property.Subject));
+				( (UnicodeProperty) pv).Value = ASSOCIATED_MESSAGE_IMAP_FOLDER_ATTRIBUTES;
+				imAss.SetProperty (pv);
+				imAss.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+				return imAss;
+			} catch (Exception e) {
+				throw new Exception ("GetIMAPFolderAttributesStore Error: " + e.ToString () + " in Folder: " + currentFolder);
+			}
+			
 		}
 	}
 }

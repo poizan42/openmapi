@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - DefaultTTY.cs
+// openmapi.org - NMapi C# Mapi API - Sensitivity.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -22,33 +22,43 @@
 //
 
 using System;
-using System.Threading;
+using System.IO;
 
-using Mono.Terminal;
 
-namespace NMapi.Tools.Shell {
+using NMapi;
+using NMapi.Flags;
+using NMapi.Events;
+using NMapi.Properties;
+using NMapi.Table;
 
-	public sealed class DefaultTTY
+namespace NMapi.Flags {
+
+	/// <summary>
+	///  
+	/// </summary>
+	public enum Sensitivity
 	{
-		public static void Main (string[] args)
-		{
-			LineEditor editor = new LineEditor ("MapiShell", 300);
+		//  PR_SENSITIVITY values
 
-			Driver driver = new Driver (args);
-			Thread driverThread = new Thread (new ThreadStart (driver.Start));
-			driverThread.Start ();
+		/// <summary>
+		///  
+		/// </summary>
+		None = 0,
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Personal,
+		
+		/// <summary>
+		///  
+		/// </summary>
+		Private,
 
-			driver.WaitUntilInput ();
-
-			string input = null;
-			while (true) {
-				input = editor.Edit (driver.CurrentPrefix, String.Empty);
-				if (input == null) // Exit on EOF
-					input = "quit";
-				driver.PutInputAndWait (input);
-			}
-
-		}
+		/// <summary>
+		///  
+		/// </summary>
+		CompanyConfidential
 	}
 
 }

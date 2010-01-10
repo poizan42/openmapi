@@ -31,7 +31,12 @@ namespace NMapi.Server {
 		///  The IPAddress where the server should listen for incoming connections.
 		/// </summary>
 		public IPAddress ListenAddress {
-			get { return IPAddress.Any; }
+			get {
+				string addr = Environment.GetEnvironmentVariable ("OPENMAPI_LISTEN_ADDRESS");
+				if (!String.IsNullOrEmpty (addr))
+					return System.Net.IPAddress.Parse(addr);
+				return IPAddress.Any;
+			}
 		}
 		
 		/// <summary>
@@ -98,6 +103,27 @@ namespace NMapi.Server {
 				return val;
 			return defaultValue;
 		}
+
+		/// <summary>
+		///  Returns a string which displays the current configuration
+		/// </summary>
+
+      public string GetConfigurationString() {
+         string ret = "";
+
+         ret += "Mapisvr configuration details:\n";
+         ret += "-----------------------------------------------------------------\n";
+         ret += "OPENMAPI_PROVIDER      : " + NMapiProvider +"\n";
+         ret += "OPENMAPI_CERT_FILE     : " + (X509CertificateCertFile != null ? X509CertificateCertFile : "<not defined>") + "\n";
+         ret += "OPENMAPI_KEY_FILE      : " + (X509CertificateKeyFile != null ? X509CertificateKeyFile : "<not defined>") + "\n";
+         ret += "OPENMAPI_LISTEN_ADDRESS: " + ListenAddress +"\n";
+         ret += "OPENMAPI_LISTEN_PORT   : " + ListenPort +"\n";
+         ret += "OPENMAPI_TARGET_HOST   : " + TargetHost +"\n";
+         ret += "OPENMAPI_TARGET_PORT   : " + TargetPort +"\n";
+         ret += "\n(to change settings, set corresponding environment variables)\n";
+         ret += "-----------------------------------------------------------------\n";
+         return ret;
+      }
 	}
 }
 

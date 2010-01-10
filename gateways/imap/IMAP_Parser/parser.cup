@@ -124,13 +124,16 @@ using System.Text;
 using System.Web.UI;
 using System.Diagnostics;
 
-
 /*----------------------------------------------------------------*/ 
 
 
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 action code {:
+
+  // need to have these pragmas to eliminate warnings caused by generated variables that are not used
+  #pragma warning disable 0219
+
 	private byte[] literalByteParkingSpace;
 	public byte[] LiteralByteParkingSpace {
 		get { return literalByteParkingSpace; }
@@ -143,6 +146,9 @@ action code {:
 :}
 
 parser code {:
+
+  // need to have these pragmas to eliminate warnings caused by generated variables that are not used
+  #pragma warning disable 0219
   
   private CommandAnalyserParserInterface parseInt;
   
@@ -491,7 +497,7 @@ cmd_fetch ::=
     SP
 	FETCH_ARG_PRIM:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.Fetch_att1=arg; 
 		ParseInt.command.Sequence_set = ss;
 	:}
@@ -548,7 +554,7 @@ cmd_search ::=
 	astringstring:c
 	{:
 		ParseInt.command.Charset=c; 
-		Console.WriteLine("charset: "+c); 
+		Trace.WriteLine("charset: "+c); 
 		ParseInt.SetEncoding (c);
 	:}
 	SP
@@ -559,7 +565,7 @@ cmd_search ::=
 	|
 	search_key_list:skl
 	{: 
-		Console.WriteLine("cmd_search:search key list");
+		Trace.WriteLine("cmd_search:search key list");
 		ParseInt.command.Search_key_list = skl;
 	:}
 	;
@@ -587,7 +593,7 @@ search_key_list ::=
 search_key ::=
 	SEARCH_KEYWORD_SOLE:k
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 	:}
@@ -596,7 +602,7 @@ search_key ::=
 	SP
 	date:dt
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		if (dt != null)
@@ -607,7 +613,7 @@ search_key ::=
 	SP
 	number:n
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		RESULT.Number=Convert.ToInt32 (n);
@@ -617,7 +623,7 @@ search_key ::=
 	SP
 	search_keyword_or_astring_or_number:s
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		RESULT.Astring=s;
@@ -627,7 +633,7 @@ search_key ::=
 	SP
 	search_key:sk
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		RESULT.Search_key1=sk;
@@ -639,7 +645,7 @@ search_key ::=
 	SP
 	search_keyword_or_astring_or_number:s2
 	{: 
-		Console.WriteLine("search_keyword: "+k);
+		Trace.WriteLine("search_keyword: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		RESULT.Header_fld_name=s1;
@@ -652,7 +658,7 @@ search_key ::=
 	SP
 	search_key:sk2
 	{: 
-		Console.WriteLine("search_keyword or: "+k);
+		Trace.WriteLine("search_keyword or: "+k);
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword=k;
 		RESULT.Search_key1=sk1;
@@ -663,7 +669,7 @@ search_key ::=
 	search_key_list:skl
 	SEARCH_KEYWORD_RPARENT
 	{: 
-		Console.WriteLine("search_keyword param");
+		Trace.WriteLine("search_keyword param");
 		RESULT = new CommandSearchKey ();
 		RESULT.Keyword="PARENTHESIS";
 		RESULT.Search_key_list = skl;
@@ -766,7 +772,7 @@ cmd_store ::=
 	SP
 	flag_list
 		{: 
-			Console.WriteLine("flag_key: "+k);
+			Trace.WriteLine("flag_key: "+k);
 			ParseInt.command.Flag_key=k; 
 			ParseInt.command.Sequence_set = ss;
 		:}
@@ -777,7 +783,7 @@ cmd_store ::=
 	SP
 	flag_list_elements
 		{: 
-			Console.WriteLine("flag_key: "+k);
+			Trace.WriteLine("flag_key: "+k);
 			ParseInt.command.Flag_key=k; 
 			ParseInt.command.Sequence_set = ss;
 		:}
@@ -789,8 +795,8 @@ cmd_store ::=
 	SP
 	flag_list
 		{: 
-			ParseInt.command.Flag_sign=s; Console.WriteLine("flag_sign: "+s); 
-			ParseInt.command.Flag_key=k; Console.WriteLine("flag_key: "+k); 
+			ParseInt.command.Flag_sign=s; Trace.WriteLine("flag_sign: "+s); 
+			ParseInt.command.Flag_key=k; Trace.WriteLine("flag_key: "+k); 
 			ParseInt.command.Sequence_set = ss;
 		:}
 	|
@@ -801,8 +807,8 @@ cmd_store ::=
 	SP
 	flag_list_elements
 		{:
-			ParseInt.command.Flag_sign=s; Console.WriteLine("flag_sign: "+s); 
-		   	ParseInt.command.Flag_key=k; Console.WriteLine("flag_key: "+k); 
+			ParseInt.command.Flag_sign=s; Trace.WriteLine("flag_sign: "+s); 
+		   	ParseInt.command.Flag_key=k; Trace.WriteLine("flag_key: "+k); 
 			ParseInt.command.Sequence_set = ss;
 		:}
 	;
@@ -823,21 +829,21 @@ cmd_unsubscribe ::=
 fetch_att ::=
 	FETCH_ATT:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.NewFetch_item();
 		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
 	:}
 	|
 	FETCH_ATT_BODY:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.NewFetch_item();
 		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
 	:}
 	|
 	FETCH_ATT_BODY:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.NewFetch_item();
 		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
 	:}
@@ -848,14 +854,14 @@ fetch_att ::=
 	|
 	FETCH_ATT_BODY_PEEK:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.NewFetch_item();
 		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
 	:}
 	|
 	FETCH_ATT_BODY_PEEK:arg
 	{:
-		Console.WriteLine("FETCH_ARG_PRIM: "+arg);
+		Trace.WriteLine("FETCH_ARG_PRIM: "+arg);
 		ParseInt.command.NewFetch_item();
 		ParseInt.command.Current_fetch_item.Fetch_att_key=arg;
 	:}
@@ -894,13 +900,13 @@ fetch_att_section ::=
 section_msgtext ::=
 	FETCH_MSG_TEXT_SINGLE:arg
 	{:
-		Console.WriteLine("fetch-msg-text: "+arg);
+		Trace.WriteLine("fetch-msg-text: "+arg);
 		ParseInt.command.Current_fetch_item.Section_text=arg;
 	:}
 	|
 	FETCH_MSG_TEXT_HEADERLIST_KEY:arg
 	{:
-		Console.WriteLine("fetch-msg-text: "+arg);
+		Trace.WriteLine("fetch-msg-text: "+arg);
 		ParseInt.command.Current_fetch_item.Section_text=arg;
 	:}
 	SP
@@ -923,7 +929,7 @@ header_elements ::=
 header_element ::=
 	astringstring:arg
 	{:
-		Console.WriteLine("header-list-element: "+arg);
+		Trace.WriteLine("header-list-element: "+arg);
 		ParseInt.command.Current_fetch_item.AddHeader(arg);
 	:}
 	;
@@ -934,13 +940,13 @@ section_part ::=
 	DOT
 	NZ_NUMBER:arg
 	{: 
-		Console.WriteLine("section-part-element: "+arg); 
+		Trace.WriteLine("section-part-element: "+arg); 
 		ParseInt.command.Current_fetch_item.AddSection_part(arg);
 	:}
 	|
 	NZ_NUMBER:arg
 	{: 
-		Console.WriteLine("section-part-element: "+arg); 
+		Trace.WriteLine("section-part-element: "+arg); 
 		ParseInt.command.Current_fetch_item.AddSection_part(arg);
 	:}
 	;
@@ -953,9 +959,9 @@ opt_sec_number ::=
 	NZ_NUMBER:argr
 	GREATERTHAN
 	{: 
-		Console.WriteLine("section-number-left: "+argl);
+		Trace.WriteLine("section-number-left: "+argl);
 		ParseInt.command.Current_fetch_item.Section_number1 = argl;
-		Console.WriteLine("section-number-right: "+argr); 
+		Trace.WriteLine("section-number-right: "+argr); 
 		ParseInt.command.Current_fetch_item.Section_number2 = argr;
 	:}
 	;
@@ -984,9 +990,9 @@ literal ::=
 	LITERAL:l
 	{:
 	      int count = System.Convert.ToInt32(l.Substring(1,l.Length-2));
-	      Console.WriteLine("before literal reading, count: " + count);
+	      Trace.WriteLine("before literal reading, count: " + count);
 		  LiteralByteParkingSpace = ParseInt.ReadLiteral(count);
-//	      Console.WriteLine("after literal reading: \"" + ll + "\"");
+//	      Trace.WriteLine("after literal reading: \"" + ll + "\"");
 		  RESULT = "dummy";
 	:}
 	CRLF
@@ -1036,18 +1042,18 @@ flag_list_elements ::=
 
 flag_list_element ::=
 	ATOM:a
-	{: ParseInt.command.AddFlag(a); Console.WriteLine("Flag: "+a); :}
+	{: ParseInt.command.AddFlag(a); Trace.WriteLine("Flag: "+a); :}
 	|
 	BACKSLASH
 	ATOM:a
-	{: ParseInt.command.AddFlag("\\"+a); Console.WriteLine("Flag: \\"+a); :}
+	{: ParseInt.command.AddFlag("\\"+a); Trace.WriteLine("Flag: \\"+a); :}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
 date ::=
 	DATE:dt
 	{: 
-	  Console.WriteLine("Datestring:" + dt);
+	  Trace.WriteLine("Datestring:" + dt);
       RESULT = new DateTimeBox ();
       try {
 		RESULT.Value = DateTime.Parse (dt);
@@ -1067,7 +1073,7 @@ opt_date_time ::=
 date_time ::=
 	DATE_TIME:dt
 	{: 
-	  Console.WriteLine("Datetimestring:" + dt);
+	  Trace.WriteLine("Datetimestring:" + dt);
 	  try {
 	  	ParseInt.command.DateTimex = DateTime.Parse(dt.Substring(1,dt.Length-2));
 	  } catch {
@@ -1128,10 +1134,10 @@ sequence_range ::=
 	sequence_number:l
 	COLON
 	sequence_number:r
-	{: RESULT = new Pair((object) l, (object) r); Console.WriteLine("sequence_range: "+l+":"+r); :}
+	{: RESULT = new Pair((object) l, (object) r); Trace.WriteLine("sequence_range: "+l+":"+r); :}
 	|
 	sequence_number:n
-	{: RESULT = new Pair((object) n, (object) null); Console.WriteLine("sequence_number: "+n); :}
+	{: RESULT = new Pair((object) n, (object) null); Trace.WriteLine("sequence_number: "+n); :}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 
@@ -1148,10 +1154,10 @@ status_list ::=
 	status_list
 	SP
 	STATUS_ATT: s
-	{: ParseInt.command.AddStatus(s); Console.WriteLine("status_att "+s); :}
+	{: ParseInt.command.AddStatus(s); Trace.WriteLine("status_att "+s); :}
 	|
 	STATUS_ATT:s
-	{: ParseInt.command.AddStatus(s); Console.WriteLine("status_att "+s); :}
+	{: ParseInt.command.AddStatus(s); Trace.WriteLine("status_att "+s); :}
 	;
 /*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */ 
 

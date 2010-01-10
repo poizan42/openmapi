@@ -1,7 +1,10 @@
 #!/usr/bin/make
 
+LANG=en_US.UTF-8
+
 MONO = mono
-MCS = gmcs
+MCS = gmcs 
+
 MLOG = $(MONO) bin/mlog.exe
 XSLTPROC = xsltproc
 MONODOCER = monodocer
@@ -9,8 +12,11 @@ MONODOCS2HTML = monodocs2html
 PREPROC = $(MONO) bin/preproc.exe
 MAPIMAP = $(MONO) --debug bin/mapimap.exe
 
-#0612,0618
-NO_WARN=1591
+# Ignore warnings:
+# - if a sourcefile is specified multiple times (CS2002)
+# - if missing XML comment for publicly visible type or member 'Type_or_Member' (CS1591)
+# 0612,0618
+NO_WARN=2002,1591
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
@@ -25,11 +31,12 @@ MONO_CECIL = $(shell pkg-config --variable=Libraries cecil)
 GOLDPARSER_SOURCES = $(wildcard lib/GoldParser/*.cs)
 REMOTETEA_SOURCES  = $(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES = $(wildcard mapimetal/*.cs)
-SERVER_SOURCES = $(shell find server/{Modules,Protocols} -name "*.cs") $(wildcard server/*.cs)
+SERVER_SOURCES = $(shell find server/Modules server/Protocols -name "*.cs") $(wildcard server/*.cs)
 MAPIWAIT_SOURCES = $(wildcard tools/mapiwait/*.cs)
 CUP_SOURCES = $(wildcard lib/cup/Runtime/*.cs)
 IMAP_SOURCES = $(shell find gateways/imap -name "*.cs")
 NMAPI_SOURCES = $(shell find NMapi -name "*.cs")
+SHELL_SOURCES = $(shell find tools/mapishell -name "*.cs")
 NMAPI_GENERATED_SOURCES = \
 		NMapi/Core/NMapi_Generated.cs NMapi/Core/RemoteCall_Generated.cs \
 		NMapi/Data/Data_Generated.cs NMapi/Data/Data_Props_Generated.cs \
@@ -39,6 +46,7 @@ NMAPI_GENERATED_SOURCES = \
 		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
 		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
 		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
+TEST_SOURCES = $(shell find tests -name "*.cs")
 
 CECILDLL = bin/Mono.Cecil.dll
 NMAPIDLL = bin/NMapi.dll
@@ -46,8 +54,12 @@ RTSDLL = bin/RemoteTeaSharp.dll
 NTSDLL = bin/NMapi.Tools.Shell.dll
 NSIDLL = bin/NMapi.Server.ICalls.dll
 PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
+CUPDLL = bin/cup.dll
 
 all: code
+
+check-warnings: clean
+	$(MAKE) all 2>&1| awk ' BEGIN{a=0}{print $$0} /^Compilation succeeded - ..* warning/{a = a + $$4;} END{printf("\n\n"); print "TOTAL NUMBER OF WARNINGS: " a;}'
 	
 allwithdocs: code docs
 
@@ -68,10 +80,10 @@ xml/generated/mapi.cs.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.
 	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
 
 xml/generated/mapi.java.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.xsd xml/mapi.xml
-	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
+	$(PREPROC) java xml/schema/mapi.xsd xml/mapi.xml $@
 
 xml/generated/mapi.python.generated.xml: .xmlgendir bin/preproc.exe xml/schema/mapi.xsd xml/mapi.xml
-	$(PREPROC) csharp  xml/schema/mapi.xsd xml/mapi.xml $@
+	$(PREPROC) python  xml/schema/mapi.xsd xml/mapi.xml $@
 
 bin/preproc.exe: .bindir xml/preproc.cs
 	$(MCS) $(DEBUG) /r:System.Core.dll /r:System.Xml.Linq.dll /out:$@ xml/preproc.cs
@@ -200,6 +212,7 @@ providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	-ns NMapi.Interop.MapiRPC -constName MAPIRPC
 
 NMapi/Data/xslt/cs/xdrgen.xsl: NMapi/Data/xslt/common.xsl NMapi/Data/xslt/cs/xdr_data.xsl NMapi/Data/xslt/cs/xdr_calls.xsl
+	touch $@
 
 providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.cs: NMapi/Data/xslt/cs/xdrgen.xsl providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated/idl_generated.xml
 	$(XSLTPROC) -o $@ $^
@@ -306,25 +319,25 @@ alltools: bin/mapishell.exe bin/mapiwait.exe
 #mapitool
 #mapimap
 
-bin/cup.dll: $(CUP_SOURCES)
+$(CUPDLL): $(CUP_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/out:$@ $(CUP_SOURCES)
 	
-bin/mapiimap.exe: $(NMAPIDLL) bin/cup.dll $(IMAP_SOURCES)
+bin/mapiimap.exe: $(NMAPIDLL) $(CUPDLL) $(IMAP_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
-	/out:$@  \/r:$(NMAPIDLL) /r:bin/cup.dll \
+	/out:$@  \/r:$(NMAPIDLL) /r:$(CUPDLL) \
 	/r:System.Web.dll /r:System.Data.dll $(IMAP_SOURCES)
 
 tools/mapishell/ShellObject.xml_Generated.cs: bin/mapimetal.exe tools/mapishell/ShellObject.xml
 	$(MONO) bin/mapimetal.exe tools/mapishell/ShellObject.xml
 
-$(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.xml_Generated.cs $(NDESK_OPTIONS)
+$(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.xml_Generated.cs $(NDESK_OPTIONS) $(SHELL_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/resource:tools/mapishell/default.mss,default.mss \
 	/out:$@  \
 	/r:$(NMAPIDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
 	
-bin/mapishell.exe: $(NTSDLL)
+bin/mapishell.exe: $(NTSDLL) tools/mapishell/DefaultTTY.cs
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
 	/out:$@  \
 	/r:$(NTSDLL) tools/mapishell/DefaultTTY.cs
@@ -361,13 +374,13 @@ mapitool: $(NMAPIDLL)
 # Tests
 #
 
-bin/NMapi.Test.dll: $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
+bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:$(NMAPIDLL) /r:bin/nmapisvr.exe \
 	/r:$(PTXCDLL) /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
 	/r:System.Web.dll \
-	`find tests -name "*.cs"` $(TEST_SOURCES)
+	$(TEST_SOURCES)
 
 testlib: bin/NMapi.Test.dll
 
@@ -401,7 +414,7 @@ sample: bin/hello.exe bin/grid.exe
 
 gateways: bin/NMapi.Gateways.IMAP.exe
 
-bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(IMAP_SOURCES)
+bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(CUPDLL) $(IMAP_SOURCES) 
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ /doc:bin/NMapi.Gateways.xmldoc /nowarn:$(NO_WARN) /target:exe \
 	/r:nunit.framework.dll \
 	/r:System.Data.dll \
@@ -414,11 +427,8 @@ bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(IMAP_SOURCES)
 	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(NMAPIDLL) \
-	$(IMAP_SOURCES) \
-	lib/cup/Runtime/Scanner.cs \
-	lib/cup/Runtime/Symbol.cs \
-	lib/cup/Runtime/virtual_parse_stack.cs \
-	lib/cup/Runtime/lr_parser.cs
+	/r:$(CUPDLL) \
+	$(IMAP_SOURCES)
 
 #
 # Docs

@@ -63,7 +63,7 @@ namespace CompactTeaSharp
 		/// <param name="receiverAddress">Indicates the receiver of the XDR data. This can
 		///  be null for XDR streams connected permanently to a
 		///  receiver (like in case of TCP/IP based XDR streams).</param>
-		//// <param name="receiverPort"> Port number of the receiver.</param>
+		/// <param name="receiverPort"> Port number of the receiver.</param>
 		public virtual void BeginEncoding (IPAddress receiverAddress, int receiverPort)
 		{
 		}
@@ -123,7 +123,7 @@ namespace CompactTeaSharp
 		///  the exact length in advance. The encoded data is always padded to be
 		///  a multiple of four to maintain XDR alignment.
 		/// </summary>
-		//// <param name="value">The opaque value to be encoded in the form of a series of bytes.</param>
+		/// <param name="value">The opaque value to be encoded in the form of a series of bytes.</param>
 		public void XdrEncodeDynamicOpaque (byte [] value)
 		{
 			XdrEncodeInt (value.Length);

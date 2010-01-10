@@ -164,7 +164,7 @@ namespace NMapi {
 				arg.obj = obj;
 				arg.pszId = new StringAdapter (userName);
 
-				var result = session.clnt.Admin_UserCreate_1 (arg);
+				session.clnt.Admin_UserCreate_1 (arg);
 			} catch (OncRpcException e) {
 				Console.WriteLine (e); 
 				return false;

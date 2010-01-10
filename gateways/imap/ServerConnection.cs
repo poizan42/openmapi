@@ -36,15 +36,13 @@ namespace NMapi.Gateways.IMAP
 {
 
 	
-	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Path, UID_Creation_EntryId, UIDNEXT, UIDVALIDITY, AdditionalFlags};
+	public enum IMAPGatewayNamedProperty {Subscriptions, UID, UID_Creation_Path, UID_Creation_EntryId, UID_Creation_UIDValidity, AdditionalFlags
+											, UIDNEXT, UIDVALIDITY};
 	
 //	public delegate void LogDelegate(string message);
 	
 	public class ServerConnection
 	{
-		private LogDelegate logInput;
-		private LogDelegate logOutput;
-
 		private IMAPConnectionState state;
 		private IMapiFactory factory;
 		private IMapiSession session;
@@ -206,13 +204,6 @@ state.Log ("Server1");
 			}
 		}
 
-		public LogDelegate LogInput {
-			set { logInput = value; }
-		}
-		public LogDelegate LogOutput {
-			set { logOutput = value; }
-		}
-
 
 		internal void SetRootDir()
 		{
@@ -227,34 +218,44 @@ state.Log ("Server1");
 				IMapiFolder folder = null;
 				IMapiFolder prevFolder = null;
 
-				byte[] prevEId = new byte[0];
-				List<string> inboxPathEls = new List<string> ();
-				state.Log ("setrootdir 1");
-				
-				while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
-					state.Log ("setrootdir 2");
-					prevFolder = folder;
-					folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray, null, Mapi.Unicode);
-					MapiPropHelper folderHelper = new MapiPropHelper (folder);
-					UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
-					string displayName = (propDisplayName != null) ? propDisplayName.Value : null;
-						
-					state.Log (folder.GetType ().ToString ());
-					state.Log (displayName);
-					state.Log ("setrootdir 3");
+					try {
+
+					byte[] prevEId = new byte[0];
+					List<string> inboxPathEls = new List<string> ();
+					state.Log ("setrootdir 1");
 					
-					prevEId = eId.Value.ByteArray;
-					if (folder != null) {
-						inboxPathEls.Add (displayName);
-						eId = (BinaryProperty) folderHelper.HrGetOnePropNull (Property.ParentEntryId);
-state.Log ("setrootdir 4");
+					while (eId != null && !CompareEntryIDs(eId.Value.ByteArray, prevEId)) {
+						state.Log ("setrootdir 2");
+						if (prevFolder != null)
+							prevFolder.Dispose ();
+						prevFolder = folder;
+						folder = (IMapiFolder) store.OpenEntry (eId.Value.ByteArray, null, Mapi.Unicode);
+						MapiPropHelper folderHelper = new MapiPropHelper (folder);
+						UnicodeProperty propDisplayName = (UnicodeProperty) folderHelper.HrGetOnePropNull (Property.DisplayName);
+						string displayName = (propDisplayName != null) ? propDisplayName.Value : null;
+							
+						state.Log (folder.GetType ().ToString ());
+						state.Log (displayName);
+						state.Log ("setrootdir 3");
+						
+						prevEId = eId.Value.ByteArray;
+						if (folder != null) {
+							inboxPathEls.Add (displayName);
+							eId = (BinaryProperty) folderHelper.HrGetOnePropNull (Property.ParentEntryId);
+	state.Log ("setrootdir 4");
+						}
 					}
-				}
-				if (prevFolder != null) {
-					PropertyValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
-					rootDir = PathHelper.PathSeparator + ((UnicodeProperty) dir).Value;
-					inboxPath = PathHelper.Array2Path (inboxPathEls.Take (inboxPathEls.Count - 2).Reverse ().ToArray ());
-					return;
+					if (prevFolder != null) {
+						PropertyValue dir = new MapiPropHelper (prevFolder).HrGetOnePropNull (Property.DisplayNameW);
+						rootDir = PathHelper.PathSeparator + ((UnicodeProperty) dir).Value;
+						inboxPath = PathHelper.Array2Path (inboxPathEls.Take (inboxPathEls.Count - 2).Reverse ().ToArray ());
+						return;
+					}
+				} finally {
+					if (prevFolder != null)
+						prevFolder.Dispose ();
+					if (folder != null)
+						folder.Dispose ();
 				}
 			}
 			rootDir = "";
@@ -357,9 +358,9 @@ state.Log ("setrootdir 4");
 				type= PropertyType.Int32;
 				prop = new IntProperty ();
 				break;
-			case IMAPGatewayNamedProperty.UID_Path:
+			case IMAPGatewayNamedProperty.UID_Creation_Path:
 				guid = Guids.PS_PUBLIC_STRINGS;
-				name = "openmapi-message-UID_Path";
+				name = "openmapi-message-UID_CreationPath";
 				type = PropertyType.Unicode;
 				prop = new UnicodeProperty ();
 				break;
@@ -368,6 +369,12 @@ state.Log ("setrootdir 4");
 				name = "openmapi-message-UID_CreationEntryId";
 				type = PropertyType.Binary;
 				prop = new BinaryProperty ();
+				break;
+			case IMAPGatewayNamedProperty.UID_Creation_UIDValidity:
+				guid = Guids.PS_PUBLIC_STRINGS;
+				name = "openmapi-message-UID_CreationUIDValidity";
+				type= PropertyType.Int32;
+				prop = new IntProperty ();
 				break;
 			case IMAPGatewayNamedProperty.UIDNEXT:
 				guid = Guids.PS_PUBLIC_STRINGS;

@@ -43,8 +43,8 @@ namespace NMapi.Server {
 	public sealed partial class OncRpcService : BaseOncRpcService
 	{
 		public OncRpcService (CommonRpcService service, 
-			SessionManager sman, IPAddress ip, int port, string certFile, string keyFile) 
-				: base (service, sman, ip, port, certFile, keyFile)
+			SessionManager sman, IPAddress ip, int port, SslStore sslParams) 
+				: base (service, sman, ip, port, sslParams)
 		{
 		}
 		

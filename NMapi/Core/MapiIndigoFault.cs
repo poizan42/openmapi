@@ -42,11 +42,6 @@ namespace NMapi {
 		private int hresult;
 		private string message;
 
-		private Exception exception         = null;
-		private IOException ioException         = null;
-		private SocketException socketException = null;
-		private OncRpcException rpcException    = null;
-
 		/// <summary>
 		///  The HRESULT code (MAPI_E_XXX). In NMapi the error codes 
 		///  live inside the "Error" class. Fore example 

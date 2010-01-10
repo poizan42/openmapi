@@ -30,11 +30,11 @@ using NMapi.Properties;
 
 namespace NMapi.Tools.Shell {
 
-	public sealed class CatCommand : AbstractBaseCommand
+	public sealed class DirCatCommand : AbstractBaseCommand
 	{
 		public override string Name {
 			get {
-				return "cat";
+				return "dircat";
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return "Print content of property";
+				return "Print content of a folder property";
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace NMapi.Tools.Shell {
 			}
 		}
 
-		public CatCommand (Driver driver, ShellState state) : base (driver, state)
+		public DirCatCommand (Driver driver, ShellState state) : base (driver, state)
 		{
 		}
 
@@ -70,7 +70,7 @@ namespace NMapi.Tools.Shell {
 
 			string keyName = prms [0];
 			string propName = prms [1];
-			using (IMapiProp obj = state.OpenPropObj (keyName)) {
+			using (IMapiProp obj = state.OpenFolder (state.Input2AbsolutePath (keyName))) {
 				if (obj == null) {
 					driver.WriteLine ("Unknown Key ID!");
 					return;

@@ -318,6 +318,7 @@ namespace NMapi {
 		/// <summary>
 		///  Builds a MapiException from an Exception.
 		/// </summary>
+		/// <param name="msg">The Message of the Exception.</param>
 		/// <param name="e">The IOException.</param>
 		public MapiException (string msg, Exception e) : 
 			base (GetErr (Error.CallFailed, msg), e)

@@ -21,7 +21,7 @@
 // License along with this software; if not, write to the Free
 // Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-//	
+//
 //-->
 
 <definitions>
@@ -70,21 +70,21 @@
 				<boolGate type="RowEntry">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPMapiNameId">
 			<declare type="MapiNameId" constrarg="true">Value</declare>
 			<both>
 				<boolGate static="true" type="MapiNameId">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPSPropValue">
 			<declare type="PropertyValue" constrarg="true">Value</declare>
 			<both>
 				<boolGate static="true" type="PropertyValue">Value</boolGate>
 			</both>
 		</class>
-		
+
 		<class id="LPNotification">
 			<declare type="Notification" constrarg="true">Value</declare>
 			<both>
@@ -99,7 +99,7 @@
 			</both>
 		</class>
 	</namespace>
-	
+
 	<namespace name="NMapi">
 		<class id="AdrEntry">
 			<declare type="int">Reserved1</declare>
@@ -154,7 +154,7 @@
 				<opaque length="8">Data4</opaque>
 			</both>
 		</class>
-	
+
 		<class id="LongLong">
 			<declare type="long" privName="value" constrarg="true">Value</declare>
 			<both>
@@ -249,9 +249,9 @@
 		<class id="MarkAsReadAction" inherits="Action">
 			<!-- do nothing //-->
 		</class>
-		
-	</namespace>
 
+	</namespace>
+	
 
 	<namespace name="NMapi.Table">
 
@@ -313,7 +313,7 @@
 				<int>ulPropTag2</int>
 			</decode>
 		</class>
-	
+
 		<class id="ContentRestriction" inherits="Restriction">
 			<declare type="FuzzyLevel" privName="ulFuzzyLevel">FuzzyLevel</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
@@ -377,7 +377,7 @@
 			<declare type="Restriction" isArray="true" privName="lpRes" constrarg="true">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.Or</int> <!-- SPECIAL //-->
-				<countedSizeArray type="Restriction">lpRes</countedSizeArray>			
+				<countedSizeArray type="Restriction">lpRes</countedSizeArray>
 			</encode>
 			<decode>
 				<code>
@@ -438,7 +438,7 @@
 				<boolGate static="true" type="Restriction">lpRes</boolGate>
 			</decode>
 		</class>
-		
+
 		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
 		<class id="AnnotationRestriction" inherits="Restriction">
 			<declare type="Restriction" privName="lpRes">Res</declare>
@@ -453,10 +453,10 @@
 				<boolGate static="true" type="Restriction">lpRes</boolGate>
 			</decode>
 		</class>
-		
+
 		<!-- TODO: OpenMapi.org-specific; Required for Outlook 2010; Not supported by TXC protocol. (yet?) //-->
 		<class id="CountRestriction" inherits="Restriction">
-			<declare type="int" privName="ulCount">Count</declare>			
+			<declare type="int" privName="ulCount">Count</declare>
 			<declare type="Restriction" privName="lpRes">Res</declare>
 			<encode>
 				<int cast="true">RestrictionType.Count</int> <!-- SPECIAL //-->
@@ -477,215 +477,219 @@
 				<int cast="true" castTo="TableSort">ulOrder</int>
 			</both>
 		</class>
-		
+
 	</namespace>
 
 	<namespace name="NMapi.Properties">
 
-		<class id="ShortProperty" inherits="PropertyValue">
+		<!-- TODO: IPropertyValue implementation should be defined in a different way.
+		 			(using props.xml or something) !
+		//-->
+
+		<class id="ShortProperty" inherits="PropertyValue, IPropertyValue &lt;short&gt;">
 			<declare type="short" privName="i" constrarg="true">Value</declare>
 			<both>
 				<short>i</short>
 			</both>
 		</class>
 
-		<class id="IntProperty" inherits="PropertyValue">
+		<class id="IntProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="l" constrarg="true">Value</declare>
 			<both>
 				<int>l</int>
 			</both>
 		</class>
 
-		<class id="FloatProperty" inherits="PropertyValue">
+		<class id="FloatProperty" inherits="PropertyValue, IPropertyValue &lt;float&gt;">
 			<declare type="float" privName="flt" constrarg="true">Value</declare>
 			<both>
 				<float>flt</float>
 			</both>
 		</class>
 
-		<class id="DoubleProperty" inherits="PropertyValue">
+		<class id="DoubleProperty" inherits="PropertyValue, IPropertyValue &lt;double&gt;">
 			<declare type="double" privName="dbl" constrarg="true">Value</declare>
 			<both>
 				<double>dbl</double>
 			</both>
 		</class>
-	
-		<class id="CurrencyProperty" inherits="PropertyValue">
+
+		<class id="CurrencyProperty" inherits="PropertyValue, IPropertyValue &lt;long&gt;">
 			<declare type="long" privName="cur" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LongLong">cur</wrapped>
 			</both>
 		</class>
-	
-		<class id="AppTimeProperty" inherits="PropertyValue">
+
+		<class id="AppTimeProperty" inherits="PropertyValue, IPropertyValue &lt;double&gt;">
 			<declare type="double" privName="at" constrarg="true">Value</declare>
 			<both>
 				<double>at</double>
 			</both>
 		</class>
-	
-		<class id="ErrorProperty" inherits="PropertyValue">
+
+		<class id="ErrorProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="err" constrarg="true">Value</declare>
 			<both>
 				<int>err</int>
 			</both>
 		</class>
 
-		<class id="BooleanProperty" inherits="PropertyValue">
+		<class id="BooleanProperty" inherits="PropertyValue, IPropertyValue &lt;short&gt;">
 			<declare type="short" privName="b" constrarg="true">Value</declare>
 			<both>
 				<short>b</short>
 			</both>
 		</class>
 
-		<class id="ObjectProperty" inherits="PropertyValue">
+		<class id="ObjectProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="x" constrarg="true">Value</declare>
 			<both>
 				<int>x</int>
 			</both>
 		</class>
 
-		<class id="LongProperty" inherits="PropertyValue">
+		<class id="LongProperty" inherits="PropertyValue, IPropertyValue &lt;long&gt;">
 			<declare type="long" privName="li" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LongLong">li</wrapped>
 			</both>
 		</class>
 
-		<class id="String8Property" inherits="PropertyValue">
+		<class id="String8Property" inherits="PropertyValue, IPropertyValue &lt;string&gt;">
 			<declare type="string" privName="lpszA" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="StringAdapter">lpszA</wrapped>
 			</both>
 		</class>
 
-		<class id="UnicodeProperty" inherits="PropertyValue">
+		<class id="UnicodeProperty" inherits="PropertyValue, IPropertyValue &lt;string&gt;">
 			<declare type="string" privName="lpszW" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="UnicodeAdapter">lpszW</wrapped>
 			</both>
 		</class>
-	
-		<class id="FileTimeProperty" inherits="PropertyValue">
+
+		<class id="FileTimeProperty" inherits="PropertyValue, IPropertyValue &lt;FileTime&gt;">
 			<declare type="FileTime" privName="ft" constrarg="true">Value</declare>
 			<both>
 				<complex type="FileTime">ft</complex>
 			</both>
 		</class>
 
-		<class id="GuidProperty" inherits="PropertyValue">
+		<class id="GuidProperty" inherits="PropertyValue, IPropertyValue &lt;NMapiGuid&gt;">
 			<declare type="NMapiGuid" privName="lpguid" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LPGuid">lpguid</wrapped>
 			</both>
 		</class>
-	
-		<class id="BinaryProperty" inherits="PropertyValue">
+
+		<class id="BinaryProperty" inherits="PropertyValue, IPropertyValue &lt;SBinary&gt;">
 			<declare type="SBinary" privName="bin" constrarg="true">Value</declare>
 			<both>
 				<complex type="SBinary">bin</complex>
 			</both>
 		</class>
 		
-		<class id="ActionsProperty" inherits="PropertyValue">
+		<class id="ActionsProperty" inherits="PropertyValue, IPropertyValue &lt;Actions&gt;">
 			<declare type="Actions" privName="actions" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LPACTIONS">actions</wrapped>
 			</both>
 		</class>
 		
-		<class id="RestrictionProperty" inherits="PropertyValue">
+		<class id="RestrictionProperty" inherits="PropertyValue, IPropertyValue &lt;Restriction&gt;">
 			<declare type="Restriction" privName="restriction" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LPSRestriction">restriction</wrapped>
 			</both>
 		</class>
 		
-		<class id="ShortArrayProperty" inherits="PropertyValue">
+		<class id="ShortArrayProperty" inherits="PropertyValue, IPropertyValue &lt;short []&gt;">
 			<declare type="short" isArray="true" privName="MVi" constrarg="true">Value</declare>
 			<both>
 				<shortVector>MVi</shortVector>
 			</both>
 		</class>
 
-		<class id="IntArrayProperty" inherits="PropertyValue">
+		<class id="IntArrayProperty" inherits="PropertyValue, IPropertyValue &lt;int []&gt;">
 			<declare type="int" isArray="true" privName="MVl" constrarg="true">Value</declare>
 			<both>
 				<intVector>MVl</intVector>
 			</both>
 		</class>
 
-		<class id="FloatArrayProperty" inherits="PropertyValue">
+		<class id="FloatArrayProperty" inherits="PropertyValue, IPropertyValue &lt;float []&gt;">
 			<declare type="float" isArray="true" privName="MVflt" constrarg="true">Value</declare>
 			<both>
 				<floatVector>MVflt</floatVector>
 			</both>
 		</class>
 
-		<class id="DoubleArrayProperty" inherits="PropertyValue">
+		<class id="DoubleArrayProperty" inherits="PropertyValue, IPropertyValue &lt;double []&gt;">
 			<declare type="double" isArray="true" privName="MVdbl" constrarg="true">Value</declare>
 			<both>
 				<doubleVector>MVdbl</doubleVector>
 			</both>
 		</class>
 
-		<class id="CurrencyArrayProperty" inherits="PropertyValue">
+		<class id="CurrencyArrayProperty" inherits="PropertyValue, IPropertyValue &lt;long []&gt;">
 			<declare type="long" isArray="true" privName="MVcur" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="long" in="LongLong">MVcur</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="AppTimeArrayProperty" inherits="PropertyValue">
+		<class id="AppTimeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;double []&gt;">
 			<declare type="double" isArray="true" privName="MVat" constrarg="true">Value</declare>
 			<both>
 				<doubleVector>MVat</doubleVector>
 			</both>
 		</class>
 
-		<class id="FileTimeArrayProperty" inherits="PropertyValue">
+		<class id="FileTimeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;FileTime []&gt;">
 			<declare type="FileTime" isArray="true" privName="MVft" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="FileTime">MVft</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="BinaryArrayProperty" inherits="PropertyValue">
+		<class id="BinaryArrayProperty" inherits="PropertyValue, IPropertyValue &lt;SBinary []&gt;">
 			<declare type="SBinary" isArray="true" privName="MVbin" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="SBinary">MVbin</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="String8ArrayProperty" inherits="PropertyValue">
+		<class id="String8ArrayProperty" inherits="PropertyValue, IPropertyValue &lt;string []&gt;">
 			<declare type="string" isArray="true" privName="MVsza" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="string" in="StringAdapter">MVsza</wrappedCountedSizeArray>
 			</both>
 		</class>
-	
-		<class id="UnicodeArrayProperty" inherits="PropertyValue">
+
+		<class id="UnicodeArrayProperty" inherits="PropertyValue, IPropertyValue &lt;string []&gt;">
 			<declare type="string" isArray="true" privName="MVszW" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="string" in="UnicodeAdapter">MVszW</wrappedCountedSizeArray>
 			</both>
 		</class>
 
-		<class id="GuidArrayProperty" inherits="PropertyValue">
+		<class id="GuidArrayProperty" inherits="PropertyValue, IPropertyValue &lt;NMapiGuid []&gt;">
 			<declare type="NMapiGuid" isArray="true" privName="MVguid" constrarg="true">Value</declare>
 			<both>
 				<countedSizeArray type="NMapiGuid">MVguid</countedSizeArray>
 			</both>
 		</class>
 
-		<class id="LongArrayProperty" inherits="PropertyValue">
+		<class id="LongArrayProperty" inherits="PropertyValue, IPropertyValue &lt;long []&gt;">
 			<declare type="long" isArray="true" privName="MVli" constrarg="true">Value</declare>
 			<both>
 				<wrappedCountedSizeArray type="long" in="LongLong">MVli</wrappedCountedSizeArray>
 			</both>
 		</class>
-	
-		<class id="XProperty" inherits="PropertyValue">
+
+		<class id="XProperty" inherits="PropertyValue, IPropertyValue &lt;int&gt;">
 			<declare type="int" privName="x" constrarg="true">Value</declare>
 			<both>
 				<int>x</int>
@@ -705,14 +709,14 @@
 				<int>lID</int>
 			</both>
 		</class>
-		
+
 		<class id="StringMapiNameId" inherits="MapiNameId">
 			<declare type="string" privName="lpwstrName" constrarg="true">StrName</declare>
 			<both>
 				<wrapped in="UnicodeAdapter">lpwstrName</wrapped>
 			</both>
 		</class>
-		
+
 		<class id="PropertyProblem">
 			<declare type="int" privName="ulIndex">Index</declare>
 			<declare type="int" privName="ulPropTag">PropTag</declare>
@@ -724,10 +728,10 @@
 			</both>
 		</class>
 	</namespace>
-	
-	
+
+
 	<namespace name="NMapi.Events">
-			
+
 		<class id="ErrorNotification" inherits="Notification">
 			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
 			<declare type="int" privName="scode">SCode</declare>
@@ -760,7 +764,7 @@
 				</code>
 			</decode>
 		</class>
-		
+
 		<class id="ExtendedNotification" inherits="Notification">
 			<declare type="int" privName="ulEvent">Event</declare>
 			<declare type="byte" isArray="true" privName="pbEventParameters">EventParameters</declare>
@@ -805,7 +809,7 @@
 				<int>ulMessageFlags</int>
 			</decode>
 		</class>
-		
+
 		<class id="ObjectNotification" inherits="Notification">
 			<declare type="byte" isArray="true" privName="lpEntryID">EntryID</declare>
 			<declare type="int" privName="ulObjType">ObjType</declare>
@@ -831,7 +835,7 @@
 				<countedSizeArray static="true" type="PropertyValue">lpPropVals</countedSizeArray>
 			</both>
 		</class>
-		
+
 		<class id="TableNotification" inherits="Notification">
 			<declare type="TableNotificationType" privName="ulTableEvent">TableEvent</declare>
 			<declare type="int" privName="hResult">HResult</declare>
@@ -846,6 +850,8 @@
 				<complex type="Row">row</complex>
 			</both>
 		</class>
-		
+
 	</namespace>
 </definitions>
+
+<!-- vi:set noexpandtab: -->

@@ -1,12 +1,16 @@
 
-
 The server can be run using something like:
 
 OPENMAPI_TARGET_HOST=127.0.0.1:7000 OPENMAPI_CERT_FILE=ca.cer OPENMAPI_KEY_FILE=ca.key mono --debug bin/nmapisvr.exe
 
-SSL-certificates are required.
+SSL-certificate is *required*.
 
+Currently, the cert/key can be provided in 2 forms:
 
+1. A single PKCS12 encoded file, containing both certificate and private key.
+2. Two separate files: One PEM encoded certificate and one PVK or PEM encoded private key.
+
+For more information on the PVK key format, see http://www.drh-consultancy.demon.co.uk/pvk.html
 
 --- 
 
@@ -35,4 +39,3 @@ using (IMapiFolder taskFolder = session.PrivateStore.OpenTaskFolder ())
 
 
 You MUST put the folder inside a using block or dispose/close it manually.
-

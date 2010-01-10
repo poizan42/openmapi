@@ -54,7 +54,9 @@ namespace NMapi.Format.Mime
 		{
 			MimeMessage mm = new MimeMessage();
 			
+#pragma warning disable 0219
 			String erg = mm.Boundary;
+#pragma warning restore 0219
 		}
 			
 		/// <summary>

@@ -99,7 +99,7 @@ namespace NMapi {
 			
 			Rule rule = new Rule ();
 
-			foreach (var prop int values) {
+			foreach (var prop in values) {
 				switch (prop.PropTag) {
 					case ExchangeProperty.RuleId: /* TODO */ break;
 					case ExchangeProperty.RuleSequence:/* TODO */ break;

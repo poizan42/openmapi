@@ -115,7 +115,7 @@ namespace CompactTeaSharp.Mlog
 					return;
 				});
 				
-			List<string> rest = p.Parse (args);
+			p.Parse (args);
 
 			ParserFactory.InitializeFactoryFromResource ("xdr.cgt");
 			

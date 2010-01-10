@@ -27,6 +27,9 @@ using TUVienna;
 using NMapi.Gateways.IMAP;
 /*
 */
+// need to have these pragmas to eliminate warnings caused by generated variables that are not used
+#pragma warning disable 0414
+#pragma warning disable 0169
 
 namespace NMapi.Gateways.IMAP
 {
@@ -48,7 +51,7 @@ namespace NMapi.Gateways.IMAP
 			Yylex yy = new Yylex(f);
 			Symbol t;
 			while ((t = yy.next_token()) != null)
-				Console.WriteLine(t);
+				Trace.WriteLine(t);
 		}
 
 		public void init(String filePathName)
@@ -62,7 +65,7 @@ namespace NMapi.Gateways.IMAP
 		public Symbol nextToken()
 		{
 			Symbol t = yy.next_token();
-			Console.WriteLine(t);
+			Trace.WriteLine(t);
 			return t;
 		}
 		
@@ -106,7 +109,7 @@ class Utility {
     int code
     )
     {
-    Console.WriteLine(errorMsg[code]);
+    Trace.WriteLine(errorMsg[code]);
     }
   }
 
@@ -145,10 +148,6 @@ public class Yytoken : ICloneable  {
 %{
 		
 	private int tokenbase;
-	private int yytokenbase()
-	{
-		return tokenbase;
-	}
 
 	public void newReader (System.IO.TextReader yy_reader1)
 	{

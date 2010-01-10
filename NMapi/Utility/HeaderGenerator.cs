@@ -106,7 +106,6 @@ namespace NMapi.Utility {
 
 			// if sender and sentrepresenting are equal, fill in only from
 			InternetAddress iaFrom = null;
-			InternetAddress iaSender = null;
 
 			if (props2.Exists && props4.Exists) {
 				if (props2.Unicode == props4.Unicode) {
@@ -144,7 +143,6 @@ namespace NMapi.Utility {
 			props4.Prop = Property.SentRepresentingEmailAddress;
 
 			// if sender and sentrepresenting are equal, fill in only from
-			InternetAddress iaFrom = null;
 			InternetAddress iaSender = null;
 
 			if (props2.Exists && props4.Exists) {
@@ -193,13 +191,23 @@ namespace NMapi.Utility {
 			}
 			return true;
 		}
+		
+		
+		private IMapiTableReader GetRecipientTable () {
+			IMessage msg = GetMessage();
+			IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode);
+
+			// !! Dispose msg if required
+			if (msg != this.msg)
+				msg.Dispose ();
+				
+			return mtr;			
+		}
 
 		public bool DoRecipients ()
 		{
 			Trace.WriteLine ("doRecipients ");				
-			IMessage msg = GetMessage();
-			using (IMapiTableReader mtr = msg.GetRecipientTable(Mapi.Unicode)) {
-	//			SPropTagArray (Property.EntryId, Property.DisplayNameW, Property.EmailAddressW, Property.AddrTypeW);
+			using (IMapiTableReader mtr = GetRecipientTable()) {
 				RowSet rs = mtr.GetRows (20);
 				while (rs.Count () > 0) {
 					Trace.WriteLine ("doRecipients 1");

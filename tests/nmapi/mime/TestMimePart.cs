@@ -374,7 +374,9 @@ Content-Transfer-Encoding: 7bit
 
 			Assert.AreEqual ("Hello all,", mp.Content);
 			Assert.AreEqual ("Hello all,", Encoding.ASCII.GetString(mp.RawContent));
+			#pragma warning disable 0219
 			Stream s = mp.ContentStream;
+			#pragma warning restore 0219
 		}
 
 		public void _MimePart_ContentC2()
@@ -392,8 +394,9 @@ Content-Transfer-Encoding: quoted-printable
 
 			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", mp.Content);
 			Assert.AreEqual ("Andreas H=FCgel<andreas.huegel@topalis.com>", Encoding.ASCII.GetString(mp.RawContent));
+			#pragma warning disable 0219
 			Stream s = mp.ContentStream;
-			MemoryStream ms = new MemoryStream();
+			#pragma warning restore 0219
 		}
 		
 		public void _MimePart_ContentC3()
@@ -411,7 +414,9 @@ Content-Transfer-Encoding: base64
 
 			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", mp.Content);
 			Assert.AreEqual ("QW5kcmVhcyBI/GdlbDxhbmRyZWFzLmh1ZWdlbEB0b3BhbGlzLmNvbT4=", Encoding.ASCII.GetString(mp.RawContent));
+			#pragma warning disable 0219
 			Stream s = mp.ContentStream;
+			#pragma warning restore 0219
 		}
 		
 

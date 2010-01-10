@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 
 using NMapi;
+using NMapi.Linq;
 using NMapi.Flags;
 using NMapi.Properties;
 
@@ -70,6 +71,19 @@ namespace NMapi.Tools.Shell {
 			string logonHost = prms [0];
 			string logonUser = prms [1];
 			string password = prms [2];
+
+            if (state.LoggedOn) {
+				state.CloseSession ();
+				if (state.Logging)
+					driver.WriteLine ("Closed existing session.");
+				try {
+					state.Session = state.Factory.CreateMapiSession ();
+					state.MapiContext = new MapiContext (state.Session);
+				} catch (MapiException e) {
+					driver.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" + e.Message);
+					return;
+				}
+			}
 
 			if (!state.CheckSessionMsg ())
 				return;

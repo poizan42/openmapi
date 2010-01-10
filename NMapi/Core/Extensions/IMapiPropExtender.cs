@@ -60,6 +60,7 @@ namespace NMapi {
 		///  Get a set of properties for the current object.
 		/// In case of string properties the data is returned as unicode.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tags">Property tags of the requested properties.</param>
 		/// <returns>An array of property values, which correspond to the requested tags.</returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -71,6 +72,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns>The property value of the requested tag.</returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -82,6 +84,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		/// <exception cref="MapiInvalidParameterException">An empty tag array or null has been passed.</exception>
@@ -96,6 +99,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="values"></param>
 		/// <returns></returns>
 		public static PropertyProblem[] SetProperties (this IMapiProp prop, params PropertyValue[] values)
@@ -108,6 +112,7 @@ namespace NMapi {
 		///  If the operation succeeds null is returned. Otherwise an object of 
 		///  type PropertyProblem is returned, that described the problem. 
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="value">An object that identifies the property and also contains the value to be set.</param>
 		/// <returns>
 		///  If the property has been set successfully, null is returned.
@@ -123,6 +128,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tags"></param>
 		/// <returns></returns>
 		public static PropertyProblem[] DeleteProperties (this IMapiProp prop, params PropertyTag[] tags)
@@ -133,6 +139,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag"></param>
 		/// <returns></returns>
 		public static PropertyProblem DeleteProperty (this IMapiProp prop, PropertyTag tag)
@@ -144,6 +151,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="mnid"></param>
 		/// <returns></returns>
 		public static PropertyValue GetNamedProperty (this IMapiProp prop, NamedPropertyDef namedDef)
@@ -166,6 +174,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="guid"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
@@ -178,6 +187,7 @@ namespace NMapi {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="guid"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
@@ -228,16 +238,16 @@ namespace NMapi {
 		
 		
 		/*
-	
+
 		KEEP_OPEN_READONLY
 		Changes should be committed and the object should be kept open for reading. No additional changes will be made.
 
 		MAPI_DEFERRED_ERRORS
 		Allows SaveChanges to return successfully, possibly before the changes have been fully committed.
-		
+
 		*/
-		
-		
+
+
 		/// <summary>
 		///  Saves the changes while closing the object for write access. (TODO: correct?)
 		/// </summary>
@@ -248,10 +258,10 @@ namespace NMapi {
 		{
 			prop.SaveChanges (0);
 		}
-		
-		
+
+
 		/// <summary>
-		///  
+		///
 		/// </summary>
 		/// <exception cref="MapiNoAccessException"></exception>
 		/// <exception cref="MapiObjectChangedException"></exception>
@@ -261,10 +271,10 @@ namespace NMapi {
 			int flags = (keepOpenWriteable) ? NMAPI.KEEP_OPEN_READWRITE : 0;
 			prop.SaveChanges (flags);
 		}
-		
-		
+
+
 		/// <summary>
-		///  
+		///
 		/// </summary>
 		/// <exception cref="MapiNoAccessException"></exception>
 		/// <exception cref="MapiObjectChangedException"></exception>
@@ -273,9 +283,9 @@ namespace NMapi {
 		{
 			prop.SaveChanges (NMAPI.FORCE_SAVE);
 		}
-		
+
 		/// <summary>
-		///  Returns a list of properties that exist on the object; 
+		///  Returns a list of properties that exist on the object;
 		///  String properties are returned as UnicodeProperty objects.
 		/// </summary>
 		/// <exception cref="MapiBadCharWidthException">Thrown if the OpenMapi-Provider does not support Unicode.</exception>
@@ -287,6 +297,7 @@ namespace NMapi {
 		/// <summary>
 		///  Open a property as an object for readonly access.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <exception cref="MapiInterfaceNotSupportedException"></exception>
 		/// <exception cref="MapiNoAccessException"></exception>
@@ -297,10 +308,11 @@ namespace NMapi {
 		{
 			return prop.OpenProperty (tag, interFace, AccessMode.Read);
 		}
-		
+
 		/// <summary>
 		///  Open a property as an object using the specified access permissions.
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <param name="interFace"></param>
 		/// <param name="mode"></param>
@@ -316,9 +328,10 @@ namespace NMapi {
 
 		/// <summary>
 		///  Open a property as an object using the specified access permissions.
-		///  If "create" is set to true, create the property if it does not exist 
+		///  If "create" is set to true, create the property if it does not exist
 		///  (and update it if it does).
 		/// </summary>
+		/// <param name="prop">A IMapiProp object.</param>
 		/// <param name="tag">The property tag of the property to be opened.</param>
 		/// <param name="interFace"></param>
 		/// <param name="mode"></param>
@@ -330,23 +343,23 @@ namespace NMapi {
 		/// <exception cref="MapiInvalidParameterException"></exception>
 		public static IBase OpenProperty (this IMapiProp prop, PropertyTag tag, NMapiGuid interFace, AccessMode mode, bool create)
 		{
-			int flags = ((create) ? Mapi.Create : 0) | 
+			int flags = ((create) ? Mapi.Create : 0) |
 						((create || mode == AccessMode.ReadWrite) ? Mapi.Modify : 0);
 			return prop.OpenProperty (tag.Tag, interFace, 0, flags);
 		}
-		
-		
+
+
 		// TODO: the same stuff with the "interface" parameter ...
-		
-		
-		
+
+
+
 
 /*
 		MAPI_DEFERRED_ERRORS
 */
-		
+
 		/// <summary>
-		///  This enumeration is used by the OpenMapi API only. It is not designed to be 
+		///  This enumeration is used by the OpenMapi API only. It is not designed to be
 		///  passed to lower-level MAPI layers.
 		/// </summary>
 		public enum AccessMode
@@ -354,9 +367,6 @@ namespace NMapi {
 			Read,
 			ReadWrite
 		}
-		
-		
-		
 		
 		private static PropertyProblem GetFirstProblemOrNull (PropertyProblem[] problems)
 		{
@@ -367,7 +377,82 @@ namespace NMapi {
 		
 		
 		
-			
-	}
+		
+		
+		
+		
+		
+		////
+		
+		
+		
 
+		public static T Get <T> (this IMapiProp message, MapiNameId name) where T : PropertyValue
+		{
+			var tags = message.GetPropList (Mapi.Unicode);
+			var props = message.GetProps (tags, 0);
+
+			var names = new MapiNameId [] {
+				name
+			};
+
+			var id = message.GetIDsFromNames (names, Mapi.Create) [0];
+			int index = PropertyValue.GetArrayIndex (props, id.Tag);
+			return PropertyValue.GetArrayProp (props, index) as T;
+		}
+
+		public static T Get <T> (this IMapiProp message, int id, NMapiGuid guid) where T : PropertyValue
+		{
+			var name = new NumericMapiNameId (id);
+			name.Guid = guid;
+			return message.Get <T> (name);
+		}
+
+		public static T Get <T> (this IMapiProp message, string id, NMapiGuid guid) where T : PropertyValue
+		{
+			var name = new StringMapiNameId (id);
+			name.Guid = guid;
+			return message.Get <T> (name);
+		}
+
+		public static PropertyProblem Set <T, U, V> (this IMapiProp message, MapiNameId name, PropertyType type, V val) where T : PropertyValue, IPropertyValue <V>, new () where U : PropertyTag
+		{
+			var prop = new T ();
+
+			var names = new MapiNameId [] {
+				name
+			};
+
+			var id = message.GetIDsFromNames (names, Mapi.Create) [0];
+			var tag = id.AsType (type) as U;
+			prop.PropTag = tag.Tag;
+			prop.Value = val;
+			return message.SetProperty (prop);
+		}
+
+		public static PropertyProblem Set <T, U, V> (this IMapiProp message, int id, NMapiGuid guid, PropertyType type, V val) where T : PropertyValue, IPropertyValue <V>, new () where U : PropertyTag
+		{
+			var name = new NumericMapiNameId (id);
+			name.Guid = guid;
+			return message.Set <T, U, V> (name, type, val);
+		}
+
+		public static PropertyProblem Set <T, U, V> (this IMapiProp message, string id, NMapiGuid guid, PropertyType type, V val) where T : PropertyValue, IPropertyValue <V>, new () where U : PropertyTag
+		{
+			var name = new StringMapiNameId (id);
+			name.Guid = guid;
+			return message.Set <T, U, V> (name, type, val);
+		}
+		
+		
+		
+		////
+		
+		
+		
+		
+		
+	}
 }
+
+// vi:set noexpandtab:

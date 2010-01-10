@@ -21,18 +21,12 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 
-/**
- * Parses a outlook-rtf data. 
- *
- */
 
 namespace NMapi.Utility {
 
-/**
- * Generates outlook-rtf. 
- *
- */
-
+	/// <summary>
+	///  Generates outlook-rtf.
+	/// </summary>
 	public class RTFWriter 
 	{
 		

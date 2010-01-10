@@ -1,4 +1,4 @@
-// openmapi.org - NMapi C# IMAP Gateway - CommandFetchItem.cs
+// openmapi.org - NMapi C# IMAP Gateway - CommandSearchKey.cs
 //
 // Copyright 2008 Topalis AG
 //

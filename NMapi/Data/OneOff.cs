@@ -150,11 +150,6 @@ namespace NMapi {
 				this.charset  = wc16charset;
 			} else
 				this.charsize = 1;
-
-			// check the data.
-			object tmp = DisplayName;
-			tmp = AddressType;
-			tmp = EmailAddress;
 		}
 	
 
@@ -163,7 +158,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="displayName">The display name (PR_DISPLAY_NAME)</param>
 		/// <param name="addressType">The address type (PR_ADDRTYPE)</param>
-		/// <param name="emailAddress">The amail address (PR_EMAIL_ADDRESS)</param>
+		/// <param name="emailAddress">The email address (PR_EMAIL_ADDRESS)</param>
 		/// <param name="ulFlags">(MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
 
 		public OneOff (string displayName, string addressType, 
@@ -180,13 +175,13 @@ namespace NMapi {
 		/// <param name="addressType">The address type (PR_ADDRESS_TYPE)</param>
 		/// <param name="emailAddress"> The amail address (PR_EMAIL_ADDRESS)</param>
 		/// <param name="ulFlags"> (MAPI_UNICODE, MAPI_SEND_NO_RITCH_INFO)</param>
+		/// <param name="chrset"> The charset name</param>
 
 		public OneOff (string displayName, string addressType, 
 			string emailAddress, int ulFlags, string chrset)
 		{
 			int len = OFFSET_NAME;
-			int i;
-			int pos = 0;
+            int pos = 0;
 			byte [] bytesName, bytesType, bytesMail;
 		
 			if ((ulFlags & Mapi.Unicode) != 0) {

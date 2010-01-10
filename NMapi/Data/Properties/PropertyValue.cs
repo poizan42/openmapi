@@ -38,6 +38,19 @@ using NMapi.Interop;
 
 namespace NMapi.Properties {
 
+	
+	public interface IPropertyValue <T>
+	{
+
+		[DataMember (Name = "Value")]
+		T Value {
+			get;
+			set;
+		}
+		
+	}
+
+
 	/// <summary>
 	///  The PropertyValue structure.
 	/// </summary>

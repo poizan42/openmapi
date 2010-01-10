@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - Pwd.cs
+// openmapi.org - NMapi C# Mapi API - Props.cs
 //
 // Copyright 2008 Topalis AG
 //
@@ -30,11 +30,11 @@ using NMapi.Properties;
 
 namespace NMapi.Tools.Shell {
 
-	public sealed class PwdCommand : AbstractBaseCommand
+	public sealed class DirPropsCommand : AbstractBaseCommand
 	{
 		public override string Name {
 			get {
-				return "pwd";
+				return "dirprops";
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return  "Print working directory";
+				return "List the Properties of an directory";
 			}
 		}
 
@@ -56,13 +56,41 @@ namespace NMapi.Tools.Shell {
 			}
 		}
 
-		public PwdCommand (Driver driver, ShellState state) : base (driver, state)
+		public DirPropsCommand (Driver driver, ShellState state) : base (driver, state)
 		{
 		}
 
 		public override void Run (CommandContext context)
 		{
-			driver.WriteLine (state.CurrentPath);
+			if (context.Param == String.Empty) {
+				RequireMsg ("key");
+				return;
+			}
+
+			string keyName = ShellUtil.SplitParams (context.Param) [0];
+
+			using (IMapiProp obj = state.OpenFolder (state.Input2AbsolutePath (keyName))) {
+				if (obj == null) { 
+					driver.WriteLine ("Unknown Key ID!");
+					return;
+				}
+				var tags = obj.GetPropList (0);
+				int i = 0;
+				foreach (var propTag in tags) {
+					string name = state.PropTag2Name (propTag.Tag);
+
+					if (name.Length <= 39) {
+						driver.Write (String.Format ("{0,-40}", name));
+						if ((i % 2) == 0)
+							driver.WriteLine ();
+					}
+					else
+						driver.WriteLine (name);
+
+					i++;
+				}
+				driver.WriteLine ();
+			}
 		}
 
 	}

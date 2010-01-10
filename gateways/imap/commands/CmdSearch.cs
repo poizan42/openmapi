@@ -19,6 +19,7 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using NMapi;
 using NMapi.Flags;
@@ -29,6 +30,7 @@ using NMapi.Properties.Special;
 using NMapi.Format.Mime;
 using NMapi.Gateways.IMAP;
 using NMapi.Utility;
+
 
 namespace NMapi.Gateways.IMAP {
 
@@ -49,11 +51,11 @@ namespace NMapi.Gateways.IMAP {
 		public override void Run (Command command)
 		{
 			Response r = null;
-		 	Encoding encoding = null;
 
+			// test for valid characterset
 			if (command.Charset != null) {
 				try {
-					encoding = Encoding.GetEncoding(command.Charset);
+					Encoding.GetEncoding(command.Charset);
 				} catch {
 					state.ResponseManager.AddResponse (new Response (ResponseState.BAD, Name, command.Tag).AddResponseItem ("BADCHARSET"));
 					return;
@@ -74,20 +76,20 @@ namespace NMapi.Gateways.IMAP {
 				}
 
 
-				using (contentsTable = contentsTable) {
+				using (contentsTable) {
 
 					// set the properties to fetch
 					PropertyTag [] currentPropTagArray = PropertyTag.ArrayFromIntegers (new int[] {FolderHelper.UIDPropTag});
 					contentsTable.SetColumns(currentPropTagArray, 0);
 					contentsTable.Restrict (restr, 0);
 					// get rows
-					Console.WriteLine ("DoFetchLoop Query Rows");
+					Trace.WriteLine ("DoFetchLoop Query Rows");
 					RowSet rows = null;
 					while ((rows = contentsTable.QueryRows (querySize, Mapi.Unicode)).Count > 0) {
-						Console.WriteLine ("DoFetchLoop Query Rows Fetch");
+						Trace.WriteLine ("DoFetchLoop Query Rows Fetch");
 						r = new Response (ResponseState.NONE, Name);
 						foreach (Row row in rows) {
-							Console.WriteLine ("DoFetchLoop Query Rows Fetch Process Row");
+							Trace.WriteLine ("DoFetchLoop Query Rows Fetch Process Row");
 							uint uid = (uint) ((IntProperty) PropertyValue.GetArrayProp(row.Props, 0)).Value;
 							if (uid != 0) {
 								if (command.UIDCommand) {
