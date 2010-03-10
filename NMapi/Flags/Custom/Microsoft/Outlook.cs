@@ -159,6 +159,7 @@ namespace NMapi.Flags {
 		public const int DispidTaskDueDate         = 0x8105;
 		public const int DispidTaskActualEffort    = 0x8110;
 		public const int DispidTaskEstimatedEffort = 0x8111;
+		public const int DispidTaskRecurrence      = 0x8116;
 		public const int DispidTaskFRecur          = 0x8126;
 		public const int DispidTaskComplete        = 0x811C;
 		public const int DispidTaskStatus			   = 0x8101;
