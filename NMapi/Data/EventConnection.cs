@@ -33,32 +33,35 @@ namespace NMapi {
 	/// </summary>
 	public struct EventConnection
 	{
+		// TODO: Should be `uint'
+		// See: `lpulConnection' at http://msdn.microsoft.com/en-us/library/cc842238.aspx
 		private int connection;
 		private bool initialized;
-		
+
 		/// <summary>
 		///  
 		/// </summary>
 		public int Connection {
 			get {
-				if (!initialized)
-					return -1;
-				return connection;
+				return initialized ? connection : -1;
+
+				// TODO: May be it's better to throw an exception!?
+				if (initialized)
+					return connection;
+
+				throw new InvalidOperationException ("Connection not initialized!");
 			}
 		}
-		
+
 		public EventConnection (int connection)
 		{
 			this.initialized = true;
 			this.connection = connection;
 		}
-		
+
 		public override string ToString ()
 		{
 			return "" + connection;
 		}
-		
-		
 	}
-
 }
