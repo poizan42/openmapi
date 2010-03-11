@@ -33,7 +33,6 @@
 
 namespace NMapi.Format.Mime
 {
-
 	using System;
 	using System.IO;
 	using System.Collections.Generic;
@@ -42,17 +41,91 @@ namespace NMapi.Format.Mime
 	using NUnit.Framework;
 	using System.Diagnostics;
 	using System.Reflection;
- 
-
 
 	[TestFixture]
 	public class TestInternetAddress
 	{
-
 		[Test]
 		public void ConstructInternetAddress ()
 		{
+			InternetAddress ia;
 
+			ia = new InternetAddress ();
+			ia.Personal = "Andreas Hügel";
+			Assert.AreEqual ("Andreas Hügel<>", ia.Address);
+			Assert.AreEqual ("=?utf-8?Q?Andreas_H=C3=BCgel?= <>", ia.ToString ());
+			ia.Email = null;
+			Assert.AreEqual ("Andreas Hügel<>", ia.Address);
+			Assert.AreEqual ("=?utf-8?Q?Andreas_H=C3=BCgel?= <>", ia.ToString ());
+			ia.Email = "";
+			Assert.AreEqual ("Andreas Hügel<>", ia.Address);
+
+
+			ia = new InternetAddress ();
+			ia.Email = "andreas.huegel@topalis.com";
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Address);
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.ToString ());
+			ia.Personal = null;
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Address);
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.ToString ());
+			ia.Personal = "";
+			Assert.AreEqual ("<andreas.huegel@topalis.com>", ia.Address);
+			Assert.AreEqual ("<andreas.huegel@topalis.com>", ia.ToString ());
+		
+			ia = new InternetAddress ();
+			ia.Personal = "Andreas Hügel";
+			ia.Email = "andreas.huegel@topalis.com";
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+		
+			// same thing made the other way around
+			ia = new InternetAddress ();
+			ia.Email = "andreas.huegel@topalis.com";
+			ia.Personal = "Andreas Hügel";
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+		}
+
+		[Test]
+		public void AnalyseInternetAddress ()
+		{
+			InternetAddress ia;
+
+			ia = new InternetAddress ("Andreas Hügel");
+			Assert.AreEqual ("Andreas Hügel", ia.Email);
+			Assert.IsNull (ia.Personal);
+
+			ia = new InternetAddress ("andreas.huegel@topalis.com");
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);
+			Assert.IsNull (ia.Personal);
+
+			ia = new InternetAddress ("<andreas.huegel@topalis.com>");
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);
+			Assert.AreEqual ("", ia.Personal);
+
+			ia = new InternetAddress ("Andreas Hügel <andreas.huegel@topalis.com>");
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+			Assert.AreEqual ("Andreas Hügel <andreas.huegel@topalis.com>", ia.ToString ());  // extra space
+			Assert.AreEqual ("Andreas Hügel", ia.Personal);
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);
+			ia.Personal = "Andreas Hügel";
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+
+		
+			ia = new InternetAddress ("Andreas Hügel         <andreas.huegel@topalis.com>");
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+			Assert.AreEqual ("Andreas Hügel         <andreas.huegel@topalis.com>", ia.ToString ());  // extra spaces
+			Assert.AreEqual ("Andreas Hügel", ia.Personal);
+			Assert.AreEqual ("andreas.huegel@topalis.com", ia.Email);
+			ia.Personal = "Andreas Hügel";
+			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
+		}
+	}
+
+	[TestFixture]
+	public class TestInternetAddressEncoding
+	{
+		[Test]
+		public void ConstructInternetAddress ()
+		{
 			InternetAddress ia;
 
 			ia = new InternetAddress ();
@@ -95,7 +168,6 @@ namespace NMapi.Format.Mime
 		[Test]
 		public void AnalyseInternetAddress ()
 		{
-
 			InternetAddress ia;
 
 			ia = new InternetAddress ("Andreas Hügel");
@@ -128,10 +200,6 @@ namespace NMapi.Format.Mime
 			ia.Personal = "Andreas Hügel";
 			Assert.AreEqual ("Andreas Hügel<andreas.huegel@topalis.com>", ia.Address);
 			Assert.AreEqual ("=?utf-8?Q?Andreas_H=C3=BCgel?= <andreas.huegel@topalis.com>", ia.ToString ()); // extra spaces is now missing and encoding is done
-		
-		
 		}
-
-
 	}
 }
