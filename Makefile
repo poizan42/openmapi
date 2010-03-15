@@ -467,8 +467,8 @@ docs: $(NMAPIDLL)
 	$(MONODOCS2HTML) -template:documents/doctemplate.xsl -source:xmldocs -dest:docs
 
 $(CECILDLL): $(MONO_CECIL) .bindir
-#	cp $< $@
-#	touch $@
+	cp $< $@
+	touch $@
 
 clean:
 	-rm -rf server.zip samples/*.xml_Generated.cs bin xml/generated docs xmldocs \
