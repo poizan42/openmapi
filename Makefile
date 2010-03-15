@@ -157,7 +157,7 @@ key.snk:
 
 $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES) $(NMAPI_RESOURCES) key.snk
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
-	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:exe \
+	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
 	/r:nunit.framework.dll \
 	/r:System.Drawing.dll \
 	/r:System.Data.dll \
