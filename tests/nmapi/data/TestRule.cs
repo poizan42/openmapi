@@ -7,7 +7,7 @@ namespace NMapi.Test
 	using NMapi.Flags;
 	using NMapi.Properties;
 	using NMapi.Table;
-	using NMapi.Server;
+//	using NMapi.Server;
 	using NMapi.Rules;
 
 	using NUnit.Framework;
@@ -17,7 +17,7 @@ namespace NMapi.Test
 	{
 		
 		[Test]
-		public void RuleTest ()
+		public void RuleSimpleTest ()
 		{
 			AndRestriction ar = new AndRestriction ();
 			

@@ -152,7 +152,10 @@ NMapi/resources/strings.de-DE.resources:
 $(SGMLDLL):
 	$(MCS) /target:library /out:bin/sgml.dll lib/sgml/*.cs
 
-$(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES) $(NMAPI_RESOURCES)
+key.snk:
+	sn -k key.snk
+
+$(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES) $(NMAPI_RESOURCES) key.snk
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:exe \
 	/r:nunit.framework.dll \

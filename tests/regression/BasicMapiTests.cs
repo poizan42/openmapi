@@ -48,7 +48,7 @@ namespace NMapi.Test
 				int index = PropertyValue.GetArrayIndex (propValueArray, Outlook.Property.IPM_CONTACT_ENTRYID);
 
 				if (index == -1) {
-					using (IMapiFolder contactFolder = rootFolder.CreateFolder (Folder.Generic, "Kontakte", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
+					using (IMapiFolder contactFolder = rootFolder.CreateFolder (FolderType.Generic, "Kontakte", "Test", InterfaceIdentifiers.IMapiFolder, Mapi.Unicode)) {
 						Assert.That (contactFolder, Is.Not.Null);
 						PropertyValue propValue = Property.Typed.ContainerClass.CreateValue (FolderClasses.Ipf.Contact);
 						Assert.That (propValue, Is.Not.Null);
