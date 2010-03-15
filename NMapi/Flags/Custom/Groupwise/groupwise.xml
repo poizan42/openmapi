@@ -19,8 +19,10 @@
 //
 //-->
 <properties namespace="NMapi.Flags.Groupwise" class="GroupwiseProperty">
-	
-	<!-- Attachment properties //-->
+
+	<!-- 
+		///////////////////// Attachment properties ///////////////////// 
+	//-->
 
 	<property name="AttachLastMod" type="SysTime" id="0x604A" />
 
@@ -28,10 +30,9 @@
 	<property name="AttachType" type="Int16" id="0x604B" />
 
 
-
-	<!--  Folder properties //-->
-
-
+	<!-- 
+		///////////////////// Folder properties ///////////////////// 
+	//-->
 
 	<!-- ENUM: FolderFlags //-->
 	<!-- Read-only   //-->
@@ -43,11 +44,11 @@
 	<!-- ENUM: FolderType //-->
 	<!-- 	Read-only  //-->
 	<property name="UwType " type="Int16" id="0x604B" />
+	
 
-
-
-	<!-- Message properties //-->
-
+	<!-- 
+		///////////////////// Message properties ///////////////////// 
+	//-->
 
 
 	<!-- ENUM: AcceptLevel //-->

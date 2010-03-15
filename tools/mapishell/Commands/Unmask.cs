@@ -1,10 +1,9 @@
 //
-// openmapi.org - NMapi C# Mapi API - Cat.cs
+// openmapi.org - NMapi C# Mapi API - Unmask.cs
 //
 // Copyright 2008 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
-// Author: fred
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -31,11 +30,11 @@ using NMapi.Properties;
 
 namespace NMapi.Tools.Shell {
 
-	public sealed class DirCatCommand : AbstractBaseCommand
+	public sealed class UnmaskCommand : AbstractBaseCommand
 	{
 		public override string Name {
 			get {
-				return "dircat";
+				return "unmask";
 			}
 		}
 
@@ -47,7 +46,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return "Print content of a folder property";
+				return "Unmask an object";
 			}
 		}
 
@@ -57,7 +56,7 @@ namespace NMapi.Tools.Shell {
 			}
 		}
 
-		public DirCatCommand (Driver driver, ShellState state) : base (driver, state)
+		public UnmaskCommand (Driver driver, ShellState state) : base (driver, state)
 		{
 		}
 
@@ -65,28 +64,25 @@ namespace NMapi.Tools.Shell {
 		{
 			string[] prms = ShellUtil.SplitParams (context.Param);
 			if (prms.Length < 2) {
-				RequireMsg ("key", "property");
+				RequireMsg ("key", "mask_provider");
 				return;
 			}
 
 			string keyName = prms [0];
-			string propName = prms [1];
-			using (IMapiProp obj = state.OpenFolder (state.Input2AbsolutePath (keyName))) {
+			string maskProvider = prms [1];
+
+/*			using (IMapiProp obj = state.OpenPropObj (keyName)) {
 				if (obj == null) {
 					driver.WriteLine ("Unknown Key ID!");
 					return;
 				}
 				int propTag = -1;
 				try {
-					if (propName.StartsWith ("@")) {
-						propTag = state.PropertyLookup.GetValue ("NMapi.Flags.Property", propName.Substring (1));
-					} else {
-						string[] tmp = TypeResolver.SplitTypeNameAndProperty (propName);
-						string typeName = tmp [0];
-						string fieldName = tmp [1];
-						propTag = state.PropertyLookup.GetValue (typeName, fieldName);
-					}
-				} catch {
+					string[] tmp = TypeResolver.SplitTypeNameAndProperty (propName);
+					string typeName = tmp [0];
+					string fieldName = tmp [1];
+					propTag = state.PropertyLookup.GetValue (typeName, fieldName);
+				} catch (Exception e) {
 					driver.WriteLine ("Invalid/unregistered Property!");
 					return;
 				}
@@ -95,7 +91,6 @@ namespace NMapi.Tools.Shell {
 					// TODO: Depends on type!
 
 					val = new MapiPropHelper (obj).HrGetOneProp (propTag);
-/*
 
 					IStream streamsrc = null, streamdst = null;
 
@@ -119,8 +114,6 @@ namespace NMapi.Tools.Shell {
 					}
 
 
-*/
-
 				} catch (MapiException e) {
 					if (e.HResult == Error.NotFound) {
 						driver.WriteLine ("Property does not exist on this object!");
@@ -128,14 +121,11 @@ namespace NMapi.Tools.Shell {
 					}
 					throw;
 				}
-				
-				if (val is BinaryProperty)
-					driver.WriteLine (((BinaryProperty) val).Value.ToHexString ());
-				else {
-					object data = val.GetValueObj ();
-					driver.WriteLine (data);
-				}
-			}
+				PropertyType type = PropertyTypeHelper.PROP_TYPE (val.PropTag);
+				object data = val.GetValueObj ();
+*/
+				driver.WriteLine ("TODO!");
+//			}
 		}
 
 	}

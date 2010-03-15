@@ -125,10 +125,10 @@ namespace NMapi.Properties.Special {
 		
 			if (flags == 0) {
 				bWipe = true;
-				flags = ModRecip.Add;
+				flags = ModifyRecipientsMode.Add;
 			}
 		
-			if ((flags & (ModRecip.Modify|ModRecip.Remove)) != 0) {
+			if ((flags & (ModifyRecipientsMode.Modify|ModifyRecipientsMode.Remove)) != 0) {
 				for (i = 0; i <mods.AEntries.Length; i++) 
 					if (FindProp (Property.RowId, mods.AEntries[i].PropVals) == null) 
 						throw MapiException.Make (Error.InvalidParameter);
@@ -153,7 +153,7 @@ namespace NMapi.Properties.Special {
 					throw MapiException.Make (res.hr);
 			}
 		
-			if (flags == ModRecip.Add)
+			if (flags == ModifyRecipientsMode.Add)
 			{
 				var arg = new Message_AddRecipient_arg();
 				Message_AddRecipient_res res;
@@ -185,7 +185,7 @@ namespace NMapi.Properties.Special {
 					rowid.Value = res.ulRowid;
 				}
 			} 
-			else if (flags == ModRecip.Modify)
+			else if (flags == ModifyRecipientsMode.Modify)
 			{
 				var arg = new Message_ModifyRecipient_arg ();
 				Message_ModifyRecipient_res res;
@@ -207,7 +207,7 @@ namespace NMapi.Properties.Special {
 						throw MapiException.Make (res.hr);
 				}
 			}
-			else if (flags == ModRecip.Remove)
+			else if (flags == ModifyRecipientsMode.Remove)
 			{
 				var arg = new Message_DeleteRecipient_arg();
 				Message_DeleteRecipient_res res;

@@ -1,49 +1,0 @@
-8
-
-dir
-87
-https://svn.openmapi.org/svn/openmapi/trunk/nmapi/server/Modules
-https://svn.openmapi.org/svn/openmapi
-
-
-
-2008-09-17T21:36:45.994906Z
-1
-jroith
-
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-7e9c2147-6d2a-4f89-8ef6-0215227d3333
-
-ModAccess
-dir
-
-ModAuth
-dir
-
-ModLog
-dir
-
-ModLoadBalance
-dir
-
-ModClientDiff
-dir
-
-ModSecurity
-dir
-
-ModTransform
-dir
-

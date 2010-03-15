@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Rmdir.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -47,7 +47,7 @@ namespace NMapi.Tools.Shell {
 
 		public override string Description {
 			get {
-				return  "Delete folder";
+				return  "Deletes a folder.";
 			}
 		}
 
@@ -61,14 +61,47 @@ namespace NMapi.Tools.Shell {
 		{
 		}
 
+		private void PrintErrorItemsExist (string items)
+		{
+			// TODO: "error"-call!
+			driver.WriteLine ("Directory contains " + items + 
+				" and the directory can't be deleted. " + 
+				"Specify -R to still delete it.");
+		}
+
 		public override void Run (CommandContext context)
 		{
+			int flags = 0;
+			bool deleteRecursive = false;
+			
+			// TODO: param option to recursively delete.
+			
+			if (deleteRecursive)
+				flags |= NMAPI.DEL_MESSAGES | NMAPI.DEL_FOLDERS;
+			
 			Action<IMapiFolder, string> op = (parent, folderName) => {
 				SBinary entryId = state.GetSubDirEntryId (parent, folderName);
-				if (entryId != null)
-					parent.DeleteFolder (entryId.ByteArray, null, 0);
-				else
-					driver.WriteLine ("File not found.");
+				ShellProgressBar progressBar = driver.CreateProgressBar ("Deleting directory");
+			
+				if (entryId != null) {
+					try {
+						parent.DeleteFolder (entryId.ByteArray, progressBar, flags);						
+					} catch (MapiHasMessagesException) {
+						if (deleteRecursive)
+							throw;
+						PrintErrorItemsExist ("messages");
+					} catch (MapiHasFoldersException) {
+						if (deleteRecursive)
+							throw;
+						PrintErrorItemsExist ("subfolders");
+					} finally {
+						if (progressBar != null) {
+							progressBar.Close ();
+							progressBar = null;
+						}
+					}
+				} else
+					driver.WriteLine ("Directory not found."); // TODO: "error-call"!
 			};
 	
 			state.PerformOperationOnFolder (context, op);

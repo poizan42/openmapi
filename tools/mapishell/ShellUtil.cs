@@ -64,7 +64,6 @@ namespace NMapi.Tools.Shell {
 			return Environment.GetFolderPath (Environment.SpecialFolder.Personal);
 		}
 
-
 	}
 
 }

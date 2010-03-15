@@ -332,6 +332,7 @@ namespace NMapi.Tools.Shell {
 			Func<IMapiContainer, SBinary, object> action)
 		{
 			IMapiTableReader tableReader = null;
+			// TODO: close table properly!
 			try {
 				tableReader = parent.GetHierarchyTable (Mapi.Unicode);
 			} catch (MapiException e) {
@@ -371,7 +372,6 @@ namespace NMapi.Tools.Shell {
 				return (IMapiContainer) prnt.OpenEntry (
 					entryId.ByteArray, null, Mapi.Modify);
 			};
-
 			return (IMapiContainer) _SharedGetSubDir (parent, match, action);
 		}
 

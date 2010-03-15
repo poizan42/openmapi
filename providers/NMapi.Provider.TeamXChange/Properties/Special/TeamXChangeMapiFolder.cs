@@ -118,16 +118,16 @@ namespace NMapi.Properties.Special {
 			arg.lpMsgList = new LPEntryList (msgList);
 			arg.lpInterface = new LPGuid (interFace);
 			arg.dsteid = new SBinary (entryID);
-			arg.ulFlags = flags;
-			arg.pBar = new LPProgressBar();
+			arg.ulFlags = flags;			
+			arg.pBar = session.CreateProgressBar (progress);
 			try {
 				res = clnt.MAPIFolder_CopyMessages_1 (arg);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw MapiException.Make (e);
-			}
-			catch (OncRpcException e) {
+			} catch (OncRpcException e) {
 				throw MapiException.Make (e);
+			} finally {
+				session.UnregisterProgressBar (arg.pBar);
 			}
 			if (Error.CallHasFailed (res.hr)) {
 				if (res.hr == Error.NoSupport) {
@@ -153,13 +153,16 @@ namespace NMapi.Properties.Special {
 			prms.obj = new HObject (obj);
 			prms.lpMsgList = new LPEntryList (msgList);
 			prms.ulFlags = flags;
-			prms.pBar = new LPProgressBar ();
-			
-			var res = MakeCall<MAPIFolder_DeleteMessages_res, 
-				MAPIFolder_DeleteMessages_arg> (clnt.MAPIFolder_DeleteMessages_1, prms);
+			prms.pBar = session.CreateProgressBar (progress);
+			try {
+				var res = MakeCall<MAPIFolder_DeleteMessages_res, 
+					MAPIFolder_DeleteMessages_arg> (clnt.MAPIFolder_DeleteMessages_1, prms);
+			} finally {
+				session.UnregisterProgressBar (prms.pBar);
+			}
 		}
 
-		public IMapiFolder CreateFolder (Folder folderType, string folderName, 
+		public IMapiFolder CreateFolder (FolderType folderType, string folderName, 
 			string folderComment, NMapiGuid interFace, int flags)
 		{
 			var prms = new MAPIFolder_CreateFolder_arg ();
@@ -200,17 +203,21 @@ namespace NMapi.Properties.Special {
 			prms.dsteid = new SBinary (destEntryID);
 			prms.lpInterface = new LPGuid (interFace);
 			prms.ulFlags = flags;
-			prms.pBar = new LPProgressBar();
-			if ((prms.ulFlags & Mapi.Unicode) != 0) {
-				prms.pszNewNameW = new UnicodeAdapter (newFolderName);
-				prms.pszNewNameA = new StringAdapter ();
-			} else {
-				prms.pszNewNameA = new StringAdapter (newFolderName);
-				prms.pszNewNameW = new UnicodeAdapter ();
-			}
+			prms.pBar = session.CreateProgressBar (progress);
+			try {
+				if ((prms.ulFlags & Mapi.Unicode) != 0) {
+					prms.pszNewNameW = new UnicodeAdapter (newFolderName);
+					prms.pszNewNameA = new StringAdapter ();
+				} else {
+					prms.pszNewNameA = new StringAdapter (newFolderName);
+					prms.pszNewNameW = new UnicodeAdapter ();
+				}
 
-			var res = MakeCall<MAPIFolder_CopyFolder_res, 
-				MAPIFolder_CopyFolder_arg> (clnt.MAPIFolder_CopyFolder_1, prms);
+				var res = MakeCall<MAPIFolder_CopyFolder_res, 
+					MAPIFolder_CopyFolder_arg> (clnt.MAPIFolder_CopyFolder_1, prms);
+			} finally {
+				session.UnregisterProgressBar (prms.pBar);
+			}
 		}
 
 		public void DeleteFolder (byte [] entryID, IMapiProgress progress, int flags)
@@ -219,10 +226,13 @@ namespace NMapi.Properties.Special {
 			prms.obj = new HObject (obj);
 			prms.eid = new SBinary (entryID);
 			prms.ulFlags = flags;
-			prms.pBar = new LPProgressBar ();
-
-			var res = MakeCall<MAPIFolder_DeleteFolder_res, 
-				MAPIFolder_DeleteFolder_arg> (clnt.MAPIFolder_DeleteFolder_1, prms);
+			prms.pBar = session.CreateProgressBar (progress);
+			try {
+				var res = MakeCall<MAPIFolder_DeleteFolder_res, 
+					MAPIFolder_DeleteFolder_arg> (clnt.MAPIFolder_DeleteFolder_1, prms);
+			} finally {
+				session.UnregisterProgressBar (prms.pBar);
+			}
 		}
 
 		public void SetReadFlags (EntryList msgList, IMapiProgress progress, int flags)
@@ -231,10 +241,13 @@ namespace NMapi.Properties.Special {
 			prms.obj = new HObject (obj);
 			prms.lpMsgList = new LPEntryList (msgList);
 			prms.ulFlags = flags;
-			prms.pBar = new LPProgressBar ();
-			
-			var res = MakeCall<MAPIFolder_SetReadFlags_res, 
-				MAPIFolder_SetReadFlags_arg> (clnt.MAPIFolder_SetReadFlags_1, prms);
+			prms.pBar = session.CreateProgressBar (progress);
+			try {
+				var res = MakeCall<MAPIFolder_SetReadFlags_res, 
+					MAPIFolder_SetReadFlags_arg> (clnt.MAPIFolder_SetReadFlags_1, prms);
+			} finally {
+				session.UnregisterProgressBar (prms.pBar);
+			}
 		}
 
 		public int GetMessageStatus (byte [] entryID, int flags)
@@ -278,10 +291,13 @@ namespace NMapi.Properties.Special {
 			var prms = new MAPIFolder_EmptyFolder_arg ();
 			prms.obj = new HObject (obj);
 			prms.ulFlags = flags;
-			prms.pBar = new LPProgressBar ();
-			
-			var res = MakeCall<MAPIFolder_EmptyFolder_res, 
-				MAPIFolder_EmptyFolder_arg> (clnt.MAPIFolder_EmptyFolder_1, prms);
+			prms.pBar = session.CreateProgressBar (progress);
+			try {
+				var res = MakeCall<MAPIFolder_EmptyFolder_res, 
+					MAPIFolder_EmptyFolder_arg> (clnt.MAPIFolder_EmptyFolder_1, prms);
+			} finally {
+				session.UnregisterProgressBar (prms.pBar);
+			}
 		}
 
 		public long AssignIMAP4UID (byte [] entryID, int flags)

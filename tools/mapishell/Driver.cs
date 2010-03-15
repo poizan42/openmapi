@@ -38,7 +38,8 @@ namespace NMapi.Tools.Shell {
 	public sealed class Driver : MarshalByRefObject, IMapiShell
 	{
 		private const string RC_FILE = ".mashrc";
-
+		
+		private QuitDelegate quit = null;
 		private ShellState state;
 		private MetaManager metaMan;
 		private bool isClosed;
@@ -90,7 +91,22 @@ namespace NMapi.Tools.Shell {
 				return isClosed;
 			}
 		}
+		
+		public ShellProgressBar CreateProgressBar (string caption)
+		{
+			return new ConsoleProgressBar (caption);
+		}
+		
+		public void SetQuitAction (QuitDelegate quit)
+		{
+			this.quit = quit;
+		}
 
+		public void Quit ()
+		{
+			if (quit != null)
+				this.quit ();
+		}
 
 		#region THREAD_SYNC
 

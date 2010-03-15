@@ -321,7 +321,7 @@
 				<remarks>$$MSDN_531288.aspx</remarks>
 			</doc>
 			<returns map="true">^I#MAPI^Folder</returns>
-			<param type="^Folder">folderType</param>
+			<param type="^Folder^Type">folderType</param>
 			<param type="string">folderName</param>
 			<param type="string">folderComment</param>
 			<param type="^N#Mapi^Guid">interFace</param>
@@ -655,7 +655,7 @@
 				<remarks></remarks>
 			</doc>
 			<returns map="true">^I#Msg^Store</returns>
-			<param type="^Mdb">flags</param>
+			<param type="^Open^Store^Flags">flags</param>
 			<param type="string">user</param>
 			<param type="bool">isPublic</param>
 		</method>

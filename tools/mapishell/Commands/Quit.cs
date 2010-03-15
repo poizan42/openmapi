@@ -74,7 +74,7 @@ namespace NMapi.Tools.Shell {
 		{
 			RunExitScript ();
 			state.CloseSession ();
-			Environment.Exit (1);
+			driver.Quit ();
 		}
 
 	}

@@ -360,7 +360,7 @@ namespace CompactTeaSharp.Server
 					// it before it is pulled off by accept ().
 
 #if DEBUG
-					Console.WriteLine (e);
+					Console.WriteLine ("caught:" + e);
 #endif
 
 					// If the socket has been gone away after an IOException 
@@ -368,7 +368,12 @@ namespace CompactTeaSharp.Server
 					// gracefully.
 					if (socket == null)
 						return;
+				} catch (SocketException e) {					
+					// Fix crash when server is closed.
+					if (socket == null)
+						return;
 				}
+				
 			}
 		}
 		

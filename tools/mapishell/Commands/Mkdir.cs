@@ -65,7 +65,7 @@ namespace NMapi.Tools.Shell {
 		{
 
 			Action<IMapiFolder, string> op = (parent, folderName) =>
-				parent.CreateFolder (Folder.Generic, folderName, "", null, Mapi.Unicode);
+				parent.CreateFolder (FolderType.Generic, folderName, "", null, Mapi.Unicode);
 	
 			state.PerformOperationOnFolder (context, op);
 		}

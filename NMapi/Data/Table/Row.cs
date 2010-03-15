@@ -53,6 +53,7 @@ namespace NMapi.Table {
 
 		public Row () 
 		{
+			lpProps = new PropertyValue [0];
 		}
 	
 		public Row (PropertyValue [] values)

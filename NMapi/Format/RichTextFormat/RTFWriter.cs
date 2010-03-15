@@ -1,3 +1,4 @@
+//
 // openmapi.org - NMapi C# IMAP Gateway - RTFWriter.cs
 //
 // Copyright 2009 VIPcom GmbH
@@ -20,7 +21,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
-
 
 namespace NMapi.Utility {
 

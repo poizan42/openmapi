@@ -30,6 +30,11 @@ namespace NMapi.Tools.Shell {
 
 	public sealed class DefaultTTY
 	{
+		private static void DoExit ()
+		{
+			Environment.Exit (1);
+		}
+		
 		public static void Main (string[] args)
 		{
 			LineEditor editor = new LineEditor ("MapiShell", 300);
@@ -37,7 +42,7 @@ namespace NMapi.Tools.Shell {
 			Driver driver = new Driver (args);
 			Thread driverThread = new Thread (new ThreadStart (driver.Start));
 			driverThread.Start ();
-
+			driver.SetQuitAction (DoExit);
 			driver.WaitUntilInput ();
 
 			string input = null;
