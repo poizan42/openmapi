@@ -33,9 +33,8 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///   OpenMapi-specific constants. 
-	/// </summary>
+	/// <summary>OpenMapi-specific constants.</summary>
+	/// <remarks></remarks>
 	public static class OpenMapi
 	{
 		

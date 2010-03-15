@@ -284,7 +284,7 @@ namespace NMapi.Utility {
 						MimeBodyPart mbp = new MimeBodyPart ();
 					
 						// embedded Messages
-						if (attachMethProps.LongNum == (long) Attach.EmbeddedMsg) {
+						if (attachMethProps.LongNum == (long) AttachMethod.EmbeddedMsg) {
 							using (IAttach ia1 = im.OpenAttach (attachCnt, null, 0))
 							using (IMessage embeddedIMsg = (IMessage) ia1.OpenProperty (Property.AttachDataObj, InterfaceIdentifiers.IMessage, 0, Mapi.Unicode)) {
 								PropertyValue[] props = embeddedIMsg.GetProps (PropertyTag.ArrayFromIntegers (propsAllProperties), Mapi.Unicode);

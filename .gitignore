@@ -1,6 +1,8 @@
 # globs
 *_Generated.cs
 generated
+.DS_STORE
+.svn
 # explicit
 /testresults.xml
 /xmldocs

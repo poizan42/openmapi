@@ -93,9 +93,9 @@
 		</class>
 		
 		<class id="LPACTIONS">
-			<declare type="Actions" constrarg="true">Value</declare>
+			<declare type="NMapi.Rules.Actions" constrarg="true">Value</declare>
 			<both>
-				<boolGate type="Actions">Value</boolGate>
+				<boolGate type="NMapi.Rules.Actions">Value</boolGate>
 			</both>
 		</class>
 	</namespace>
@@ -161,6 +161,9 @@
 				<long>value</long>
 			</both>
 		</class>
+	</namespace>
+		
+	<namespace name="NMapi.Rules">
 		
 		<class id="Actions">
 			<declare type="Action" isArray="true" privName="actions" constrarg="true">Values</declare>
@@ -591,8 +594,8 @@
 			</both>
 		</class>
 		
-		<class id="ActionsProperty" inherits="PropertyValue, IPropertyValue &lt;Actions&gt;">
-			<declare type="Actions" privName="actions" constrarg="true">Value</declare>
+		<class id="ActionsProperty" inherits="PropertyValue, IPropertyValue &lt;NMapi.Rules.Actions&gt;">
+			<declare type="NMapi.Rules.Actions" privName="actions" constrarg="true">Value</declare>
 			<both>
 				<wrapped in="LPACTIONS">actions</wrapped>
 			</both>

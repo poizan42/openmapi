@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Sensitivity.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,42 +22,27 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  
-	/// </summary>
+	/// <summary>Possible values for the property tag Property.Sensitivity.</summary>
 	public enum Sensitivity
 	{
-		//  PR_SENSITIVITY values
-
-		/// <summary>
-		///  
-		/// </summary>
+		
+		/// <summary>No sensitivity.</summary>
+		/// <remarks>Classic MAPI name of this is SENSITIVITY_NONE.</remarks>
 		None = 0,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The sensitivity of the message is "Personal".</summary>
+		/// <remarks>Classic MAPI name of this is SENSITIVITY_COMPANY_PERSONAL.</remarks>
 		Personal,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The sensitivity of the message is "Private".</summary>
+		/// <remarks>Classic MAPI name of this is SENSITIVITY_PRIVATE.</remarks>
 		Private,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The sensitivity of the message is "Company Confidential".</summary>
+		/// <remarks>Classic MAPI name of this is SENSITIVITY_COMPANY_CONFIDENTIAL.</remarks>
 		CompanyConfidential
 	}
 

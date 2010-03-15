@@ -16,7 +16,7 @@ MAPIMAP = $(MONO) --debug bin/mapimap.exe
 # - if a sourcefile is specified multiple times (CS2002)
 # - if missing XML comment for publicly visible type or member 'Type_or_Member' (CS1591)
 # 0612,0618
-NO_WARN=2002,1591
+NO_WARN=2002,1591,1570
 DEBUG= /debug -d:DEBUG 
 TRACE= -d:TRACE 
 WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
@@ -26,12 +26,12 @@ WITH_BOO_CODEDOM= # /define:WITH_BOO  /r:Boo.CodeDom.dll
 WITH_MONO_SECURITY = /D:USE_MONO_SECURITY /r:Mono.Security.dll
 
 NDESK_OPTIONS = lib/NDesk.Options.cs
-MONO_GETLINE = $(shell pkg-config --variable=Sources mono-lineeditor)
+MONO_GETLINE = lib/getline.cs
 MONO_CECIL = $(shell pkg-config --variable=Libraries cecil)
 GOLDPARSER_SOURCES = $(wildcard lib/GoldParser/*.cs)
 REMOTETEA_SOURCES  = $(shell find RemoteTea-Sharp/OncRpc -name "*.cs")
 MMETAL_SOURCES = $(wildcard mapimetal/*.cs)
-SERVER_SOURCES = $(shell find server/Modules server/Protocols -name "*.cs") $(wildcard server/*.cs)
+SERVER_SOURCES = $(shell find server/RpcServer -name "*.cs") $(wildcard server/WebServer/*.cs) $(wildcard server/*.cs)
 MAPIWAIT_SOURCES = $(wildcard tools/mapiwait/*.cs)
 CUP_SOURCES = $(wildcard lib/cup/Runtime/*.cs)
 IMAP_SOURCES = $(shell find gateways/imap -name "*.cs")
@@ -42,10 +42,14 @@ NMAPI_GENERATED_SOURCES = \
 		NMapi/Data/Data_Generated.cs NMapi/Data/Data_Props_Generated.cs \
 		NMapi/Core/Exceptions_Generated.cs NMapi/Data/PropertyTag_Generated.cs \
 		NMapi/Data/NamedPropDef_Generated.cs NMapi/Flags/Properties/Named_Generated.cs \
+		NMapi/Flags/Errors_Generated.cs \
 		NMapi/Flags/Properties/Property_Generated.cs \
 		NMapi/Flags/Custom/Microsoft/Exchange_Properties_Generated.cs \
 		NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs \
 		NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs
+NMAPI_RESOURCES = \
+		NMapi/resources/strings.resources \
+		NMapi/resources/strings.de-DE.resources
 TEST_SOURCES = $(shell find tests -name "*.cs")
 
 CECILDLL = bin/Mono.Cecil.dll
@@ -55,6 +59,8 @@ NTSDLL = bin/NMapi.Tools.Shell.dll
 NSIDLL = bin/NMapi.Server.ICalls.dll
 PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
 CUPDLL = bin/cup.dll
+C5DLL = Mono.C5.dll
+SGMLDLL = bin/sgml.dll
 
 all: code
 
@@ -113,6 +119,9 @@ NMapi/Data/Data_Props_Generated.cs: NMapi/Data/xslt/cs/props.xsl NMapi/Data/Prop
 NMapi/Core/Exceptions_Generated.cs: NMapi/Core/xslt/exceptions.xsl NMapi/Flags/errors.xml
 	$(XSLTPROC) -o $@ $^
 
+NMapi/Flags/Errors_Generated.cs: NMapi/Flags/xslt/cs/errors.xsl NMapi/Flags/errors.xml
+	$(XSLTPROC) -o $@ $^
+		
 NMapi/Data/PropertyTag_Generated.cs: NMapi/Data/xslt/cs/tags.xsl NMapi/Data/Props.xml
 	$(XSLTPROC) -o $@ $^
 
@@ -134,9 +143,18 @@ NMapi/Flags/Custom/Microsoft/Outlook_Generated.cs: NMapi/Flags/xslt/cs/propertie
 NMapi/Flags/Custom/Groupwise/Groupwise_Properties_Generated.cs: NMapi/Flags/xslt/cs/properties.xsl NMapi/Flags/Custom/Groupwise/groupwise.xml
 	$(XSLTPROC) -o $@ $^
 
-$(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES)
+NMapi/resources/strings.resources:
+	resgen2 NMapi/resources/strings.resx
+
+NMapi/resources/strings.de-DE.resources:
+	resgen2 NMapi/resources/strings.de-DE.resx
+
+$(SGMLDLL):
+	$(MCS) /target:library /out:bin/sgml.dll lib/sgml/*.cs
+
+$(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES) $(NMAPI_RESOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
-	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
+	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:exe \
 	/r:nunit.framework.dll \
 	/r:System.Drawing.dll \
 	/r:System.Data.dll \
@@ -145,8 +163,13 @@ $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES)
 	/r:System.Xml.Linq.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
+	/r:WindowsBase.dll \
 	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
+	/r:$(C5DLL) \
+	/r:$(SGMLDLL) \
+	/res:NMapi/resources/strings.resources \
+	/res:NMapi/resources/strings.de-DE.resources \
 	$(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES)
 
 #
@@ -242,16 +265,16 @@ bin/mlog.exe: bin/GoldParser.dll RemoteTea-Sharp/mlog/xdr.cgt $(NDESK_OPTIONS)
 	RemoteTea-Sharp/mlog/generators/*.cs \
 	$(NDESK_OPTIONS)
 
-server/CommonRpcService_Generated.cs: server/xslt/mapi_common_rpc.xsl xml/generated/mapi.cs.generated.xml
+server/RpcServer/CommonRpcService_Generated.cs: server/RpcServer/xslt/mapi_common_rpc.xsl xml/generated/mapi.cs.generated.xml
 	$(XSLTPROC) -o $@ $^
 
-server/Protocols/OncRpc/OncRpcService_Generated.cs: server/Protocols/OncRpc/oncserver.xsl  server/Protocols/OncRpc/gen.xml
+server/RpcServer/Protocols/OncRpc/OncRpcService_Generated.cs: server/RpcServer/Protocols/OncRpc/oncserver.xsl  server/RpcServer/Protocols/OncRpc/gen.xml
 	$(XSLTPROC) -o $@ $^
 
-SERVER_ICALLS_SOURCES = $(wildcard server/ICalls/*.cs)
+SERVER_ICALLS_SOURCES = $(wildcard server/WebServer/ICalls/*.cs)
 SERVER_ICALLS_GENERATED_SOURCES = \
-		server/CommonRpcService_Generated.cs \
-		server/Protocols/OncRpc/OncRpcService_Generated.cs
+		server/RpcServer/CommonRpcService_Generated.cs \
+		server/RpcServer/Protocols/OncRpc/OncRpcService_Generated.cs
 
 $(NSIDLL): $(NMAPIDLL) $(NTSDLL) $(SERVER_ICALLS_SOURCES) $(SERVER_ICALLS_GENERATED_SOURCES)
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ /nowarn:$(NO_WARN) \
@@ -261,22 +284,22 @@ $(NSIDLL): $(NMAPIDLL) $(NTSDLL) $(SERVER_ICALLS_SOURCES) $(SERVER_ICALLS_GENERA
 	/target:library $(SERVER_ICALLS_SOURCES)
 
 .aspxbindir:
-	test -d server/aspx/Bin || mkdir server/aspx/Bin
+	test -d server/WebServer/aspx/Bin || mkdir server/WebServer/aspx/Bin
 	touch $@
 
-server/aspx/Bin/%: bin/% .aspxbindir
+server/WebServer/aspx/Bin/%: bin/% .aspxbindir
 	cp $< $@
 
-SERVER_ZIP_SOURCES = $(shell find server/aspx -type f) \
-					 server/aspx/Bin/NMapi.Server.ICalls.dll server/aspx/Bin/NMapi.dll \
-					 server/aspx/Bin/RemoteTeaSharp.dll server/aspx/Bin/NMapi.Tools.Shell.dll
+SERVER_ZIP_SOURCES = $(shell find server/WebServer/aspx -type f) \
+					 server/WebServer/aspx/Bin/NMapi.Server.ICalls.dll server/WebServer/aspx/Bin/NMapi.dll \
+					 server/WebServer/aspx/Bin/RemoteTeaSharp.dll server/WebServer/aspx/Bin/NMapi.Tools.Shell.dll
 
 server.zip: $(SERVER_ZIP_SOURCES)
-	cd server/aspx; zip $(abspath $@) $(subst server/aspx/,,$^)
+	cd server/WebServer/aspx; zip $(abspath $@) $(subst server/WebServer/aspx/,,$^)
 
 bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
 		$(NSIDLL)  $(NMAPIDLL) $(SERVER_SOURCES) \
-		server/Protocols/OncRpc/OncRpcService_Generated.cs server/CommonRpcService_Generated.cs server.zip
+		server/RpcServer/Protocols/OncRpc/OncRpcService_Generated.cs server/RpcServer/CommonRpcService_Generated.cs server.zip
 
 #	$(MCS) $(DEBUG) $(TRACE) /out:bin/oncclient.exe /nowarn:$(NO_WARN) \
 #	/r:$(PTXCDLL) \
@@ -289,6 +312,8 @@ bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
 	/r:System.ServiceModel.dll \
 	/r:Novell.Directory.Ldap.dll \
 	/r:Mono.WebServer2.dll \
+	/r:Mono.Security.dll \
+	/r:System.Configuration.dll \
 	/r:ICSharpCode.SharpZipLib.dll \
 	/r:$(RTSDLL) \
 	/r:System.Runtime.Remoting.dll \
@@ -298,8 +323,8 @@ bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
 	/r:$(NSIDLL) \
 	/r:$(NMAPIDLL) \
 	$(SERVER_SOURCES) \
-	server/Protocols/OncRpc/OncRpcService_Generated.cs \
-	server/CommonRpcService_Generated.cs
+	server/RpcServer/Protocols/OncRpc/OncRpcService_Generated.cs \
+	server/RpcServer/CommonRpcService_Generated.cs
 	
 #	/r:bin/Jayrock.dll \
 #	/r:bin/Jayrock.Json.dll \
@@ -335,7 +360,7 @@ $(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.x
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/resource:tools/mapishell/default.mss,default.mss \
 	/out:$@  \
-	/r:$(NMAPIDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
+	/r:$(NMAPIDLL) /r:$(PTXCDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
 	
 bin/mapishell.exe: $(NTSDLL) tools/mapishell/DefaultTTY.cs
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
@@ -439,13 +464,13 @@ docs: $(NMAPIDLL)
 	$(MONODOCS2HTML) -template:documents/doctemplate.xsl -source:xmldocs -dest:docs
 
 $(CECILDLL): $(MONO_CECIL) .bindir
-	cp $< $@
-	touch $@
+#	cp $< $@
+#	touch $@
 
 clean:
 	-rm -rf server.zip samples/*.xml_Generated.cs bin xml/generated docs xmldocs \
 		$(NMAPI_GENERATED_SOURCES) \
-		server/aspx/Bin providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated \
+		server/WebServer/aspx/Bin providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated \
 		NMapi/Code/NMapi_Generated.cs NMapi/Code/RemoteCalls_Generated.cs \
-		NMapi/Data/Data_Generated.cs  server/CommonRpcService_Generated.cs \
+		NMapi/Data/Data_Generated.cs  server/RpcServer/CommonRpcService_Generated.cs \
 		*~ .bindir .xmlgendir .txgenerateddir .aspxbindir

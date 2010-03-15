@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PostalAddressId.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -38,66 +38,13 @@ namespace NMapi.Flags {
 	/// </remarks>
 	public enum PostalAddressId
 	{
-		/// <summary>
-		///  No postal (mailing) address selected.
-		/// </summary>
-		/// <remarks>
-		/// 	NOT:
-		/// 		PidTagStreetAddress, 
-		/// 		PidTagLocality, 
-		/// 		PidTagStateOrProvince, 
-		/// 		PidTagPostalCode, 
-		/// 		PidTagCountry, 
-		/// 		PidLidAddressCountryCode, 
-		/// 		PidTagPostalAddress
-		/// </remarks>
+		
 		NoAddress = 0,
 		
-		
-		
-		/// <summary>
-		///  Home address is selected.
-		/// </summary>
-		/*
-		The values of the 
-		PidTagStreetAddress, 
-		PidTagLocality, 
-		PidTagStateOrProvince, 
-		PidTagPostalCode, 
-		PidTagPostOfficeBox, 
-		PidTagCountry, 
-		PidLidAddressCountryCode,
-		PidTagPostalAddress
-		
-		MUST be equal to the values of the 
-		PidTagHomeAddressStreet, 
-		PidTagHomeAddressCity, 
-		PidTagHomeAddressStateOrProvince, 
-		PidTagHomeAddressPostalCode, 
-		PidTagHomeAddressPostOfficeBox, 
-		PidTagHomeAddressCountry, 
-		PidLidHomeAddressCountryCode, 
-		PidLidHomeAddress properties.
-		*/		
 		HomeAddress = 1,
-
-		/// <summary>
-		///  Work address is selected.
-		/// </summary>
-		
-		 // PidTagStreetAddress, PidTagLocality, PidTagStateOrProvince, PidTagPostalCode, PidTagPostOfficeBox, PidTagCountry, PidLidAddressCountryCode, and PidTagPostalAddress 
-		// MUST be equal to the values of the PidLidWorkAddressStreet, PidLidWorkAddressCity, PidLidWorkAddressState, PidLidWorkAddressPostalCode, PidLidWorkAddressPostOfficeBox, 
-		//		PidLidWorkAddressCountry, PidLidWorkAddressCountryCode, and PidLidWorkAddress properties, respectively.
 		
 		WorkAddress = 2,
 		
-		/// <summary>
-		///  "Other" address is selected.
-		/// </summary>
-
-		// PidTagStreetAddress, PidTagLocality, PidTagStateOrProvince, PidTagPostalCode, 
-		//  PidTagPostOfficeBox, PidTagCountry, PidLidAddressCountryCode, and PidTagPostalAddress properties MUST be equal to the values of the PidTagOtherAddressStreet, PidTagOtherAddressCity, PidTagOtherAddressStateOrProvince, PidTagOtherAddressPostalCode, PidTagOtherAddressPostOfficeBox, PidTagOtherAddressCountry, PidLidOtherAddressCountryCode, and PidLidOtherAddress properties, respectively.
-
 		OtherAddress = 3
 		
 	}

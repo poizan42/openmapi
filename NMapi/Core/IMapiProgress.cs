@@ -1,10 +1,9 @@
 //
 // openmapi.org - NMapi C# Mapi API - IMapiProgress.cs
 //
-// Copyright 2008 VipCom AG
+// Copyright 2010 Topalis AG
 //
-// Author (Javajumapi): VipCOM AG
-// Author (C# port):    Johannes Roith <johannes@jroith.de>
+// Author: Johannes Roith <johannes@jroith.de>
 //
 // This is free software; you can redistribute it and/or modify it
 // under the terms of the GNU Lesser General Public License as
@@ -25,22 +24,20 @@
 namespace NMapi {
 
 	/// <summary>
-	///  The IMAPIProgress interface. This interface is implemented by clients 
-	///  that want to track the progress of an operation. The class implementing
-	///  the interface is called by the server to update the progress status.
+	///  Progressbar-Callback-Interface implemented by clients.
 	/// </summary>
 	///  <remarks>
-	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms531721.aspx
+	///   The IMAPIProgress interface. This interface is implemented by clients 
+	///   that want to track the progress of an operation. The class implementing
+	///   the interface is called by the server to update the progress status.
 	///  </remarks>
 	public interface IMapiProgress
 	{
 
-		/// <summary>
-		///  Updates the status.
-		/// </summary>
-		///  <remarks>
-		///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms528663.aspx
-		///  </remarks>
+		/// <summary>Called by provider to update the progress bar.</summary>
+		/// <remarks>
+		///  
+		/// </remarks>
 		/// <exception cref="MapiException">Throws MapiException.</exception>
 		void Progress (int value, int count, int total); 
 
@@ -64,7 +61,8 @@ namespace NMapi {
 		/// <exception cref="MapiException">Throws MapiException.</exception>
 		int Min {
 			get;
-		}
+		}
+
 		/// <summary>
 		///   This property returns the maximum number of items in the current operation. 
 		/// </summary>
@@ -74,7 +72,7 @@ namespace NMapi {
 		/// <exception cref="MapiException">Throws MapiException.</exception>
 		int Max {
 			get;
-		}
+		}
 
 		/// <summary>
 		///   Sets  the values of the <see cref="M:IMapiProgress.Min">Min</see>, 

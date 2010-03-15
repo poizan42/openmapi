@@ -22,85 +22,48 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseAttachType
-		{
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseAttachType
+	{
+		/// <summary>Attached file</summary>
+		File = 0x0001,
 
-			/// <summary>
-			///  Attached file 
-			/// </summary>
-			File = 0x0001,
+		/// <summary>Attached message.</summary>
+		Message = 0x0004,
 
-			/// <summary>
-			///  Attached message 
-			/// </summary>
-			Message = 0x0004,
+		/// <summary>Attached sound file.</summary>
+		Sound = 0x0008,
 
-			/// <summary>
-			///  Attached sound file 
-			/// </summary>
-			Sound = 0x0008,
+		/// <summary>Attached view.</summary>
+		View = 0x0010,
 
-			/// <summary>
-			///  Attached view
-			/// </summary>
-			View = 0x0010,
+		/// <summary>Attached appointment.</summary>
+		Appointment = 0x0020,
 
-			/// <summary>
-			///  Attached appointment 
-			/// </summary>
-			Appointment = 0x0020,
+		/// <summary>Attached task.</summary>
+		Todo = 0x0040,
 
-			/// <summary>
-			///  Attached task
-			/// </summary>
-				//  
-			Todo = 0x0040,
+		/// <summary>Attached note.</summary>
+		Note = 0x0080,
 
-			/// <summary>
-			///  Attached note 
-			/// </summary>
-			Note = 0x0080,
+		/// <summary>Attached mail </summary>
+		Mail = 0x0100,
 
-			/// <summary>
-			///  Attached mail 
-			/// </summary>
-			Mail = 0x0100,
+		/// <summary>Attached form.</summary>
+		Form = 0x0200,
 
-			/// <summary>
-			///  Attached form 
-			/// </summary>
-			Form = 0x0200,
+		/// <summary>Attached multimedia file.</summary>
+		Multimedia = 0x0400,
 
-			/// <summary>
-			///  Attached multimedia file 
-			/// </summary>
-			Multimedia = 0x0400,
+		/// <summary>Attached phone message.</summary>
+		Phone = 0x0800,
 
-			/// <summary>
-			///  Attached phone message 
-			/// </summary>
-			Phone = 0x0800,
-
-			/// <summary>
-			///  Attached OLE object
-			/// </summary>
-			Ole = 0x1000
-		}
-
+		/// <summary>Attached OLE object.</summary>
+		Ole = 0x1000
+	}
 
 }

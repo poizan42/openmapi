@@ -32,9 +32,7 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  Possible values for the Property.Importance tag.
-	/// </summary>
+	/// <summary>Possible values for the Property.Importance tag.</summary>
 	public enum Importance
 	{
 		Low = 0,

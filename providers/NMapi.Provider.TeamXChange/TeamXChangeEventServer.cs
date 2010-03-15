@@ -51,10 +51,11 @@ namespace NMapi {
 		private string host;
 		private int port;
 		private int evuid;
+		private int progressId;
 		private TcpClient eventSock;
 		private OncRpcTcpConnectionServerTransport eventServ; 
 		private Dictionary<int, TeamXChangeEventSubscription> eventSubMap;
-
+		private Dictionary<int, IMapiProgress> progressMap;
 
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public TeamXChangeEventServer (MAPIRPCClient client, string host, int port, byte[] objb) 
@@ -66,6 +67,7 @@ namespace NMapi {
 			try {
 				evuid = 0;
 				eventSubMap = new Dictionary<int, TeamXChangeEventSubscription> ();
+				progressMap = new Dictionary<int, IMapiProgress> ();
 				eventSock = new TcpClient (this.host, this.port);
 
                 Stream wrappedStream = OncNetworkUtility.GetSslClientStream(eventSock.GetStream(), host);
@@ -101,6 +103,7 @@ namespace NMapi {
 					catch (IOException) {} // Do nothing
 				}
 				eventSubMap = null;
+				progressMap = null;
 				eventSock = null;
 			} catch (Exception) {
 				// do nothing
@@ -138,24 +141,71 @@ namespace NMapi {
 			switch (e.type) {
 				case ClientEvType.CLEV_MAPI: HandleRealEvent (e); break;
 				case ClientEvType.CLEV_PROGRESS: HandleProgressEvent (e); break;
-			}
+				default: throw new MapiBadValueException ("Unknown event type received."); break;
+			}			
 		}
 		
 		private void HandleRealEvent (ClientEvent e)
 		{
 			lock (eventSubMap) {
+				if (e.mapi == null)
+					return;
 				if (eventSubMap.ContainsKey (e.mapi.ulConn)) {
 					var sub = eventSubMap [e.mapi.ulConn];
 					if (sub != null)
-						sub.OnNotify (e.mapi.notif);
+						sub.OnNotify (e.mapi.notif); // TODO: try ?!
 				}
 			}
 		}
 		
 		private void HandleProgressEvent (ClientEvent e)
 		{
-			// TODO (This is also marked as "todo" in jumapi.	
+			if (e.progress != null) {
+				IMapiProgress progress = null;
+				lock (progressMap) {
+					progress = GetProgressFromMap (e.progress.ulID);
+				}
+				if (progress != null) {
+					int ul1 = e.progress.ul1;
+					int ul2 = e.progress.ul2;
+					int ul3 = e.progress.ul3;
+
+					switch (e.progress.type) {
+						case ProgressType.PROGRESS_SETLIMITS: progress.SetLimits (ul1, ul2, ul3); break;
+						case ProgressType.PROGRESS_UPDATE: progress.Progress (ul1, ul2, ul3); break;
+						default: throw new MapiBadValueException ("Unknown progress type received."); break;
+					}
+				}
+			}
 		}
+		
+		private IMapiProgress GetProgressFromMap (int progressId)
+		{
+			lock (progressMap) {
+				if (progressMap.ContainsKey (progressId))
+					return progressMap [progressId];
+			}
+			return null;
+		}
+		
+		public int RegisterProgressId (IMapiProgress progress)
+		{
+			lock (progressMap) {
+				progressId++;
+				progressMap [progressId] = progress;				
+				return progressId;
+			}
+		}
+		
+		public void UnregisterProgressId (int id)
+		{
+			lock (progressMap) {
+				if (progressMap.ContainsKey (progressId))
+					progressMap.Remove (progressId);
+			}
+		}
+		
+		
 
 		public EventConnection Advise (TeamXChangeMsgStore store, byte [] eid, 
 			NotificationEventType mask, IMapiAdviseSink sink)

@@ -27,8 +27,6 @@ using System.Collections;
 using System.Runtime.Serialization;
 
 using System.Diagnostics;
-using CompactTeaSharp;
-
 
 using NMapi;
 using NMapi.Flags;
@@ -39,15 +37,16 @@ using NMapi.Interop;
 
 namespace NMapi.Properties {
 
-	/// <summary>
-	///  Implements an IComparer for PropertyValue objects.
-	/// </summary>
+	/// <summary>Implements an IComparer for PropertyValue objects.</summary>
+	/// <remarks> TODO: describe _HOW_ the data is compared exactly. </remarks>
 	public sealed class PropertyComparer : IComparer
 	{
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="obj1"></param>
+		/// <param name="obj2"></param>
+		/// <returns></returns>
 		public int Compare (object obj1, object obj2)
 		{
 			PropertyValue prop1 = obj1 as PropertyValue;

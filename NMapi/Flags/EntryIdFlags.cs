@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - EntryIdFlags.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,47 +22,44 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  Flags that can appear in the first byte of the EntryId flags fields.
-	/// </summary>
+	/// <summary>Flags that can appear in the first byte of the EntryId flags fields.</summary>
+	/// <remarks>
+	///  <para>
+	///   An EntryId consist of an array of bytes of arbitrary length. The format 
+	///   is unknown and depends on the provider that generated the EntryId. However, 
+	///   all EntryIds have in common that the first 4 bytes are reserved to store 
+	///   some flags (defined here) with a known meaning.
+	///  </para>
+	/// </remarks>
 	[Flags]
 	public enum EntryIdFlags
 	{
-		
 		/// <summary>
 		///  If set the EntryId is not a long-time entry-id, meaning it may 
-		///  only be valid for the current session.
+		///  only be valid for the current session. In this case, usually 
+		///  <see cref="NotRecip" />, <see cref="ThisSession" />, <see cref="Now" /> 
+		///  and <see cref="NotReserved" /> also must be set.
 		/// </summary>
 		ShortTerm = 0x80,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The EntryId is not a valid recipient.</summary>
+		/// <remarks>
+		///  This is probably true for most EntryIds, in the store. 
+		///  In fact, only entry-ids that represent users and One-Off-EntryIds 
+		///  could NOT have this flag set. Not sure how this is actually in pratice.
+		/// </remarks>
 		NotRecip = 0x40,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The EntryId is valid only for this session.</summary>
 		ThisSession = 0x20,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>The EntryId is just valid for the current operation. (Really?)</summary>
 		Now = 0x10,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		NotReserved = 0x08
 	}
 

@@ -105,6 +105,7 @@ namespace NMapi.Table {
 		/// </summary>
 		public RowSet ()
 		{
+			aRow = new Row [0];
 		}
 
 		/// <summary>

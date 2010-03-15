@@ -35,19 +35,37 @@ using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
 
-namespace NMapi {
+namespace NMapi.Rules {
 
-	/// <summary>
-	///  Abstract base class for all actions.
-	/// </summary>
+	/// <summary>Abstract base class for all Rule-Actions.</summary>
+	/// <remarks>
+	///  <para>
+	///   Actions are usually used together with server-side rules.
+	///   They specify tasks that the server can perform when a new message 
+	///   arrives in a particular folder, like sneding an autoreply or moving 
+	///   the message. For more information about rules <see cref="T:NMapi.Rules.Rule" />.
+	/// </para>
+	/// <para>
+	///  In NMapi actions are represented as classes that are derived from the 
+	///  Action class; They can have a few associated flags (the "Flavor")
+	///  as well as some arbitary (?) flags that may be set by the client. 
+	///  Some actions also can contain additional data like an <see cref="T:EntryId" />.
+	/// </para>
+	/// <para>
+	///  This class is a data structure that is part of the core MAPI API. 
+	///  In classic MAPI the type is called "ACTION". 
+	///  It is also part of the OpenMapi network protocol.
+	/// </para>
+	/// </remarks>
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public abstract class Action : IXdrAble, ICloneable
 	{
-		protected ActionType actionType;
-		protected int ulActionFlavor;
-		protected int ulFlags;
+		private ActionType actionType;
+		private int ulActionFlavor;
+		private int ulFlags;
 		
 		/// <summary></summary>
+		/// <value></value>
 		[DataMember (Name="ActionFlavor")]
 		public int ActionFlavor {
 			get { return ulActionFlavor; }
@@ -55,14 +73,11 @@ namespace NMapi {
 		}
 		
 		/// <summary></summary>
+		/// <value></value>
 		[DataMember (Name="Flags")]
 		public int Flags {
 			get { return ulFlags; }
 			set { ulFlags = value; }
-		}
-		
-		protected Action ()
-		{
 		}
 		
 		[Obsolete]
@@ -121,13 +136,15 @@ namespace NMapi {
 			return action;
 		}
 		
+		
+		/// <summary></summary>
 		public abstract object Clone ();
 		
 		
 		public override string ToString ()
 		{
 			// TODO
-			return base.ToString ();
+			return "{Action: TODO! }";
 		}
 	
 	}

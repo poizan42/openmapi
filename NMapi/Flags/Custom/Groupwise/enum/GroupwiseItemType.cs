@@ -22,57 +22,44 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseItemType
+	{
+		
+		/// <summary>Mail</summary>
+		Mail = 0x00000001,
+		
+		/// <summary>Note</summary>
+		Note = 0x00000002,
+		
+		/// <summary>Task</summary>
+		Todo = 0x00000004,
+		
+		/// <summary>Appointment</summary>
+		Appointment = 0x00000008,
+		
+		/// <summary>Phone message</summary>
+		Phone = 0x00000010,
+		
+		/// <summary>Busy search</summary>
+		Search = 0x00000020,
+		
+		/// <summary>Profile</summary>
+		Profile = 0x00002000,
+		
+		/// <summary>ODMA reference</summary>
+		OdmaReference = 0x00004000,
+		
+		/// <summary>Independent Service Vendor object.</summary>
+		ISVObject = 0x00010000,
+		
+		/// <summary>Workflow</summary>
+		WorkFlow = 0x00020000
 
-
-
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseItemType
-		{
-			// Mail 
-			Mail = 0x00000001,
-			
-			// Note 
-			Note = 0x00000002,
-			
-			// Task 
-			Todo = 0x00000004,
-			
-			// Appointment 
-			Appointment = 0x00000008,
-			
-			// Phone message 
-			Phone = 0x00000010,
-			
-			// Busy search 
-			Search = 0x00000020,
-			
-			// Profile 
-			Profile = 0x00002000,
-			
-			// ODMA reference 
-			OdmaReference = 0x00004000,
-			
-			// Independent Service Vendor object 
-			ISVObject = 0x00010000,
-			
-			// Workflow
-			WorkFlow = 0x00020000
-
-		}
-
+	}
 
 }

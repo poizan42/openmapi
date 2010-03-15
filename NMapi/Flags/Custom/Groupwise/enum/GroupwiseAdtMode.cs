@@ -22,42 +22,22 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	public enum GroupwiseAdtMode
+	{
 
-		/// <summary>
-		///   
-		/// </summary>
-		public enum GroupwiseAdtMode
-		{
+		/// <summary>An Auto-Date item displayed as graph.</summary>
+		Graph = 1,
 
-			/// <summary>
-			/// An Auto-Date item displayed as graph 
-			/// </summary>
-			Graph = 1,
+		/// <summary>An Auto-Date item displayed as a formula.</summary>
+		Formula = 2,
 
-			/// <summary>
-			///  An Auto-Date item displayed as a formula 
-			/// </summary>
-			Formula = 2,
+		/// <summary>Number of occurrences of an Auto-Date item in this mode.</summary>
+		Occurences = 3
 
-			/// <summary>
-			/// Number of occurrences of an Auto-Date item in this mode
-			/// </summary>
-			Occurences = 3
-
-
-		}
-
-
+	}
 
 }

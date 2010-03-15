@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TextFormatAlignment.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,9 +22,6 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
 
 namespace NMapi.Flags {
 	
@@ -35,14 +32,10 @@ namespace NMapi.Flags {
 	public enum TextFormatAlignment
 	{
 		
-		/// <summary>
-		///  Indicates that text is to be aligned to the center.
-		/// </summary>
+		/// <summary>Indicates that text is to be aligned to the center.</summary>
 		Center,
 		
-		/// <summary>
-		///  Indicates that text is to be aligned to the right.
-		/// </summary>
+		/// <summary>Indicates that text is to be aligned to the right.</summary>
 		Right
 		
 	}

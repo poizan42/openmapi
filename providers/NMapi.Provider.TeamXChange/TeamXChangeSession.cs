@@ -306,7 +306,7 @@ namespace NMapi {
 		///  Opens a Message-Store.
 		/// </summary>
 		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public TeamXChangeMsgStore OpenStore (Mdb flags, string user, bool isPublic) 
+		public TeamXChangeMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic) 
 		{
 			Session_OpenStore_arg arg = new Session_OpenStore_arg ();
 			Session_OpenStore_res res;
@@ -384,7 +384,36 @@ namespace NMapi {
 		{
 			throw new NotImplementedException ("Not implemented!");
 		}
-
+		
+		public LPProgressBar CreateProgressBar (IMapiProgress progress)
+		{
+			LPProgressBar result = new LPProgressBar ();
+			if (progress != null) {
+				result.Value = new ProgressBar ();
+				result.Value.ulID = eventServer.RegisterProgressId (progress);
+				result.Value.ulMin = progress.Min;
+				result.Value.ulMax = progress.Max;
+				result.Value.ulFlags = progress.Flags;
+			}
+			return result;
+		}
+		
+		public void UnregisterProgressBar (LPProgressBar progressBar)
+		{
+			if (progressBar.Value != null)
+				eventServer.UnregisterProgressId (progressBar.Value.ulID);
+		}
+		
+		
+		// debugging ... -  do not check in!
+		public void ServerTrace (string message)
+		{
+			Admin_TraceWrite_arg arg = new Admin_TraceWrite_arg ();
+			arg.obj = obj;
+			arg.pszMessage = new StringAdapter (message);
+			client.Admin_TraceWrite_1 (arg);
+		}
+		
 	}
 
 

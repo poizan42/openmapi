@@ -37,9 +37,11 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("openmapi.org")]
 [assembly: AssemblyProduct("NMapi")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Topalis AG")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly:AssemblyKeyFileAttribute("key.snk")]
 
 // This sets the default COM visibility of types in the assembly to invisible.
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.

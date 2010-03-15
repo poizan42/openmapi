@@ -1,7 +1,7 @@
 //
-// openmapi.org - NMapi C# Mapi API - Misc.cs
+// openmapi.org - NMapi C# Mapi API - Debug.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2009 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,31 +22,18 @@
 //
 
 using System;
+using System.Diagnostics;
 
+// TODO: NMapi.Diagnostics
 namespace NMapi.Utility {
 	
 	/// <summary></summary>
-	public static class Misc
+	public static class Debug
 	{
 		
 		/// <summary></summary>
-		/// <remarks>
-		///  You may pass null-values.
-		/// </remarks>
-		/// <param name="data1"></param>
-		/// <param name="data2"></param>
-		/// <returns></returns>
-		public static byte[] ConcatBytes (byte[] data1, byte[] data2)
-		{
-			int d1Length = (data1 != null) ? (data1.Length) : 0;
-			int d2Length = (data2 != null) ? (data2.Length) : 0;
-			byte[] result = new byte [d1Length + d2Length];
-			if (d1Length != 0)
-				Array.Copy (data1, 0, result, 0, d1Length);
-			if (d2Length != 0)
-				Array.Copy (data2, 0, result, d1Length, d2Length);
-			return result;
-		}
+		public static readonly BooleanSwitch XdrTrace = new BooleanSwitch ("xdrTrace", 
+										"configured in application config file!");
 		
 	}
 	

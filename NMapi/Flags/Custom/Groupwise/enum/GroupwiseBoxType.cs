@@ -22,39 +22,26 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseBoxType
+	{
+		
+		/// <summary>Contains Inbox objects.</summary>
+		In = 0x0001,
+		
+		/// <summary>Contains Outbox objects.</summary>
+		Out = 0x0002,
+		
+		/// <summary>Contains personal objects.</summary>
+		Personal = 0x0004,
+		
+		/// <summary>Contains work in progress.</summary>
+		Draft = 0x0008
 
-
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseBoxType
-		{
-
-			//  Contains In Box items 
-			In = 0x0001,
-			
-			//  Contains Out Box items 
-			Out = 0x0002,
-			
-			//  Contains personal items 
-			Personal = 0x0004,
-			
-			// Contains work in progress
-			Draft = 0x0008
-
-		}
-
+	}
 
 }

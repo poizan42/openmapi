@@ -31,9 +31,7 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  A list of the MAPI property types.
-	/// </summary>
+	/// <summary>Definition of all MAPI property types.</summary>
 	/// <remarks>
 	///   0 and ffff are not real property types and may be used for other purposes!
 	/// </remarks>
@@ -63,7 +61,6 @@ namespace NMapi.Flags {
 		Pointer		= 259,   // This was introduced in Outlook 2010. Not sure how/if we need to support it.
 		                     // An alias for this is "FileHandle".
 	
-
 		MvInt16     = (NMAPI.MV_FLAG | Int16),
 		MvInt32     = (NMAPI.MV_FLAG | Int32),
 		MvFloat     = (NMAPI.MV_FLAG | Float),

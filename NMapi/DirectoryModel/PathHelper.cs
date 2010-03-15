@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PathHelper.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -28,27 +28,26 @@ using System.Collections.Generic;
 
 namespace NMapi.DirectoryModel {
 
-	/// <summary>
-	///   
-	/// </summary>
+	/// <summary>Helper methods for working with MAPI folder paths.</summary>
 	public static class PathHelper
 	{
 		
-		/// <summary>
-		///   
-		/// </summary>
+		/// <summary></summary>
 		public const char PathSeparator = '/';
 
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException"></exception>
 		public static string ResolveAbsolutePath (string path)
 		{
 			if (path == null || path.Length == 0)
 				throw new ArgumentException ("Path must not be empty!");
 
-			if (path [0] != '/')
-				throw new ArgumentException ("Path must start with '/'!");
+//			if (path [0] != '/')
+//				throw new ArgumentException ("Path must start with '/'!");
 
 			List<string> list = new List<string> ();
 			string[] parts = path.Split (PathSeparator);
@@ -73,6 +72,9 @@ namespace NMapi.DirectoryModel {
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="path2"></param>
+		/// <returns></returns>
 		public static string Combine (string path, string path2)
 		{
 			if (path == null || path == String.Empty)
@@ -85,6 +87,8 @@ namespace NMapi.DirectoryModel {
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static string[] Path2Array (string path)
 		{
 			List<string> list = new List<string> ();
@@ -98,6 +102,8 @@ namespace NMapi.DirectoryModel {
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="array"></param>
+		/// <returns></returns>
 		public static string Array2Path (string[] array)
 		{
 			if (array.Length == 0)
@@ -113,6 +119,8 @@ namespace NMapi.DirectoryModel {
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static string GetParent (string path)
 		{
 			string[] parts = PathHelper.Path2Array (path);
@@ -133,6 +141,8 @@ namespace NMapi.DirectoryModel {
 		/// <summary>
 		///   
 		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static string GetLast (string path)
 		{
 			string[] parts = Path2Array (path);

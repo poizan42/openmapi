@@ -44,6 +44,7 @@ namespace NMapi {
 		/// <summary>
 		///
 		/// </summary>
+		/// <param name="d"></param>
 		public FileTime (DateTime d)
 		{
             LongValue = d.ToFileTime();
@@ -74,9 +75,9 @@ namespace NMapi {
 			}
 		}
 		
-		/// <summary>
-		///  Implementation of the IComparable interface.
-		/// </summary>
+		/// <summary>Implementation of the IComparable interface.</summary>
+		/// <remarks></remarks>
+		/// <param name="obj"></param>
 		public int CompareTo (object obj)
 		{
 			if (!(obj is FileTime))

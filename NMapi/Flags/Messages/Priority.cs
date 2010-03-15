@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Priority.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,24 +22,22 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  PR_PRIORITY values
-	/// </summary>
+	/// <summary>Possible value for the property tag Property.Priority.</summary>
 	public enum Priority
 	{
-		Urgent    =  1,
-		Normal    =  0,
+		/// <summary>High priority.</summary>
+		/// <remarks>The classic MAPI name for this constant is PRIO_URGENT.</remarks>
+		Urgent =  1,
+			
+		/// <summary>The default.</summary>
+		/// <remarks>The classic MAPI name for this constant is PRIO_NORMAL.</remarks>
+		Normal =  0,
+	
+		/// <summary>Low priorty.</summary>
+		/// <remarks>The classic MAPI name for this constant is PRIO_NON_URGENT.</remarks>
 		NonUrgent = -1
 	}
 

@@ -31,16 +31,16 @@ namespace NMapi.Flags {
 
 	/// <summary>
 	///  Helper class to convert .NET System.Drawing.Color objects to 
-	///  Mapi Color integers and vice versa.
+	///  MAPI Color integers and vice versa.
 	/// </summary>
 	public static class ColorConvertor
 	{
 
 		// TODO: CORRECT ???
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name=""></param>
+		/// <returns></returns>
 		public static int EncodeColor (Color color)
 		{
 			return (color.R) +  (color.G << 2)  + (color.B << 4);
@@ -49,9 +49,9 @@ namespace NMapi.Flags {
 
 		// TODO: CORRECT ???
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <param name=""></param>
+		/// <returns></returns>
 		public static Color DecodeColor (int data)
 		{
 			return Color.FromArgb (data);

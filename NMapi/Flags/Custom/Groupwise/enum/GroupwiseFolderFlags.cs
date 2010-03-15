@@ -22,29 +22,16 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseFolderFlags
+	{
 
+		/// <summary>This folder is shared.</summary>
+		Shared = 0x0002
+	}
 
-
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseFolderFlags
-		{
-
-			//  This folder is shared.
-			Shared = 0x0002
-		}
-		
 }

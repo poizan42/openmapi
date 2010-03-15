@@ -20,24 +20,25 @@
 //-->
 <properties namespace="NMapi.Flags" class="OutlookProperty">
 
-	<property name="IPM_APPOINTMENT_ENTRYID" type="Binary" id="0x36D0" />
-	<property name="IPM_CONTACT_ENTRYID" type="Binary" id="0x36D1" />
-	<property name="IPM_DRAFTS_ENTRYID" type="Binary" id="0x36D7" />
-	<property name="IPM_JOURNAL_ENTRYID" type="Binary" id="0x36D2" />
-	<property name="IPM_NOTE_ENTRYID" type="Binary" id="0x36D3" />
-	<property name="IPM_TASK_ENTRYID" type="Binary" id="0x36D4" />
+	<property name="IpmAppointmentEntryId" type="Binary" id="0x36D0" />
+	<property name="IpmContactEntryId" type="Binary" id="0x36D1" />
+	<property name="IpmDraftsEntryId" type="Binary" id="0x36D7" />
+	<property name="IpmJournalEntryId" type="Binary" id="0x36D2" />
+	<property name="IpmNoteEntryId" type="Binary" id="0x36D3" />
+	<property name="IpmTaskEntryId" type="Binary" id="0x36D4" />
 
-	<property name="INTERNET_CPID" type="Int32" id="0x3FDE" />
-	<property name="MESSAGE_CODEPAGE" type="Int32" id="0x3FFD" />
-	<property name="INTERNET_MESSAGE_ID_A" type="String8" id="0x1035" />
-	<property name="INTERNET_MESSAGE_ID_W" type="Unicode" id="0x1035" />
-	<property name="IN_REPLY_TO_ID_A" type="String8" id="0x1042" />
-	<property name="IN_REPLY_TO_ID_W" type="Unicode" id="0x1042" />
-	<property name="HTML" type="Binary" id="0x1013" />
-	<property name="BODY_HTML_A" type="String8" id="0x1013" />
-	<property name="BODY_HTML_W" type="Unicode" id="0x1013" />
-	<property name="ICON_INDEX" type="Int32" id="0x1080" />
-	<property name="FLAG_STATUS" type="Int32" id="0x1090" />
-	<property name="RECIPIENT_FLAGS" type="Int32" id="0x5ffd" />
-	<property name="RECIPIENT_TRACKSTATUS" type="Int32" id="0x5fff" />
+	<property name="InternetCPID" type="Int32" id="0x3FDE" />
+	<property name="MessageCodepage" type="Int32" id="0x3FFD" />
+	<property name="InternetMessageIdA" type="String8" id="0x1035" />
+	<property name="InternetMessageIdW" type="Unicode" id="0x1035" />
+	<property name="InReplyToIdA" type="String8" id="0x1042" />
+	<property name="InReplyToIdW" type="Unicode" id="0x1042" />
+	<property name="Html" type="Binary" id="0x1013" />
+	<property name="BodyHtmlA" type="String8" id="0x1013" />
+	<property name="BodyHtmlW" type="Unicode" id="0x1013" />
+	<property name="IconIndex" type="Int32" id="0x1080" />
+	<property name="FlagStatus" type="Int32" id="0x1090" />
+	<property name="RecipientFlags" type="Int32" id="0x5ffd" />
+	<property name="RecipientTrackstatus" type="Int32" id="0x5fff" />
+
 </properties>

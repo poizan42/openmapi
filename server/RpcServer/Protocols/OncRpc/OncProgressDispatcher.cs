@@ -134,20 +134,6 @@ namespace NMapi.Server {
 				SendSetLimits (min, max, flags);
 			}
 			
-			
-				// TODO: we could actually send the average of the waiting period ...
-				
-				// have a custom thread for this.
-/*
-	            // delay notification
-	            MyGetSystemTimeAsFileTime(&ft);
-	            FileTime2LargeInteger(&ft, &li);
-	            if (li.QuadPart < m_nexttime.QuadPart)
-	                return S_OK;
-
-	            m_nexttime.QuadPart = li.QuadPart + 5000000; //500msec, 10000 tics/msec
-*/
-
 			public void Progress (int progressValue, int itemOfTotal, int totalCount)
 			{
 				totalCount = Math.Max (1, totalCount);

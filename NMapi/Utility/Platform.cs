@@ -61,6 +61,8 @@ namespace NMapi.Utility {
 			return OS.unknown;
 		}
 		
+		// adapted from http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
+		
 		//From Managed.Windows.Forms/XplatUI
 		private static bool IsRunningOnMac ()
 		{

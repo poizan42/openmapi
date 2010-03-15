@@ -48,7 +48,7 @@ namespace NMapi.Flags {
 		
 		/// <summary>
 		///  An array of offsets into the array. Each of them points to the 
-		///  first character of an UTF-16-encoded, NULL-Terminated string.
+		///  first character of an UTF-16-encoded, NULL-terminated string.
 		/// </summary>
 		public int[] Offsets {
 			get { return offsets; }

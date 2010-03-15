@@ -34,10 +34,12 @@ namespace NMapi {
 	///  to the property value.
 	/// </summary>
 	/// <example>
-	///  var namedProp = NamedProperty.Blub;
-	///  NamePropertyResolver resolver = mapiObject.ResolveNameProperties (namedProp);
-	///  UnicodePropertyTag propTag = (StringPropertyTag) namedProp.CreateTag (resolver);
-	///  UnicodeProperty uniProp = propTag.CreateValue ();
+	///  <code>
+	///   var namedProp = NamedProperty.Blub;
+	///   NamePropertyResolver resolver = mapiObject.ResolveNameProperties (namedProp);
+	///   UnicodePropertyTag propTag = (StringPropertyTag) namedProp.CreateTag (resolver);
+	///   UnicodeProperty uniProp = propTag.CreateValue ();
+	///  </code>
 	/// </example>
 	public abstract partial class NamedPropertyDef
 	{

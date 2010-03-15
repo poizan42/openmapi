@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - MapiObjectType.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,20 +22,13 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 	
-	/// <summary>
+	/// <summary></summary>
+	/// <remarks>
 	///  
-	/// </summary>
+	/// </remarks>
 	public static class MapiObjectType
 	{
 		public const int Store    = 0x00000001;

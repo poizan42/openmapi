@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - AddressBookProviderEmailList.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,15 +22,10 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  
-	/// </summary>
+	/// <summary></summary>
 	/// <remarks>
 	///  Note: This file is based on the documentation published by Microsoft
 	///       [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
@@ -67,18 +62,5 @@ namespace NMapi.Flags {
 		/// </summary>
 		PrimaryFaxDefined = 0x00000005
 	}
-		
-		/*
-		This PtypMultipleInteger32 property specifies which electronic address properties are set on 
-		the Contact object. Each PtypInteger32 value in this property MUST be unique in the property 
-		and MUST be set to one of the values in the following table.
-		
-		If this property is set, then PidLidAddressBookProviderArrayType MUST also be set. These two properties MUST be kept synchronized 
-		with each other.<9>
-		
-		For example, if one of the values in PidLidAddressBookProviderEmailList is “0x00000000”, then 
-		PidLidAddressBookProviderArrayType would have the bit” 0x00000001” set.
-		
-		*/
 	
 }

@@ -78,6 +78,7 @@ namespace NMapi.Utility {
 		
 		/// <summary></summary>
 		/// <remarks></remarks>
+		/// <value></value>
 		public static string CachePath {
 			get {
 				if (Platform.Current == Platform.OS.Mac)
@@ -87,6 +88,8 @@ namespace NMapi.Utility {
 		}
 		
 		/// <summary>The system temp path.</summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public static string TempPath {
 			get { return Path.GetTempPath (); }
 		}

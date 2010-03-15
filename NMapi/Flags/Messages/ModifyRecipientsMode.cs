@@ -1,5 +1,5 @@
 //
-// openmapi.org - NMapi C# Mapi API - ModifyRecipientsFlags.cs
+// openmapi.org - NMapi C# Mapi API - ModifyRecipientsMode.cs
 //
 // Copyright 2008-2010 Topalis AG
 //
@@ -26,20 +26,25 @@ using System;
 namespace NMapi.Flags {
 
 	/// <summary>
-	///  Flags for the ModifyRecipients () method.
+	///  Mode for the <see cref="M:NMapi.Properties.Special.IMessage.ModifyRecipients" /> method.
 	/// </summary>
-	/// <remarks></remarks>
-	public static class ModifyRecipientsFlags
+	/// <remarks>
+	///  The <see cref="M:NMapi.Properties.Special.IMessage.ModifyRecipients" /> method 
+	///  is a somewhat strange call that can be used to add, modify and delete 
+	///  recipients from the recipient table of a message. These different 
+	///  operations are distinuished by passing one of these mode values.
+	/// </remarks>
+	public static class ModifyRecipientsMode
 	{
-		/// <summary></summary>
+		/// <summary>If set, the Modify-call adds the recipient to the list.</summary>
 		/// <remarks>Classic MAPI defines this as MODRECIP_ADD.</remarks>
 		public const int Add = 0x00000002;
 
-		/// <summary></summary>
+		/// <summary>If set, the Modify-call modifies a recipient already present in the list.</summary>
 		/// <remarks>Classic MAPI defines this as MODRECIP_MODIFY.</remarks>
 		public const int Modify = 0x00000004;
 
-		/// <summary></summary>
+		/// <summary>If set, the Modify-call removes the recipient from the list.</summary>
 		/// <remarks>Classic MAPI defines this as MODRECIP_REMOVE.</remarks>
 		public const int Remove = 0x00000008;
 	}

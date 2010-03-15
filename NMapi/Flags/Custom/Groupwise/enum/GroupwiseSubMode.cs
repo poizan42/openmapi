@@ -22,32 +22,21 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-		/// <summary>
-		///   
-		/// </summary>
-		public enum GroupwiseSubMode {
+	/// <summary></summary>
+	public enum GroupwiseSubMode {
 
-			// Month of Auto-Date item 
-			AdtMonthDayMode = 1,
+		/// <summary>Month of Auto-Date item.</summary>
+		AdtMonthDayMode = 1,
 
-			//  Weekday of Auto-Date item 
-			AdtWkdayMode = 2,
-			
-			// Period of Auto-Date item
-			AdtPeriodicMode = 3
+		/// <summary>Weekday of Auto-Date item.</summary>
+		AdtWkdayMode = 2,
+		
+		/// <summary>Period of Auto-Date item.</summary>
+		AdtPeriodicMode = 3
 
-
-		}
+	}
 
 }

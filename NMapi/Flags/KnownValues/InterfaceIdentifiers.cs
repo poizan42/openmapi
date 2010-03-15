@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - InterfaceIdentifiers.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,8 +22,6 @@
 //
 
 using System;
-using System.IO;
-
 
 using NMapi;
 using NMapi.Flags;
@@ -33,9 +31,8 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 	
-	/// <summary>
-	///  
-	/// </summary>
+	/// <summary></summary>
+	/// <remarks></remarks>
 	public static class InterfaceIdentifiers
 	{
 		

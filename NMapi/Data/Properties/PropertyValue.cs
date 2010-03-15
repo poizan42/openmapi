@@ -50,45 +50,59 @@ namespace NMapi.Properties {
 		
 	}
 
-
-	/// <summary>
-	///  The PropertyValue structure.
-	/// </summary>
+	/// <summary>Common Base-Class for MAPI properties.</summary>
 	/// <remarks>
-	///  See MSDN: http://msdn2.microsoft.com/en-us/library/ms531142.aspx
+	///  <para>A MAPI Property is a pair of a PropertyTag and a Value.</para>
+	///  <para>This class and derived classes are not Thread-Safe.</para>
+	///  <para>See MSDN: http://msdn2.microsoft.com/en-us/library/ms531142.aspx</para>
 	/// </remarks>
-
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public abstract partial class PropertyValue : IXdrEncodeable, IComparable
 	{
 		protected int ulPropTag;
-
-		/// <summary>
-		///  The property tag.
-		/// </summary>
+		private PropertyTag _tag;
+		
+		/// <summary>The property tag as a numeric value.</summary>
+		/// <remarks>
+		///  This should only be used when no data (type or id) of the tag 
+		///  will be accessed. Otherwise the "Tag" property should be used.
+		/// </remarks>
 		[DataMember (Name="PropTag")]
 		public int PropTag {
 			get { return ulPropTag; }
 			set { ulPropTag = value; } // TODO: we should not provide public access to the setter....
 		}
 		
+		/// <summary>Returns the PropertyTag of the property.</summary>
+		/// <remarks>
+		///  <para>
+		///   TODO: describe what a tag is, how to access it and what data it provides.
+		///  </para>
+		/// </remarks>
+		/// <value>The property tag of the property.</value>
+		public PropertyTag Tag {
+			get {
+				if (_tag == null)
+					_tag = PropertyTag.CreatePropertyTag (PropTag);
+				return _tag;
+			}
+		}
 		
-		
-		/// <summary>
-		///  Provides weak-typed access to Value field.
-		/// /summary>
+		/// <summary>Provides weak-typed access to Value field.</summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public abstract object GetValueObj ();
 		
 		
-		/// <summary>
-		///  Derived classes must implement the IComparable interface.
-		/// </summary>
+		/// <summary>Derived classes must implement the IComparable interface.</summary>
+		/// <remarks>TODO: describe how the data is compared.</remarks>
+		/// <param name="obj"> TODO </param>
+		/// <returns> TODO </returns>
 		public abstract int CompareTo (object obj);
 		
-		
-		/// <summary>
-		///  Derived classes must implement DEEP (!) cloneing.
-		/// </summary>
+		/// <summary>Derived classes must implement DEEP (!) cloning.</summary>
+		/// <remarks> TODO: describe! </remarks>
+		/// <returns>A deep copy of the property object.</returns>
 		public abstract object Clone ();
 
 
@@ -99,8 +113,6 @@ namespace NMapi.Properties {
 		{
 			ulPropTag = Property.Null;
 		}
-		
-		
 
 		protected PropertyValue (int ulPropTag) 
 		{
@@ -439,15 +451,17 @@ namespace NMapi.Properties {
 			return values1.Length.CompareTo (values2.Length);
 		}
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Returns a string representation of the data intended for debugging.</summary>
+		/// <remarks>Never try to parse this. This is for development pruposes ONLY!</remarks>
 		public override string ToString ()
 		{
-			return GetValueObj ().ToString ();
+			var obj = GetValueObj ();
+			if (obj != null)
+				return obj.ToString ();
+			return null;
 		}
 
-		// TODO: deprecated ?
+		// TODO: deprecated ? - REMOVE!
 		/// <summary>
 		///  
 		/// </summary>
@@ -468,7 +482,7 @@ namespace NMapi.Properties {
 		
 		/// <summary>
 		///  Converts a string8 property to an unicode property 
-		//   with the same property id.
+		///  with the same property id.
 		/// </summary>
 		public UnicodeProperty ToUnicodeProperty ()
 		{
@@ -486,7 +500,7 @@ namespace NMapi.Properties {
 
 		/// <summary>
 		///  Converts a unicode property to a string8 property 
-		//   with the same property id.
+		///  with the same property id.
 		/// </summary>
 		public String8Property ToString8Property ()
 		{
@@ -503,7 +517,7 @@ namespace NMapi.Properties {
 		
 		/// <summary>
 		///  Converts a string8-array-property to an unicode-array-property 
-		//   with the same property id.
+		///  with the same property id.
 		/// </summary>
 		public UnicodeArrayProperty ToUnicodeArrayProperty ()
 		{
@@ -520,7 +534,7 @@ namespace NMapi.Properties {
 
 		/// <summary>
 		///  Converts a unicode-array-property to a string8-array-property 
-		//   with the same property id.
+		///  with the same property id.
 		/// </summary>
 		public String8ArrayProperty ToString8ArrayProperty ()
 		{
@@ -532,6 +546,5 @@ namespace NMapi.Properties {
 		
 	}
 
-	
 
 }

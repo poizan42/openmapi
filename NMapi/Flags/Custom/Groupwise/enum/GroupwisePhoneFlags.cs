@@ -22,45 +22,34 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwisePhoneFlags
+	{
+		/// <summary>Called check box</summary>
+		Called = 0x0001,
 
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwisePhoneFlags
-		{
-			// Called check box 
-			Called = 0x0001,
+		/// <summary>Please Call check box</summary>
+		PleaseCall = 0x0002,
 
-			// Please Call check box 
-			PleaseCall = 0x0002,
+		/// <summary>Will Call check box</summary>
+		WillCall = 0x0004,
 
-			// Will Call check box 
-			WillCall = 0x0004,
+		/// <summary>Returned Your Call check box</summary>
+		ReturnedYourCall = 0x0008,
 
-			// Returned Your Call check box 
-			ReturnedYourCall = 0x0008,
+		/// <summary>Wants To See You check box</summary>
+		WantsToSeeYou = 0x0010,
 
-			// Wants To See You check box 
-			WantsToSeeYou = 0x0010,
+		/// <summary>Came to See You check box</summary>
+		CameToSeeYou = 0x0020,
 
-			// Came to See You check box 
-			CameToSeeYou = 0x0020,
+		/// <summary>Urgent check box</summary>
+		Urgent = 0x0040
 
-			// Urgent check box
-			Urgent = 0x0040
-
-		}
+	}
 
 }

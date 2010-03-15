@@ -30,24 +30,38 @@ namespace NMapi {
 
 	/// <summary>
 	///  Wraps the property tag integer for stronger typing
-	//   and easier access to Id and Type of the tag.
+	///  and easier access to Id and Type of the tag.
 	/// </summary>
-	public abstract partial class PropertyTag
+	/// <remarks>
+	///  <para>
+	///   TODO: Describe what property tags are.
+	///  </para>
+	///  <para>
+	///   TODO: Describe the relationship to the int-value.
+	///  </para>
+	///  <para>
+	///   TODO: Describe the relationship to property-values.
+	///  </para>
+	///  <para>
+	///   This type is immutable.
+	///  </para>
+	/// </remarks>
+	public abstract partial class PropertyTag : ICloneable
 	{
-		private int propTag;
+		private readonly int propTag;
 
-		/// <summary>
-		///  The property type of the property tag.
-		/// </summary>
+		/// <summary>The property type of the property tag.</summary>		
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public PropertyType Type {
 			get {
 				return PropertyTypeHelper.PROP_TYPE (propTag);
 			}
 		}
 
-		/// <summary>
-		///  The id of the property.
-		/// </summary>
+		/// <summary>The id of the property.</summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public int Id {
 			get {
 				return PropertyTypeHelper.PROP_ID (propTag);
@@ -58,13 +72,15 @@ namespace NMapi {
 		///  Returns the value of the full property tag, that is the concatenation 
 		///  of the property type and property id in a single 32-bit integer.
 		/// </summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public int Tag {
 			get { return propTag; }
 		}
 		
-		/// <summary>
-		///  Returns the property ID range that this property is part of.
-		/// </summary>
+		/// <summary>Gets the range that this property is part of.</summary>
+		/// <remarks></remarks>
+		/// <returns>The value of the range that this Property-Id is part of.</returns>
 		public PropertyRange ContainedInPropertyRange {
 			get {
 				if (Id >= 0x0001 && Id <= 0x0C00) return PropertyRange.Core_Envelope;
@@ -94,11 +110,12 @@ namespace NMapi {
 			}
 		}
 		
-		
 		/// <summary>
 		///  If true, the property tag is in the range of properties that must be 
 		///  transmitted when an object is sent by a transport provider.
 		/// </summary>
+		/// <remarks></remarks>
+		///  <returns>True if the property must be transmitted.</returns>
 		public bool IsTransmitted {
 			get {
 				var range = ContainedInPropertyRange;
@@ -108,35 +125,51 @@ namespace NMapi {
 			}
 		}
 		
-		/// <summary>
-		///  Returns true if the PropertyTyper of this tag is a multi-value property-type.
-		/// </summary>
+		/// <summary>Checks if the property tag refers to a multi-value property.</summary>
+		/// <remarks>Multi-value-properties are properties that (can) store an array of values.</remarks>
+		/// <returns>True if the PropertyTyper of this tag is a multi-value property-type.</returns>
 		public bool IsMultiValue {
 			get {
 				return ((int) Type & NMAPI.MV_FLAG) != 0;
 			}
 		}
 		
-		/// <summary>
-		///  True if the property tag is in the range of named properties. 
+		/// <summary>Checks if a property tag refers to a named property.</summary>
+		/// <remarks>
 		///  That means that the value of the ID has only a certain meaning 
 		///  for the objects in the same store with the same mapping signature.
 		///  The permanent name can be resolved using the named-property methods
 		///  on the IMapiProp interface.
-		/// </summary>
+		/// </remarks>
+		/// <param name="intTags"></param>
+		/// <returns>True if the property tag is in the range of named properties. </returns>
 		public bool IsNamedProperty {
 			get {
 				return (ContainedInPropertyRange == PropertyRange.NamedTransmitted);
 			}
 		}
 
-		/// <summary>
-		///  Converts the tag to a different type.
-		/// </summary>
+		/// <summary>Converts the tag to a different property type.</summary>
+		/// <remarks></remarks>
+		/// <param name="type"></param>
+		/// <returns></returns>		
 		public PropertyTag AsType (PropertyType type)
 		{
 			return PropertyTag.CreatePropertyTag (PropertyTypeHelper.CHANGE_PROP_TYPE (Tag, type));
 		}
+		
+		
+		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
+		public PropertyTag AsMultiValue ()
+		{
+			throw new NotImplementedException ("Not yet implemented."); // TODO
+		}
+		
+		
+		
 		
 		/*
 		/// <summary>
@@ -152,6 +185,7 @@ namespace NMapi {
 		/// <summary>
 		///  Creates a new property tag object from a 32-bit property tag integer.
 		/// </summary>
+		/// <param name="intTags"></param>		
 		protected PropertyTag (int pt)
 		{
 			propTag = pt;
@@ -161,6 +195,9 @@ namespace NMapi {
 		///  Creates an array of property tag objects from a 32-bit 
 		///  integer-array of property tags.
 		/// </summary>
+		/// <remarks></remarks>
+		/// <param name="intTags"></param>
+		/// <returns></returns>
 		public static PropertyTag[] ArrayFromIntegers (params int[] intTags)
 		{
 			PropertyTag[] result = new PropertyTag [intTags.Length];
@@ -170,9 +207,7 @@ namespace NMapi {
 			return result;
 		}
 
-		/// <summary>
-		///  Returns a human-readable representation of the property tag.
-		/// </summary>
+		/// <summary>Returns a human-readable representation of the property tag.</summary>
 		public override string ToString ()
 		{
 			return new StringBuilder ()
@@ -186,13 +221,61 @@ namespace NMapi {
 				.Append (" }").ToString ();
 		}
 
+		#region operators
+		
+		/*
+		
+		TODO: this currently would break VMAPI.
+		
+		public static bool operator == (PropertyTag a, PropertyTag b)
+		{
+			// can't be null.
+			return (a.propTag == b.propTag);
+		}
 
-		// TODO: override Equals () + GetHashCode ()
-
-
-		// TODO: support cloneing.
-
-
+		public static bool operator != (PropertyTag a, PropertyTag b)
+		{
+			return !(a == b);
+		} 
+		
+		public bool Equals (PropertyTag obj)
+		{
+			return (this == obj);
+		}
+		
+		public override bool Equals (object o)
+		{
+			if (o == null || !(o is PropertyTag))
+				return false;
+			return this.Equals ((PropertyTag) o);
+		}
+		
+		public override int GetHashCode ()
+		{
+			return propTag.GetHashCode ();
+		}
+		*/
+		
+		#endregion operators
+		
+		/// <summary></summary>
+		/// <returns></returns>
+		public object Clone ()
+		{
+			// shallow-copy is sufficient, because we have only an int-memeber.
+			return this.MemberwiseClone ();
+		}
+		
+		
+		/// <summary></summary>
+		/// <returns></returns>
+		public bool IdEquals (PropertyTag tag2)
+		{
+			if (tag2 == null)
+				return false;
+			return (Id == tag2.Id);
+		}
+		
 		// TODO: clone? deep copy?
 		private static PropertyTag[] EnforceType (PropertyTag[] tags, 
 			PropertyType sourceType, PropertyType targetType)
@@ -211,19 +294,28 @@ namespace NMapi {
 		/// <summary>
 		///  Ensures that there are not String8 property tags in the array.
 		///  If any tags are found they are replaced by Unicode property tags.
+		///  The same is true for MvString8-Tags.
 		/// </summary>
+		/// <remarks></remarks>
+		/// <param name="tags"></param>
+		/// <returns></returns>
 		public static PropertyTag[] EnforceUnicodeTags (PropertyTag[] tags)
 		{
-			return EnforceType (tags, PropertyType.String8, PropertyType.Unicode);
+			PropertyTag[] tags2 = EnforceType (tags, PropertyType.String8, PropertyType.Unicode);
+			return EnforceType (tags2, PropertyType.MvString8, PropertyType.MvUnicode);
 		}
 		
 		/// <summary>
 		///  Ensures that there are no Unicode property tags in the array.
 		///  If any tags are found they are replaced by String8 property tags.
+		///  The same is true for MvUnicode-Tags.
 		/// </summary>
+		/// <param name="tags"></param>
+		/// <returns></returns>
 		public static PropertyTag[] EnforceString8Tags (PropertyTag[] tags)
 		{
-			return EnforceType (tags, PropertyType.Unicode, PropertyType.String8);
+			PropertyTag[] tags2 = EnforceType (tags, PropertyType.Unicode, PropertyType.String8);
+			return EnforceType (tags2, PropertyType.MvUnicode, PropertyType.MvString8);
 		}
 		
 	}

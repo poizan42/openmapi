@@ -22,87 +22,82 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary></summary>
+	/// <summary>Flags for the <see cref="IMapiStore.Logoff" /> call.</summary>
 	/// <remarks></remarks>
 	[Flags]
 	public enum LogoffFlags
 	{
-		
+
 		// in-flags:
-		
-		/// <summary></summary>
-		/// <remarks></remarks>
 
-
-//		The message store should not wait for messages from transport providers before closing. Outbound messages that are ready to be sent are sent. If this store contains the default Inbox, any in-process messages are received, and then further reception is disabled. When all activity is complete, the MAPI spooler releases the store, and control is immediately returned to the caller.
-
-
+		/// <summary>Shut down provider right away.</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_NO_WAIT.</para>
+		/// </remarks>
 		NoWait = 0x00000001,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-		
-
-//		The message store should not wait for information from transport providers before closing. Messages that are currently being processed are completed, but no new messages are processed. When all activity is complete, the MAPI spooler releases the store, and control is immediately returned to the store provider.
-
-
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_ORDERLY.</para>
+		/// </remarks>
 		Orderly = 0x00000002,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-
-//		The logoff should work the same as if the LOGOFF_NO_WAIT flag is set, but either the IXPLogon::FlushQueues or IMAPIStatus::FlushQueues method for the appropriate transport providers should be called. The LOGOFF_PURGE flag returns control to the caller after completion.
-
-
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_PURGE.</para>
+		/// </remarks>
 		Purge = 0x00000004,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-
-//		Any transport provider activity for this message store should be stopped before logoff. Control is returned to the caller after activity is stopped. If any transport provider activity is taking place, the logoff does not occur and no change in the behavior of the MAPI spooler or transport providers occurs. If transport provider activity is idle, the MAPI spooler releases the store.
-
-
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_ABORT.</para>
+		/// </remarks>
 		Abort = 0x00000008,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-// 		????		
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_QUIET.</para>
+		/// </remarks>
 		Quiet = 0x00000010,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
 
-//		If any transport provider activity is taking place, the logoff should not occur.
-
+		// below: out-flags : this are basically set by the call to inform 
+		//                    the caller about the status / progress.
+	
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_COMPLETE.</para>
+		/// </remarks>
 		Complete = 0x00010000,
 
-		
-		// below: out-flags ...
-
-		/// <summary></summary>
-		/// <remarks></remarks>
-//		Inbound messages are currently arriving.
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_INBOUND.</para>
+		/// </remarks>
 		Inbound = 0x00020000,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-//		Outbound messages are in the process of being sent.
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_OUTBOUND.</para>
+		/// </remarks>
 		Outbound = 0x00040000,
 
-		/// <summary></summary>
-		/// <remarks></remarks>
-//		Outbound messages are pending (that is, they are in the Outbox).
+		/// <summary>TODO: add documentation!</summary>
+		/// <remarks>
+		///  <para>TODO: describe!</para>
+		///  <para>The classic MAPI name for this constant is LOGOFF_OUTBOUND_QUEUE.</para>
+		/// </remarks>
 		OutboundQueue = 0x00080000
 	}
 

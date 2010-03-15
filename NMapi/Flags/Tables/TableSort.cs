@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - TableSort.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,24 +22,23 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  Bit 0: set if descending, 1 if ascending
-	/// </summary>
+	/// <summary>The sort-order of a column in a MAPI-Table.</summary>
+	/// <remarks></remarks>
 	public enum TableSort
 	{
+		/// <summary>Sort this column in ascending order.</summary>
+		/// <remarks>The classic MAPI name for this value is TABLE_SORT_ASCEND.</remarks>
 		Ascend  = 0,
+
+		/// <summary>Sort this column in descending order.</summary>
+		/// <remarks>The classic MAPI name for this value is TABLE_SORT_DESCEND.</remarks>
 		Descend,
+		
+		/// <summary>TODO: document. This is related to cetagorized sorts!</summary>
+		/// <remarks>The classic MAPI name for this value is TABLE_SORT_COMBINE.</remarks>
 		Combine
 	}
 }

@@ -22,34 +22,19 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  (Readonly) properties for Antivirus plugins.
-	/// </summary>
+	/// <summary>Possible values for the ExchangeProperty.AntivirusScanStatus property.</summary>
 	public enum AntivirusScanStatus
 	{
-		/// <summary>
-		///  No virus has been found after scanning the object.
-		/// </summary>
+		/// <summary>No virus has been found after scanning the object.</summary>
 		NoVirus = 0,
 
-		/// <summary>
-		///  A virus has been detected on an object.
-		/// </summary>
+		/// <summary>A virus has been detected on an object.</summary>
 		VirusPresent = 1,
 
-		/// <summary>
-		///  A virus has been successfully removed from an object.
-		/// </summary>
+		/// <summary>A virus has been successfully removed from an object.</summary>
 		VirusCleaned = 2,
 
 		/// <summary>

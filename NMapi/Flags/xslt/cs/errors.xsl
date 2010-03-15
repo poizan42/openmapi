@@ -3,7 +3,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - errors.xsl
 //
-// Copyright 2009 Topalis AG
+// Copyright 2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //

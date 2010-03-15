@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - AutoConfigurationFactory.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -34,6 +34,13 @@ using NMapi.Admin;
 
 namespace NMapi {
 
+	/// <summary>
+	///  Provides a simple factory that dynamically selects an NMapi provider, 
+	///  based on the configuration-file of the executing application.
+	/// </summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	[MapiFactory ("org.openmapi.auto")]
 	public class AutoConfigurationFactory : IMapiFactory
 	{
@@ -41,6 +48,9 @@ namespace NMapi {
 
 		public AutoConfigurationFactory ()
 		{
+			
+			// TODO: try!
+			
 			NMapiCoreSection config = (NMapiCoreSection)
 				ConfigurationManager.GetSection ("nmapi/core");
 
@@ -48,16 +58,21 @@ namespace NMapi {
 			string typeName = backend;
 			string assemblyName = null;
 
-			int index = backend.IndexOf (',');
+			int index = -1;
+			if (backend != null)
+				index = backend.IndexOf (',');
 			if (index != -1) {
 				typeName = backend.Substring (0, index);
 				assemblyName = backend.Substring (index+1);
 			}
 
-			object o = Activator.CreateInstance (assemblyName, typeName).Unwrap () as IMapiFactory;
-			if (o == null)
+			IMapiFactory fObj = null;
+			var instance = Activator.CreateInstance (assemblyName, typeName);
+			if (instance != null)
+				fObj = instance.Unwrap () as IMapiFactory;
+			if (fObj == null)
 				throw new Exception ("Couldn't create backend factory!");
-			factory = (IMapiFactory) o;
+			factory = fObj;
 		}
 
 		public bool SupportsNotifications {
@@ -66,11 +81,15 @@ namespace NMapi {
 
 		public IMapiSession CreateMapiSession ()
 		{
+			if (factory == null)
+				throw new MapiCallFailedException ("factory is null.");
 			return factory.CreateMapiSession ();
 		}
 
 		public IMapiAdmin CreateMapiAdmin (string host)
 		{
+			if (factory == null)
+				throw new MapiCallFailedException ("factory is null.");
 			return factory.CreateMapiAdmin (host);
 		}
 	}

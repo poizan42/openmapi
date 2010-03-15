@@ -30,15 +30,22 @@ using NMapi.Admin;
 
 namespace NMapi {
 
-	/// <summary>
-	///
-	/// </summary>
+	/// <summary>Factory interface implemented by all NMapi providers.</summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	public interface IMapiFactory
 	{
 		// experimental
 		bool SupportsNotifications { get; }
 
+		/// <summary></summary>
+		/// <returns></returns>
 		IMapiSession CreateMapiSession ();
+		
+		/// <summary></summary>
+		/// <param name="host"></param>
+		/// <returns></returns>
 		IMapiAdmin CreateMapiAdmin (string host);
 	}
 

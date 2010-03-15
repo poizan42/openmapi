@@ -40,64 +40,11 @@ namespace NMapi.Provider.TeamXChange {
 			get { return true; }
 		}
 
-		public IMapiTable CreateIMapiTable ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMapiTableReader CreateIMapiTableReader ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMapiProp CreateIMapiProp ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMapiContainer CreateIMapiContainer ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMapiFolder CreateIMapiFolder ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMessage CreateIMessage ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IAttach CreateIAttach ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IBase CreateIBase ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IMapiProgress CreateIMapiProgress ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
-
-		public IStream CreateIStream ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
-		}
+		// TODO: most of this can be removed!
 
 		public IMapiSession CreateMapiSession ()
 		{
 			return new TeamXChangeMapiSession ();
-		}
-
-		public IEventSubscription CreateEventSubscription ()
-		{
-			throw new NotImplementedException ("Not yet implemented.");
 		}
 
 		public IMapiAdmin CreateMapiAdmin (string host)

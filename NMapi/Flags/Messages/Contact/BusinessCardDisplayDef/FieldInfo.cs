@@ -40,55 +40,26 @@ namespace NMapi.Flags {
 	/// </remarks>
 	public sealed class FieldInfo
 	{
-		/// <summary>
-		///  The Mapi Property Id the the FieldInfo applies to.
-		/// </summary>
-		/// <remarks>
-		///  Valid property id may be extracted from the following tags:
-		///
-		///  PidTagDisplayName, PidTagTitle, PidTagDepartmentName, PidTagCompanyName, 
-		///  PidTagBusinessTelephoneNumber, PidTagBusiness2TelephoneNumber, PidTagBusinessFaxNumber, 
-		///  PidTagCompanyMainTelephoneNumber, PidTagHomeTelephoneNumber, PidTagHome2TelephoneNumber, 
-		///  PidTagHomeFaxNumber, PidTagMobileTelephoneNumber, PidTagAssistantTelephoneNumber, 
-		///  PidTagOtherTelephoneNumber, PidTagTtyTddPhoneNumber, PidTagPrimaryTelephoneNumber, 
-		///  PidTagPrimaryFaxNumber, PidTagPagerTelephoneNumber, PidLidWorkAddress, PidLidHomeAddress, 
-		///  PidLidOtherAddress, PidLidInstantMessagingAddress, PidTagBusinessHomePage, PidTagPersonalHomePage, 
-		///  PidLidContactUserField1, PidLidContactUserField2, PidLidContactUserField3, 
-		///  PidLidContactUserField4, PidLidEmail1OriginalDisplayName, PidLidEmail2OriginalDisplayName, 
-		///  PidLidEmail3OriginalDisplayName
-		///
-		/// </remarks>
+		/// <summary>The Mapi Property Id the FieldInfo applies to.</summary>
 		public short TextPropertyId { get; set; }
 
-		/// <summary>
-		///  Format of the text.
-		/// </summary>		
+		/// <summary>Format of the text.</summary>		
 		public TextFormat TextFormat { get; set; }
 
-		/// <summary>
-		///  Format of the label.
-		/// </summary>
+		/// <summary>Format of the label.</summary>
 		public LabelFormat LabelFormat  { get; set; }
 		
-		/// <summary>
-		///  The font size in points. (MUST be &gt;= 3 and &lt;= 32)
-		/// </summary>
+		/// <summary>The font size in points. (MUST be &gt;= 3 and &lt;= 32)</summary>
 		public int FontSize { get; set; }
 		
 // TODO!
-		/// <summary>
-		/// Byte offset into extra byte information.
-		/// </summary>
+		/// <summary>Byte offset into extra byte information.</summary>
 		public short LabelOffset  { get; set; }
 
-		/// <summary>
-		///  The color of the value.
-		/// </summary>
+		/// <summary>The color of the value.</summary>
 		public Color ValueFontColor { get; set; }
 		
-		/// <summary>
-		///  The color of the label.
-		/// </summary>		
+		/// <summary>The color of the label.</summary>		
 		public Color LabelFontColor { get; set; }
 		
 		
@@ -100,8 +71,7 @@ namespace NMapi.Flags {
 		}
 		
 		/// <summary>
-		///  Creates a new FieldInfo class from the data stored in the 
-		///  FieldInfo-part (16 bytes) of the BusinessCardDisplayDefinition property.
+		/// 
 		/// </summary>
 		public FieldInfo (byte[] data)
 		{
@@ -118,8 +88,7 @@ namespace NMapi.Flags {
 		}
 		
 		/// <summary>
-		///  Generates the bytes for the FieldInfo that are part of the 
-		///  BusinessCardDisplayDefinition binary property.
+		/// 
 		/// </summary>
 		public byte[] Generate ()
 		{

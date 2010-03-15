@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - AddressTypes.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -26,15 +26,21 @@ using System;
 namespace NMapi.Flags {
 	
 	/// <summary>
-	///  Valid characters are only the letters a-z and 0-9. Uppercase should be used.
+	///  A set of known AddressTypes. Since providers may register custom types 
+	///  the list is not exhaustive. However the most common types are "EX" and "SMTP".
 	/// </summary>
+	/// <remarks>
+	///  <para>
+	///   AddressTypes are associated with recipients and allow MAPI to pick the 
+	///   correct transport to deliver messages.
+	///  </para>
+	///  <para>Valid characters are only the letters a-z and 0-9. Uppercase should be used.</para>
+	/// </remarks>
 	public static class AddressTypes
 	{
 
-		/// <summary>
-		///  Checks if two types match; They do if the strings are the same, 
-		///  ignoring upper/lower case.
-		/// </summary>
+		/// <summary>Checks if two address-types types match.</summary>
+		/// <remarks>They do match if the strings are the same, ignoring upper/lower case.</remarks>
 		/// <returns>Returns true if the address types match.</returns>
 		/// <param name="adrType1">First address to be compared.</param>
 		/// <param name="adrType2">Second address to be compared.</param>
@@ -55,7 +61,7 @@ namespace NMapi.Flags {
 		/// <summary></summary>
 		public const string X400 = "X400";
 		
-		/// <summary></summary>
+		/// <summary>AddressType for Lotus Notes recipients.</summary>
 		public const string LotusNotes = "NOTES";
 
 		/// <summary></summary>

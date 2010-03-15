@@ -22,84 +22,75 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseUserStatus
-		{
-			// The item was accepted 
-			Accepted = 0x00000001,
-			
-			//  An alarm is set for the item
-			Alarm = 0x00000002,
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseUserStatus
+	{
+		/// <summary>The item was accepted.</summary>
+		Accepted = 0x00000001,
+		
+		/// <summary>An alarm is set for the item.</summary>
+		Alarm = 0x00000002,
 
-			// The item was completed 
-			Completed = 0x00000008,
+		/// <summary>The item was completed.</summary>
+		Completed = 0x00000008,
 
-			// The item was delegated 
-			Delegated = 0x00000010,
+		/// <summary>The item was delegated.</summary>
+		Delegated = 0x00000010,
 
-			// The item was deleted
-			Deleted = 0x00000020,
+		/// <summary>The item was deleted.</summary>
+		Deleted = 0x00000020,
 
-			// The item was downloaded 
-			Downloaded = 0x00000100,
+		/// <summary>The item was downloaded.</summary>
+		Downloaded = 0x00000100,
 
-			// The item was forwarded 
-			Forwarded = 0x00000200,
+		/// <summary>The item was forwarded.</summary>
+		Forwarded = 0x00000200,
 
-			// The item was hidden 
-		 	Hidden = 0x00000400,
+		/// <summary>The item was hidden.</summary>
+	 	Hidden = 0x00000400,
 
-			// The item was incomplete 
-			Incomplete  = 0x00000800,
+		/// <summary>The item was incomplete.</summary>
+		Incomplete  = 0x00000800,
 
-			// The item was moved 
-		 	Moved = 0x00001000,
+		/// <summary>The item was moved.</summary>
+	 	Moved = 0x00001000,
 
-			// The item was opened 
-			Opened = 0x00004000,
+		/// <summary>The item was opened.</summary>
+		Opened = 0x00004000,
 
-			// The item was purged 
-			Purged = 0x00008000,
+		/// <summary>The item was purged.</summary>
+		Purged = 0x00008000,
 
-			//The item was read 
-			Read = 0x00010000,
+		/// <summary>The item was read .</summary>
+		Read = 0x00010000,
 
-			// The item was replied to
-			Replied = 0x00020000,
+		/// <summary>The item was replied to.</summary>
+		Replied = 0x00020000,
 
-			// The item was retracted 
-			Retracted = 0x00040000,
+		/// <summary>The item was retracted.</summary>
+		Retracted = 0x00040000,
 
-			// A retraction has been requested for the item
-			RetractReq = 0x00080000,
+		/// <summary>A retraction has been requested for the item.</summary>
+		RetractReq = 0x00080000,
 
-			// The item has been started
-			Started = 0x00200000,
+		/// <summary>The item has been started.</summary>
+		Started = 0x00200000,
 
-			// The item was unaccepted
-			Unaccepted = 0x01000000,
+		/// <summary>The item was unaccepted.</summary>
+		Unaccepted = 0x01000000,
 
-			// The item was undeleted
-			Undeleted = 0x04000000,
+		/// <summary>The item was undeleted.</summary>
+		Undeleted = 0x04000000,
 
-			// The item was unread
-			Unread = 0x10000000,
+		/// <summary>The item was unread.</summary>
+		Unread = 0x10000000,
 
-			// The item was unstarted
-			Unstarted = 0x20000000
-		}
+		/// <summary>The item was unstarted.</summary>
+		Unstarted = 0x20000000
+	}
+	
 }

@@ -22,33 +22,23 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-
-	/// <summary>
-	///   
-	/// </summary>
+	/// <summary></summary>
 	public enum GroupwiseSenderStatus
 	{
-		//  Item has been deleted 
+
+		/// <summary>Item has been deleted.</summary>
 		Deleted = 0x00000020,
 
-		//  Item has been downloaded 
+		/// <summary>Item has been downloaded.</summary>
 		Downloaded = 0x00000200,
 
-		//  Item has been purged 
+		/// <summary>Item has been purged.</summary>
 		Purged = 0x00008000,
 		
-		// Item has been undeleted
+		/// <summary>Item has been undeleted.</summary>
 		Undeleted = 0x04000000,
 	}
 

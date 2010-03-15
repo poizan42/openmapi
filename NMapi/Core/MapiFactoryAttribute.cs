@@ -27,9 +27,12 @@ namespace NMapi {
 
 	/// <summary>
 	///  When applied to a class, indicates that the class implements 
-	///  an OpenMapi/NMapi provider. It also provides information like the 
-	///  type and version of the provider.
+	///  an OpenMapi/NMapi provider.
 	/// </summary>
+	/// <remarks>
+	///  It also provides information like the 
+	///  type and version of the provider.
+	/// </remarks>
 	public sealed class MapiFactoryAttribute : Attribute
 	{
 		private readonly string name;
@@ -82,12 +85,23 @@ namespace NMapi {
 			get { return authors; }
 		}
 
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// param name=""></param>			
 		public MapiFactoryAttribute (string name)// : this (name, 
 //			MapiProviderType.Unknown, null, null, null, null)
 		{
 			this.name = name;
 		}
 	
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// param name="name"></param>
+		/// param name="type"></param>
+		/// param name="description"></param>
+		/// param name="version"></param>
+		/// param name="license"></param>
+		/// param name="authors"></param>
 		public MapiFactoryAttribute (string name, MapiProviderType type, string description, 
 			int[] version, string license, params string[] authors)
 		{

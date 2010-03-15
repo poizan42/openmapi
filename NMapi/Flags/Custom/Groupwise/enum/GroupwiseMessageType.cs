@@ -22,35 +22,25 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseMessageType
+	{
+		/// <summary>No body; files only</summary>
+		FilesOnly = 0x00000001,
 
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseMessageType
-		{
-			// No body; files only 
-			FilesOnly = 0x00000001,
+		/// <summary>Forwarded message</summary>
+		Forward = 0x00000002,
 
-			// Forwarded message 
-			Forward = 0x00000002,
+		/// <summary>Reply to message</summary>
+		Reply = 0x00000004,
 
-			// Reply to message 
-			Reply = 0x00000004,
+		/// <summary>Encapsulated message</summary>
+		Encapsulated = 0x00000008
 
-			// Encapsulated message
-			Encapsulated = 0x00000008
-
-		}
+	}
+	
 }

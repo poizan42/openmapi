@@ -33,24 +33,7 @@ using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	// TBLTYPE
-	/// <summary></summary>
-	public enum TableType
-	{
-		/// <summary></summary>
-		Snapshot = 0,
-		
-		/// <summary></summary>
-		KeySet,
-		
-		/// <summary></summary>
-		Dynamic
-	}
-
-
-
 	// TODO: This class must be refactored/killed.
-
 
 	public sealed class NMAPI
 	{
@@ -137,14 +120,6 @@ namespace NMapi.Flags {
 		public const int FOLDER_MOVE     = 0x00000001;
 		public const int COPY_SUBFOLDERS = 0x00000010;
 	
-		public const int MSGSTATUS_HIGHLIGHTED = 0x00000001;
-		public const int MSGSTATUS_TAGGED      = 0x00000002;
-		public const int MSGSTATUS_HIDDEN      = 0x00000004;
-		public const int MSGSTATUS_DELMARKED   = 0x00000008;
-
-		public const int MSGSTATUS_REMOTE_DOWNLOAD = 0x00001000;
-		public const int MSGSTATUS_REMOTE_DELETE   = 0x00002000;
-
 		public const int RECURSIVE_SORT = 0x00000002;
 
 		public const int MSG_LOCKED   = 0x00000001;

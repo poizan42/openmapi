@@ -75,7 +75,6 @@ using NMapi.Table;
 
 	namespace <xsl:value-of select="normalize-space ($namespace)" /> {
 
-
 		/// &lt;summary&gt;
 		///  <xsl:call-template name="foldLines">
 				<xsl:with-param name="string" select="node()/doc/summary/text()" />
@@ -107,16 +106,16 @@ using NMapi.Table;
 
 		/// &lt;summary&gt;
 		///  <xsl:call-template name="foldLines">
-				<xsl:with-param name="string" select="node()/doc/remarks/text()" />
+				<xsl:with-param name="string" select="doc/summary/text()" />
 			</xsl:call-template>
 		/// &lt;/summary&gt;
 		/// &lt;remarks&gt;
 		///  <xsl:call-template name="foldLines">
-				<xsl:with-param name="string" select="node()/doc/remarks/text()" />
+				<xsl:with-param name="string" select="doc/remarks/text()" />
 			</xsl:call-template>
 		/// &lt;/remarks&gt;
 		/// &lt;exception cref="MapiException"&gt;Throws MapiException&lt;/exception&gt;
-	<xsl:for-each select="node()/doc/exception">
+	<xsl:for-each select="doc/exception">
 		/// &lt;exception cref="<xsl:value-of select="@cref" />"&gt;<xsl:value-of select="text()" />&lt;/exception&gt;
 	</xsl:for-each>
 	<xsl:choose>

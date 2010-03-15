@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - IEventSubscription.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -23,11 +23,14 @@
 
 namespace NMapi.Events {
 
-	/// <summary>
-	///
-	/// </summary>
+	/// <summary></summary>
+	/// <remarks></remarks>
 	public interface IEventSubscription
 	{
+		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="notifications"></param>
 		void OnNotify (Notification [] notifications);
 	}
 

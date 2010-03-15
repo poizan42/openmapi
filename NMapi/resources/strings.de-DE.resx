@@ -41,7 +41,7 @@
 		<value>Aufruf fehlgeschlagen.</value>
 	</data>
 	<data name="ExceptionMessage_NotEnoughMemory" xml:space="preserve">
-		<value>Out of memory</value>
+		<value>Nicht ausreichend Arbeitsspeicher verfügbar.</value>
 	</data>
 	<data name="ExceptionMessage_NoAccess" xml:space="preserve">
 		<value>Zugriff verweigert.</value>
@@ -62,16 +62,16 @@
 		<value>Session-Limit überschritten.</value>
 	</data>
 	<data name="ExceptionMessage_NetworkError" xml:space="preserve">
-		<value>Neterwerk- I/O-Fehler.</value>
+		<value>Netzwerk- I/O-Fehler.</value>
 	</data>
 	<data name="ExceptionMessage_DiskError" xml:space="preserve">
 		<value>Disk error</value>
 	</data>
 	<data name="ExceptionMessage_TooComplex" xml:space="preserve">
-		<value>Too complex</value>
+		<value>Zu komplex.</value>
 	</data>
 	<data name="ExceptionMessage_Unconfigured" xml:space="preserve">
-		<value>Not configured</value>
+		<value>Nicht konfiguriert.</value>
 	</data>
 	<data name="ExceptionMessage_UnknownCpid" xml:space="preserve">
 		<value>Unknown client codepage</value>
@@ -80,16 +80,16 @@
 		<value>Unknown client locale</value>
 	</data>
 	<data name="ExceptionMessage_PasswordChangeRequired" xml:space="preserve">
-		<value>Please change your password</value>
+		<value>Bitte ändern Sie Ihr Passwort.</value>
 	</data>
 	<data name="ExceptionMessage_PasswordExpired" xml:space="preserve">
-		<value>Your password has expired</value>
+		<value>Passwort abgelaufen.</value>
 	</data>
 	<data name="ExceptionMessage_FolderCycle" xml:space="preserve">
-		<value>The source folder contains the destination.</value>
+		<value>Der Quellordner enthält das Ziel.</value>
 	</data>
 	<data name="ExceptionMessage_MapiWPartialCompletion" xml:space="preserve">
-		<value>Some operations did not complete.</value>
+		<value>Einige Operationen wurden nicht abgeschlossen.</value>
 	</data>
 
 	<!-- UMAPI error messages //-->

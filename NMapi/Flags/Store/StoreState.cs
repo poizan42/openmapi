@@ -22,26 +22,18 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  
-	/// </summary>
+	/// <summary></summary>
 	[Flags]
 	public enum StoreState
 	{
 		// Bits for PR_STORE_STATE
 
+		/// <summary></summary>
 		HasSearches = 0x01000000
+		
 	}
 
 }

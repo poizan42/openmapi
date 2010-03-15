@@ -40,32 +40,32 @@ namespace NMapi.Flags {
 		/// <summary>
 		///  
 		/// </summary>
-		Template_ImageLeft = 0,// The image will be left aligned, stretching the full height of the card vertically; text fields will appear to the right of the image.
-
+		Template_ImageLeft = 0,
+		
 		/// <summary>
 		///  
 		/// </summary>
-		Template_ImageRight, // The image will be right aligned, stretching the full height of the card vertically; text fields will appear to the left of the image.
-
+		Template_ImageRight,
+		
 		/// <summary>
 		///  
 		/// </summary>
-		Template_ImageTop, // The image will be aligned to the top, stretching the full width of the card horizontally; text fields will appear under the image.
-
+		Template_ImageTop,
+		
 		/// <summary>
 		///  
 		/// </summary>
-		Template_ImageBottom, // The image will be aligned to the bottom, stretching the full width of the card horizontally; text fields will appear above the image
-
+		Template_ImageBottom,
+		
 		/// <summary>
 		///  
 		/// </summary>
-		Template_NoImage, // No image is included in the card, only text fields are included. PidLidBusinessCardCardPicture SHOULD NOT be set on the Contact object in this case.
-
+		Template_NoImage,
+		
 		/// <summary>
 		///  
 		/// </summary>
-		Template_BackgroundImage // The image will be used as a background for the card, stretching the full height and width of the card. Text fields are displayed on top of the image.
+		Template_BackgroundImage
 	}
 	
 	

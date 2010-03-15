@@ -22,37 +22,20 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	public enum GroupwiseAcceptLevel
+	{
+		/// <summary>High level</summary>
+		High = 250,
 
-		/// <summary>
-		///   
-		/// </summary>
-		public enum GroupwiseAcceptLevel
-		{
-			/// <summary>
-			///  High level
-			/// </summary>
-			High = 250,
+		/// <summary>Medium level</summary>
+		Medium = 200,
 
-			/// <summary>
-			///  Medium level 
-			/// </summary>
-			Medium = 200,
-
-			/// <summary>
-			///  Low level
-			/// </summary>
-			Low = 150
-		}
-
+		/// <summary>Low level</summary>
+		Low = 150
+	}
 
 }

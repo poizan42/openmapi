@@ -46,6 +46,8 @@ namespace NMapi {
 		///  Indicates, that the property is used as a flag; This information 
 		///  may be used by components when optimizing storage of the property.
 		/// </summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public bool IsFlag {
 			get { return isFlag; }
 			set { isFlag = value; }
@@ -56,6 +58,8 @@ namespace NMapi {
 		///  This does not mean that it actually will be indexed, it is just a 
 		///  hint, so optimizations at the database level can take place.
 		/// </summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public bool ShouldIndex {
 			get { return shouldIndex; }
 			set { shouldIndex = value; }
@@ -67,6 +71,8 @@ namespace NMapi {
 		///  objects (or information about them) and can't quickly compare the 
 		///  value of two properties (like Lucene).
 		/// </summary>
+		/// <remarks></remarks>
+		/// <value></value>
 		public PropertyTag[] ExpectedCompareTags {
 			get { return expectedCompareTags; }
 			set { expectedCompareTags = value; }

@@ -212,12 +212,12 @@ namespace NMapi.Server {
 			return result;
 		}
 		
-		
-		// DO not check in! ?!
 		public override Admin_TraceWrite_res Admin_TraceWrite_1 (
 			OncRpcCallInformation call, Admin_TraceWrite_arg arg1)
 		{
+#if DEBUG
 			Trace.WriteLine ("CLIENT-TRACE:" + arg1.pszMessage.Value);
+#endif
 			return new Admin_TraceWrite_res ();
 		}
 

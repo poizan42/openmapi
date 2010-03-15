@@ -22,28 +22,18 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-		/// <summary>
-		///   
-		/// </summary>
-		public enum GroupwiseEndMode
-		{
-			// End date of an Auto-Date item 
-			Date  = 1,
-			
-			// End occurrence of an Auto-Date item
-			Occur = 2
-		}
-
+	/// <summary></summary>
+	public enum GroupwiseEndMode
+	{
+		
+		/// <summary>End date of an Auto-Date object.</summary>
+		Date  = 1,
+		
+		/// <summary>End occurrence of an Auto-Date object.</summary>
+		Occur = 2
+	}
 
 }

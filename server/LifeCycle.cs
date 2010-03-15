@@ -26,8 +26,10 @@ namespace NMapi.Server {
 	public sealed class LifeCycle
 	{
 		
+		/// <summary></summary>
 		public event EventHandler<EventArgs> Start;
 		
+		/// <summary></summary>
 		public event EventHandler<EventArgs> Exit;
 
 

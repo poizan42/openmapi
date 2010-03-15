@@ -22,37 +22,24 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseCopyType
+	{
+		/// <summary>Primary field (To: field) </summary>
+		Pr = 0x0001,
 
-
-
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseCopyType
-		{
-			//  Primary field (To: field) 
-			Pr = 0x0001,
-
-			//  Carbon copy field 
-			Cc = 0x0002,
-			
-			//  Blind copy field 
-			Bc = 0x0004,
-			
-			//  Place field
-			Place = 0x0008
-		}
+		/// <summary>Carbon copy field</summary>
+		Cc = 0x0002,
+		
+		/// <summary>Blind copy field </summary>
+		Bc = 0x0004,
+		
+		/// <summary>Place field</summary>
+		Place = 0x0008
+	}
 
 }

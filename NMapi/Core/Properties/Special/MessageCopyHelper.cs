@@ -106,7 +106,7 @@ namespace NMapi.Properties.Special {
 			try {
 				MyMsgCopyProps (attachSource, attachDest);
 				IntProperty propVal = attachSource.GetProperty (Property.Typed.AttachMethod) as IntProperty;
-				if (propVal.Value == ((int) Attach.EmbeddedMsg)) {
+				if (propVal.Value == ((int) AttachMethod.EmbeddedMsg)) {
 					msgsrc = (IMessage) attachSource.OpenProperty (Property.AttachDataObj, 
 						InterfaceIdentifiers.IMessage, 0, 0);
 					msgdst = (IMessage) attachDest.OpenProperty (Property.AttachDataObj,
@@ -182,7 +182,7 @@ namespace NMapi.Properties.Special {
 					RowSet rows = table.GetRows (10);
 					if (rows.ARow.Length == 0)
 						break;
-					messageDest.ModifyRecipients (ModRecip.Add, new AdrList (rows));
+					messageDest.ModifyRecipients (ModifyRecipientsMode.Add, new AdrList (rows));
 				}
 			}
 			finally {

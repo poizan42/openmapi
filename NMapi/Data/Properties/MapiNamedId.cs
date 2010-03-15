@@ -67,11 +67,11 @@ namespace NMapi.Properties {
 		///  UlKind is the same as "ulKind" in jumapi.
 		/// </summary>
 		[DataMember (Name="UlKind")]
-		public MnId  UlKind {
+		public NamedPropertyIdKind  UlKind {
 			get {
 				if (this is StringMapiNameId)
-					return MnId.String;
-				return MnId.Id;
+					return NamedPropertyIdKind.String;
+				return NamedPropertyIdKind.Id;
 			}
 		}
 
@@ -98,11 +98,11 @@ namespace NMapi.Properties {
 				Trace.WriteLine ("XdrDecode called: MapiNameId");
 			
 			NMapiGuid guid = new LPGuid (xdr).Value;
-			MnId ulKind = (MnId) xdr.XdrDecodeInt ();
+			NamedPropertyIdKind ulKind = (NamedPropertyIdKind) xdr.XdrDecodeInt ();
 			MapiNameId result = null;
 			switch (ulKind) {
-				case MnId.String: result = new StringMapiNameId (xdr); break;
-				case MnId.Id: result = new NumericMapiNameId (xdr); break;
+				case NamedPropertyIdKind.String: result = new StringMapiNameId (xdr); break;
+				case NamedPropertyIdKind.Id: result = new NumericMapiNameId (xdr); break;
 			}
 			result.Guid = guid;
 			return result;

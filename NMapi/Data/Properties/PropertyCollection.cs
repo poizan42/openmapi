@@ -38,12 +38,11 @@ using NMapi.Interop;
 
 namespace NMapi.Properties {
 
-	/// <summary>
-	///  
-	/// </summary>
-	public sealed class PropertyCollection
-	{	
-		private PropertyValue[] props;		
+	/// <summary>A collection of MAPI properties.</summary>
+	/// <remarks></remarks>
+	public sealed class PropertyCollection : IEnumerable
+	{
+		private PropertyValue[] props;
 		
 		/// <summary>
 		///  
@@ -51,7 +50,7 @@ namespace NMapi.Properties {
 		/// <param name="props"></param>
 		public PropertyCollection (PropertyValue[] props)
 		{
-
+			this.props = props;
 		}
 		
 		
@@ -104,6 +103,22 @@ namespace NMapi.Properties {
 		// TODO: FindByIdOrNull
 		
 		
+		
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			if (props == null)
+				return null;
+			return props.GetEnumerator ();
+		}
+		
+		
+		public PropertyValue[] ToPropertyValueArray ()
+		{
+			return props;			
+		}
+		
+		
+		
 		/// <summary></summary>
 		/// <remarks></remarks>
 		/// <param name="props"></param>
@@ -147,4 +162,5 @@ namespace NMapi.Properties {
 		}
 		
 	}
-	
+		
+}

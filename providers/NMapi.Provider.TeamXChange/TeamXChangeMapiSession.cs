@@ -49,7 +49,7 @@ namespace NMapi {
 
 		~TeamXChangeMapiSession ()
 		{
-			Dispose ();
+			Dispose (false);
 		}
 
 		/// <summary>
@@ -60,22 +60,38 @@ namespace NMapi {
 		/// </summary>
 		public void Dispose ()
 		{
+			Dispose (true);
+			GC.SuppressFinalize(this);
+		}
+		
+		protected void Dispose (bool disposing)
+		{
 			if (isDisposed)
 				return;
 
-			if (privatemdb != null) {
-				privatemdb.Close2 ();
-				privatemdb = null;
+			try {
+				if (privatemdb != null)
+					privatemdb.Close2 ();
+			} catch (Exception e) {
+				// ignore
 			}
-			if (publicmdb != null) {
-				publicmdb.Close2 ();
-				publicmdb = null;
+			try {
+				if (publicmdb != null)
+					publicmdb.Close2 ();
+			} catch (Exception e) {
+				// ignore
 			}
-			if (session != null) {
-				session.Close ();
-				session = null;
+			try {
+				if (session != null)
+					session.Close ();
+			} catch (Exception e) {
+				// ignore
 			}
 
+			privatemdb = null;
+			publicmdb = null;
+			session = null;
+			
 			isDisposed = true;
 		}
 
@@ -139,8 +155,8 @@ namespace NMapi {
 				else
 					session = new TeamXChangeSession (host);
 				session.Logon2 (user, password, sessionFlags, codePage, localeId);
-				privatemdb = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, false);
-				publicmdb  = (TeamXChangeMsgStore) OpenStore (Mdb.Write, null, true);
+				privatemdb = (TeamXChangeMsgStore) OpenStore (OpenStoreFlags.Write, null, false);
+				publicmdb  = (TeamXChangeMsgStore) OpenStore (OpenStoreFlags.Write, null, true);
 			} 
 			catch (MapiException e) {
 				if (privatemdb != null) {
@@ -156,7 +172,7 @@ namespace NMapi {
 		}
 
 		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public IMsgStore OpenStore (Mdb flags, string user, bool isPublic) 
+		public IMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic) 
 		{
 			return session.OpenStore (flags, user, isPublic);
 		}
@@ -276,8 +292,6 @@ namespace NMapi {
 		{
 			session.RegisterSyncClientID (id);
 		}
-		
-		
 		
 	}
 

@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - FileUnderFormat.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,28 +22,22 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
 
 namespace NMapi.Flags {
-
-
-	
-//		If a property is not present, then the separator characters surrounding it can be removed by the application.
-//		Computing the value of the PidLidFileUnder property based on PidLidFileUnderId property value
-	
-	
-	// Nl = \r\n
 	
 	/// <summary>
-	///  Possible values for the Property "PidLidFileUnderId". (TODO: the MS name!). 
-	///  This property specifies how the client should update the property "PidLidFileUnder" 
-	///  if any contact properties are changed.
+	///  Possible values for the Property NamedProperty.FileUnderId. 
 	/// </summary>
 	/// <remarks>
-	///  Note: This file is based on the documentation published by Microsoft
-	///       [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
+	///  <para>
+	///   This property specifies how the client should update the property 
+	///   NamedProperty.FileUnder if any contact properties are changed.
+	///  </para>
+	///  <para>Nl = \r\n</para>
+	///  <para>
+	///   Note: This file is based on the documentation published by Microsoft
+	///        [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
+	///  </para>
 	/// </remarks>
 	public enum FileUnderFormat : uint
 	{
@@ -66,14 +60,9 @@ namespace NMapi.Flags {
 		Update_GivenName_Space_MiddleName_Space_Surname_Space_Generation = 0x8037,
 		Update_Surname_GivenName_Space_MiddleName_Space_Generation = 0x8038,
 
-		Update_BestMatch = 0xfffffffd,	// Application should use the current value of PidLidFileUnder and other contact properties 
-									// to find a “best match” for PidLidFileUnderId to one of the previous values in this table.
-
-		Update_UseLocaleDefaultsAndUpdateFileUnder = 0xfffffffe,		// application is to choose the appropriate default values (according to the language locale) for PidLidFileUnderId 
-																	// and update PidLidFileUnder to match the choice.
-									
-		Keep_CustomUserProvidedFileUnder = 0xffffffff			// PidLidFileUnder (!) is a user-provided PtypString, and SHOULD NOT be changed when another 
-															// Contact Name property changes.
+		Update_BestMatch = 0xfffffffd,
+		Update_UseLocaleDefaultsAndUpdateFileUnder = 0xfffffffe,
+		Keep_CustomUserProvidedFileUnder = 0xffffffff
 	}
 	
 }

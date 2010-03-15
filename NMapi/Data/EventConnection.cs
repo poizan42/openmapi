@@ -28,17 +28,17 @@ namespace NMapi {
 	using NMapi.Flags;
 	using NMapi.Properties;
 
-	/// <summary>
-	///  Represents an event connection.
-	/// </summary>
+	/// <summary>Represents an event connection.</summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	public struct EventConnection
 	{
 		private int connection;
 		private bool initialized;
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <value></value>
 		public int Connection {
 			get {
 				if (!initialized)
@@ -46,7 +46,9 @@ namespace NMapi {
 				return connection;
 			}
 		}
-		
+
+		/// <summary></summary>
+		/// <param name="connection"></param>
 		public EventConnection (int connection)
 		{
 			this.initialized = true;

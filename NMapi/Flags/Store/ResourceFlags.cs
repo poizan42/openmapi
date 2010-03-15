@@ -22,21 +22,11 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
 
-	/// <summary>
-	///  Flags that can be set for the property tag Property.ResourceFlags.
-	/// </summary>
+	/// <summary>Flags that can be set for the property tag Property.ResourceFlags.</summary>
 	[Flags]
 	public enum ResourceFlags
 	{
@@ -47,29 +37,19 @@ namespace NMapi.Flags {
 		
 		
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Service_DefaultStore = 0x0001,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Service_SingleCopy = 0x0002,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Service_CreateWithStore = 0x0004,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Service_PrimaryIdentity = 0x0008,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Service_NoPrimaryIdentity = 0x0020,
 		
 	
@@ -82,16 +62,12 @@ namespace NMapi.Flags {
 		//
 	
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Hook_Inbound = 0x00000200,
 		
 		
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Hook_Outbound = 0x00000400,
 
 
@@ -104,54 +80,34 @@ namespace NMapi.Flags {
 
 
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_DefaultOutbound = 0x00000001,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_DefaultStore = 0x00000002,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_NeedIpmTree = 0x00000800,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_PrimaryStore = 0x00001000,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_SecondaryStore = 0x00002000,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_PrimaryIdentity = 0x00000004,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_SimpleStore = 0x00000008,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_XpPreferLast = 0x00000010,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_NoPrimaryIdentity = 0x00000020,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_NoDefaultStore = 0x00000040,
 		
 		/// <summary>
@@ -159,9 +115,7 @@ namespace NMapi.Flags {
 		/// </summary>
 		Status_TempSection = 0x00000080,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Status_OwnStore = 0x00000100
 		
 

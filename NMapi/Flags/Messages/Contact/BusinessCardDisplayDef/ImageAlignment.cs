@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - ImageAlignment.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -28,9 +28,7 @@ using NMapi;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  Values for ImageAlignment.
-	/// </summary>
+	/// <summary>Values for ImageAlignment.</summary>
 	/// <remarks>
 	///  Note: This file is based on information published by Microsoft
 	///        [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
@@ -38,58 +36,34 @@ namespace NMapi.Flags {
 	public enum ImageAlignment
 	{
 		
-		// This field indicates how the image is aligned in the image area. 
-		// The value of this field is ignored for text-only cards (i.e. when the value of TemplateID is “0x04”). 
-		// The value of this field MUST have one of the following values:
-		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Fit = 0,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		TopLeft,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		TopCenter,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		TopRight,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		MiddleLeft,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		MiddleCenter,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		MiddleRight,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		BottomLeft,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		BottomCenter,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		BottomRight	
 	}
 	

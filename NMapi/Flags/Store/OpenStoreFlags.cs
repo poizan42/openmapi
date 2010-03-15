@@ -26,43 +26,36 @@ using System;
 namespace NMapi.Flags {
 
 	/// <summary>Flags for <see cref="M:IMapiSession.OpenStore" />.</summary>
-	/// <remarks>
-	///  <para></para>
-	///  <para></para>
-	/// </remarks>
+	/// <remarks>Provides some control on how a message store is opened.</remarks>
 	[Flags]
 	public enum OpenStoreFlags
 	{
-		
-		
-		
-//		MAPI_BEST_ACCESS
-//		Requests that the message store be opened with the maximum network permissions allowed for the user and the maximum client application permissions. For example, if the client has read/write permission, the message store should be opened with read/write permission; if the client has read-only permission, the message store should be opened with read-only permission.
-//
-//		MAPI_DEFERRED_ERRORS
-//		Allows OpenMsgStore to return successfully, possibly before the message store is fully available to the calling client. If the message store is not available, making a subsequent object call can raise an error.
 
+//		TODO: NMAPI.MAPI_BEST_ACCESS and NMAPI.MAPI_DEFERRED_ERRORS are possible as well!
+//		       This can lead to problems, for example when casting to (OpenStoreFlags) in the server.
 		
-		
-		
-		/// <summary></summary>
-		//		Prevents the display of logon dialog boxes. If this flag is set, and OpenMsgStore does not have enough configuration information to open the message store without the user's help, it returns MAPI_E_LOGON_FAILED. If this flag is not set, the message store provider can prompt the user to correct a name or password, to insert a disk, or to perform other actions necessary to establish connection to the message store.
-		/// <remarks>MDB_NO_DIALOG</remarks>
+		/// <summary>This is used to logon to the store in a strictly non-interactive way.</summary>
+		/// <remarks>
+		///  <para>
+		///   The absence of this flag allows a certain degree of interaction
+		///   with the user to go on. Still, since this basically breaks proper 
+		///   layering and I'm not convinced that it's a good idea if some lower 
+		///   layer starts popping up some GUI, this is a feature of rather dubious value.
+		/// </para>
+		///  <para>The classic MAPI constant for this is called MDB_NO_DIALOG.</para>
+		/// </remarks>
 		NoDialog  = 0x00000001,
 		
-		/// <summary></summary>
-//		Requests read/write access to the message store.
-		/// <remarks>MDB_WRITE</remarks>
+		/// <summary>If set, the client attempts to open the store with write-access.</summary>
+		/// <remarks>The classic MAPI constant for this is called MDB_WRITE.</remarks>
 		Write = 0x00000004,
 		
-		/// <summary></summary>
-//		Instructs MAPI that the message store is not permanent and should not be added to the message store table. This flag is used to log on the message store so that information can be retrieved programmatically from the profile section.
-		/// <remarks>MDB_TEMPORARY</remarks>
+		/// <summary>The store, although opened, should not appear in the store table.</summary>
+		/// <remarks>The classic MAPI constant for this is called MDB_TEMPORARY.</remarks>
 		Temporary = 0x00000020,
 		
-		/// <summary></summary>
-//		The message store should not be used for sending or receiving mail. When this flag is set, MAPI does not notify the MAPI spooler that this message store is being opened.		
-		/// <remarks>MDB_NO_MAIL</remarks>
+		/// <summary>TODO: documentation!</summary>
+		/// <remarks>The classic MAPI constant for this is called MDB_NO_MAIL.</remarks>
 		NoMail = 0x00000080
 	}
 }

@@ -22,42 +22,31 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
+	/// <summary></summary>
+	[Flags]
+	public enum GroupwiseStatusTracking
+	{
 
-		/// <summary>
-		///   
-		/// </summary>
-		[Flags]
-		public enum GroupwiseStatusTracking
-		{
+		/// <summary>No tracking.</summary>
+		None = 0x00,
 
-			//  No tracking 
-			 None = 0x00,
+		/// <summary>Delivered.</summary>
+		Delivered = 0x01,
 
-			// Delivered 
-			 Delivered = 0x01,
+		/// <summary>Host deleted.</summary>
+		HostDeleted = 0x02, 
 
-			//Host deleted 
-			 HostDeleted = 0x02, 
+		/// <summary>Deleted</summary>
+		Deleted = 0x04,  
 
-			//Deleted
-			 Deleted = 0x04,  
+		/// <summary>Opened</summary>
+		Opened = 0x08,  
 
-			//Opened
-			 Opened = 0x08,  
+		/// <summary>Full tracking</summary>
+		Full = 0xFF,
 
-			//  Full tracking
-			 Full = 0xFF,
-
-		}
+	}
 }

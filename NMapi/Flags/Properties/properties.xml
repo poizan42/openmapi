@@ -270,6 +270,7 @@
 	<!--
 		Message content
 	//-->
+	
 	<property name="Body" type="Unicode" id="0x1000" />
 	<property name="BodyW" type="Unicode" id="0x1000" />
 	<property name="BodyA" type="String8" id="0x1000" />
@@ -289,7 +290,7 @@
 	<property name="RtfSyncPrefixCount" type="Int32" id="0x1010" />
 	<property name="RtfSyncTrailingCount" type="Int32" id="0x1011" />
 	<property name="OriginallyIntendedRecipEntryId" type="Binary" id="0x1012" />
-
+	<property name="NativeBody" type="Int32" id="0x1016" />
 	<property name="AttributeHidden" type="Boolean" id="0x10F4" />
 
 	<!--

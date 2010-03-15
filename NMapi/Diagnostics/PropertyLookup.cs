@@ -86,7 +86,7 @@ namespace NMapi {
 
 		/// <summary>
 		///  If the property tag exists as a constant field of a class that 
-		///  has previously been registred, returns the name (ClassName + FieldName) 
+		///  has previously been registered, returns the name (ClassName + FieldName) 
 		///  for the property tag. Otherwise null is returned.
 		/// </summary>
 		public string GetName (int propTag)

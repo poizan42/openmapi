@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - PropertyRange.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,123 +22,83 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
+	/// <summary>Definition of behaviour assocaited with certain property ranges.</summary>
+	/// <remarks>
 	///  Property IDs are usually part of a certain range that 
 	///  defines if the property should be transmitted by a transport 
 	///  provider and also divides the whole set of possible IDs into subsets  
 	///  which are used by different MAPI components to avoid conflicts.
-	/// </summary>
+	/// </remarks>
 	public enum PropertyRange
 	{
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_Envelope,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_PerRecipient,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_NonTransmittable,
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_MessageContent,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_CommonProperties,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_MessageStoreObject,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_FolderOrAbContainer,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Attachment-realted properties.</summary>
 		Core_System_Attachment,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_AddressBookObject,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_MailUser,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_DistributionList,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_ProfileSection,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Core_System_StatusObject,
 	
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		CustomTransportEnvelopeTransmitted,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		RecipientAssociatedNotTransmitted,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Custom properties that are not transmitted when messages are sent.</summary>
 		CustomNotTransmitted,
 
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		ServiceProviderNotTransmitted,
 
 		/// <summary>
-		///  
+		///  Properties that are defined in the context of a Message-Class 
+		///  (Property.MessageClass) and are transmitted when messages are sent.
 		/// </summary>
 		MessageClassTransmitted,
 
 		/// <summary>
-		///  
+		///  Properties that are defined in the context of a Message-Class 
+		///  (Property.MessageClass) and are not transmitted when messages are sent.
 		/// </summary>
 		MessageClassNotTransmitted,
 
-		/// <summary>
-		///  Indicates that the property tag is a named property.
-		/// </summary>
+		/// <summary>Indicates that the property tag is a named property.</summary>
 		NamedTransmitted,
 
 		/// <summary>

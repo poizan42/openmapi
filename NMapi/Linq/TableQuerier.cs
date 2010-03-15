@@ -103,10 +103,12 @@ namespace NMapi.Linq {
 			Type type = typeof (MEntity);
 			MEntity entity = (MEntity) Activator.CreateInstance (type);
 
-			object result;
+			object result = null;
 			for (int i = 0; i < tags.Count; i++) {
-				result = row.Props [i].GetValueObj ();
-				propList [i].SetValue (entity, result, null);
+				if (! (row.Props [i] is ErrorProperty )) {
+					result = row.Props [i].GetValueObj ();
+					propList [i].SetValue (entity, result, null);
+				}
 			}
 			((IMapiEntity) entity).MarkAsUnchanged ();
 			((IMapiEntity) entity).Context = context;
@@ -262,7 +264,6 @@ namespace NMapi.Linq {
 					rows = table.QueryRows  (1, 0);
 					if (rows.Count == 0)
 						throw new MapiNotFoundException ("No match!");
-					PropertyType propType = PropertyTypeHelper.PROP_TYPE (state.ScalarQueriedProperty);
 					result = rows [0].Props [0].GetValueObj ();
 
 				} finally {
@@ -340,8 +341,7 @@ namespace NMapi.Linq {
 		//  so "state.ReadBackwards" is ignored.
 		internal object Average {
 			get {
-				int total;
-				
+				// int total;
 				//return SumCount (out total) / total;
 				throw new Exception ("UNCOMMENT LINE ABOVE AND FIX!"); // TODO
 				

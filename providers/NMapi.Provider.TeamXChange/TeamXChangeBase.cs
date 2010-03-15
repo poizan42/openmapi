@@ -26,6 +26,7 @@ namespace NMapi {
 
 	using System;
 	using System.IO;
+	using System.Net.Sockets;
 	using CompactTeaSharp;
 	using NMapi.Flags;
 	using NMapi.Interop.MapiRPC;
@@ -53,7 +54,7 @@ namespace NMapi {
 		{
 			Dispose (false);
 		}
-	
+		
 		/// <summary>
 		///  Call Dispose when you are finished using the Mapi-Class  
 		///  in order to release network resources.
@@ -74,15 +75,17 @@ namespace NMapi {
 				var arg = new Base_Close_arg ();
 				arg.obj = new HObject (new LongLong (obj));
 				if (clnt == null) {
-					string msg = session.GetType().FullName +
-						" object already closed";
-					throw new NullReferenceException (msg);
+					string msg = session.GetType ().FullName + " object already closed.";
+					throw new InvalidOperationException (msg);
 				}
 				clnt.Base_Close_1 (arg);
-			}
-			catch (OncRpcException) {} // do nothing
-			catch (IOException) {} // do nothing
-			finally {
+			} catch (OncRpcException) {
+				// do nothing	
+			} catch (IOException) {
+			 	// do nothing
+			} catch (SocketException) { // TODO: we might have to check for this exception everywhere ?
+				// do nothing
+			} finally {
 				disposed = true;
 			}
 		}

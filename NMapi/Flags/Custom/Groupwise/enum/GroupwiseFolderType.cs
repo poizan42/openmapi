@@ -22,45 +22,35 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags.Groupwise {
 
-		/// <summary>
-		///   
-		/// </summary>
-		public enum GroupwiseFolderType
-		{
-			//  Normal folder. 
-		 	Normal = 0,
+	/// <summary></summary>
+	public enum GroupwiseFolderType
+	{
+		/// <summary>Normal folder.</summary>
+	 	Normal = 0,
 
-			//  Query folder. 
-		 	Query = 4,
+		/// <summary>Query folder.</summary>
+	 	Query = 4,
 
-			// User folder (system-created). 
-	 		User = 6,
+		/// <summary>User folder (system-created).</summary>
+ 		User = 6,
 
-			//  Mailbox (system-created). 
-		 	Universal = 7,
+		/// <summary>Mailbox (system-created).</summary>
+	 	Universal = 7,
 
-			//  Trash (system-created). 
-		 	Trash = 9,
+		/// <summary>Trash (system-created).</summary>
+	 	Trash = 9,
 
-			//  Calendar (system-created). 
-			Calendar = 10,
+		/// <summary>Calendar (system-created).</summary>
+		Calendar = 10,
 
-			//  Cabinet (system-created). 
-		 	Cabinet = 12,
+		/// <summary>Cabinet (system-created).</summary>
+	 	Cabinet = 12,
 
-			// Current work (system-created).
-		 	WorkInProgress = 13
-		}
+		/// <summary>Current work (system-created).</summary>
+	 	WorkInProgress = 13
+	}
 
 }

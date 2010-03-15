@@ -55,7 +55,7 @@ namespace NMapi {
 			}
 		}
 		
-		// TODO: we should call an xslt-function here.
+		<!-- TODO: we should call an xslt-function here. //-->
 		
 		public static MapiException Make (int error)
 		{
@@ -73,23 +73,20 @@ namespace NMapi {
 
 <xsl:template match="error">
 	
-	/// &lt;summary&gt;
-	///  Exception for the MAPI-Error <xsl:value-of select="@name" />.
-	/// &lt;/summary&gt;
+	/// &lt;summary&gt;Exception for the MAPI-Error '<xsl:value-of select="@classicName" />'.&lt;/summary&gt;
+	/// &lt;remarks&gt;&lt;/remarks&gt;
 	[Serializable]
 	public partial class Mapi<xsl:value-of select="@name" />Exception : MapiException
 	{
-
-		/// &lt;summary&gt;
-		///  Creates a new Mapi<xsl:value-of select="@name" />Exception.
-		/// &lt;/summary&gt;
+		/// &lt;summary&gt;Creates a new Mapi<xsl:value-of select="@name" />Exception.&lt;/summary&gt;
+		/// &lt;remarks&gt;&lt;/remarks&gt;
 		public Mapi<xsl:value-of select="@name" />Exception () : base (Error.<xsl:value-of select="@name" />)
 		{
 		}
 
-		/// &lt;summary&gt;
-		///  Creates a new Mapi<xsl:value-of select="@name" />Exception with a custom message.
-		/// &lt;/summary&gt;
+		/// &lt;summary&gt;Creates a new Mapi<xsl:value-of select="@name" />Exception with a custom message.&lt;/summary&gt;
+		/// &lt;remarks&gt;&lt;/remarks&gt;
+		/// &lt;param name="msg"&gt;A custom error message.&lt;/summary&gt;
 		public Mapi<xsl:value-of select="@name" />Exception (string msg) : base (msg, Error.<xsl:value-of select="@name" />)
 		{
 		}

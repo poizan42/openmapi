@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - MapiAccess.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,29 +22,41 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	/// <summary>
-	///  
-	/// </summary>
+	/// <summary>Possible flags for the property tag Property.Access.</summary>
+	/// <remarks>
+	///  This property, together with the flags, can be used on messages, folders 
+	///  and store objects. However, not all flags make sense everywhere. 
+	///  The Create*-Flags can only be used on folders and stores.
+	/// </remarks>
 	[Flags]
 	public enum MapiAccess
 	{
-		Modify            = 0x00000001,
-		Read              = 0x00000002,
-		Delete            = 0x00000004,
-		CreateHierarchy   = 0x00000008,
-		CreateContents    = 0x00000010,
-		CreateAssociated  = 0x00000020
+		/// <summary>The object can be modified.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_ACCESS_MODIFY.</remarks>
+		Modify = 0x00000001,
+
+		/// <summary>The data of the object can be read.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_ACCESS_READ.</remarks>
+		Read = 0x00000002,
+
+		/// <summary>The object can be deleted.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_ACCESS_DELETE.</remarks>
+		Delete = 0x00000004,
+
+		/// <summary>The object can create subfolders.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_CREATE_HIERARCHY.</remarks>
+		CreateHierarchy = 0x00000008,
+
+		/// <summary>The object ca create message in its contents-table.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_CREATE_CONTENTS.</remarks>
+		CreateContents = 0x00000010,
+
+		/// <summary>The object ca create message in its associated contents-table.</summary>
+		/// <remarks>In classic MAPI this was called MAPI_CREATE_ASSOCIATED.</remarks>
+		CreateAssociated = 0x00000020
 	}
 
 

@@ -13,10 +13,10 @@ using System.Globalization;
 using System.Threading;
 
 // namespace NDesk.Mail
-/*
-
- namespace NMapi.Format.MBox
+namespace NMapi.Format.MBox
 {
+	/*
+
 	public class Mailbox
 	{
 		public string filename;
@@ -486,5 +486,7 @@ using System.Threading;
 					DateTimeStyles.AllowWhiteSpaces).ToLocalTime ();
 		}
 	}
+
+	*/
+
 }
-*/

@@ -84,6 +84,9 @@ namespace NMapi {
 		public new int HResult {
 			get { return hresult; }
 		}
+		
+		// TODO: We changed the behaviour slightly, because e.Exception used to be null if an Onc/Socket/IO-Exception had occurred.
+		//       It will now contin the exception. If This does not lead to problems with existing code, this information can be removed.
 
 		/// <summary>
 		///  If the interface gets an Exception it sets 
@@ -93,13 +96,14 @@ namespace NMapi {
 		public Exception Exception {
 			get { return exception; }
 		}
+		
 		/// <summary>
 		///  If the interface gets an IOException it sets 
 		///  <see cref="MapiException.HResult">HResult</see> 
 		///  "Error.NetworkError" and stores the IOException here.
 		/// </summary>
 		public IOException IOException {
-			get { return ioException; }
+			get { return exception as IOException; }
 		}
 
 		/// <summary>
@@ -108,7 +112,7 @@ namespace NMapi {
 		///  "Error.NetworkError" and stores the SocketException here.
 		/// </summary>
 		public SocketException SocketException {
-			get { return socketException; }
+			get { return exception as SocketException; }
 		}
 
 		/// <summary>
@@ -117,12 +121,12 @@ namespace NMapi {
 		///  "Error.NetworkError" and stores the OncRpcException here.
 		/// </summary>
 		public OncRpcException RpcException {
-			get { return rpcException; }
+			get { return exception as OncRpcException; }
 		}
-
-
-
-
+		
+		
+		
+		
 		/// <summary></summary>
 		public string Component {
 			get { return (component != null) ? component : String.Empty; }
@@ -159,9 +163,6 @@ namespace NMapi {
 			this.dbgLogId = info.GetString ("dbgLogId");
 
 			this.exception = (Exception) info.GetValue ("exception", typeof (Exception));			// TODO!
-			this.ioException = (IOException) info.GetValue ("ioException", typeof (IOException));			// TODO!
-			this.socketException = (SocketException) info.GetValue ("socketException", typeof (SocketException));			// TODO!
-			this.rpcException = (OncRpcException) info.GetValue ("rpcException", typeof (OncRpcException));			// TODO!
 		}
 
 		/// <summary></summary>
@@ -178,9 +179,6 @@ namespace NMapi {
 			info.AddValue ("dbgLogId", this.dbgLogId);
 
 			info.AddValue ("exception", this.exception);			// TODO!
-			info.AddValue ("ioException", this.ioException);			// TODO!
-			info.AddValue ("socketException", this.socketException);			// TODO!
-			info.AddValue ("rpcException", this.rpcException);			// TODO!
 
 			base.GetObjectData (info, context);
 		}
@@ -335,7 +333,7 @@ namespace NMapi {
 			base (GetErr (Error.NetworkError), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.ioException = e;
+			this.exception = e;
 		}
 
 		/// <summary>
@@ -347,7 +345,7 @@ namespace NMapi {
 			base (GetErr(Error.NetworkError, msg), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.ioException = e;
+			this.exception = e;
 		}
 
 		/// <summary>
@@ -359,7 +357,7 @@ namespace NMapi {
 			base (GetErr (Error.NetworkError, msg), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.socketException = e;
+			this.exception = e;
 		}
 
 		/// <summary>
@@ -370,7 +368,7 @@ namespace NMapi {
 			base (GetErr (Error.NetworkError), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.socketException = e;
+			this.exception = e;
 		}
 
 		/// <summary>
@@ -381,7 +379,7 @@ namespace NMapi {
 			base (GetErr (Error.NetworkError), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.rpcException = e;
+			this.exception = e;
 		}
 
 		/// <summary>
@@ -393,16 +391,15 @@ namespace NMapi {
 			base (GetErr (Error.NetworkError, msg), e)
 		{
 			this.hresult = Error.NetworkError;
-			this.rpcException = e;
+			this.exception = e;
 		}
 
 		private static string GetErr (int hr)
 		{
-			return "0x" + hr.ToString ("x") 
-				+ ": " + Error.GetErrorName (hr);
+			return "0x" + hr.ToString ("x") + ": " + Error.GetErrorName (hr);
 		}
 
-		private static string GetErr (int hr, String msg)
+		private static string GetErr (int hr, string msg)
 		{
 			return GetErr (hr) + ": " + msg;
 		}

@@ -22,18 +22,12 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	public struct Mapi
+	// TODO: This class must be refactored.
+
+	public static class Mapi
 	{
 		public const int Modify = 0x00000001;
 		public const int Create = 0x00000002;

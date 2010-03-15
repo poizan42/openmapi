@@ -29,7 +29,6 @@ using System.Runtime.Serialization;
 using System.Diagnostics;
 using CompactTeaSharp;
 
-
 using NMapi;
 using NMapi.Flags;
 using NMapi.Events;
@@ -40,8 +39,11 @@ using NMapi.Interop;
 namespace NMapi.Table {
 
 	/// <summary>
-	///  Case-class for Restrictions.
+	///  Base-class for Restrictions.
 	/// </summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	[DataContract (Namespace="http://schemas.openmapi.org/indigo/1.0")]
 	public abstract class Restriction : IXdrAble, ICloneable
 	{
@@ -87,7 +89,7 @@ namespace NMapi.Table {
 			
 			Restriction combinedRes = Restriction.FromString (
 							"!( ( @blub && @blah ) || @wurzelbrumft ) " ,
-							..new  Dicitionary<.,.> ...{
+							..new  Dictionary<.,.> ...{
 								"blub" = resBlub,
 								"blah" = resBlah,
 								"wurzelbrumft" = resWurzelbrumft
@@ -109,6 +111,7 @@ namespace NMapi.Table {
 		/// <summary>
 		///  
 		/// </summary>
+		/// <returns></returns>
 		public abstract object Clone ();
 		
 		[Obsolete]
@@ -148,8 +151,9 @@ namespace NMapi.Table {
 		/// </summary>
 		public override string ToString ()
 		{
-			return "(value_of_tag[" + PropTag1.ToString ("x") + "] " + RelOp 
-				+ " value_of_tag[" + PropTag2.ToString ("x") + "])";
+			string p1Str = (PropTag1 != null) ? PropTag1.ToString ("x") : String.Empty;
+			string p2Str = (PropTag2 != null) ? PropTag2.ToString ("x") : String.Empty;
+			return "(value_of_tag[" + p1Str + "] " + RelOp + " value_of_tag[" + p2Str + "])";
 		}
 	}
 	
@@ -167,15 +171,16 @@ namespace NMapi.Table {
 		{
 			StringBuilder builder = new StringBuilder ();
 			builder.Append ("(");
-			
-			for (int i=0; i < Res.Length; i++) {
-				Restriction res = Res [i];
-				if (res == null)
-					builder.Append ("NULL");
-				else
-					builder.Append (res.ToString ());
-				if (i != Res.Length-1)
-					builder.Append (" && ");
+			if (Res != null) {
+				for (int i=0; i < Res.Length; i++) {
+					Restriction res = Res [i];
+					if (res == null)
+						builder.Append ("NULL");
+					else
+						builder.Append (res.ToString ());
+					if (i != Res.Length-1)
+						builder.Append (" && ");
+				}
 			}
 			builder.Append (")");
 			return builder.ToString ();
@@ -197,15 +202,16 @@ namespace NMapi.Table {
 		{
 			StringBuilder builder = new StringBuilder ();
 			builder.Append ("(");
-			
-			for (int i=0; i < Res.Length; i++) {
-				Restriction res = Res [i];
-				if (res == null)
-					builder.Append ("NULL");
-				else
-					builder.Append (res.ToString ());
-				if (i != Res.Length-1)
-					builder.Append (" || ");
+			if (Res != null) {
+				for (int i=0; i < Res.Length; i++) {
+					Restriction res = Res [i];
+					if (res == null)
+						builder.Append ("NULL");
+					else
+						builder.Append (res.ToString ());
+					if (i != Res.Length-1)
+						builder.Append (" || ");
+				}
 			}
 			builder.Append (")");
 			return builder.ToString ();
@@ -223,7 +229,8 @@ namespace NMapi.Table {
 		/// </summary>
 		public override string ToString ()
 		{
-			return "(!" + Res.ToString () + ")";
+			string resStr = (Res != null) ? Res.ToString () : "";
+			return "(!" + resStr + ")";
 		}
 	}
 	
@@ -259,8 +266,9 @@ namespace NMapi.Table {
 		/// </summary>
 		public override string ToString ()
 		{
-			return "(value_of_tag[" + PropTag.ToString ("x") + "] " 
-						+ RelOp + " " + Prop.ToString () + ")";
+			string ptStr = (PropTag != null) ? PropTag.ToString ("x") : String.Empty;
+			string propStr = (Prop != null) ? Prop.ToString () : String.Empty;
+			return "(value_of_tag[" + ptStr + "] " + RelOp + " " + propStr + ")";
 		}
 
 	}
@@ -320,7 +328,9 @@ namespace NMapi.Table {
 		/// </summary>
 		public override string ToString ()
 		{
-			return "/* " + Prop.ToString () + " */" + Res.ToString ();
+			string resStr = (Res != null) ? Res.ToString () : String.Empty;
+			string propStr = (Prop != null) ? Prop.ToString () : String.Empty;
+			return "/* " + propStr + " */" + resStr;
 		}
 		
 	}

@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - ObjectEventProxy.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -33,9 +33,8 @@ namespace NMapi.Events {
 	using NMapi.Table;
 	using NMapi.Properties.Special;
 
-	/// <summary>
-	///  Proxy for easy event access.
-	/// </summary>
+	/// <summary>Proxy object for easy event access.</summary>
+	/// <remarks></remarks>
 	public class ObjectEventProxy
 	{
 		private ObjectEventSet globalEventSetCollection;

@@ -36,15 +36,29 @@ namespace NMapi.Meta {
 	/// </summary>
 	public class MsgMailMeta : IMetaHandler
 	{
+		private string GetStringOrUnknown (PropertyValue property)
+		{
+			if (property.Tag.Type == PropertyType.Error)
+				return "<unknown>";
+			return "'" + (string) property + "'";
+		}
+		
 		public string GetSummary (IBase obj, 
 			Dictionary<int, PropertyValue> someProps)
 		{
 			IMapiProp prop = obj as IMapiProp;
 			if (obj != null) {
-				var tags = PropertyTag.ArrayFromIntegers (Property.SenderEmailAddress, Property.Subject);
+				var tags = PropertyTag.ArrayFromIntegers (
+						Property.MessageClass, 
+						Property.SenderEmailAddress,
+						Property.Subject);
+
 				PropertyValue[] values = prop.GetProps (tags, 0); // read-only
-				// TODO: check length of values!
-				return "IPM.Note: (From : '" + (string) values [0] + "', Subject: '" + (string) values [1] + "')";
+				string msgClass = GetStringOrUnknown (values [0]);
+				string from = GetStringOrUnknown (values [1]);
+				string subject = GetStringOrUnknown (values [2]);
+
+				return msgClass + " (From : " + from + ", Subject: " + subject + ")";
 			}
 			return null;
 		}

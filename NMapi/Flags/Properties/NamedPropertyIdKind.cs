@@ -22,25 +22,12 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
-	// TODO: rename.
-
-
-
-	/// <summary>
-	///  Indicates the type of the named property (id or string).
-	/// </summary>
-	public enum NamedPropertyIdKind // MnId
+	/// <summary>Indicates the type of a named property (Int32-Id or string).</summary>
+	/// <remarks>Classic names for these were: MNID_ID and MNID_STRING.</remarks>
+	public enum NamedPropertyIdKind
 	{
 		Id = 0,
 		String

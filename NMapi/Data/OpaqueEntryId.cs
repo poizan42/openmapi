@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - OpaqueEntryId.cs
 //
-// Copyright 2008-2009 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -29,25 +29,32 @@ namespace NMapi {
 	using NMapi.Properties;
 
 	/// <summary>
-	///  
+	///  An opaque EntryId is an EntryId that is treated as an array of binary data.
 	/// </summary>
+	/// <remarks>
+	///  <para>
+	///   The only structure known is the "flags" part, that is common to all 
+	///   EntryIds. The rest of the data probably has a certain format, but 
+	///   since it depends on the provider it is usually unknown to us.
+	///  </para>
+	///  <para>
+	///   If you need to work with EntryIds on the client that you retrieved 
+	///   from properties (as binary data), then it is usually a good idea 
+	///   to wrap them inside an OpaqueEntryId. Similiarly, most of the EntryIds 
+	///   returned by NMapi on the client side are usually instances of 
+	///   this class.
+	///  </para>
+	/// </remarks>
 	public sealed class OpaqueEntryId : EntryId
 	{
 		private byte[] rest;
 		
-		
-		/// <summary>
-		///  
-		/// </summary>
 		public override byte[] ToByteArray ()
 		{
 			byte[] result = new byte [BaseOffset + rest.Length];
 			return StoreData (result);
 		}
 
-		/// <summary>
-		///  
-		/// </summary>
 		protected override byte[] StoreData (byte[] result)
 		{
 			Array.Copy (rest, 0, result, BaseOffset, rest.Length);
@@ -55,10 +62,19 @@ namespace NMapi {
 			return result;
 		}
 		
-
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Creates a new EntryId instance from a byte array.</summary>
+		/// <remarks>
+		///  Use this class to create an EntryId type from an entry id that you 
+		///  received as binary data. For example, consider this code:
+		///  <code>
+		///   PropertyValue eidProp = GetProps (Property.Typed.EntryId);
+		///   if (eidProp == null || ! (eidProp is BinaryProperty))
+		///     throw new Exception ("Error!");
+		///   EntryId eid = new OpaqueEntryId ((byte[]) eidProp);
+		///   Console.WriteLine (eid.IsShortTerm);
+		///  </code>
+		/// </remarks>
+		/// <param name="entryIdBytes">The byte array that represents the entry id.</param>
 		public OpaqueEntryId (byte[] entryIdBytes) : base (entryIdBytes)
 		{
 			int restLength = entryIdBytes.Length - BaseOffset;

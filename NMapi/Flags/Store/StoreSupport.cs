@@ -22,14 +22,6 @@
 //
 
 using System;
-using System.IO;
-
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 
@@ -56,7 +48,16 @@ namespace NMapi.Flags {
 		RestrictionOk    = 0x00001000,
 		SortOk           = 0x00002000,
 		PublicFolders    = 0x00004000,
-		UncompressedRtf  = 0x00008000
+		UncompressedRtf  = 0x00008000,
+		HtmlOk           = 0x00010000,
+		AnsiOk           = 0x00020000,
+		UnicodeOk        = 0x00040000,
+		LocalStore       = 0x00080000,
+		// unused flag:    0x00100000		
+		ItemProc         = 0x00200000,
+		// unused flag:    0x00400000
+		PusherOk         = 0x00800000,
+		
 
 	}
 

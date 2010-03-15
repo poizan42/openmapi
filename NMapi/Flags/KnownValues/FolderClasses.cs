@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - FolderClasses.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,59 +22,76 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
-using NMapi.Flags;
-using NMapi.Events;
-using NMapi.Properties;
-using NMapi.Table;
 
 namespace NMapi.Flags {
 	
-	/// <summary>
-	///   TODO: docs!
-	/// </summary>
+	/// <summary>Set of some known and common folder class names.</summary>
+	/// <remarks>
+	///  <para>
+	///   MAPI folders can be associated with a certain class. Furthermore 
+	///   the classes can be "subtyped", using the dot-Notation, decribed below. 
+	///   The class of a folder is defined by the property tag Property.ContainerClass.
+	///  </para>
+	///  <para>
+	///   TODO: describe set of properties / way of handling this.
+	///  </para>	
+	///  <para>
+	///   TODO: describe how sub-classes work.
+	///  </para>
+	/// </remarks>
 	public static class FolderClasses
 	{
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="folderClass"></param>
+		/// <param name="matchWithPrefix"></param>
+		/// <returns></returns>
+		public static bool SoftMatch (string folderClass, string matchWithPrefix)
+		{
+			if (folderClass == null || matchWithPrefix == null)
+				return (folderClass == matchWithPrefix);
+			return folderClass.ToUpper ().StartsWith (matchWithPrefix.ToUpper ());
+		}
+
+		/// <summary>Some container classes in the IPF part of the store.</summary>
 		public static class Ipf
 		{
-			/// <summary>
-			///  Indicates that the folder contains appointments.
-			///  Outlook will display this folder in the "Appointment" category.
-			/// </summary>
+			/// <summary>Indicates that the folder contains appointments.</summary>
+			/// <remarks>Outlook will display this folder in the "Appointment" category.</remarks>
 			public const string Appointment = "IPF.Appointment";
 
-			/// <summary>
-			///  Indicates that the folder contains appointments.
-			///  Outlook will display this folder in the "Tasks" category.
-			/// </summary>
+			/// <summary>Indicates that the folder contains appointments.</summary>
+			/// <remarks>Outlook will display this folder in the "Tasks" category.</remarks>
 			public const string Task = "IPF.Task";
 
-			/// <summary>
-			///  Indicates that the folder contains appointments.
-			///  Outlook will display this folder in the "Contacts" category.
-			/// </summary>
+			/// <summary>Indicates that the folder contains appointments.</summary>
+			/// <remarks>Outlook will display this folder in the "Contacts" category.</remarks>
 			public const string Contact = "IPF.Contact";
 
-			/// <summary>
-			///  
-			/// </summary>
+			/// <summary></summary>
+			/// <remarks></remarks>
 			public const string Journal = "IPF.Journal";			
 
-			/// <summary>
-			///  Indicates that the folder contains mails.
-			///  Outlook will display this folder in the default Mail view.
-			/// </summary>
+			/// <summary>Indicates that the folder contains mails.</summary>
+			/// <remarks>Outlook will display this folder in the default Mail view.</remarks>
 			public const string Note = "IPF.Note";
 
-			/// <summary>
-			///  
-			/// </summary>
+			/// <summary>Indicates that the folder contains sticky-notes.</summary>
+			/// <remarks></remarks>
 			public const string StickyNote = "IPF.StickyNote";
+			
+			/// <summary>A folder that stores certain configuration information.</summary>
+			/// <remarks>Outlook 2010 creates this type of folder.</remarks>
+			public const string Configuration = "IPF.Configuration";
+			
+			/// <summary></summary>
+			/// <remarks></remarks>
+			public const string OutlookReminder = "Outlook.Reminder";
+			
+			/// <summary></summary>
+			/// <remarks></remarks>
+			public const string OutlookHomepage = "IPF.Note.OutlookHomepage";
+			
 		}
 		
 	}

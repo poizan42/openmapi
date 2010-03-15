@@ -33,9 +33,10 @@ using NMapi.Format.Mime;
 
 namespace NMapi.Utility {
 	
-	
-	// This class must die.
-	
+	// TODO: This class should be removed. The IMAP-Gateway has to be adapted.
+	//       The property classes can now be casted and the 0termination-bug has been fixed a long time ago.
+	//       The calls related to PropertyValue[]-Arrays can be replaced with calls in PropertyCollection.
+
 	public class PropertyHelper 
 	{
 		private PropertyValue[] props;

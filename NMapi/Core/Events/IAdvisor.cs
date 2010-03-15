@@ -29,6 +29,9 @@ namespace NMapi.Events {
 	///  A simple interface implemented by IMsgStore and IMapiTable.
 	///  This is part of the NMapi delegate-based Event-model.
 	/// </summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	public interface IAdvisor
 	{
 		/// <summary>

@@ -45,6 +45,7 @@ using NMapi.Flags;
 using NMapi.Events;
 using NMapi.Properties;
 using NMapi.Table;
+using NMapi.Rules;
 
 namespace NMapi {
 

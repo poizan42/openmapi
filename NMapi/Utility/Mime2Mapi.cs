@@ -329,7 +329,7 @@ namespace NMapi.Utility {
 				Console.WriteLine ("MimeToMapiRecipients 10");
 				AdrList al = new AdrList (lae.ToArray ());
 				Console.WriteLine ("MimeToMapiRecipients 11");
-				im.ModifyRecipients (ModRecip.Add, al);
+				im.ModifyRecipients (ModifyRecipientsMode.Add, al);
 				Console.WriteLine ("MimeToMapiRecipients 12");
 			}
 			Console.WriteLine ("recipients end");
@@ -496,7 +496,7 @@ namespace NMapi.Utility {
 							
 							IntProperty lprop = new IntProperty ();
 							lprop.PropTag = Property.AttachMethod;
-							lprop.Value = (int) Attach.ByValue;
+							lprop.Value = (int) AttachMethod.ByValue;
 							aprops.Add (lprop);
 
 							Console.WriteLine ("MimeToMapiAttachments name");			
@@ -592,7 +592,7 @@ namespace NMapi.Utility {
 	
 			IntProperty lprop = new IntProperty ();
 			lprop.PropTag = Property.AttachMethod;
-			lprop.Value = (int) Attach.EmbeddedMsg;
+			lprop.Value = (int) AttachMethod.EmbeddedMsg;
 			aprops.Add (lprop);
 
 			Console.WriteLine ("MimeToMapiEmbeddedMessages subject--> displayname" + name);			

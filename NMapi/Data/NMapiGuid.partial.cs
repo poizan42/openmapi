@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - NMapiGuid.cs
 //
-// Copyright 2008 Topalis AG
+// Copyright 2008-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -39,10 +39,17 @@ namespace NMapi {
 	/// <summary>
 	///  
 	/// </summary>
+	/// <remarks>
+	///  
+	/// </remarks>
 	public partial class NMapiGuid : IComparable
 	{
+		/// <summary>The length of the Guid in bytes.</summary>
 		public const int LENGTH = 16;
 		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public byte[] ToByteArray ()
 		{
 			byte[] result = new byte [LENGTH];
@@ -56,6 +63,9 @@ namespace NMapi {
 			return result;
 		}
 		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public long[] ToInt64Pair ()
 		{
 			byte[] bytes = ToByteArray ();
@@ -65,6 +75,24 @@ namespace NMapi {
 			return result;
 		}
 
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="part1"></param>
+		/// <param name="part2"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException"></exception>
+		public static NMapiGuid FromHexString (string str) 
+		{
+			if (str == null || str.Length != 32)
+				throw new ArgumentException ("str must have a length of 32.");
+			return new NMapiGuid (new Guid (str).ToByteArray ());
+		}
+
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="part1"></param>
+		/// <param name="part2"></param>
+		/// <returns></returns>
 		public static NMapiGuid FromInt64Pair (long part1, long part2) 
 		{
 			byte[] part1Bytes = BitConverter.GetBytes (part1);
@@ -74,30 +102,42 @@ namespace NMapi {
 			Array.Copy (part2Bytes, 0, result, 8, part2Bytes.Length);
 			return new NMapiGuid (result);
 		}
-		
-		public NMapiGuid (byte[] bytes) 
-		{
-			Data1 = BitConverter.ToInt32 (bytes, 0);
-			Data2 = BitConverter.ToInt16 (bytes, 4);
-			Data3 = BitConverter.ToInt16 (bytes, 6);
-			Data4 = new byte [8];
-			Array.Copy (bytes, 8, Data4, 0, 8);
-		}
-		
-		/// <summary>
-		///  
-		/// </summary>
+
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public static NMapiGuid MakeNew ()
 		{
 			return new NMapiGuid (Guid.NewGuid ());
 		}
 		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="bytes"></param>
+		public NMapiGuid (byte[] bytes) 
+		{
+			if (bytes != null) {
+				Data1 = BitConverter.ToInt32 (bytes, 0);
+				Data2 = BitConverter.ToInt16 (bytes, 4);
+				Data3 = BitConverter.ToInt16 (bytes, 6);
+				Data4 = new byte [8];
+				Array.Copy (bytes, 8, Data4, 0, 8);
+			}
+		}
+
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="guid"></param>
 		public NMapiGuid (Guid guid) : this (guid.ToByteArray ()) 
 		{
 		}
 		
 		/* Implements kind-of Value-Equality! */
 		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
+		/// <param name="guid2"></param>
 		public bool Equals (NMapiGuid guid2)
 		{
 			if (guid2 == null)
@@ -130,9 +170,9 @@ namespace NMapi {
 			return this.Equals (guid2);
 		}
 		
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary>Returns a HEX representation of the GUID.</summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
 		public string ToHexString ()
 		{
 			return new SBinary (ToByteArray ()).ToHexString ();
@@ -140,17 +180,7 @@ namespace NMapi {
 
 		public override int GetHashCode ()
 		{
-			/*
-			byte[] flat = ToByteArray (); // TODO: This is VERY slow !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -> Maybe we should save the byte[] instead of numbers and/or use the native MS Guid type.
-			int hash = 0;
-			if (flat != null) {
-				for (int i = 0; i < flat.Length; i++)
-					hash = 31 * hash + flat [i];
-			}
-			return hash;
-			*/
-			
-			// algo from System.Guid.cs (Mono).
+			// from System.Guid.cs (Mono).
 			int res;
 			res = (int) Data1; 
 			res = res ^ ((int) Data2 << 16 | Data3);
@@ -165,9 +195,10 @@ namespace NMapi {
 			return res;			
 		}
 		
-		/// <summary>
-		///  Implementation of the IComparable interface.
-		/// </summary>
+		/// <summary>Implementation of the IComparable interface.</summary>
+		/// <remarks></remarks>
+		/// <returns></returns>
+		/// <param name="obj"></param>
 		public int CompareTo (object obj)
 		{
 			if (!(obj is NMapiGuid))

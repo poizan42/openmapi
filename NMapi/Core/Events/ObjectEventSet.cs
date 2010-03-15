@@ -23,6 +23,10 @@
 
 namespace NMapi.Events {
 
+
+	// TODO: we need to ensure that event notifications are always properly unregistered!
+
+
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
@@ -32,9 +36,8 @@ namespace NMapi.Events {
 	using NMapi.Flags;
 	using NMapi.Table;
 
-	/// <summary>
-	///  Base class for Events.
-	/// </summary>
+	/// <summary>Base class for Notification-EventArgs.</summary>
+	/// <remarks></remarks>
 	public class MapiNotificationEventArgs : EventArgs
 	{
 		private NotificationEventType eventType;
@@ -372,95 +375,94 @@ namespace NMapi.Events {
 			}
 		}
 
-
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnCriticalError (ErrorEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnCriticalError (ErrorEventArgs ea)
 		{
 			if (criticalError != null)
-				criticalError (this, e);
+				criticalError (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnObjectModified (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnObjectModified (ObjectEventArgs ea)
 		{
 			if (objectModified != null)
-				objectModified (this, e);
+				objectModified (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnObjectCreated (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnObjectCreated (ObjectEventArgs ea)
 		{
 			if (objectCreated != null)
-				objectCreated (this, e);
+				objectCreated (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnObjectMoved (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnObjectMoved (ObjectEventArgs ea)
 		{
 			if (objectMoved != null)
-				objectMoved (this, e);
+				objectMoved (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnObjectDeleted (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnObjectDeleted (ObjectEventArgs ea)
 		{
 			if (objectDeleted != null)
-				objectDeleted (this, e);
+				objectDeleted (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnObjectCopied (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnObjectCopied (ObjectEventArgs ea)
 		{
 			if (objectCopied != null)
-				objectCopied (this, e);
+				objectCopied (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnExtended (ExtendedEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnExtended (ExtendedEventArgs ea)
 		{
 			if (extended != null)
-				extended (this, e);
+				extended (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnSearchComplete (ObjectEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnSearchComplete (ObjectEventArgs ea)
 		{
 			if (searchComplete != null)
-				searchComplete (this, e);
+				searchComplete (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnTableModified (TableEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnTableModified (TableEventArgs ea)
 		{
 			if (tableModified != null)
-				tableModified (this, e);
+				tableModified (this, ea);
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		public virtual void OnNewMail (NewMailEventArgs e)
+		/// <summary></summary>
+		/// <remarks></remarks>
+		/// <param name="ea"></param>
+		public virtual void OnNewMail (NewMailEventArgs ea)
 		{
 			if (newMail != null)
-				newMail (this, e);
+				newMail (this, ea);
 		}
 
 

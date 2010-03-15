@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - Gender.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -22,34 +22,23 @@
 //
 
 using System;
-using System.IO;
-
-using NMapi;
 
 namespace NMapi.Flags {
 	
-	/// <summary>
-	///  Possible values of the Gender-Property.
-	/// </summary>
+	/// <summary>Possible values of the property tag Property.Gender.</summary>
 	/// <remarks>
 	///  Note: This file is based on the documentation published by Microsoft
 	///       [MS-OXOCNTC], Version 2.0, published on 10/04/2009.
 	/// </remarks>
 	public enum Gender
 	{
-		/// <summary>
-		///  
-		/// </summary>
+		/// <summary></summary>
 		Unspecified = 0,
 
-		/// <summary>
-		///  The person described by the contact object is female.
-		/// </summary>
+		/// <summary>The person described by the contact object is female.</summary>
 		Female,
 
-		/// <summary>
-		///  The person described by the contact object is male.
-		/// </summary>
+		/// <summary>The person described by the contact object is male.</summary>
 		Male
 	}
 	

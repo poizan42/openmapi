@@ -138,7 +138,7 @@
 				bool isPublicStore = (bIsPublic != 0);
 			]]>
 		</pre>
-		<valuedcall params="(Mdb) flags, storeUser, isPublicStore" />
+		<valuedcall params="(OpenStoreFlags) flags, storeUser, isPublicStore" />
 		<putmap result="obj" />
 	</call>
 	<!-- BEGIN: AB-methods on Session object. //-->
@@ -338,7 +338,7 @@
 					folderName = folderNameW;
 			]]>
 		</pre>
-		<valuedcall params="(Folder) folderType, folderName, folderComment, interFace, flags" /> <!-- CAST!  //-->
+		<valuedcall params="(FolderType) folderType, folderName, folderComment, interFace, flags" /> <!-- CAST!  //-->
 		<putmap result="obj" />
 	</call>
 <!--
@@ -356,22 +356,6 @@
 		<extract left="eid" right="eid.ByteArray" />
 		<extract left="progress" right="pBar.Value" />
 		<extract left="flags" right="ulFlags" />
-		<pre>
-			
-			/*
-			Outlook seems to use a progress indicator with these ops:
-			
-				* CopyTo
-				* CopyProperties
-				* EmptyFolder
-				* DeleteMessages
-				* SetReadFlags
-				* Copy/Move Messages
-				* Copy/Move Folder (!)
-			*/
-			
-			
-		</pre>
 		<voidcall params="eid, _session.ProgressDispatcher.Build (progress), flags" /><!-- TODO: NULL = Progress //-->
 	</call>
 	<call name="MAPIFolder_SetReadFlags" targetClass="IMapiFolder" targetMethod="SetReadFlags" level="LoggedIn">
@@ -670,7 +654,7 @@
 	<call name="Message_AddRecipient" targetClass="IMessage" targetMethod="ModifyRecipients" level="LoggedIn"><!-- NOTE: EXCEPTION from rule //-->
 		<pre>
 			<![CDATA[
-				int flags = ModRecip.Add;
+				int flags = ModifyRecipientsMode.Add;
 				AdrEntry entry = _arg1.pEntry.Value;
 				var entryList = new AdrList (new AdrEntry [] { entry });
 			]]>
@@ -681,7 +665,7 @@
 	<call name="Message_ModifyRecipient" targetClass="IMessage" targetMethod="ModifyRecipients" level="LoggedIn"><!-- NOTE: EXCEPTION from rule //-->
 		<pre>
 			<![CDATA[
-				int flags = ModRecip.Modify;
+				int flags = ModifyRecipientsMode.Modify;
 				AdrEntry entry = _arg1.pEntry.Value;
 				var entryList = new AdrList (new AdrEntry [] { entry });
 			]]>
@@ -691,7 +675,7 @@
 	<call name="Message_DeleteRecipient" targetClass="IMessage" targetMethod="ModifyRecipients" level="LoggedIn"><!-- NOTE: EXCEPTION from rule //-->
 		<pre>
 			<![CDATA[
-				int flags = ModRecip.Remove;
+				int flags = ModifyRecipientsMode.Remove;
 				AdrEntry entry = _arg1.pEntry.Value;
 				var entryList = new AdrList (new AdrEntry [] { entry });
 			]]>
