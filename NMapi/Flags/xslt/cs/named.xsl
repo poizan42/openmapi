@@ -40,7 +40,7 @@ using NMapi.Table;
 namespace <xsl:value-of select="@namespace" /> {
 
 	/// &lt;summary&gt;
-	///  Contains the known property tag constants.
+	///  Contains the known named property definitions.
 	/// &lt;/summary&gt;
 	public static class <xsl:value-of select="@class" />
 	{

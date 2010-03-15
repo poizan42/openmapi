@@ -238,7 +238,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenAppointmentFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_APPOINTMENT_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmAppointmentEntryId);
 		}
 		
 		/// <summary>
@@ -254,7 +254,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenContactFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_CONTACT_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmContactEntryId);
 		}
 		
 		/// <summary>
@@ -270,7 +270,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenDraftsFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_DRAFTS_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmDraftsEntryId);
 		}
 		
 		/// <summary>
@@ -286,7 +286,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenJournalFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_JOURNAL_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmJournalEntryId);
 		}
 		
 		/// <summary>
@@ -302,7 +302,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenNoteFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_NOTE_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmNoteEntryId);
 		}
 		
 		/// <summary>
@@ -318,7 +318,7 @@ namespace NMapi {
 		/// </returns>
 		public static IMapiFolder OpenTaskFolder (this IMsgStore store)
 		{
-			return OpenLinkedFolder (store, OutlookProperty.Typed.IPM_TASK_ENTRYID);
+			return OpenLinkedFolder (store, OutlookProperty.Typed.IpmTaskEntryId);
 		}
 		
 		private static IMapiFolder OpenLinkedFolder (IMsgStore store, 

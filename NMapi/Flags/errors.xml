@@ -19,88 +19,138 @@
 //
 //-->
 <errors>
-	<error name="CallFailed" message="MAPI_E_CALL_FAILED: Call failed" />
-	<error name="NotEnoughMemory" message="MAPI_E_NOT_ENOUGH_MEMORY: Out of memory" />
-	<error name="InvalidParameter" message="MAPI_E_INVALID_PARAMETER" />
-	<error name="InterfaceNotSupported" message="MAPI_E_INTERFACE_NOT_SUPPORTED" />
-	<error name="NoAccess" message="MAPI_E_NO_ACCESS: Access denied" />
-	<error name="NoSupport" message="MAPI_E_NO_SUPPORT" />
-	<error name="BadCharWidth" message="MAPI_E_BAD_CHARWITH" />
-	<error name="StringTooLong" message="MAPI_E_STRING_TOO_LONG" />
-	<error name="UnknownFlags" message="MAPI_E_UNKNOWN_FLAGS" />
-	<error name="InvalidEntryid" message="MAPI_E_INVALID_ENTRYID" />
-	<error name="InvalidObject" message="MAPI_E_INVALID_OBJECT" />
-	<error name="ObjectChanged" message="MAPI_E_OBJECT_CHANGED" />
-	<error name="ObjectDeleted" message="MAPI_E_OBJECT_DELETED" />
-	<error name="Busy" message="MAPI_E_BUSY" />
-	<error name="NotEnoughDisk" message="MAPI_E_NOT_ENOUGH_DISK: Out of disk space" />
-	<error name="NotEnoughResources" message="MAPI_E_NOT_ENOUGH_RESOURCES" />
-	<error name="NotFound" message="MAPI_E_NOT_FOUND: Not found" />
-	<error name="Version" message="MAPI_E_VERSION: Invalid version" />
-	<error name="LogonFailed" message="MAPI_E_LOGON_FAILED: Logon failed" />
-	<error name="SessionLimit" message="MAPI_E_SESSION_LIMIT: Session limit" />
-	<error name="UserCancel" message="MAPI_E_USER_CANCEL" />
-	<error name="UnableToAbort" message="MAPI_E_UNABLE_TO_ABORT" />
-	<error name="NetworkError" message="MAPI_E_NETWORK_ERROR: Network error or i/o error" />
-	<error name="DiskError" message="MAPI_E_DISK_ERROR: Disk error" />
-	<error name="TooComplex" message="MAPI_E_TOO_COMPLEX: Too complex" />
-	<error name="BadColumn" message="MAPI_E_BAD_COLUMN" />
-	<error name="ExtendedError" message="MAPI_E_EXTENDED_ERROR" />
-	<error name="Computed" message="MAPI_E_COMPUTED" />
-	<error name="CorruptData" message="MAPI_E_CORRUPT_DATA" />
-	<error name="Unconfigured" message="MAPI_E_UNCONFIGURED: Not configured" />
-	<error name="Failoneprovider" message="MAPI_E_FAILONEPROVIDER" />
-	<error name="UnknownCpid" message="MAPI_E_UNKNOWN_CPID: Unknown client codepage" />
-	<error name="UnknownLcid" message="MAPI_E_UNKNOWN_LCID: Unknown client locale" />
-	<error name="PasswordChangeRequired" message="MAPI_E_PASSWORD_CHANGE_REQUIRED: Please change your password" />
-	<error name="PasswordExpired" message="MAPI_E_PASSWORD_EXPIRED: Your password has expired" />
-	<error name="InvalidWorkstationAccount" message="MAPI_E_INVALID_WORKSTATION_ACCOUNT" />
-	<error name="InvalidAccessTime" message="MAPI_E_INVALID_ACCESS_TIME" />
-	<error name="AccountDisabled" message="MAPI_E_ACCOUNT_DISABLED" />
-	<error name="EndOfSession" message="MAPI_E_END_OF_SESSION" />
-	<error name="UnknownEntryid" message="MAPI_E_UNKNOWN_ENTRYID" />
-	<error name="MissingRequiredColumn" message="MAPI_E_MISSING_REQUIRED_COLUMN" />
-	<error name="BadValue" message="MAPI_E_BAD_VALUE" />
-	<error name="InvalidType" message="MAPI_E_INVALID_TYPE" />
-	<error name="TypeNoSupport" message="MAPIE_TYPE_NO_SUPPORT" />
-	<error name="UnexpectedType" message="MAPI_E_UNEXPECTED_TYPE" />
-	<error name="TooBig" message="MAPI_E_TOO_BIG" />
-	<error name="DeclineCopy" message="MAPI_E_DECLINE_COPY" />
-	<error name="UnexpectedId" message="MAPI_E_UNEXPECTED_ID" />
-	<error name="UnableToComplete" message="MAPI_E_UNABLE_TO_COMPLETE" />
-	<error name="Timeout" message="MAPI_E_TIMEOUT" />
-	<error name="TableEmpty" message="MAPI_E_TABLE_EMPTY" />
-	<error name="TableTooBig" message="MAPI_E_TABLE_TOO_BIG" />
-	<error name="InvalidBookmark" message="MAPI_E_INVALID_BOOKMARK" />
-	<error name="Wait" message="MAPI_E_WAIT" />
-	<error name="Cancel" message="MAPI_E_CANCEL" />
-	<error name="NotMe" message="MAPI_E_NOT_ME" />
-	<error name="CorruptStore" message="MAPI_E_CORRUPT_STORE" />
-	<error name="NotInQueue" message="MAPI_E_NOT_IN_QUEUE" />
-	<error name="NoSuppress" message="MAPI_E_NO_SUPPRESS" />
-	<error name="Collision" message="MAPI_E_COLLISION" />
-	<error name="NotInitialized" message="MAPI_E_NO_INITIALIZED" />
-	<error name="NonStandard" message="MAPI_E_NON_STANDARD" />
-	<error name="NoRecipients" message="MAPI_E_NO_RECIPIENTS" />
-	<error name="Submitted" message="MAPI_E_SUBMITTED" />
-	<error name="HasFolders" message="MAPI_E_HAS_FOLDERS" />
-	<error name="HasMessages" message="MAPI_E_HAS_MESSAGES" />
-	<error name="FolderCycle" message="MAPI_E_FOLDER_CYCLE: The source folder contains the destination." />
-	<error name="AmbiguousRecip" message="MAPI_E_AMBIGOUS_RECIP" />
-	<error name="MapiWPartialCompletion" message="MAPI_W_PARTIAL_COMPLETION: Some operations did not complete." />
-	<error name="UMapiOLDENTRYID" message="UMAPI_E_OLDENTRYID: Old ENTRYID. (Server db was recreated)." />
-	<error name="UMapiNFU" message="UMAPI_E_NFU: Unexpected not found." />
-	<error name="UMapiLDAPERR" message="UMAPI_E_LDAPERR: LDAP execution error" />
-	<error name="UMapiLICENSE_LIMIT" message="UMAPI_E_LICENSE_LIMIT: License limit exceeded" />
-	<error name="UMapiLICENSE_BAD" message="UMAPI_E_LICENSE_BAD: No license" />
-	<error name="UMapiLICENSE_EXPIRED" message="UMAPI_E_LICENSE_EXPIRED: License expired" />
-	<error name="UMapiLICENSE_FEATURE" message="UMAPI_E_LICENSE_FEATURE: Feature not licensed" />
-	<error name="UMapiCONFIGDATA" message="UMAPI_E_CONFIGDATA: No configuration data for this entryid" />
-	<error name="UMapiWRAPEID" message="UMAPI_E_WRAPEID" />
-	<error name="UMapiSIZE_LIMIT" message="UMAPI_E_SIZE_LIMIT: Size limit exceeded (body too large?)" />
-	<error name="UMapiLDAPCFG" message="UMAPI_E_LDAPCFG: LDAP configuration error" />
-	<error name="UMapiSQLERR" message="UMAPI_E_SQLERR: SQL Error. Check umapi-server.log." />
-	<error name="UMapiDIRTY" message="UMAPI_E_DIRTY" />
-	<error name="UMapiOLE_ATTACH" message="UMAPI_E_OLE_ATTACH" />
-	<error name="UMapiREF_ATTACH" message="UMAPI_E_REF_ATTACH" />
+	
+	<!--
+		Note: User-readable, localized text is defined in strings.resx and the 
+		      appropriate local versions of the file.
+	//-->
+	
+	<!--
+		Common
+	//-->
+	<error name="CallFailed" classicName="MAPI_E_CALL_FAILED" id="0x80004005" />
+	<error name="NotEnoughMemory" classicName="MAPI_E_NOT_ENOUGH_MEMORY" id="0x8007000e" />
+	<error name="InvalidParameter" classicName="MAPI_E_INVALID_PARAMETER" id="0x80070057" />
+	<error name="InterfaceNotSupported" classicName="MAPI_E_INTERFACE_NOT_SUPPORTED" id="0x80004002" />
+	<error name="NoAccess" classicName="MAPI_E_NO_ACCESS" id="0x80070005" />
+		
+	<error name="NoSupport" classicName="MAPI_E_NO_SUPPORT" id="ErrorPrefix | 0x102" />
+	<error name="BadCharWidth" classicName="MAPI_E_BAD_CHARWITH" id="ErrorPrefix | 0x103" />
+	<error name="StringTooLong" classicName="MAPI_E_STRING_TOO_LONG" id="ErrorPrefix | 0x105" />
+	<error name="UnknownFlags" classicName="MAPI_E_UNKNOWN_FLAGS" id="ErrorPrefix | 0x106" />
+	<error name="InvalidEntryid" classicName="MAPI_E_INVALID_ENTRYID" id="ErrorPrefix | 0x107" />
+	<error name="InvalidObject" classicName="MAPI_E_INVALID_OBJECT" id="ErrorPrefix | 0x108" />
+	<error name="ObjectChanged" classicName="MAPI_E_OBJECT_CHANGED" id="ErrorPrefix | 0x109" />
+	<error name="ObjectDeleted" classicName="MAPI_E_OBJECT_DELETED" id="ErrorPrefix | 0x10A" />
+	<error name="Busy" classicName="MAPI_E_BUSY" id="ErrorPrefix | 0x10B" />
+	<error name="NotEnoughDisk" classicName="MAPI_E_NOT_ENOUGH_DISK" id="ErrorPrefix | 0x10D" />
+	<error name="NotEnoughResources" classicName="MAPI_E_NOT_ENOUGH_RESOURCES" id="ErrorPrefix | 0x10E" />
+	<error name="NotFound" classicName="MAPI_E_NOT_FOUND" id="ErrorPrefix | 0x10F" />
+	<error name="Version" classicName="MAPI_E_VERSION" id="ErrorPrefix | 0x110" />
+	<error name="LogonFailed" classicName="MAPI_E_LOGON_FAILED" id="ErrorPrefix | 0x111" />
+	<error name="SessionLimit" classicName="MAPI_E_SESSION_LIMIT" id="ErrorPrefix | 0x112" />
+	<error name="UserCancel" classicName="MAPI_E_USER_CANCEL" id="ErrorPrefix | 0x113" />
+	<error name="UnableToAbort" classicName="MAPI_E_UNABLE_TO_ABORT" id="ErrorPrefix | 0x114" />
+	<error name="NetworkError" classicName="MAPI_E_NETWORK_ERROR" id="ErrorPrefix | 0x115" />
+	<error name="DiskError" classicName="MAPI_E_DISK_ERROR" id="ErrorPrefix | 0x116" />
+	<error name="TooComplex" classicName="MAPI_E_TOO_COMPLEX" id="ErrorPrefix | 0x117" />
+	<error name="BadColumn" classicName="MAPI_E_BAD_COLUMN" id="ErrorPrefix | 0x118" />
+	<error name="ExtendedError" classicName="MAPI_E_EXTENDED_ERROR" id="ErrorPrefix | 0x119" />
+	<error name="Computed" classicName="MAPI_E_COMPUTED" id="ErrorPrefix | 0x11A" />
+	<error name="CorruptData" classicName="MAPI_E_CORRUPT_DATA" id="ErrorPrefix | 0x11B" />
+	<error name="Unconfigured" classicName="MAPI_E_UNCONFIGURED" id="ErrorPrefix | 0x11C" />
+	<error name="Failoneprovider" classicName="MAPI_E_FAILONEPROVIDER" id="ErrorPrefix | 0x11D" />
+	<error name="UnknownCpid" classicName="MAPI_E_UNKNOWN_CPID" id="ErrorPrefix | 0x11E" />
+	<error name="UnknownLcid" classicName="MAPI_E_UNKNOWN_LCID" id="ErrorPrefix | 0x11F" />
+
+	<!--
+		Logon: Flavors of AccessDenied	
+	-->
+	<error name="PasswordChangeRequired" classicName="MAPI_E_PASSWORD_CHANGE_REQUIRED" id="ErrorPrefix | 0x120" />
+	<error name="PasswordExpired" classicName="MAPI_E_PASSWORD_EXPIRED" id="ErrorPrefix | 0x121" />
+	<error name="InvalidWorkstationAccount" classicName="MAPI_E_INVALID_WORKSTATION_ACCOUNT" id="ErrorPrefix | 0x122" />
+	<error name="InvalidAccessTime" classicName="MAPI_E_INVALID_ACCESS_TIME" id="ErrorPrefix | 0x123" />
+	<error name="AccountDisabled" classicName="MAPI_E_ACCOUNT_DISABLED" id="ErrorPrefix | 0x124" />
+
+	<!--
+		MAPI base function and status object
+	-->
+	<error name="EndOfSession" classicName="MAPI_E_END_OF_SESSION" id="ErrorPrefix | 0x200" />
+	<error name="UnknownEntryid" classicName="MAPI_E_UNKNOWN_ENTRYID" id="ErrorPrefix | 0x201" />
+	<error name="MissingRequiredColumn" classicName="MAPI_E_MISSING_REQUIRED_COLUMN" id="ErrorPrefix | 0x202" />
+	<warn name="MapiWNoService" classicName="MAPI_W_NO_SERVICE" id="ErrorPrefixWarn | 0x203" />
+
+	<!--
+		Property
+	-->
+	<error name="BadValue" classicName="MAPI_E_BAD_VALUE" id="ErrorPrefix | 0x301" />
+	<error name="InvalidType" classicName="MAPI_E_INVALID_TYPE" id="ErrorPrefix | 0x302" />
+	<error name="TypeNoSupport" classicName="MAPIE_TYPE_NO_SUPPORT" id="ErrorPrefix | 0x303" />
+	<error name="UnexpectedType" classicName="MAPI_E_UNEXPECTED_TYPE" id="ErrorPrefix | 0x304" />
+	<error name="TooBig" classicName="MAPI_E_TOO_BIG" id="ErrorPrefix | 0x305" />
+	<error name="DeclineCopy" classicName="MAPI_E_DECLINE_COPY" id="ErrorPrefix | 0x306" />
+	<error name="UnexpectedId" classicName="MAPI_E_UNEXPECTED_ID" id="ErrorPrefix | 0x307" />
+	<warn name="MapiWErrorsReturned" classicName="MAPI_W_ERRORS_RETURNED" id="ErrorPrefixWarn | 0x380" />
+
+	<!--
+		Table
+	-->
+	<error name="UnableToComplete" classicName="MAPI_E_UNABLE_TO_COMPLETE" id="ErrorPrefix | 0x400" />
+	<error name="Timeout" classicName="MAPI_E_TIMEOUT" id="ErrorPrefix | 0x401" />
+	<error name="TableEmpty" classicName="MAPI_E_TABLE_EMPTY" id="ErrorPrefix | 0x402" />
+	<error name="TableTooBig" classicName="MAPI_E_TABLE_TOO_BIG" id="ErrorPrefix | 0x403" />
+	<error name="InvalidBookmark" classicName="MAPI_E_INVALID_BOOKMARK" id="ErrorPrefix | 0x405" />
+
+	<warn name="MapiWPositionChanged" classicName="MAPI_W_POSITION_CHANGED" id="ErrorPrefixWarn | 0x481" />
+	<warn name="MapiWApproxCount" classicName="MAPI_W_APPROX_COUNT" id="ErrorPrefixWarn | 0x482" />
+
+	<!--
+		Transport
+	-->
+	<error name="Wait" classicName="MAPI_E_WAIT" id="ErrorPrefix | 0x500" />
+	<error name="Cancel" classicName="MAPI_E_CANCEL" id="ErrorPrefix | 0x501" />
+	<error name="NotMe" classicName="MAPI_E_NOT_ME" id="ErrorPrefix | 0x502" />
+	<warn name="MapiWCancelMessage" classicName="MAPI_W_CANCEL_MESSAGE" id="ErrorPrefixWarn | 0x580" />
+
+	<!--
+		Message Store, Folder, Message
+	-->
+	<error name="CorruptStore" classicName="MAPI_E_CORRUPT_STORE" id="ErrorPrefix | 0x600" />
+	<error name="NotInQueue" classicName="MAPI_E_NOT_IN_QUEUE" id="ErrorPrefix | 0x601" />
+	<error name="NoSuppress" classicName="MAPI_E_NO_SUPPRESS" id="ErrorPrefix | 0x602" />
+	<error name="Collision" classicName="MAPI_E_COLLISION" id="ErrorPrefix | 0x604" />
+	<error name="NotInitialized" classicName="MAPI_E_NO_INITIALIZED" id="ErrorPrefix | 0x605" /> <!-- TODO: is the classic name correct? //-->
+	<error name="NonStandard" classicName="MAPI_E_NON_STANDARD" id="ErrorPrefix | 0x606" />
+	<error name="NoRecipients" classicName="MAPI_E_NO_RECIPIENTS" id="ErrorPrefix | 0x607" />
+	<error name="Submitted" classicName="MAPI_E_SUBMITTED" id="ErrorPrefix | 0x608" />
+	<error name="HasFolders" classicName="MAPI_E_HAS_FOLDERS" id="ErrorPrefix | 0x609" />
+	<error name="HasMessages" classicName="MAPI_E_HAS_MESSAGES" id="ErrorPrefix | 0x60A" />
+	<error name="FolderCycle" classicName="MAPI_E_FOLDER_CYCLE" id="ErrorPrefix | 0x60B" />
+	<warn name="MapiWPartialCompletion" classicName="MAPI_W_PARTIAL_COMPLETION" id="ErrorPrefixWarn | 0x680" />
+	
+	<!--
+		Address Book specific errors and warnings
+	-->
+	<error name="AmbiguousRecip" classicName="MAPI_E_AMBIGOUS_RECIP" id="ErrorPrefix | 0x700" />
+
+	<!-- The range 0x0800 to 0x08FF is reserved //-->
+
+	<!--
+		UMAPI-specific definitions
+	//-->
+	<error name="UMapiOLDENTRYID" classicName="UMAPI_E_OLDENTRYID" id="UMapiError | 0x0001" />
+	<error name="UMapiSQLERR" classicName="UMAPI_E_SQLERR" id="UMapiError | 0x0002" />
+	<error name="UMapiNFU" classicName="UMAPI_E_NFU" id="UMapiError | 0x0003" />
+	<error name="UMapiLICENSE_BAD" classicName="UMAPI_E_LICENSE_BAD" id="UMapiError | 0x0004" />
+	<error name="UMapiLICENSE_LIMIT" classicName="UMAPI_E_LICENSE_LIMIT" id="UMapiError | 0x0005" />
+	<error name="UMapiLICENSE_EXPIRED" classicName="UMAPI_E_LICENSE_EXPIRED" id="UMapiError | 0x0006" />
+	<error name="UMapiLICENSE_FEATURE" classicName="UMAPI_E_LICENSE_FEATURE" id="UMapiError | 0x0007" />
+	<error name="UMapiCONFIGDATA" classicName="UMAPI_E_CONFIGDATA" id="UMapiError | 0x0008" />
+	<error name="UMapiWRAPEID" classicName="UMAPI_E_WRAPEID" id="UMapiError | 0x0009" />
+	<error name="UMapiSIZE_LIMIT" classicName="UMAPI_E_SIZE_LIMIT" id="UMapiError | 0x000a" />
+	<error name="UMapiLDAPCFG" classicName="UMAPI_E_LDAPCFG" id="UMapiError | 0x000b" />
+	<error name="UMapiLDAPERR" classicName="UMAPI_E_LDAPERR" id="UMapiError | 0x000c" />
+	<error name="UMapiDIRTY" classicName="UMAPI_E_DIRTY" id="UMapiError | 0x000d" />
+	<error name="UMapiOLE_ATTACH" classicName="UMAPI_E_OLE_ATTACH" id="UMapiError | 0x000e" />
+	<error name="UMapiREF_ATTACH" classicName="UMAPI_E_REF_ATTACH" id="UMapiError | 0x000f" />
 </errors>

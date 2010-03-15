@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+//
+// openmapi.org - NMapi C# Mapi API - strings.de-DE.resx
+//
+// Copyright 2010 Topalis AG
+//
+// Author: Johannes Roith <johannes@jroith.de>
+//
+// This is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation; either version 2.1 of
+// the License, or (at your option) any later version.
+//
+// This software is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this software; if not, write to the Free
+// Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+// 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+//
+//-->
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="ExceptionMessage_CallFailed" xml:space="preserve">
+		<value>Aufruf fehlgeschlagen.</value>
+	</data>
+	<data name="ExceptionMessage_NotEnoughMemory" xml:space="preserve">
+		<value>Out of memory</value>
+	</data>
+	<data name="ExceptionMessage_NoAccess" xml:space="preserve">
+		<value>Zugriff verweigert.</value>
+	</data>
+	<data name="ExceptionMessage_NotEnoughDisk" xml:space="preserve">
+		<value>Kein Festplattenspeicherplatz.</value>
+	</data>
+	<data name="ExceptionMessage_NotFound" xml:space="preserve">
+		<value>Nicht gefunden.</value>
+	</data>
+	<data name="ExceptionMessage_Version" xml:space="preserve">
+		<value>Ungültige Version.</value>
+	</data>
+	<data name="ExceptionMessage_LogonFailed" xml:space="preserve">
+		<value>Login fehlgeschlagen.</value>
+	</data>
+	<data name="ExceptionMessage_SessionLimit" xml:space="preserve">
+		<value>Session-Limit überschritten.</value>
+	</data>
+	<data name="ExceptionMessage_NetworkError" xml:space="preserve">
+		<value>Neterwerk- I/O-Fehler.</value>
+	</data>
+	<data name="ExceptionMessage_DiskError" xml:space="preserve">
+		<value>Disk error</value>
+	</data>
+	<data name="ExceptionMessage_TooComplex" xml:space="preserve">
+		<value>Too complex</value>
+	</data>
+	<data name="ExceptionMessage_Unconfigured" xml:space="preserve">
+		<value>Not configured</value>
+	</data>
+	<data name="ExceptionMessage_UnknownCpid" xml:space="preserve">
+		<value>Unknown client codepage</value>
+	</data>
+	<data name="ExceptionMessage_UnknownLcid" xml:space="preserve">
+		<value>Unknown client locale</value>
+	</data>
+	<data name="ExceptionMessage_PasswordChangeRequired" xml:space="preserve">
+		<value>Please change your password</value>
+	</data>
+	<data name="ExceptionMessage_PasswordExpired" xml:space="preserve">
+		<value>Your password has expired</value>
+	</data>
+	<data name="ExceptionMessage_FolderCycle" xml:space="preserve">
+		<value>The source folder contains the destination.</value>
+	</data>
+	<data name="ExceptionMessage_MapiWPartialCompletion" xml:space="preserve">
+		<value>Some operations did not complete.</value>
+	</data>
+
+	<!-- UMAPI error messages //-->
+	
+	<data name="ExceptionMessage_UMapiOLDENTRYID" xml:space="preserve">
+		<value>Old ENTRYID. (Server db was recreated).</value>
+	</data>
+	<data name="ExceptionMessage_UMapiNFU" xml:space="preserve">
+		<value>Unexpected not found.</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLDAPERR" xml:space="preserve">
+		<value>LDAP execution error</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLICENSE_LIMIT" xml:space="preserve">
+		<value>License limit exceeded</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLICENSE_BAD" xml:space="preserve">
+		<value>Keine Lizenz.</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLICENSE_EXPIRED" xml:space="preserve">
+		<value>Lizenz abgelaufen.</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLICENSE_FEATURE" xml:space="preserve">
+		<value>Funktion nicht lizenziert.</value>
+	</data>
+	<data name="ExceptionMessage_UMapiCONFIGDATA" xml:space="preserve">
+		<value>No configuration data for this entryid</value>
+	</data>
+	<data name="ExceptionMessage_UMapiSIZE_LIMIT" xml:space="preserve">
+		<value>Größenbeschränkung überschritten. (Zu großer Body?)</value>
+	</data>
+	<data name="ExceptionMessage_UMapiLDAPCFG" xml:space="preserve">
+		<value>LDAP-Konfiguration-Fehler.</value>
+	</data>
+	<data name="ExceptionMessage_UMapiSQLERR" xml:space="preserve">
+		<value>SQL-Fehler. Prüfen Sie umapi-server.log.</value>
+	</data>
+
+</root>

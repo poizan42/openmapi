@@ -29,12 +29,17 @@ using System.Reflection.Emit;
 using System.Collections.Generic;
 
 using NMapi;
-//using NMapi.WCF.Xmpp;
+using NMapi.Utility;
 
 using NMapi.Server.ICalls;
 
 namespace NMapi.Server {
 
+	// TODO: refactor
+	//			- move code-generation into a new class
+	//			- make thread-safe
+	//          - extract module registry.
+	
 	public class Driver
 	{
 		public static void Main (string[] args)
@@ -70,7 +75,7 @@ namespace NMapi.Server {
 			}
 		}
 
-		private Configuration cfg = new Configuration ();
+		private Configuration cfg;
 		private SessionManager sessionMan;
 		private ProxyInformation pinfo;
 
@@ -78,6 +83,9 @@ namespace NMapi.Server {
 		private Dictionary<RemoteCall, List<ServerModuleCall>> preCalls;
 		private Dictionary<RemoteCall, List<ServerModuleCall>> postCalls;
 
+		private LifeCycle lifeCycle;
+		private ModuleRegistry moduleRegistry;
+		
 		private void DetectModules ()
 		{
 			modules.Clear ();
@@ -89,9 +97,9 @@ namespace NMapi.Server {
 				if (foundInterfaces.Length > 0) {
 					IServerModule module = null;
 					try {
-						module = (IServerModule) Activator.CreateInstance (type);
+						module = (IServerModule) Activator.CreateInstance (type, new object [] { lifeCycle });
 					} catch (MissingMethodException) {
-						throw new Exception ("The module '" + type + "' does not contain an empty constructor.");
+						throw new Exception ("The module '" + type + "' does not contain an constructor that takes one (LifeCycle) argument.");
 					}
 					this.modules.Add (module);
 
@@ -104,6 +112,21 @@ namespace NMapi.Server {
 
 						RegisterCalls (preCalls, allCalls, preAttribs, new ServerModuleCall (module, method.Name));
 						RegisterCalls (postCalls, allCalls, postAttribs, new ServerModuleCall (module, method.Name));
+					}
+				}
+			}
+		}
+
+		private void ShutdownModules ()
+		{
+			// ggf. shut down modules ... TODO: sync!			
+			foreach (var mod in modules) {
+				if (mod != null && mod is IDisposable) {
+					try {
+						((IDisposable) mod).Dispose ();
+					} catch (Exception e) {
+						// we just ignore the exception.
+						Console.WriteLine (e);
 					}
 				}
 			}
@@ -133,8 +156,12 @@ namespace NMapi.Server {
 
 		public Driver ()
 		{
+			this.cfg = new Configuration ();
+			this.lifeCycle = new LifeCycle ();
 			this.sessionMan = new SessionManager ();
 			this.pinfo = new ProxyInformation ();
+			
+			this.moduleRegistry = new ModuleRegistry ();
 			this.modules = new List<IServerModule> ();
 			this.preCalls = new Dictionary<RemoteCall, List<ServerModuleCall>> ();
 			this.postCalls = new Dictionary<RemoteCall, List<ServerModuleCall>> ();
@@ -157,56 +184,72 @@ namespace NMapi.Server {
 		public SessionManager SessionManager {
 			get { return sessionMan; }
 		}
-
-
-
+		
 		#endregion
-
-		private static string GetTempDir ()
-		{
-			return Environment.GetEnvironmentVariable ("temp");
-		}
 
 		public void Run ()
 		{
-			try {	
+			try {
 
 				//// Dump configuration to STDOUT
-				Console.Write(cfg.GetConfigurationString());
+				Console.Write (cfg.GetConfigurationString());
 
-				Console.Write ("Loading 'web <-> proxy remoting' ... ");
+				Console.WriteLine ("Started: " + DateTime.Now);
 
+				string settingsPath = DotDir.LocalSettingsPath;
+				Console.WriteLine ("Local Settings: " + settingsPath);
+				if (!Directory.Exists (settingsPath))
+					Directory.CreateDirectory (settingsPath);
+				
 
 				InternalCallServer.Driver = this;
 
+				Console.WriteLine ("Loading 'web <-> proxy remoting' ... ");
+
+				// we just start this on our own thread.
 				InternalCallServer icall = new InternalCallServer ();
 				icall.Run ();
 				Console.WriteLine ("done.");
 
-				Console.Write ("Loading 'http server' ... ");
-				WebServer svr = new WebServer ();
-				svr.Run ();
-				Console.WriteLine ("done.");
+
+				Console.WriteLine ("Loading 'http server' ... ");
+				
+				new Thread (() => {
+					// slightly improves startup time.
+					WebServer svr = new WebServer ();
+					svr.Run ();
+				}).Start ();
 
 				DetectModules ();
 				CommonRpcService decoratedRpc = GenerateAssembly ();
 
 				Console.Write ("Loading 'onc server' ... ");
 
-				CompactTeaSharp.SslStore sslParams = null;
-				if (cfg.X509CertificateCertFile != null){
-					sslParams = 
-						new CompactTeaSharp.SslStore(cfg.X509CertificateCertFile, cfg.X509CertificateKeyFile);
-				}else{
-					Console.Write ("No ssl credentials configured, starting server without encryption... \n");
-				}
+				string crtFile = cfg.X509CertificateCertFile;
+				string keyFile = cfg.X509CertificateKeyFile;
+				if (crtFile == null) {
+					Console.WriteLine ("No ssl credentials configured.");
+										
+					crtFile = Path.Combine (settingsPath, "auto.crt");
+					keyFile = Path.Combine (settingsPath, "auto.key");
 
+					bool validCerts = CertificateManager.CheckValidCertificates (crtFile, keyFile);
+					if (!validCerts) {
+						Console.WriteLine ("Creating new default certificates.");
+						CertificateManager.Generate (crtFile, keyFile);
+					} else
+						Console.WriteLine ("Default certificates have been found and will be used.");
+				}
+				
+				CompactTeaSharp.SslStore sslParams = new CompactTeaSharp.SslStore (crtFile, keyFile);
 				OncRpcService oncService = new OncRpcService (decoratedRpc, sessionMan, 
 											cfg.ListenAddress, cfg.ListenPort, sslParams);
 				Thread oncThread = new Thread (new ThreadStart (oncService.Run));
 				oncThread.Start ();
 
-				Console.WriteLine ("done.");
+				lifeCycle.OnStart ();
+
+				Console.WriteLine ("READY.");
 
 
 /*				Shutdown.RegisterHandler ((ignored) => {
@@ -224,19 +267,25 @@ namespace NMapi.Server {
 				
 				Console.WriteLine ("Press ENTER to stop server.");
 				Console.ReadLine ();
+				Console.Write ("Stopping ... ");
 				
 				oncService.Dispose ();
+				lifeCycle.OnExit ();
+				ShutdownModules ();
+				
+				Console.WriteLine ("done.");
 				
 			} finally {
 				
 				// cleanup if required ....
 			
-				
 			}
 			Environment.Exit (1);
 		}
 
 		/*******************************************************************************/
+
+		// TODO: move this into a CodeGen-Helper-Class.
 
 		private CommonRpcService GenerateAssembly ()
 		{

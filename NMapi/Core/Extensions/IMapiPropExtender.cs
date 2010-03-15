@@ -386,7 +386,7 @@ namespace NMapi {
 		
 		
 		
-
+		// expensive!
 		public static T Get <T> (this IMapiProp message, MapiNameId name) where T : PropertyValue
 		{
 			var tags = message.GetPropList (Mapi.Unicode);
@@ -401,6 +401,7 @@ namespace NMapi {
 			return PropertyValue.GetArrayProp (props, index) as T;
 		}
 
+		// expensive (because of call to ^)
 		public static T Get <T> (this IMapiProp message, int id, NMapiGuid guid) where T : PropertyValue
 		{
 			var name = new NumericMapiNameId (id);
@@ -408,6 +409,7 @@ namespace NMapi {
 			return message.Get <T> (name);
 		}
 
+		// expensive (because of call to ^^)
 		public static T Get <T> (this IMapiProp message, string id, NMapiGuid guid) where T : PropertyValue
 		{
 			var name = new StringMapiNameId (id);

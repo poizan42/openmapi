@@ -17,6 +17,7 @@
 //
 
 using System;
+using System.Text;
 using System.Net;
 
 namespace NMapi.Server {
@@ -26,6 +27,10 @@ namespace NMapi.Server {
 	/// </summary>
 	public sealed class Configuration
 	{
+		// We default to vmapi, because that is the only provider that 
+		// can be run without any additional configuration or external 
+		// dependencies.
+		private const string DEFAULT_PROVIDER = "org.openmapi.vmapi";
 		
 		/// <summary>
 		///  The IPAddress where the server should listen for incoming connections.
@@ -56,7 +61,7 @@ namespace NMapi.Server {
 				string provider = Environment.GetEnvironmentVariable ("OPENMAPI_PROVIDER");
 				if (!String.IsNullOrEmpty (provider))
 					return provider;
-				return "org.openmapi.txc";
+				return DEFAULT_PROVIDER;
 			}
 		}
 		/// <summary>
@@ -107,23 +112,24 @@ namespace NMapi.Server {
 		/// <summary>
 		///  Returns a string which displays the current configuration
 		/// </summary>
-
-      public string GetConfigurationString() {
-         string ret = "";
-
-         ret += "Mapisvr configuration details:\n";
-         ret += "-----------------------------------------------------------------\n";
-         ret += "OPENMAPI_PROVIDER      : " + NMapiProvider +"\n";
-         ret += "OPENMAPI_CERT_FILE     : " + (X509CertificateCertFile != null ? X509CertificateCertFile : "<not defined>") + "\n";
-         ret += "OPENMAPI_KEY_FILE      : " + (X509CertificateKeyFile != null ? X509CertificateKeyFile : "<not defined>") + "\n";
-         ret += "OPENMAPI_LISTEN_ADDRESS: " + ListenAddress +"\n";
-         ret += "OPENMAPI_LISTEN_PORT   : " + ListenPort +"\n";
-         ret += "OPENMAPI_TARGET_HOST   : " + TargetHost +"\n";
-         ret += "OPENMAPI_TARGET_PORT   : " + TargetPort +"\n";
-         ret += "\n(to change settings, set corresponding environment variables)\n";
-         ret += "-----------------------------------------------------------------\n";
-         return ret;
-      }
+		public string GetConfigurationString ()
+		{
+			StringBuilder str = new StringBuilder ();
+			str.AppendLine ();
+			str.AppendLine ("OpenMapi-Server configuration details:");
+			str.AppendLine ("-----------------------------------------------------------------");
+			str.AppendLine ("OPENMAPI_PROVIDER      : " + NMapiProvider);
+			str.AppendLine ("OPENMAPI_CERT_FILE     : " + (X509CertificateCertFile != null ? X509CertificateCertFile : "<not defined>"));
+			str.AppendLine ("OPENMAPI_KEY_FILE      : " + (X509CertificateKeyFile != null ? X509CertificateKeyFile : "<not defined>"));
+			str.AppendLine ("OPENMAPI_LISTEN_ADDRESS: " + ListenAddress);
+			str.AppendLine ("OPENMAPI_LISTEN_PORT   : " + ListenPort);
+			str.AppendLine ("OPENMAPI_TARGET_HOST   : " + TargetHost);
+			str.AppendLine ("OPENMAPI_TARGET_PORT   : " + TargetPort);
+			str.AppendLine ();
+			str.AppendLine ("(to change settings, set corresponding environment variables)");
+			str.AppendLine ("-----------------------------------------------------------------");
+			return str.ToString ();
+		}
 	}
 }
 
