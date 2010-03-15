@@ -34,16 +34,25 @@ namespace NMapi {
 	/// </remarks>
 	public struct EventConnection
 	{
+		// TODO: Should be `uint'
+		// See: `lpulConnection' at http://msdn.microsoft.com/en-us/library/cc842238.aspx
+		// comment: yes, but we have this thing all over the place. The reason 
+		//                   is that jumapi was Java-based. We should not try to
+		//                    urn ints into uints for NMapi 0.1 We can change it for 0.2 or something.
 		private int connection;
 		private bool initialized;
-		
+
 		/// <summary></summary>
 		/// <value></value>
 		public int Connection {
 			get {
-				if (!initialized)
-					return -1;
-				return connection;
+				return initialized ? connection : -1;
+
+				// TODO: May be it's better to throw an exception!?
+				if (initialized)
+					return connection;
+
+				throw new InvalidOperationException ("Connection not initialized!");
 			}
 		}
 
@@ -54,15 +63,12 @@ namespace NMapi {
 			this.initialized = true;
 			this.connection = connection;
 		}
-		
+
 		// TODO: add equality comparison!!!, etc. ..
 		
 		public override string ToString ()
 		{
 			return "" + connection;
 		}
-		
-		
 	}
-
 }
