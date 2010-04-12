@@ -80,7 +80,7 @@ namespace NMapi.Table {
 		public PropertyValue FindProperty (int propertyName)
 		{
 			int index = FindPropertyIndex (propertyName);
-			if (index > 0)
+			if (index >= 0)
 				return lpProps [index];
 			return null;
 		}
@@ -97,7 +97,7 @@ namespace NMapi.Table {
 				return -1;
 			int i = 0;
 			foreach (PropertyValue prop in lpProps) {
-				if (prop.PropTag == propertyName)
+				if (prop != null && prop.PropTag == propertyName)
 					return i;
 				i++;
 			}

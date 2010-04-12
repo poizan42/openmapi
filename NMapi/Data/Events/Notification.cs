@@ -98,6 +98,8 @@ namespace NMapi.Events {
 				case NotificationEventType.TableModified: notify = new TableNotification (xdr); break;
 				case NotificationEventType.Extended: notify = new ExtendedNotification (xdr); break;
 				case NotificationEventType.StatusObjectModified: notify = new StatusObjectNotification (xdr); break;
+				default:
+					throw new Exception ("unknown event type '" + eventType + "' ! -- should not happen");
 			}
 			notify.ulEventType = eventType;
 			return notify;

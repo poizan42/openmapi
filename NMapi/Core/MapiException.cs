@@ -23,6 +23,7 @@
 //
 
 using System;
+using System.Text;
 
 using System.IO;
 using System.Net.Sockets;
@@ -265,7 +266,7 @@ namespace NMapi {
 		///  Builds a MapiException from an HResult code.
 		/// </summary>
 		/// <param name="hresult">The HResult code.</param>
-		public MapiException (int hresult) : base (GetErr (hresult))
+		public MapiException (int hresult) : base ()
 		{
 			this.hresult = hresult;
 		}
@@ -284,8 +285,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="msg">Additional textual information.</param>
 		/// <param name="hresult">The HRESULT code.</param>
-		public MapiException (string msg, int hresult) : 
-			base (GetErr (hresult, msg))
+		public MapiException (string msg, int hresult) : base (msg)
 		{
 			this.hresult = hresult;
 		}
@@ -294,8 +294,7 @@ namespace NMapi {
 		///  Builds a MapiException from an Exception.
 		/// </summary>
 		/// <param name="e">The IOException.</param>
-		public MapiException (Exception e) : 
-			base (GetErr (Error.CallFailed), e)
+		public MapiException (Exception e) : base ("", e)
 		{
 			this.hresult = Error.CallFailed;
 			this.exception = e;
@@ -306,8 +305,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="e">The IOException.</param>
 		/// <param name="hresult">The HRESULT code.</param>
-		public MapiException (Exception e, int hresult) : 
-			base (GetErr (Error.CallFailed), e)
+		public MapiException (Exception e, int hresult) : base ("", e) // GetErr (Error.CallFailed)
 		{
 			this.hresult = hresult;
 			this.exception = e;
@@ -318,8 +316,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="msg">The Message of the Exception.</param>
 		/// <param name="e">The IOException.</param>
-		public MapiException (string msg, Exception e) : 
-			base (GetErr (Error.CallFailed, msg), e)
+		public MapiException (string msg, Exception e) : base (msg, e)
 		{
 			this.hresult = Error.CallFailed;
 			this.exception = e;
@@ -329,8 +326,7 @@ namespace NMapi {
 		///  Builds a MapiException from an IOException.
 		/// </summary>
 		/// <param name="e">The IOException.</param>
-		public MapiException (IOException e) : 
-			base (GetErr (Error.NetworkError), e)
+		public MapiException (IOException e) : base ("", e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
@@ -341,8 +337,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="e">The IOException.</param>
 		/// <param name="msg">Additional textual information.</param>
-		public MapiException (string msg, IOException e) : 
-			base (GetErr(Error.NetworkError, msg), e)
+		public MapiException (string msg, IOException e) : base (msg, e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
@@ -353,8 +348,7 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="e">The SocketException.</param>
 		/// <param name="msg">Additional textual information.</param>
-		public MapiException (string msg, SocketException e) : 
-			base (GetErr (Error.NetworkError, msg), e)
+		public MapiException (string msg, SocketException e) : base (msg, e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
@@ -364,8 +358,7 @@ namespace NMapi {
 		///  Builds a MapiException from an SocketException.
 		/// </summary>
 		/// <param name="e">The SocketException.</param>
-		public MapiException (SocketException e) : 
-			base (GetErr (Error.NetworkError), e)
+		public MapiException (SocketException e) : base ("", e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
@@ -375,8 +368,7 @@ namespace NMapi {
 		///  Builds a MapiException from an OncRpcException.
 		/// </summary>
 		/// <param name="e">The OncRpcException.</param>
-		public MapiException (OncRpcException e) : 
-			base (GetErr (Error.NetworkError), e)
+		public MapiException (OncRpcException e) : base ("", e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
@@ -387,22 +379,34 @@ namespace NMapi {
 		/// </summary>
 		/// <param name="e">The OncRpcException.</param>
 		/// <param name="msg">Additional textual information.</param>
-		public MapiException (string msg, OncRpcException e) : 
-			base (GetErr (Error.NetworkError, msg), e)
+		public MapiException (string msg, OncRpcException e) : base (msg, e)
 		{
 			this.hresult = Error.NetworkError;
 			this.exception = e;
 		}
 
-		private static string GetErr (int hr)
-		{
-			return "0x" + hr.ToString ("x") + ": " + Error.GetErrorName (hr);
+		private string _msg;
+		
+		/// <summary></summary>
+		/// <remarks></remarks>
+		public override string Message {
+			get {
+				if (_msg == null) {
+					StringBuilder builder = new StringBuilder ();
+					builder.Append ("0x");
+					builder.Append (hresult.ToString ("x"));
+					builder.Append (": ");
+					builder.Append (Error.GetErrorName (hresult));
+					if (base.Message != "") {
+						builder.Append (":");
+						builder.Append (base.Message);
+					}
+					_msg = builder.ToString ();
+				}
+				return _msg;
+			}
 		}
 
-		private static string GetErr (int hr, string msg)
-		{
-			return GetErr (hr) + ": " + msg;
-		}
 	}
 
 }

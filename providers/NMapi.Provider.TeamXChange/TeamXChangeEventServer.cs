@@ -65,26 +65,21 @@ namespace NMapi {
 			this.port = port;
 			
 			try {
-				evuid = 0;
 				eventSubMap = new Dictionary<int, TeamXChangeEventSubscription> ();
 				progressMap = new Dictionary<int, IMapiProgress> ();
 				eventSock = new TcpClient (this.host, this.port);
 
-                Stream wrappedStream = OncNetworkUtility.GetSslClientStream(eventSock.GetStream(), host);
+                Stream wrappedStream = OncNetworkUtility.GetSslClientStream (eventSock.GetStream(), host);
 				eventServ = new OncRpcTcpConnectionServerTransport (
 					this, eventSock, 8192, null, 10, wrappedStream);
 				eventServ.Listen ();
 
 				wrappedStream.Write (objb, 0, objb.Length);
-			}
-			catch (SocketException e) {
+			} catch (SocketException e) {
 				throw MapiException.Make ("unknown host=" + host, e);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw MapiException.Make ("host="+host, e);
-			
-			}
-			catch (OncRpcException e) {
+			} catch (OncRpcException e) {
 				throw MapiException.Make ("host="+host, e);
 			}
 			
@@ -139,7 +134,7 @@ namespace NMapi {
 			ClientEvent e = new ClientEvent ();
 			call.RetrieveCall (e);
 			switch (e.type) {
-				case ClientEvType.CLEV_MAPI: HandleRealEvent (e); break;
+				case ClientEvType.CLEV_MAPI:  HandleRealEvent (e); break;
 				case ClientEvType.CLEV_PROGRESS: HandleProgressEvent (e); break;
 				default: throw new MapiBadValueException ("Unknown event type received."); break;
 			}			

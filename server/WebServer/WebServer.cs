@@ -39,12 +39,23 @@ namespace NMapi.Server {
 
 	public class WebServer
 	{
+		private const int DEFAULT_PORT = 9001;
+		
 		private bool running;
 		private ApplicationServer appServer;
-
+				
 		public void Run ()
 		{
-			int port = 9001;
+			Run (DEFAULT_PORT, true);
+		}
+		
+		public void Run (int port)
+		{
+			Run (port, true);
+		}
+		
+		public void Run (int port, bool preCompile)
+		{
 			string path = null;
 			do {
 				path = Path.Combine (DotDir.TempPath, "omprxy" + new Random ().Next());
@@ -85,22 +96,26 @@ namespace NMapi.Server {
 
 			appServer.AddApplication (null, port, "/", Path.GetFullPath (path));
 			appServer.Start (true);
-			try {
-				var request = WebRequest.Create ("http://localhost:" + port + "/");
-				Action<IAsyncResult> callback = (result) => 
-					Console.WriteLine ("INFO: Compilation-Init-Request to WebServer finished.");
 
-				request.BeginGetResponse (new AsyncCallback (callback), null);
-			} catch (Exception) {
-				// Do nothing.
-				throw;
+			if (preCompile) {
+				try {
+					var request = WebRequest.Create ("http://localhost:" + port + "/");
+					Action<IAsyncResult> callback = (result) => 
+						Console.WriteLine ("INFO: Compilation-Init-Request to WebServer finished.");
+
+					request.BeginGetResponse (new AsyncCallback (callback), null);
+				} catch (Exception) {
+					// Do nothing.
+					throw;
+				}
 			}
-
 			running = true;
 		}
 
 		public void Stop ()
 		{
+			// TODO: attempt to clean up web server directory.
+			
 			if (running) {
 				appServer.Stop ();
 				running = false;

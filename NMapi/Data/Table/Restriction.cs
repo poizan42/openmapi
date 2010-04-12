@@ -241,7 +241,9 @@ namespace NMapi.Table {
 	{
 		public override string ToString ()
 		{
-			return base.ToString ();	// TODO
+			return "{content: FuzzyLevel: " + FuzzyLevel + "; "
+				+ "PropertyTag: " + PropertyTag.CreatePropertyTag (PropTag) 
+				+ "PropertyValue: " + Prop + "}";
 		}
 	}
 	

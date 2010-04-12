@@ -38,11 +38,11 @@ namespace NMapi.Flags {
 	public enum ContainerFlags
 	{
 		/// <summary>The container may contain recipients.</summary>
-		/// <remarks>Class MAPI name is AB_RECIPIENTS.</remarks>
+		/// <remarks>Classic MAPI name is AB_RECIPIENTS.</remarks>
 		Recipients = 0x00000001,
 
 		/// <summary>The container may contain subcontainers.</summary>
-		/// <remarks>Class MAPI name is AB_SUBCONTAINERS.</remarks>
+		/// <remarks>Classic MAPI name is AB_SUBCONTAINERS.</remarks>
 		SubContainers = 0x00000002,
 
 		/// <summary>Indicates that entries can be added/removed.</summary> 
@@ -52,7 +52,7 @@ namespace NMapi.Flags {
 		///   same time, the meaning is undefined or unknown to the provider. 
 		///  </para>
 		///  <para>If this flag is not set, <see cref="NMapi.Flags.Ab.Unmodifiable" /> must be set.</para>
-		///  <para>Class MAPI name is AB_MODIFIABLE.</para>
+		///  <para>Classic MAPI name is AB_MODIFIABLE.</para>
 		/// </remarks>
 		Modifiable = 0x00000004,
 
@@ -62,19 +62,19 @@ namespace NMapi.Flags {
 		///   same time, the meaning is undefined or unknown to the provider. 
 		///  </para>
 		///  <para>If this flag is not set, <see cref="NMapi.Flags.Ab.Modifiable" /> must be set.</para>
-		///  <para>Class MAPI name is AB_UNMODIFIABLE.</para>
+		///  <para>Classic MAPI name is AB_UNMODIFIABLE.</para>
 		/// </remarks>
 		Unmodifiable = 0x00000008,
 
 		/// <summary>The data is filtered at the beginning (before it is displayed).</summary>
 		/// <remarks>
 		///  <para>This can help to improve performance.</para>
-		///  <para>Class MAPI name is AB_FIND_ON_OPEN.</para>
+		///  <para>Classic MAPI name is AB_FIND_ON_OPEN.</para>
 		/// </remarks>
 		FindOnOpen = 0x00000010,
 
 		/// <summary>TODO: document!</summary>
-		/// <remarks>Class MAPI name is AB_NOT_DEFAULT.</remarks>
+		/// <remarks>Classic MAPI name is AB_NOT_DEFAULT.</remarks>
 		NotDefault = 0x00000020
 	}
 

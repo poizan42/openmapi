@@ -72,7 +72,7 @@ namespace NMapi.Utility {
 					return Path.Combine (Path.Combine (MacLibraryPath, "Application Support"), FolderName);
 
 				return Path.Combine (Environment.GetFolderPath (
-					System.Environment.SpecialFolder.ApplicationData), FolderName);
+					Environment.SpecialFolder.ApplicationData), FolderName);
 			}
 		}
 		

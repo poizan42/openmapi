@@ -38,6 +38,7 @@
 	<property name="BodyHtmlW" type="Unicode" id="0x1013" />
 	<property name="IconIndex" type="Int32" id="0x1080" />
 	<property name="FlagStatus" type="Int32" id="0x1090" />
+	<property name="FollowUpIcon" type="Int32" id="0x1095" />
 	<property name="RecipientFlags" type="Int32" id="0x5ffd" />
 	<property name="RecipientTrackstatus" type="Int32" id="0x5fff" />
 

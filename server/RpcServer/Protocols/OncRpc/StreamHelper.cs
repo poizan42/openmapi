@@ -1,7 +1,7 @@
 //
 // openmapi.org - NMapi C# Mapi API - StreamHelper.cs
 //
-// Copyright 2009 Topalis AG
+// Copyright 2009-2010 Topalis AG
 //
 // Author: Johannes Roith <johannes@jroith.de>
 //
@@ -50,8 +50,8 @@ namespace NMapi.Server {
 			Stream stream;
 			
 			if (!streamReadBuffer.ContainsKey (objKey)) {
-			 	stream = new MemoryStream (); // TODO: Make Parallel!
-				istr.GetData (stream);
+			 	stream = new MemoryStream (); // TODO: Make Parallel! => implement a "buffered" stream that just accepts a certain amount of data to be written when there is a reader waiting.
+				istr.GetData (stream); // execute on own thread or something.
 				stream.Position = 0;
 				streamReadBuffer [objKey] = stream;
 			} else {
@@ -64,10 +64,12 @@ namespace NMapi.Server {
 				result.hr = 1; // ????
 				result.data = new byte [0];
 				streamReadBuffer.Remove (objKey);
-			}
-			else
-				result.data = (buffer != null) ? buffer : new byte [0];
-			
+			} else if (buffer != null) {
+				byte[] copy = new byte [bytesRead]; // TODO: here we copy it again. Annoying.
+				Array.Copy (buffer, 0, copy, 0, bytesRead);
+				result.data = copy;
+			} else
+				result.data = new byte [0];
 			return result;
 		}
 		

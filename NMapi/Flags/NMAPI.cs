@@ -85,18 +85,6 @@ namespace NMapi.Flags {
 	
 		public const int CONVENIENT_DEPTH = 0x00000001;
 
-		public const int SEARCH_RUNNING    = 0x00000001;
-		public const int SEARCH_REBUILD    = 0x00000002;
-		public const int SEARCH_RECURSIVE  = 0x00000004;
-		public const int SEARCH_FOREGROUND = 0x00000008;
-
-		public const int STOP_SEARCH       = 0x00000001;
-		public const int RESTART_SEARCH    = 0x00000002;
-		public const int RECURSIVE_SEARCH  = 0x00000004;
-		public const int SHALLOW_SEARCH    = 0x00000008;
-		public const int FOREGROUND_SEARCH = 0x00000010;
-		public const int BACKGROUND_SEARCH = 0x00000020;
-
 		public const int CREATE_CHECK_DUP_STRICT = 0x00000001;
 		public const int CREATE_CHECK_DUP_LOOSE  = 0x00000002;
 		public const int CREATE_REPLACE          = 0x00000004;

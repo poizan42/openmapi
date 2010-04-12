@@ -30,6 +30,10 @@ using Mono.Cecil.Cil;
 
 namespace NMapi {
 
+	// TODO: * get meta-data
+	//       * cached lookup tables. -> update when NMapi is rebuilt.
+	//       * HTML docs generation
+	
 	/// <summary>
 	///  Property tags are usually embedded as constants in the NMapi 
 	///  assemblies or (if custom properties are used) in other assemblies.

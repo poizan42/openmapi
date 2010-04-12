@@ -115,7 +115,9 @@ namespace NMapi.Server {
 					providerStr = cfg.NMapiProvider;
 
 				IMapiFactory factory = null;
+
 				var providers = ProviderManager.FindProviders ();
+
 				if (providers.ContainsKey (providerStr)) {
 					string[] asmAndType = providers [providerStr];
 					factory = ProviderManager.GetFactory (asmAndType);
@@ -131,7 +133,7 @@ namespace NMapi.Server {
 				if (factory == null) {
 					string str = "Couldn't create provider from " + 
 						"specified backend '"  + typeName + 
-						" (Assembly: " + assemblyName + ")' !";
+						" (Assembly: " + assemblyName + ") - " + providerStr + "' !";
 					
 					// TODO: log ?
 					Console.WriteLine (str);

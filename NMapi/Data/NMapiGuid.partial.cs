@@ -175,6 +175,7 @@ namespace NMapi {
 		/// <returns></returns>
 		public string ToHexString ()
 		{
+			// TODO: inefficient!
 			return new SBinary (ToByteArray ()).ToHexString ();
 		}
 

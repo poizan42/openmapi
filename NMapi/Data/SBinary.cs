@@ -23,6 +23,7 @@
 //
 
 using System;
+using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
 
@@ -121,18 +122,18 @@ namespace NMapi {
 		{
 			if (hexString != null)
 				return hexString;
-			string ret = "";
+			StringBuilder result = new StringBuilder ();
 			if (lpb != null) {
 				for (int i = 0; i < lpb.Length; i++) {
 					int c = ((int) lpb[i]) & 0xff;
 					string num = c.ToString ("x");;
 					if (num.Length < 2)
 						num = "0" + num;
-					ret += num;
+					result.Append (num);
 				}
-				hexString = ret;
+				hexString = result.ToString ();
 			}
-			return ret;
+			return (hexString != null) ? hexString : "";
 		}
 		
 		public override string ToString ()
