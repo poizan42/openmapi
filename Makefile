@@ -166,7 +166,6 @@ $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED
 	/r:System.Xml.Linq.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
-	/r:WindowsBase.dll \
 	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(C5DLL) \
