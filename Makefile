@@ -166,7 +166,6 @@ $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED
 	/r:System.Xml.Linq.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
-	/r:WindowsBase.dll \
 	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(C5DLL) \
@@ -291,6 +290,7 @@ $(NSIDLL): $(NMAPIDLL) $(NTSDLL) $(SERVER_ICALLS_SOURCES) $(SERVER_ICALLS_GENERA
 	touch $@
 
 server/WebServer/aspx/Bin/%: bin/% .aspxbindir
+	mkdir -p server/WebServer/aspx/Bin/
 	cp $< $@
 
 SERVER_ZIP_SOURCES = $(shell find server/WebServer/aspx -type f) \

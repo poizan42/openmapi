@@ -29,7 +29,7 @@ namespace NMapi.Test
 		{
 			IMapiFactory factory = ProviderManager.GetFactory ("NMapi.Provider.TeamXChange", "NMapi.Provider.TeamXChange.TeamXChangeMapiFactory");
 			IMapiSession session = factory.CreateMapiSession ();
-			session.Logon ("localhost", "demo1", "");
+			session.Logon ("localhost", "demo1", "demo1");
 			IMapiFolder root = (IMapiFolder) session.PrivateStore.OpenEntry (null, null, Mapi.Modify);
 			IMapiFolder folder = (IMapiFolder) session.PrivateStore.OpenEntry (session.PrivateStore.GetReceiveFolder (null, 0).EntryID, null, Mapi.Modify);
 			
