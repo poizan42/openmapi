@@ -290,7 +290,7 @@ $(NSIDLL): $(NMAPIDLL) $(NTSDLL) $(SERVER_ICALLS_SOURCES) $(SERVER_ICALLS_GENERA
 	touch $@
 
 server/WebServer/aspx/Bin/%: bin/% .aspxbindir
-	mkdir $@
+	mkdir -p server/WebServer/aspx/Bin/
 	cp $< $@
 
 SERVER_ZIP_SOURCES = $(shell find server/WebServer/aspx -type f) \
