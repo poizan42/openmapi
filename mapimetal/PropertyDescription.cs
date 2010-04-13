@@ -156,7 +156,13 @@ namespace NMapi.Linq {
 				if (typeDef == null)
 					throw new ArgumentException ("The specified type '" + 
 						typeName + "' can't be found!");
-				FieldDefinition field = typeDef.Fields.GetField (fieldName);
+#if CECIL_0_9
+					FieldDefinition field = (from f in typeDef.Fields
+										where f.Name == fieldName
+										select f).First ();
+#else
+					FieldDefinition field = typeDef.Fields.GetField (fieldName);
+#endif
 				try {
 					propValue = (int) field.Constant;
 				} catch (InvalidCastException) {

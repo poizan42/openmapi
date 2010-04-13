@@ -62,6 +62,11 @@ CUPDLL = bin/cup.dll
 C5DLL = Mono.C5.dll
 SGMLDLL = bin/sgml.dll
 
+# provides a new switch in preparation of the new Mono.Cecil 0.9 api.
+#WITH_CECIL = /D:CECIL_0_9 /r:$(CECILDLL)
+WITH_CECIL = /r:$(CECILDLL)
+
+
 all: code
 
 check-warnings: clean
@@ -156,7 +161,7 @@ key.snk:
 	sn -k key.snk
 
 $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED_SOURCES) $(NMAPI_RESOURCES) key.snk
-	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
+	$(MCS) $(DEBUG) $(TRACE) $(WITH_CECIL) /out:$@ \
 	/doc:bin/NMapi.xmldoc /nowarn:$(NO_WARN) /target:library \
 	/r:nunit.framework.dll \
 	/r:System.Drawing.dll \
@@ -166,7 +171,6 @@ $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED
 	/r:System.Xml.Linq.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
-	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(C5DLL) \
 	/r:$(SGMLDLL) \
@@ -333,7 +337,7 @@ bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
 #	/r:bin/Jayrock.Json.dll \
 
 bin/mapimetal.exe: $(CECILDLL) $(NMAPIDLL) $(MMETAL_SOURCES) mapimetal/MapiMetal.xsd $(NDESK_OPTIONS)
-	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
+	$(MCS) $(DEBUG) $(TRACE) $(WITH_CECIL) /nowarn:$(NO_WARN) /target:exe \
 	/out:$@  \
 	/resource:mapimetal/MapiMetal.xsd,MapiMetal.xsd \
 	$(WITH_BOO_CODEDOM) /r:$(CECILDLL) /r:Microsoft.JScript.dll \
@@ -452,7 +456,6 @@ bin/NMapi.Gateways.IMAP.exe: $(CECILDLL) $(RTSDLL) $(NMAPIDLL) $(CUPDLL) $(IMAP_
 	/r:System.Xml.Linq.dll \
 	/r:System.Runtime.Serialization.dll \
 	/r:System.ServiceModel.dll \
-	/r:$(CECILDLL) \
 	/r:$(RTSDLL) \
 	/r:$(NMAPIDLL) \
 	/r:$(CUPDLL) \

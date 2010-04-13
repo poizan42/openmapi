@@ -160,8 +160,13 @@ namespace NMapi {
 					continue;
 				
 				try {
+#if CECIL_0_9
+					assembly = AssemblyDefinition.ReadAssembly (asmName);
+					} catch (BadImageFormatException) {
+#else
 					assembly = AssemblyFactory.GetAssembly (asmName);
 				} catch (Mono.Cecil.Binary.ImageFormatException) {
+#endif
 					// Ignore, because this is probably just a win32 dll.
 					continue;
 				}
@@ -193,7 +198,11 @@ namespace NMapi {
 			foreach (CustomAttribute attribute in type.CustomAttributes) {
 				if (attribute.Constructor.DeclaringType.Name == 
 					"MapiFactoryAttribute")
-						return (string) attribute.ConstructorParameters [0];
+#if CECIL_0_9
+					return (string) attribute.ConstructorArguments [0].Value;
+#else
+					return (string) attribute.ConstructorParameters [0];
+#endif
 			}
 			return null;
 		}

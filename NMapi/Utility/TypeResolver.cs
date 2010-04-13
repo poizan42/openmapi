@@ -76,9 +76,13 @@ namespace NMapi {
 		/// <param name="version">The assembly version as a string (Format: "a.b.c.d") to be loaded.</param>
 		public void AddAssembly (string name, Version version)
 		{
-			AssemblyNameReference asm = new AssemblyNameReference ();
-			asm.Name = name;
-			asm.Version = version;
+			#if CECIL_0_9
+				AssemblyNameReference asm = new AssemblyNameReference (name, version);
+			#else
+				AssemblyNameReference asm = new AssemblyNameReference ();
+				asm.Name = name;
+				asm.Version = version;
+			#endif
 			AddAssembly (asm);
 		}
 
@@ -138,7 +142,13 @@ namespace NMapi {
 			TypeDefinition td = null;
 			foreach (AssemblyDefinition asmDef in map.Values)
 				foreach (ModuleDefinition module in asmDef.Modules) {
+#if CECIL_0_9
+					td = (from t in module.Types
+						where t.Name == typeName
+						select t).First ();
+#else
 					td = module.Types [typeName];
+#endif
 					if (td != null)
 						return td;
 				}

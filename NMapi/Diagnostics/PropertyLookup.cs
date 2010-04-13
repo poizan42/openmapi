@@ -22,6 +22,7 @@
 //
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -128,7 +129,16 @@ namespace NMapi {
 			TypeDefinition typeDef = resolver.ResolveDefinition (typeName);
 			if (typeDef == null)
 				throw CantResolveType (typeName);
+#if CECIL_0_9
+			FieldDefinition field = null;
+			if (typeDef.HasFields) {
+				field = (from f in typeDef.Fields
+					where f.Name == fieldName
+					select f).First ();
+			}
+#else
 			FieldDefinition field = typeDef.Fields.GetField (fieldName);
+#endif
 			if (field == null)
 				throw CantResolveField (typeName, fieldName);
 			if (IsValidPropertyField (field))

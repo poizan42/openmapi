@@ -85,7 +85,11 @@ namespace NMapi.Linq {
 			Console.WriteLine ("Checking: " + fileName);
 			AssemblyDefinition assembly = null;
 			try {
+#if CECIL_0_9
+				assembly = AssemblyDefinition.ReadAssembly (fileName);
+#else
 				assembly = AssemblyFactory.GetAssembly (fileName);
+#endif
 			} catch (System.BadImageFormatException) {
 				Driver.WriteError ("File '" + fileName + "' is not a valid assembly.");
 				Driver.ExitWithStats ();				
@@ -126,10 +130,15 @@ namespace NMapi.Linq {
 				if (count > 1)
 					Driver.WriteError ("Multiple are attributes not allowed " +
 						"on property " + property.Name);
-
+/*
+#if CECIL_0_9
+				string returnTypeName = property.GetMethod.ReturnType.Name;
+#else
 				string returnTypeName = property.GetMethod.ReturnType.ReturnType.Name;
+#endif
 				// TODO! -> compare with type!
 
+*/
 				// TODO: Check parameters!
 				MethodReference method;
 				if (isMarkedLazy) {
