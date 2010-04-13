@@ -475,5 +475,5 @@ clean:
 		$(NMAPI_GENERATED_SOURCES) \
 		server/WebServer/aspx/Bin providers/NMapi.Provider.TeamXChange/Interop.MapiRPC/generated \
 		NMapi/Code/NMapi_Generated.cs NMapi/Code/RemoteCalls_Generated.cs \
-		NMapi/Data/Data_Generated.cs  server/RpcServer/CommonRpcService_Generated.cs \
+		NMapi/Data/Data_Generated.cs server/CommonRpcService_Generated.cs server/RpcServer/CommonRpcService_Generated.cs \
 		*~ .bindir .xmlgendir .txgenerateddir .aspxbindir

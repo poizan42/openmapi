@@ -87,9 +87,6 @@ namespace NMapi {
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		public TeamXChangeSession (string host, int port) 
 		{
-			Console.WriteLine ("Target address : "+host);
-			Console.WriteLine ("Target port    : "+port);
-			
 			this.host = host;
 			this.port = port;
 			
@@ -179,7 +176,7 @@ namespace NMapi {
 				case MapiObjectType.Message:
 					return new TeamXChangeMessage (obj, (TeamXChangeBase) parent);
 				case MapiObjectType.Attach:
-					return new TeamXChangeAttach (obj, (TeamXChangeMessage)parent);
+					return new TeamXChangeAttach (obj, (TeamXChangeMessage) parent);
 				case MapiObjectType.SimpleStream:
 					return new TeamXChangeStream (obj, (TeamXChangeBase) parent, propTag);
 				case MapiObjectType.Table:
