@@ -32,7 +32,7 @@ namespace NMapi.Provider.Styx
         public IntPtr nativeObject {
             get { return cobj; }
         }
-		
+
         private bool disposed = false;
 
 		public Unknown (IntPtr obj) {

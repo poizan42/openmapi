@@ -274,6 +274,11 @@ namespace NMapi.Provider.Styx {
             Transmogrify.CheckHResult (scode);
         }
 
+        public static void FreeProws (IntPtr lpRows) {
+            int scode = CMapi_FreeProws (obj, lpRows);
+            Transmogrify.CheckHResult (scode);
+        }
+
         public static IntPtr AllocBuffer (uint size) {
             IntPtr buffer;
             int scode = CMapi_AllocateBuffer (obj, size, out buffer);
@@ -332,6 +337,9 @@ namespace NMapi.Provider.Styx {
 
         [DllImport ("libcmapi")]
         private static extern int CMapi_FreeBuffer (IntPtr obj, IntPtr buffer);
+
+        [DllImport ("libcmapi")]
+        private static extern int CMapi_FreeProws (IntPtr obj, IntPtr lpRows);
 
         #endregion
     }

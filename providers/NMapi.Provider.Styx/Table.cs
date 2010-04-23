@@ -113,7 +113,7 @@ namespace NMapi.Provider.Styx {
             int hr = CMapi_Table_GetLastError (cobj, hresult, (uint) flags, out ErrorHandle);
             Transmogrify.CheckHResult (hr);
             MapiError error = Transmogrify.PtrToMapiError (ErrorHandle);
-            //XXX MapiFreeBuffer
+            CMapi.FreeBuffer(ErrorHandle);
             return error;
         }
 
@@ -127,10 +127,14 @@ namespace NMapi.Provider.Styx {
         public PropertyTag[] QueryColumns (int flags) {
 
             IntPtr TagArrayHandle;
+            PropertyTag[] ret;
+
             int hr = CMapi_Table_QueryColumns (cobj, (uint) flags, out TagArrayHandle);
             Transmogrify.CheckHResult (hr);
 
-            return Transmogrify.PtrToTagArray (TagArrayHandle);
+            ret = Transmogrify.PtrToTagArray (TagArrayHandle);
+            CMapi.FreeBuffer(TagArrayHandle);
+            return ret;
         }
 
         public QueryPositionResult QueryPosition () {
@@ -149,10 +153,14 @@ namespace NMapi.Provider.Styx {
 
         public RowSet QueryRows (int rowCount, int flags) {
             IntPtr RowHandle;
+            RowSet ret;
+
             int hr = CMapi_Table_QueryRows (cobj, rowCount, (uint) flags, out RowHandle);
             Transmogrify.CheckHResult (hr);
 
-            return Transmogrify.PtrToRowSet (RowHandle);
+            ret = Transmogrify.PtrToRowSet (RowHandle);
+            CMapi.FreeProws(RowHandle);
+            return ret;
         }
 
         public SortOrderSet QuerySortOrder () {

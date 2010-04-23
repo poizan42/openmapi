@@ -81,7 +81,7 @@ namespace NMapi.Provider.Styx {
                 Transmogrify.CheckHResult (hr);
 
             RowSet rows = Transmogrify.PtrToRowSet (RowSetHandle);
-            //XXX MapiFreeBuffer
+            CMapi.FreeBuffer(RowSetHandle);
             return rows;
         }
 
@@ -90,7 +90,7 @@ namespace NMapi.Provider.Styx {
             int hr = CMapi_TableReader_GetTags (cobj, out TagArrayHandle);
             Transmogrify.CheckHResult (hr);
             PropertyTag[] tags = Transmogrify.PtrToTagArray (TagArrayHandle);
-            //XXX MapiFreeBuffer
+            CMapi.FreeBuffer(TagArrayHandle);
             return tags;
         }
 

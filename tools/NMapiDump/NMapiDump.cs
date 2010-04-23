@@ -251,6 +251,7 @@ namespace NMapi.Dump
                 } catch (MapiException e) {
                     System.Console.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" +
                                               e.Message);
+                    loop = false;
                 }
     
                 if (watch != null) {

@@ -40,7 +40,7 @@ namespace NMapi.Provider.Styx
             int hr = CMapi_Prop_GetLastError (cobj, hresult, (uint) flags, out ErrorHandle);
             Transmogrify.CheckHResult (hr);
             MapiError error = Transmogrify.PtrToMapiError (ErrorHandle);
-            //XXX MapiFreeBuffer
+            CMapi.FreeBuffer(ErrorHandle);
             return error;
         }
 
@@ -59,7 +59,7 @@ namespace NMapi.Provider.Styx
                     Transmogrify.CheckHResult (hr);
 
                 PropArray = Transmogrify.PtrToPropArray (PropArrayHandle, count);
-                //MAPIFREEBUFFER
+                CMapi.FreeBuffer(PropArrayHandle);
             }
 
             return PropArray;
@@ -99,7 +99,7 @@ namespace NMapi.Provider.Styx
                 int hr = CMapi_Prop_DeleteProps (cobj, TagArrayHandle, out ProblemHandle);
                 Transmogrify.CheckHResult (hr);
                 PropertyProblem[] problems = Transmogrify.PtrToProblemArray (ProblemHandle);
-                //XXX MapiFreeBuffer
+                CMapi.FreeBuffer(ProblemHandle);
                 return problems;
             }
 
@@ -132,8 +132,7 @@ namespace NMapi.Provider.Styx
             int hr = CMapi_Prop_GetPropList (cobj, (uint) flags, out TagArrayHandle);
             Transmogrify.CheckHResult (hr);
             PropertyTag[] tags = Transmogrify.PtrToTagArray (TagArrayHandle);
-
-            //XXX MapiFreeBuffer
+            CMapi.FreeBuffer(TagArrayHandle);
 
             return tags;
         }
@@ -150,7 +149,8 @@ namespace NMapi.Provider.Styx
                 Transmogrify.CheckHResult (hr);
 
                 PropertyProblem[] problems = Transmogrify.PtrToProblemArray (ProblemHandle);
-                //XXX MapiFreeBuffer
+                CMapi.FreeBuffer(ProblemHandle);
+
                 return problems;
             }
         }
