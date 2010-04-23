@@ -58,6 +58,7 @@ RTSDLL = bin/RemoteTeaSharp.dll
 NTSDLL = bin/NMapi.Tools.Shell.dll
 NSIDLL = bin/NMapi.Server.ICalls.dll
 PTXCDLL = bin/NMapi.Provider.TeamXChange.dll
+STYXDLL = bin/NMapi.Provider.Styx.dll
 CUPDLL = bin/cup.dll
 C5DLL = Mono.C5.dll
 SGMLDLL = bin/sgml.dll
@@ -183,7 +184,7 @@ $(NMAPIDLL): $(CECILDLL) $(RTSDLL) $(SGMLDLL) $(NMAPI_SOURCES) $(NMAPI_GENERATED
 #
 
 #NMapi.Provider.Indigo NMapi.Provider.WabiSabi
-allproviders: $(PTXCDLL)
+allproviders: $(PTXCDLL) $(STYXDLL)
 
 bin/NMapi.Provider.Indigo.dll: $(NMAPIDLL)
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
@@ -259,6 +260,18 @@ $(PTXCDLL): $(NMAPIDLL) $(RTSDLL) \
 	/r:System.ServiceModel.dll \
 	`find providers/NMapi.Provider.TeamXChange -name "*.cs"`
 
+$(STYXDLL): $(NMAPIDLL) $(RTSDLL)
+	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
+	/nowarn:$(NO_WARN) /target:library \
+	/r:System.Configuration.dll \
+	/r:System.Web.Services.dll \
+	/r:System.Xml.Linq.dll \
+	/r:$(NMAPIDLL) \
+	/r:System.Runtime.Serialization.dll \
+	/r:$(RTSDLL) \
+	/r:System.ServiceModel.dll \
+	`find providers/NMapi.Provider.Styx -name "*.cs"`
+
 bin/mlog.exe: bin/GoldParser.dll RemoteTea-Sharp/mlog/xdr.cgt $(NDESK_OPTIONS)
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ /nowarn:$(NO_WARN) \
 	/r:bin/GoldParser.dll \
@@ -304,7 +317,7 @@ SERVER_ZIP_SOURCES = $(shell find server/WebServer/aspx -type f) \
 server.zip: $(SERVER_ZIP_SOURCES)
 	cd server/WebServer/aspx; zip $(abspath $@) $(subst server/WebServer/aspx/,,$^)
 
-bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
+bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(STYXDLL) $(NTSDLL) \
 		$(NSIDLL)  $(NMAPIDLL) $(SERVER_SOURCES) \
 		server/RpcServer/Protocols/OncRpc/OncRpcService_Generated.cs server/RpcServer/CommonRpcService_Generated.cs server.zip
 
@@ -326,6 +339,7 @@ bin/nmapisvr.exe: $(RTSDLL) $(PTXCDLL) $(NTSDLL) \
 	/r:System.Runtime.Remoting.dll \
 	/r:System.Web.dll \
 	/r:$(PTXCDLL) \
+	/r:$(STYXDLL) \
 	/r:$(NTSDLL) \
 	/r:$(NSIDLL) \
 	/r:$(NMAPIDLL) \
@@ -367,7 +381,7 @@ $(NTSDLL): $(NMAPIDLL) tools/mapishell/default.mss tools/mapishell/ShellObject.x
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:library \
 	/resource:tools/mapishell/default.mss,default.mss \
 	/out:$@  \
-	/r:$(NMAPIDLL) /r:$(PTXCDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
+	/r:$(NMAPIDLL) /r:$(PTXCDLL) /r:$(STYXDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) `find tools/mapishell -name "*.cs"`
 	
 bin/mapishell.exe: $(NTSDLL) tools/mapishell/DefaultTTY.cs
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
@@ -406,10 +420,10 @@ mapitool: $(NMAPIDLL)
 # Tests
 #
 
-bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) bin/NMapi.Gateways.IMAP.exe
+bin/NMapi.Test.dll: $(TEST_SOURCES) $(NMAPIDLL) bin/nmapisvr.exe $(PTXCDLL) $(STYXDLL) bin/NMapi.Gateways.IMAP.exe
 	$(MCS) $(DEBUG) $(TRACE) /out:bin/NMapi.Test.dll /target:library \
 	/r:nunit.framework.dll /r:$(NMAPIDLL) /r:bin/nmapisvr.exe \
-	/r:$(PTXCDLL) /r:bin/NMapi.Gateways.IMAP.exe \
+	/r:$(PTXCDLL) /r:$(STYXDLL) /r:bin/NMapi.Gateways.IMAP.exe \
 	/r:System.Web.Services.dll \
 	/r:System.Web.dll \
 	$(TEST_SOURCES)
