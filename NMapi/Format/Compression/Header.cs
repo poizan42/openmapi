@@ -190,7 +190,7 @@ namespace NMapi.Format.Compression {
 			Array.Copy (rawSizeBytes, 0, result, 4, 4);
 
 			// Compression Type.
-			switch (compressionType) {
+			switch (compressionType) {
 				case CompressionType.Compressed: // TODO: generate from constant!
 					// magic
 					result [8] = 0x4c;

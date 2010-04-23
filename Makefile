@@ -263,13 +263,8 @@ $(PTXCDLL): $(NMAPIDLL) $(RTSDLL) \
 $(STYXDLL): $(NMAPIDLL) $(RTSDLL)
 	$(MCS) $(DEBUG) $(TRACE) /out:$@ \
 	/nowarn:$(NO_WARN) /target:library \
-	/r:System.Configuration.dll \
-	/r:System.Web.Services.dll \
-	/r:System.Xml.Linq.dll \
+	/r:System.Core.dll \
 	/r:$(NMAPIDLL) \
-	/r:System.Runtime.Serialization.dll \
-	/r:$(RTSDLL) \
-	/r:System.ServiceModel.dll \
 	`find providers/NMapi.Provider.Styx -name "*.cs"`
 
 bin/mlog.exe: bin/GoldParser.dll RemoteTea-Sharp/mlog/xdr.cgt $(NDESK_OPTIONS)
