@@ -37,6 +37,7 @@ CUP_SOURCES = $(wildcard lib/cup/Runtime/*.cs)
 IMAP_SOURCES = $(shell find gateways/imap -name "*.cs")
 NMAPI_SOURCES = $(shell find NMapi -name "*.cs")
 SHELL_SOURCES = $(shell find tools/mapishell -name "*.cs")
+NMAPIDUMP_SOURCES = $(wildcard tools/NMapiDump/*.cs)
 NMAPI_GENERATED_SOURCES = \
 		NMapi/Core/NMapi_Generated.cs NMapi/Core/RemoteCall_Generated.cs \
 		NMapi/Data/Data_Generated.cs NMapi/Data/Data_Props_Generated.cs \
@@ -356,7 +357,7 @@ bin/mapimetal.exe: $(CECILDLL) $(NMAPIDLL) $(MMETAL_SOURCES) mapimetal/MapiMetal
 # Tools
 #
 
-alltools: bin/mapishell.exe bin/mapiwait.exe
+alltools: bin/mapishell.exe bin/mapiwait.exe bin/NMapiDump.exe
 #mapitool
 #mapimap
 
@@ -387,6 +388,11 @@ bin/mapiwait.exe: $(NMAPIDLL) $(MAPIWAIT_SOURCES) $(NDESK_OPTIONS)
 	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
 	/out:$@  \
 	/r:$(NMAPIDLL) $(NDESK_OPTIONS) $(MONO_GETLINE) $(MAPIWAIT_SOURCES)
+
+bin/NMapiDump.exe: $(NMAPIDLL) $(NMAPIDUMP_SOURCES) $(NDESK_OPTIONS)
+	$(MCS) $(DEBUG) $(TRACE) /nowarn:$(NO_WARN) /target:exe \
+	/out:$@  \
+	/r:$(NMAPIDLL) $(NDESK_OPTIONS) $(NMAPIDUMP_SOURCES)
 
 
 bin/mapimap.exe: bin/GoldParser.dll $(NMAPIDLL) $(NDESK_OPTIONS) tools/mapimap/mapimap.cgt tools/mapimap/ast/*.cs \
