@@ -49,6 +49,7 @@ namespace NMapi.Provider.Styx
                 IntPtr nativeObject = ((Unknown)destFolder).nativeObject; /* XXX not really clean */
 
                 /* XXX implement progress */
+                flags |= Mapi.Unicode; /* does this work with non-exchange-servers? */
                 int hr = CMapi_Folder_CopyFolder (cobj, EidSize, entryID, ifHandle, nativeObject, newFolderName, 0, IntPtr.Zero, (uint) flags);
 
                 Transmogrify.CheckHResult (hr);
@@ -70,11 +71,12 @@ namespace NMapi.Provider.Styx
             }
         }
 
-        /* XXX only works with unicode currently (as set by mapishell) - needs work on marshalling (see below) */
         public IMapiFolder CreateFolder (NMapi.Flags.FolderType folderType, string folderName, string folderComment, NMapiGuid interFace, int flags) {
             using (MemContext MemCtx = new MemContext ()) {
                 IntPtr ifHandle = Transmogrify.GuidToPtr (interFace, MemCtx);
                 IntPtr newFolder;
+
+                flags |= Mapi.Unicode; /* does this work with non-exchange-servers? */
                 int hr = CMapi_Folder_CreateFolder (cobj, (uint) folderType, folderName, folderComment, ifHandle, (uint) flags, out newFolder);
                 Transmogrify.CheckHResult (hr);
                 return (IMapiFolder) CMapi.CreateObjectForType(newFolder, ObjectTypes.Folder);
