@@ -12,25 +12,36 @@ namespace NMapi.Test
 
 	[TestFixture]
 	[Category("Networking")]
-	public class IMapiFolderExtenderTest
+	public class StyxTests
 	{
 		
 		private SBinary CreateMessage (IMapiFolder folder, int i)
 		{
 			IMessage msg = (IMessage) folder.CreateMessage (null, 0);
-			SBinary entryId = (SBinary) msg.GetProperty (Property.Typed.EntryId);
 			msg.SetProperty (Property.Typed.Subject.CreateValue ("blub" + i));
+			msg.SetProperty (Property.Typed.BodyA.CreateValue ("This is test number " + i));
+			msg.SetProperty (Property.Typed.SenderEmailAddressA.CreateValue ("Michael Kukat <michael.kukat@to.com>"));
+			msg.SetProperty (Property.Typed.ReceivedByEmailAddressA.CreateValue ("Michael Kukat <michael.kukat@to.com>"));
+			CreateAttachResult res = msg.CreateAttach(null, 0);
+			res.Attach.SaveChanges();
+			msg.SaveChanges (NMAPI.KEEP_OPEN_READWRITE);
+			if(i > 2) msg.DeleteAttach(res.AttachmentNum, null, 0);
+			if(i > 3) msg.SetReadFlag(NMAPI.CLEAR_READ_FLAG);
 			msg.SaveChanges ();
+
+			SBinary entryId = (SBinary) msg.GetProperty (Property.Typed.EntryId);
+
 			msg.Close ();
+
 			return entryId;
 		}
 		
 		[Test]
 		public void TestCopyMessages2 ()
 		{
-			IMapiFactory factory = ProviderManager.GetFactory ("NMapi.Provider.TeamXChange", "NMapi.Provider.TeamXChange.TeamXChangeMapiFactory");
+			IMapiFactory factory = ProviderManager.GetFactory ("NMapi.Provider.Styx", "NMapi.Provider.Styx.MapiFactory");
 			IMapiSession session = factory.CreateMapiSession ();
-			session.Logon ("localhost", "demo1", "demo1");
+			session.Logon ("MAPI", "dummy", "dummy");
 			IMapiFolder root = (IMapiFolder) session.PrivateStore.OpenEntry (null, null, Mapi.Modify);
 			IMapiFolder folder = (IMapiFolder) session.PrivateStore.OpenEntry (session.PrivateStore.GetReceiveFolder (null, 0).EntryID, null, Mapi.Modify);
 			
@@ -41,12 +52,15 @@ namespace NMapi.Test
 			SBinary entryId5 = CreateMessage (folder, 5);
 			
 			EntryList entries = new EntryList (new SBinary [] { entryId1, entryId2 } );
-			
-			SBinary[] eids = folder.CopyMessagesAndIdentify (entries, null, root, null, 0);
 
-
-			Assert.AreEqual (2, eids.Length);
+			IMapiFolder newf = folder.CreateFolder(FolderType.Generic, "testfolder", "", null, Mapi.Unicode);
 			
+			folder.CopyMessages (entries, null, newf, null, 0);
+
+			newf.EmptyFolder(null, 0);
+
+			folder.SetReadFlags(entries, null, NMAPI.CLEAR_READ_FLAG);
+
 			// TODO: assert something!
 
 			
