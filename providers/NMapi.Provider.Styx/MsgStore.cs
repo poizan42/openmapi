@@ -169,11 +169,31 @@ namespace NMapi.Provider.Styx
         }
 
         public IMapiTableReader GetReceiveFolderTable (int arg) {
-            throw new NotImplementedException ();
+            IntPtr TableHandle;
+            int hr = CMapi_MsgStore_GetReceiveFolderTable (cobj, (uint) arg, out TableHandle);
+            Transmogrify.CheckHResult (hr);
+            IMapiTableReader reader;
+            if (CMapi.IsNative) {
+                Table table = new Table (TableHandle);
+                reader = new TableReaderWrapped (table);
+            } else {
+                reader = new TableReaderNative (TableHandle);
+            }
+            return reader;
         }
 
         public IMapiTableReader GetOutgoingQueue (int arg) {
-            throw new NotImplementedException ();
+            IntPtr TableHandle;
+            int hr = CMapi_MsgStore_GetOutgoingQueue (cobj, (uint) arg, out TableHandle);
+            Transmogrify.CheckHResult (hr);
+            IMapiTableReader reader;
+            if (CMapi.IsNative) {
+                Table table = new Table (TableHandle);
+                reader = new TableReaderWrapped (table);
+            } else {
+                reader = new TableReaderNative (TableHandle);
+            }
+            return reader;
         }
 
         public byte[] OrigEID {

@@ -226,7 +226,10 @@ namespace NMapi.Provider.Styx {
         }
 
         public int WaitForCompletion (int flags, int timeout) {
-            throw new NotImplementedException ();
+            uint tableStatus;
+            int hr = CMapi_Table_WaitForCompletion(cobj, (uint) flags, (uint) timeout, out tableStatus);
+            Transmogrify.CheckHResult (hr);
+            return (int) tableStatus;
         }
 
         #endregion

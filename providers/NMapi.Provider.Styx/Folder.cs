@@ -43,7 +43,16 @@ namespace NMapi.Provider.Styx
         #region IMapiFolder Members
 
         public void CopyFolder (byte[] entryID, NMapiGuid interFace, IMapiFolder destFolder, string newFolderName, IMapiProgress progress, int flags) {
-            throw new NotImplementedException ();
+            using (MemContext MemCtx = new MemContext ()) {
+                uint EidSize = entryID == null ? 0 : (uint) entryID.Length;
+                IntPtr ifHandle = Transmogrify.GuidToPtr (interFace, MemCtx);
+                IntPtr nativeObject = ((Unknown)destFolder).nativeObject; /* XXX not really clean */
+
+                /* XXX implement progress */
+                int hr = CMapi_Folder_CopyFolder (cobj, EidSize, entryID, ifHandle, nativeObject, newFolderName, 0, IntPtr.Zero, (uint) flags);
+
+                Transmogrify.CheckHResult (hr);
+            }
         }
 
         public void CopyMessages (EntryList msgList, NMapiGuid interFace, IMapiFolder destFolder, IMapiProgress progress, int flags) {
@@ -107,23 +116,52 @@ namespace NMapi.Provider.Styx
         }
 
         public void EmptyFolder (IMapiProgress progress, int flags) {
-            throw new NotImplementedException ();
+            /* XXX implement progress */
+            int hr = CMapi_Folder_EmptyFolder(cobj, 0, IntPtr.Zero, (uint) flags);
+
+            Transmogrify.CheckHResult (hr);
         }
 
         public int GetMessageStatus (byte[] entryID, int flags) {
-            throw new NotImplementedException ();
+            uint messageStatus;
+            uint EidSize = entryID == null ? 0 : (uint) entryID.Length;
+
+            int hr = CMapi_Folder_GetMessageStatus(cobj, EidSize, entryID, (uint) flags, out messageStatus);
+
+            Transmogrify.CheckHResult (hr);
+            return (int) messageStatus;
         }
 
         public void SaveContentsSort (SortOrderSet sortOrder, int flags) {
-            throw new NotImplementedException ();
+            using (MemContext MemCtx = new MemContext ()) {
+                IntPtr nativeSortOrder = Transmogrify.SortOrderSetToPtr (sortOrder, MemCtx);
+
+                int hr = CMapi_Folder_SaveContentsSort (cobj, nativeSortOrder, (uint) flags);
+                Transmogrify.CheckHResult (hr);
+            }
         }
 
         public int SetMessageStatus (byte[] entryID, int newStatus, int newStatusMask) {
-            throw new NotImplementedException ();
+            uint oldStatus;
+            uint EidSize = entryID == null ? 0 : (uint) entryID.Length;
+
+            int hr = CMapi_Folder_SetMessageStatus(cobj, EidSize, entryID, (uint) newStatus, (uint) newStatusMask, out oldStatus);
+
+            Transmogrify.CheckHResult (hr);
+            return (int) oldStatus;
         }
 
         public void SetReadFlags (EntryList msgList, IMapiProgress progress, int flags) {
-            throw new NotImplementedException ();
+            using (MemContext MemCtx = new MemContext ()) {
+                IntPtr lpMsgList = Transmogrify.EntryListToPtr(msgList, MemCtx);
+
+                if(lpMsgList == IntPtr.Zero) return;
+
+                /* XXX implement progress */
+                int hr = CMapi_Folder_SetReadFlags (cobj, lpMsgList, 0, IntPtr.Zero, (uint) flags);
+
+                Transmogrify.CheckHResult (hr);
+            }
         }
 
         #endregion
@@ -162,7 +200,7 @@ namespace NMapi.Provider.Styx
                                                            byte[]        lpEntryID,
                                                            IntPtr           lpInterface,
                                                            IntPtr           lpDestFolder,
-                                                           uint           lpszNewFolderName,
+                                                           [MarshalAs (UnmanagedType.LPWStr)] string lpszNewFolderName,
                                                            uint            ulUIParam,
                                                            IntPtr   lpProgress,
                                                            uint            ulFlags);

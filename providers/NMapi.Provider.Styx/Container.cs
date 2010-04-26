@@ -109,7 +109,15 @@ namespace NMapi.Provider.Styx
         }
 
         public void SetSearchCriteria (Restriction restriction, EntryList containerList, int searchFlags) {
-            throw new NotImplementedException ();
+            using (MemContext MemCtx = new MemContext ()) {
+                IntPtr lpRestriction;
+                IntPtr lpContainerList;
+
+                lpRestriction = Transmogrify.RestrictionToPointer(restriction, MemCtx);
+		lpContainerList = Transmogrify.EntryListToPtr(containerList, MemCtx);
+                int hr = CMapi_Container_SetSearchCriteria (cobj, lpRestriction, lpContainerList, (uint) searchFlags);
+                Transmogrify.CheckHResult (hr);
+            }
         }
 
 

@@ -56,7 +56,9 @@ namespace NMapi.Provider.Styx
         }
 
         public void DeleteAttach (int attachmentNum, IMapiProgress progress, int flags) {
-            throw new NotImplementedException ();
+            /* XXX implement progress */
+            int hr = CMapi_Message_DeleteAttach(cobj, (uint) attachmentNum, 0, IntPtr.Zero, (uint) flags);
+            Transmogrify.CheckHResult (hr);
         }
 
         public IMapiTableReader GetAttachmentTable (int flags) {

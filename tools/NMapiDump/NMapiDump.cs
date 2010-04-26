@@ -233,11 +233,18 @@ namespace NMapi.Dump
 
             do {
                 try {
+                    System.Console.WriteLine("Creating session");
                     session = factory.CreateMapiSession ();
+                    System.Console.WriteLine("Logging on");
                     session.Logon (host, user, pass);
     
-                    using (IMsgStore store = session.PrivateStore) {
-                        Dump (store);
+                    System.Console.WriteLine("Dumping store(s)");
+                    try {
+                        using (IMsgStore store = session.PrivateStore) {
+                            Dump (store);
+                        }
+                    } catch(Exception e) {
+                        System.Console.WriteLine("***ERROR*** while dumping store, message: " + e.Message);
                     }
     
                     try {
@@ -246,11 +253,11 @@ namespace NMapi.Dump
                         }
                     } catch(NotImplementedException) {}
     
+                    System.Console.WriteLine("Disposing session");
                     session.Dispose ();
     
                 } catch (MapiException e) {
-                    System.Console.WriteLine ("ERROR: Can't open Mapi-Session!\n\n" +
-                                              e.Message);
+                    System.Console.WriteLine ("***ERROR***, message: " + e.Message);
                     loop = false;
                 }
     

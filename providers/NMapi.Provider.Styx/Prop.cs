@@ -66,6 +66,8 @@ namespace NMapi.Provider.Styx
         }
 
         public IBase OpenProperty (int propTag) {
+            /* XXX how to get interFace here? NULL is not allowed */
+            /* TXC: return OpenProperty(propTag, null, 0, 0); */
             throw new NotImplementedException ();
         }
 
