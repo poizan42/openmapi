@@ -126,7 +126,25 @@ namespace NMapi.Provider.Styx
         }
 
         public GetNamesFromIDsResult GetNamesFromIDs (PropertyTag[] propTags, NMapiGuid propSetGuid, int flags) {
-            throw new NotImplementedException ();
+            GetNamesFromIDsResult res = new GetNamesFromIDsResult();
+            using (MemContext MemCtx = new MemContext ()) {
+                IntPtr TagArrayHandle = Transmogrify.TagArrayToPtr (propTags, MemCtx);
+                IntPtr propSetHandle = Transmogrify.GuidToPtr (propSetGuid, MemCtx);
+                IntPtr nativePropNames = IntPtr.Zero;
+                uint count;
+
+                int hr = CMapi_Prop_GetNamesFromIDs (cobj, out TagArrayHandle, propSetHandle, (uint) flags, out count, out nativePropNames);
+
+                Transmogrify.CheckHResult (hr);
+
+                if(count > 0 && nativePropNames != IntPtr.Zero) {
+                    res.PropTags = Transmogrify.PtrToTagArray (TagArrayHandle);
+                    res.PropNames = Transmogrify.PtrToMapiNameIds(nativePropNames, count);
+                    CMapi.FreeBuffer(nativePropNames);
+                }
+            }
+
+            return res;
         }
 
         public PropertyTag[] GetPropList (int flags) {
@@ -212,7 +230,7 @@ namespace NMapi.Provider.Styx
                                     out IntPtr lppProblems /* LPSPropProblemArray* */);
         [DllImport ("libcmapi")]
         private static extern int CMapi_Prop_GetNamesFromIDs (IntPtr prop,
-                                    IntPtr lppPropTags /* LPSPropTagArray* */,
+                                    out IntPtr lppPropTags /* LPSPropTagArray* */,
                                     IntPtr lpPropSetGuid /* LPGUID */,
                                     uint ulFlags,
                                     out uint lpcPropNames,

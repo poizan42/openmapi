@@ -764,6 +764,44 @@ namespace NMapi.Provider.Styx.Interop
             return pointer;
         }
 
+        internal static MapiNameId[] PtrToMapiNameIds (IntPtr nativeIds, uint numIds) {
+
+            if (numIds == 0 || nativeIds == IntPtr.Zero) {
+                return new MapiNameId[0];
+            }
+
+            IntPtr iter = nativeIds;
+            uint cnt;
+            MapiNameId[] ret = new MapiNameId[numIds];
+
+            for(cnt = 0; cnt < numIds; cnt++) {
+                IntPtr currentId = Marshal.ReadIntPtr(iter);
+                iter = (IntPtr) ((int) iter + Marshal.SizeOf (iter));
+
+                SMapiNameId nativeId = (SMapiNameId) Marshal.PtrToStructure(currentId, typeof(SMapiNameId));
+
+
+                switch ((NamedPropertyIdKind) nativeId.ulKind) {
+
+                    case NamedPropertyIdKind.String:
+                        StringMapiNameId StrId = new StringMapiNameId();
+                        StrId.Guid = PtrToGuid(nativeId.lpguid);
+                        StrId.StrName = Marshal.PtrToStringUni(nativeId.Kind.ptr);
+                        ret[cnt] = StrId;
+                        break;
+
+                    case NamedPropertyIdKind.Id:
+                        NumericMapiNameId NumId = new NumericMapiNameId();
+                        NumId.Guid = PtrToGuid(nativeId.lpguid);
+                        NumId.ID = nativeId.Kind.lID;
+                        ret[cnt] = NumId;
+                        break;
+                }
+            }
+            
+            return ret;
+        }
+
         public static byte[] PtrToByteArray (IntPtr pointer, uint count) {
 
             if (pointer == IntPtr.Zero)
