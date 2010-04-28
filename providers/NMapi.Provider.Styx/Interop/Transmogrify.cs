@@ -297,6 +297,7 @@ namespace NMapi.Provider.Styx.Interop
 
 
         internal static PropertyTag[] PtrToTagArray (IntPtr TagArrayHandle) {
+            if(TagArrayHandle == IntPtr.Zero) return null;
             IntPtr iter = TagArrayHandle;
             NativeSizedArray RealArray = PtrToSizedArray (ref iter);
             int[] tags = new int[RealArray.Count];
@@ -427,8 +428,7 @@ namespace NMapi.Provider.Styx.Interop
             PropertyProblem[] ProblemArray = new PropertyProblem[SizedArray.Count];
 
             for (int i = 0 ; i < SizedArray.Count ; i++) {
-                NativePropProblem problem = new NativePropProblem ();
-                Marshal.PtrToStructure (iter, problem);
+                NativePropProblem problem = (NativePropProblem) Marshal.PtrToStructure (iter, typeof(NativePropProblem));
 
                 PropertyProblem PropProblem = ProblemArray[i] = new PropertyProblem ();
                 PropProblem.Index = (int) problem.Index;

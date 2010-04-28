@@ -35,39 +35,52 @@ namespace NMapi.Provider.Styx
 
         #region IMapiProp Members
 
+        /* XXX Missing: CopyProps, CopyTo */
+
         public MapiError GetLastError (int hresult, int flags) {
-            IntPtr ErrorHandle;
+            IntPtr ErrorHandle = IntPtr.Zero;
+            MapiError error = null;
+
             int hr = CMapi_Prop_GetLastError (cobj, hresult, (uint) flags, out ErrorHandle);
+
+            /* if we have something to transmogrify, do it now and free the buffer */
+            if(ErrorHandle != IntPtr.Zero) {
+                error = Transmogrify.PtrToMapiError (ErrorHandle);
+                CMapi.FreeBuffer(ErrorHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
-            MapiError error = Transmogrify.PtrToMapiError (ErrorHandle);
-            CMapi.FreeBuffer(ErrorHandle);
+
             return error;
         }
 
         public PropertyValue[] GetProps (PropertyTag[] Tags, int flags) {
 
-            PropertyValue[] PropArray;
+            PropertyValue[] PropArray = null;
             using (MemContext MemCtx = new MemContext ()) {
 
                 IntPtr TagArrayHandle = Transmogrify.TagArrayToPtr (Tags, MemCtx);
-                IntPtr PropArrayHandle;
+                IntPtr PropArrayHandle = IntPtr.Zero;
                 uint count;
                 int hr = CMapi_Prop_GetProps (cobj, TagArrayHandle, (uint) flags, out count, out PropArrayHandle);
+
+                /* if we have something to transmogrify, do it now and free the buffer */
+                if(PropArrayHandle != IntPtr.Zero) {
+                    PropArray = Transmogrify.PtrToPropArray (PropArrayHandle, count);
+                    CMapi.FreeBuffer(PropArrayHandle);
+                }
 
                 //FIXME: hack!
                 if (hr != 0x40380)
                     Transmogrify.CheckHResult (hr);
-
-                PropArray = Transmogrify.PtrToPropArray (PropArrayHandle, count);
-                CMapi.FreeBuffer(PropArrayHandle);
             }
 
             return PropArray;
         }
 
         public IBase OpenProperty (int propTag) {
-            /* XXX how to get interFace here? NULL is not allowed */
             /* TXC: return OpenProperty(propTag, null, 0, 0); */
+            /* XXX how to get interFace here? NULL is not allowed in real MAPI */
             throw new NotImplementedException ();
         }
 
@@ -84,12 +97,8 @@ namespace NMapi.Provider.Styx
         }
 
         public void SaveChanges (int flags) {
-
             int hr = CMapi_Prop_SaveChanges (cobj, (uint) flags);
-
-            if (hr != 0) {
-                Transmogrify.CheckHResult (hr);
-            }
+            Transmogrify.CheckHResult (hr);
         }
 
         public PropertyProblem[] DeleteProps (PropertyTag[] propTagArray) {
@@ -97,11 +106,17 @@ namespace NMapi.Provider.Styx
             using (MemContext MemCtx = new MemContext ()) {
 
                 IntPtr TagArrayHandle = Transmogrify.TagArrayToPtr (propTagArray, MemCtx);
-                IntPtr ProblemHandle;
+                IntPtr ProblemHandle = IntPtr.Zero;
+                PropertyProblem[] problems = null;
+
                 int hr = CMapi_Prop_DeleteProps (cobj, TagArrayHandle, out ProblemHandle);
+                if(ProblemHandle != IntPtr.Zero) {
+                    problems = Transmogrify.PtrToProblemArray (ProblemHandle);
+                    CMapi.FreeBuffer(ProblemHandle);
+                }
+
                 Transmogrify.CheckHResult (hr);
-                PropertyProblem[] problems = Transmogrify.PtrToProblemArray (ProblemHandle);
-                CMapi.FreeBuffer(ProblemHandle);
+
                 return problems;
             }
 
@@ -135,24 +150,30 @@ namespace NMapi.Provider.Styx
 
                 int hr = CMapi_Prop_GetNamesFromIDs (cobj, out TagArrayHandle, propSetHandle, (uint) flags, out count, out nativePropNames);
 
-                Transmogrify.CheckHResult (hr);
-
                 if(count > 0 && nativePropNames != IntPtr.Zero) {
                     res.PropTags = Transmogrify.PtrToTagArray (TagArrayHandle);
                     res.PropNames = Transmogrify.PtrToMapiNameIds(nativePropNames, count);
                     CMapi.FreeBuffer(nativePropNames);
+                    CMapi.FreeBuffer(TagArrayHandle); /* XXX also this. pointer likely has been changed by MAPI function */
                 }
+
+                Transmogrify.CheckHResult (hr);
             }
 
             return res;
         }
 
         public PropertyTag[] GetPropList (int flags) {
-            IntPtr TagArrayHandle;
+            IntPtr TagArrayHandle = IntPtr.Zero;
+            PropertyTag[] tags = null;
+
             int hr = CMapi_Prop_GetPropList (cobj, (uint) flags, out TagArrayHandle);
+            if(TagArrayHandle != IntPtr.Zero) {
+                tags = Transmogrify.PtrToTagArray (TagArrayHandle);
+                CMapi.FreeBuffer(TagArrayHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
-            PropertyTag[] tags = Transmogrify.PtrToTagArray (TagArrayHandle);
-            CMapi.FreeBuffer(TagArrayHandle);
 
             return tags;
         }
@@ -162,14 +183,29 @@ namespace NMapi.Provider.Styx
             using (MemContext MemCtx = new MemContext ()) {
 
                 uint count;
-                IntPtr ProblemHandle;
+                IntPtr ProblemHandle = IntPtr.Zero;
                 IntPtr PropArrayHandle = Transmogrify.PropArrayToPtr (propArray, out count, MemCtx);
+                PropertyProblem[] problems = null;
 
                 int hr = CMapi_Prop_SetProps (cobj, count, PropArrayHandle, out ProblemHandle);
-                Transmogrify.CheckHResult (hr);
 
-                PropertyProblem[] problems = Transmogrify.PtrToProblemArray (ProblemHandle);
-                CMapi.FreeBuffer(ProblemHandle);
+                if(ProblemHandle != IntPtr.Zero) {
+                    problems = Transmogrify.PtrToProblemArray (ProblemHandle);
+                    CMapi.FreeBuffer(ProblemHandle);
+                }
+
+                /* XXX hack for ONC-RPC problems - jumapi crashes when no problem array comes back, so create one */
+                if(hr < 0) {
+                    problems = new PropertyProblem[propArray.Length];
+                    for(count = 0; count < propArray.Length; count++) {
+                        PropertyProblem prob = new PropertyProblem();
+                        prob.Index = (int) count;
+                        prob.PropTag = propArray[count].PropTag;
+                        prob.SCode = hr;
+                        problems[count] = prob;
+                    }
+                } else
+                Transmogrify.CheckHResult (hr); /* this needs to stay here when the hack gets removed! */
 
                 return problems;
             }

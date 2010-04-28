@@ -67,6 +67,7 @@ namespace NMapi.Provider.Styx
             uint Connection;
             AdviseBridge bridge = new AdviseBridge (sink);
             int EidSize = entryID == null ? 0 : entryID.Length;
+
             int hr = CMapi_MsgStore_Advise (cobj, (uint) EidSize, entryID, (uint) eventMask, bridge.SinkPtr, out Connection);
 
             /* XXX hack because some flags produce MAPI_E_UNKNOWN_FLAGS */
@@ -81,9 +82,17 @@ namespace NMapi.Provider.Styx
                 hr = CMapi_MsgStore_Advise (cobj, (uint) EidSize, entryID, (uint) newEvMask, bridge.SinkPtr, out Connection);
             }
             /* XXX end of hack */
-           
-            AdviseBridge.AddBrige (bridge, Connection);
+
             Transmogrify.CheckHResult (hr);
+
+            /* XXX if we know this connection number, delete the old AdviseBridge. Should only happen for same entryID (client crashed meanwhile?) */
+            try {
+                AdviseBridge.BridgeById (Connection);
+                AdviseBridge.RemoveBridge (Connection);
+            } catch(Exception) { }
+
+            AdviseBridge.AddBrige (bridge, Connection);
+
             return new EventConnection ((int) Connection);
         }
 
@@ -158,7 +167,8 @@ namespace NMapi.Provider.Styx
 
         public void Unadvise (EventConnection txcOutlookHackConnection) {
             int connection = txcOutlookHackConnection.Connection;
-            /* XXX check why we got -1 here (mapishell->quit) */
+
+            /* XXX check why we got -1 here from mapishell. doesn't seem to be a Styx problem */
             if(connection != -1) {
                 AdviseBridge.BridgeById ((uint)connection);
                 int hr = CMapi_MsgStore_Unadvise (cobj, (uint)connection);

@@ -45,6 +45,8 @@ namespace NMapi.Provider.Styx {
 
         #region IMapiTable Membsers
 
+        /* XXX Missing: CollapseRow, ExpandRow, GetCollapseState, GetStatus, QuerySortOrder, SetCollapseState */
+
         public void Abort () {
             int hr = CMapi_Table_Abort (cobj);
             Transmogrify.CheckHResult (hr);
@@ -67,15 +69,34 @@ namespace NMapi.Provider.Styx {
             /* XXX end of hack */
 
             Transmogrify.CheckHResult (hr);
+
+            /* XXX if we know this connection number, delete the old AdviseBridge. Should only happen for same folder (client crashed meanwhile?) */
+            try {
+                AdviseBridge.BridgeById (Connection);
+                AdviseBridge.RemoveBridge (Connection);
+            } catch(Exception) { }
+
+            AdviseBridge.AddBrige (bridge, Connection);
+
             return new EventConnection ((int) Connection);
         }
+        
 
         public int CollapseRow (byte[] instanceKey, int flags) {
             throw new NotImplementedException ();
         }
 
+        /* XXX in lots of places, int is used in NMapi, while MAPI wants uint.
+         * I don't like those casts, but we have to wait for a better time to
+         * review all the places where appropriate changes might be needed...
+         * ...or wait for 19-Jan-2038 :) */
         public int CreateBookmark () {
-            throw new NotImplementedException ();
+            uint position;
+
+            int hr = CMapi_Table_CreateBookmark(cobj, out position);
+            Transmogrify.CheckHResult (hr);
+
+            return (int) position;
         }
 
         public Events.ObjectEventSet Events {
@@ -101,7 +122,8 @@ namespace NMapi.Provider.Styx {
         }
 
         public void FreeBookmark (int position) {
-            throw new NotImplementedException ();
+            int hr = CMapi_Table_FreeBookmark(cobj, (uint) position);
+            Transmogrify.CheckHResult (hr);
         }
 
         public byte[] GetCollapseState (int flags, byte[] instanceKey) {
@@ -109,11 +131,18 @@ namespace NMapi.Provider.Styx {
         }
 
         public MapiError GetLastError (int hresult, int flags) {
-            IntPtr ErrorHandle;
+            IntPtr ErrorHandle = IntPtr.Zero;
+            MapiError error = null;
+
             int hr = CMapi_Table_GetLastError (cobj, hresult, (uint) flags, out ErrorHandle);
+
+            if(ErrorHandle != IntPtr.Zero) {
+                Transmogrify.PtrToMapiError (ErrorHandle);
+                CMapi.FreeBuffer(ErrorHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
-            MapiError error = Transmogrify.PtrToMapiError (ErrorHandle);
-            CMapi.FreeBuffer(ErrorHandle);
+
             return error;
         }
 
@@ -126,14 +155,18 @@ namespace NMapi.Provider.Styx {
 
         public PropertyTag[] QueryColumns (int flags) {
 
-            IntPtr TagArrayHandle;
-            PropertyTag[] ret;
+            IntPtr TagArrayHandle = IntPtr.Zero;
+            PropertyTag[] ret = null;
 
             int hr = CMapi_Table_QueryColumns (cobj, (uint) flags, out TagArrayHandle);
+
+            if(TagArrayHandle != IntPtr.Zero) {
+                ret = Transmogrify.PtrToTagArray (TagArrayHandle);
+                CMapi.FreeBuffer(TagArrayHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
 
-            ret = Transmogrify.PtrToTagArray (TagArrayHandle);
-            CMapi.FreeBuffer(TagArrayHandle);
             return ret;
         }
 
@@ -152,14 +185,18 @@ namespace NMapi.Provider.Styx {
         }
 
         public RowSet QueryRows (int rowCount, int flags) {
-            IntPtr RowHandle;
-            RowSet ret;
+            IntPtr RowHandle = IntPtr.Zero;
+            RowSet ret = null;
 
             int hr = CMapi_Table_QueryRows (cobj, rowCount, (uint) flags, out RowHandle);
+
+            if(RowHandle != IntPtr.Zero) {
+                ret = Transmogrify.PtrToRowSet (RowHandle);
+                CMapi.FreeProws(RowHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
 
-            ret = Transmogrify.PtrToRowSet (RowHandle);
-            CMapi.FreeProws(RowHandle);
             return ret;
         }
 
@@ -220,9 +257,8 @@ namespace NMapi.Provider.Styx {
         public void Unadvise (EventConnection txcOutlookHackConnection) {
             uint connection = (uint) txcOutlookHackConnection.Connection;
             int hr = CMapi_Table_Unadvise (cobj, connection);
-            Transmogrify.CheckHResult (hr);
             AdviseBridge.RemoveBridge (connection);
-            //XXX FIXME leaking the advise Bridge
+            Transmogrify.CheckHResult (hr);
         }
 
         public int WaitForCompletion (int flags, int timeout) {

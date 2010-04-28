@@ -59,14 +59,21 @@ namespace NMapi.Provider.Styx
             CMapi_AdviseSink_Alloc (CallbackPtr, GCHandle.ToIntPtr (gch), out SinkHandle);
             this.sink = sink;
         }
+
+	/* XXX a desctructor might be needed to delete the native C++ class using CMapi_AdviseSink_Free().
+         * Maybe the GCHandle also needs some handling. Needs to be checked! */
         
         public static int OnNotify (IntPtr Context, uint count, IntPtr Notifications) {
             GCHandle gch = GCHandle.FromIntPtr (Context);
             AdviseBridge bridge = (AdviseBridge) gch.Target;
             
-            Notification[] events = Transmogrify.PtrToNotification (Notifications, count);
-            System.Console.WriteLine ("*** Got {0} notifications\n", events.Length);
-            bridge.sink.OnNotify (events);
+            if(Notifications != IntPtr.Zero) {
+                Notification[] events = Transmogrify.PtrToNotification (Notifications, count);
+                //System.Console.WriteLine ("*** Got {0} notifications", events.Length);
+                bridge.sink.OnNotify (events);
+            } else {
+                System.Console.WriteLine("WARNING! OnNotify() with NULL pointer for notifications");
+            }
             return 0;
         }
 
