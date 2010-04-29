@@ -40,6 +40,95 @@ namespace NMapi.Provider.Styx
 
         }
 
+        #region IMapiFolder UMAPI emulation functions (named properties on folders)
+
+        /* XXX emulate TXC behaviour with named properties on Folders, which is not supported by Exchange */
+        public PropertyValue[] GetProps (PropertyTag[] Tags, int flags) {
+            PropertyValue[] values = base.GetProps(Tags, flags);
+            uint count;
+
+            /* walk over properties to find named props not being found */
+            count = 0;
+            /* XXX don't do this on a "get all" request */
+            if(Tags != null && values != null && values.Length > 0 && Tags.Length == values.Length) {
+                foreach(PropertyValue val in values) {
+                    Flags.PropertyType type = (Flags.PropertyType) PropertyTypeHelper.PROP_TYPE(val.PropTag);
+                    if(type == Flags.PropertyType.Error && PropertyTag.CreatePropertyTag(val.PropTag).IsNamedProperty)
+                        count++;
+                }
+            }
+            if(count > 0) {
+                using (IMessage msg = this.OpenMapi_GetOrCreateAssociated("FolderNamedProperties", false)) {
+                    if(msg != null) {
+                        PropertyTag[] newTags = new PropertyTag[count];
+                        int iter;
+                        count = 0;
+                        for(iter = 0; iter < values.Length; iter++) {
+                            PropertyValue val = values[iter];
+                            Flags.PropertyType type = (Flags.PropertyType) PropertyTypeHelper.PROP_TYPE(val.PropTag);
+                            if(type == Flags.PropertyType.Error && PropertyTag.CreatePropertyTag(val.PropTag).IsNamedProperty) {
+                                newTags[count] = Tags[iter];
+                                count++;
+                            }
+                        }
+                        /* mix array here! */
+                        values = msg.GetProps(newTags, flags);
+                    }
+                }
+            }
+
+            return values;
+        }
+
+        /* XXX emulate TXC behaviour with named properties on Folders, which is not supported by Exchange */
+        public PropertyProblem[] SetProps (PropertyValue[] propArray) {
+            PropertyProblem[] problems = base.SetProps(propArray);
+            uint count;
+
+            /* walk over problems to find named props with the right errors to set those props on msg */
+            count = 0;
+            if(problems != null && problems.Length > 0) {
+                foreach(PropertyProblem prob in problems) {
+                    if(PropertyTag.CreatePropertyTag(prob.PropTag).IsNamedProperty && (
+                        prob.SCode == Error.NoAccess ||
+                        prob.SCode == Error.NoSupport ||
+                        prob.SCode == Error.UnexpectedId)) count++;
+                }
+            }
+
+            /* if any suitable props have been found, construct a SetProps request with them for the msg object */
+            if(count > 0) {
+                using (IMessage msg = this.OpenMapi_GetOrCreateAssociated("FolderNamedProperties", true)) {
+                    if(msg != null) {
+                        PropertyProblem[] newProblems = null;
+                        PropertyValue[] newProps = new PropertyValue[count];
+                        int[] indexmap = new int[count];
+    
+                        count = 0;
+                        foreach(PropertyProblem prob in problems) {
+                            if(PropertyTag.CreatePropertyTag(prob.PropTag).IsNamedProperty && (
+                                prob.SCode == Error.NoAccess ||
+                                prob.SCode == Error.NoSupport ||
+                                prob.SCode == Error.UnexpectedId)) {
+                                indexmap[count] = prob.Index;
+                                newProps[count] = propArray[prob.Index];
+                                count++;
+                            }
+                        }
+                        newProblems = msg.SetProps(newProps);
+                        msg.SaveChanges(0);
+    
+                        /* XXX mix problems */
+                        return newProblems;
+                    }
+                }
+            }
+
+            return problems;
+        }
+
+        #endregion
+
         #region IMapiFolder Members
 
         public void CopyFolder (byte[] entryID, NMapiGuid interFace, IMapiFolder destFolder, string newFolderName, IMapiProgress progress, int flags) {

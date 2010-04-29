@@ -160,7 +160,9 @@ namespace NMapi {
 
 		#region OpenMapi Associated Data Helpers
 
-//		using (IMessage msg = folder.OpenMapi_GetOrCreateAssociated ("blub")) {
+//              create -> true to create object if now found, false to only return if found
+//
+//		using (IMessage msg = folder.OpenMapi_GetOrCreateAssociated ("blub", create)) {
 //			do work ...
 //			
 //		}
@@ -168,9 +170,10 @@ namespace NMapi {
 		/// <summary></summary>
 		/// <remarks>NOTE: caller must dispose/close the message!</remarks>
 		/// <param name="name"></param>
+		/// <param name="create"></param>
 		/// <returns></returns>
 		/// <exceptino cref=""></exception>
-		public static IMessage OpenMapi_GetOrCreateAssociated (this IMapiFolder folder, string name) // readable/writeable
+		public static IMessage OpenMapi_GetOrCreateAssociated (this IMapiFolder folder, string name, bool create) // readable/writeable
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name");
@@ -182,10 +185,10 @@ namespace NMapi {
 
 			string containerClass = "org.openmapi.settings.associated." + name;
 			byte[] entryId = FindOMAMessage (folder, containerClass);
-			if (entryId == null)
+			if (entryId == null && create)
 				entryId = CreateOMAMessage (folder, containerClass);
 			if (entryId != null)
-				return (IMessage) folder.OpenEntry (entryId, null, 0);
+				return (IMessage) folder.OpenEntry (entryId, null, Mapi.Modify);
 			return null;
 		}
 
