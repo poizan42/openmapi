@@ -134,9 +134,7 @@ namespace NMapi {
 			return prop.GetHierarchyTable (convenientDepth, false);
 		}
 
-		/// <summary>
-		///  Returns the (unicode) hierarchy table.
-		/// </summary>		
+		/// <summary>Returns the (unicode) hierarchy table.</summary>		
 		/// <param name="prop">An IMapiContainer object.</param>
 		/// <param name="convenientDepth">If true the hierarchy table may contain multiple levels (or not, depending on the provider).</param>		
 		/// <param name="showSoftDeletes">If true, objects that have been soft-deleted will be shown.</param>
@@ -158,6 +156,90 @@ namespace NMapi {
 			return prop.GetHierarchyTable (flags);
 		}
 		
+		
+
+		#region OpenMapi Associated Data Helpers
+
+//		using (IMessage msg = folder.OpenMapi_GetOrCreateAssociated ("blub")) {
+//			do work ...
+//			
+//		}
+		
+		/// <summary></summary>
+		/// <remarks>NOTE: caller must dispose/close the message!</remarks>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		/// <exceptino cref=""></exception>
+		public static IMessage OpenMapi_GetOrCreateAssociated (this IMapiFolder folder, string name) // readable/writeable
+		{
+			if (name == null)
+				throw new ArgumentNullException ("name");
+
+			if (name == "")
+				throw new ArgumentException ("name can't be empty.");
+
+			// TODO: if multiple messages match -> bad ;-) ?! locking will only fix this partially.
+
+			string containerClass = "org.openmapi.settings.associated." + name;
+			byte[] entryId = FindOMAMessage (folder, containerClass);
+			if (entryId == null)
+				entryId = CreateOMAMessage (folder, containerClass);
+			if (entryId != null)
+				return (IMessage) folder.OpenEntry (entryId, null, 0);
+			return null;
+		}
+
+		private static byte[] FindOMAMessage (IMapiFolder folder, string containerClass)
+		{
+			using (IMapiTable table = folder.GetAssociatedContentsTable ())
+			{
+				try {
+					table.SetColumns (PropertyTag.ArrayFromIntegers (
+									Property.EntryId, Property.ContainerClass), 0);
+					
+					UnicodeProperty prop = Property.Typed.ContainerClass.CreateValue (containerClass);
+					PropertyRestriction res = new PropertyRestriction (RelOp.Equal, prop);
+					table.FindRow (res, Bookmark.Beginning, 0); // Potentially requires a full table scan. 
+
+					RowSet rows = table.QueryRows (1, 0);
+					if (rows != null && rows.ARow.Length == 1) {
+						foreach (var current in rows.ARow [0].Props)
+							if (current.PropTag == Property.EntryId)
+								return (byte[]) current; // TODO: check if error-property
+					}
+				} catch {
+					// suppress exception...
+				}
+			}
+			return null;
+		}
+		
+		private static byte[] CreateOMAMessage (IMapiFolder folder, string containerClass)
+		{
+			byte[] entryId = null;
+			IMessage msg = folder.CreateMessage (null, NMAPI.MAPI_ASSOCIATED);
+			try {
+				UnicodeProperty prop = Property.Typed.ContainerClass.CreateValue (containerClass);
+				PropertyProblem problem = msg.SetProperty (prop);
+				// TODO: check if a problem occured,
+				msg.SaveChanges (false);
+			} catch (Exception) {
+				msg.Close ();
+				return null;
+			}
+			try {
+				entryId = (byte[]) msg.GetProperty (Property.Typed.EntryId);
+			} catch (Exception) {
+				msg.Close ();
+				return FindOMAMessage (folder, containerClass);
+			}
+			msg.Close ();
+			return entryId;
+		}
+		
+		#endregion
+
+
 	}
 
 }
