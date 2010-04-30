@@ -55,7 +55,20 @@ namespace NMapi.Provider.Styx
 
         public byte[] Identity {
             get {
-                throw new NotImplementedException ();
+                uint idLength = 0;
+                IntPtr idValue = IntPtr.Zero;
+                byte[] entryID = null;
+
+                int hr = CMapi_Session_QueryIdentity (cobj, out idLength, out idValue);
+
+                if(idLength > 0 && idValue != IntPtr.Zero) {
+                    entryID = new byte[idLength];
+                    Marshal.Copy(idValue, entryID, 0, (int) idLength);
+                    CMapi.FreeBuffer(idValue);
+                }
+                Transmogrify.CheckHResult (hr);
+
+                return entryID;
             }
         }
 

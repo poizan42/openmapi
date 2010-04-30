@@ -42,6 +42,7 @@ namespace NMapi.Test
 			IMapiFactory factory = ProviderManager.GetFactory ("NMapi.Provider.Styx", "NMapi.Provider.Styx.MapiFactory");
 			IMapiSession session = factory.CreateMapiSession ();
 			session.Logon ("MAPI", "dummy", "dummy");
+                        byte[] identity = session.Identity;
 			IMapiFolder root = (IMapiFolder) session.PrivateStore.OpenEntry (null, null, Mapi.Modify);
 			IMapiFolder folder = (IMapiFolder) session.PrivateStore.OpenEntry (session.PrivateStore.GetReceiveFolder (null, 0).EntryID, null, Mapi.Modify);
 			
