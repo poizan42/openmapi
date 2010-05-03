@@ -44,8 +44,9 @@ namespace NMapi.Provider.Styx {
             return new Session ();
         }
 
+        /* XXX not yet finally defined */
         public IMapiAdmin CreateMapiAdmin(string host) {
-            throw new NotImplementedException ();
+            throw new MapiNoSupportException ();
         }
     }
 }

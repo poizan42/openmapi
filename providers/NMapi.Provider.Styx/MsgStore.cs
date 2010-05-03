@@ -128,8 +128,9 @@ namespace NMapi.Provider.Styx
             return res;
         }
 
+        /* XXX no MAPI function, might be emulated using PR_IPM_SUBTREE_ENTRYID */
         public IMapiFolder HrOpenIPMFolder (string path, int flags) {
-            throw new NotImplementedException ();
+            throw new MapiNoSupportException ();
         }
 
         public IBase OpenEntry (byte[] entryID, NMapiGuid interFace, int flags) {
@@ -148,11 +149,11 @@ namespace NMapi.Provider.Styx
         }
 
         public IBase OpenEntry (byte[] entryID) {
-            return OpenEntry (entryID, null, 16 /* XXX MAPI_BEST_ACCESS */);
+            return OpenEntry (entryID, null, NMAPI.MAPI_BEST_ACCESS);
         }
 
         public IBase Root {
-            get { return OpenEntry (null, null, 1 /* XXX MAPI_BEST_ACCESS */); }
+            get { return OpenEntry (null, null, NMAPI.MAPI_BEST_ACCESS); }
         }
 
         public void SetReceiveFolder (string messageClass, byte[] entryID, int flags) {
@@ -206,9 +207,10 @@ namespace NMapi.Provider.Styx
             return reader;
         }
 
+        /* XXX no MAPI function, maybe could be amulated */
         public byte[] OrigEID {
             get {
-                throw new NotImplementedException();
+                throw new MapiNoSupportException();
             }
         }
 

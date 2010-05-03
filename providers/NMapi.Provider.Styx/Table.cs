@@ -115,7 +115,6 @@ namespace NMapi.Provider.Styx {
             using (MemContext MemCtx = new MemContext ()) {
 
                 IntPtr ResHandle = Transmogrify.RestrictionToPointer (restriction, MemCtx);
-                Console.WriteLine ("XX: {0} {1}", numerator, denominator);
                 int hr = CMapi_Table_FindRow (cobj, ResHandle, (uint) numerator, (uint) denominator);
                 Transmogrify.CheckHResult (hr);
             }

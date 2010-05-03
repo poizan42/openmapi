@@ -45,12 +45,14 @@ namespace NMapi.Provider.Styx
 
         }
 
+        /* XXX no MAPI function */
         public string GetConfig (string category, string id, int flags) {
-            throw new NotImplementedException ();
+            throw new MapiNoSupportException ();
         }
 
+        /* XXX no MAPI function */
         public string GetConfigNull (string category, string id, int flags) {
-            throw new NotImplementedException ();
+            throw new MapiNoSupportException ();
         }
 
         public byte[] Identity {
@@ -114,11 +116,6 @@ namespace NMapi.Provider.Styx
 
         public IMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic) {
 
-            //if (user != null) {
-                System.Diagnostics.Trace.WriteLine (String.Format (" OpenStore {0} {1}", user, flags));
-              //  throw new NotImplementedException ();
-           // }
-
             if (CMapi.IsNative == false) {
                 return OpenStoreUMapi (isPublic);
             }
@@ -150,8 +147,7 @@ namespace NMapi.Provider.Styx
                 if (RowSet.Count == 1) {
                     StoreId = (byte[]) RowSet[0].Props[0];
                 } else {
-                    //TODO: Teh Suck
-                    throw new NotImplementedException ("Error opening Message Store: Needs Implementation");
+                    throw new MapiNoSupportException ("Didn't found exactly one store, found " + RowSet.Count + " stores");
                 }
 
                 IntPtr storeHandle;
@@ -160,48 +156,50 @@ namespace NMapi.Provider.Styx
                 return new MsgStore (storeHandle);
 
             } catch (Exception e) {
-                throw new NotImplementedException ("Error opening Message Store", e);
+                /* XXX WTF? */
+                throw new NotSupportedException ("Error opening Message Store", e);
             }
         }
 
         public IMsgStore PrivateStore {
             get {
-                /* XXX hack - needs OpenStoreFlags completion for MDB_NO_DIALOG | MAPI_BEST_ACCESS */
-                return OpenStore ((NMapi.Flags.OpenStoreFlags)0x11, null, false);
+                /* XXX MAPI_BEST_ACCESS is missing in OpenStoreFlags */
+                return OpenStore (OpenStoreFlags.NoDialog | (OpenStoreFlags)NMAPI.MAPI_BEST_ACCESS, null, false);
             }
         }
 
         public IMsgStore PublicStore {
             get {
-                /* XXX hack - needs OpenStoreFlags completion for MDB_NO_DIALOG | MAPI_BEST_ACCESS */
-                return OpenStore ((NMapi.Flags.OpenStoreFlags)0x11, null, true);
+                /* XXX MAPI_BEST_ACCESS is missing in OpenStoreFlags */
+                return OpenStore (OpenStoreFlags.NoDialog | (OpenStoreFlags)NMAPI.MAPI_BEST_ACCESS, null, true);
             }
         }
 
-		public Address[] AbGetUserList (int flags)
-		{
-			throw new MapiNoSupportException (); // TODO!
-		}
-		
-		public Address AbGetUserData (byte[] entryId)
-		{
-			throw new MapiNoSupportException (); // TODO!
-		}
-		
-		public DateTime AbGetChangeTime (int flags)
-		{
-			throw new MapiNoSupportException (); // TODO!
-		}
-		
-		public Address AbGetUserDataBySmtpAddress (string smtpAddress)
-		{
-			throw new MapiNoSupportException (); // TODO!
-		}
-		
-		public Address AbGetUserDataByInternalAddress (string internalAddress)
-		{
-			throw new MapiNoSupportException (); // TODO!
-		}
+        /* XXX no MAPI functions */
+	public Address[] AbGetUserList (int flags)
+	{
+		throw new MapiNoSupportException (); // TODO!
+	}
+	
+	public Address AbGetUserData (byte[] entryId)
+	{
+		throw new MapiNoSupportException (); // TODO!
+	}
+	
+	public DateTime AbGetChangeTime (int flags)
+	{
+		throw new MapiNoSupportException (); // TODO!
+	}
+	
+	public Address AbGetUserDataBySmtpAddress (string smtpAddress)
+	{
+		throw new MapiNoSupportException (); // TODO!
+	}
+	
+	public Address AbGetUserDataByInternalAddress (string internalAddress)
+	{
+		throw new MapiNoSupportException (); // TODO!
+	}
 
         #region C-Glue
         [DllImport ("libcmapi")]
