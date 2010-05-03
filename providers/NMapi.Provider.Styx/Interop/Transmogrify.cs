@@ -384,6 +384,13 @@ namespace NMapi.Provider.Styx.Interop
                         pv.ptr = MemCtx.StringDup (str, type == PropertyType.String8);
                         break;
 
+                    case PropertyType.Systime:
+                        FileTimeProperty ftp = (FileTimeProperty) prop;
+                        FileTime filetime = ftp.Value;
+                        pv.ft.dwHighDateTime = (uint) filetime.HighDateTime;
+                        pv.ft.dwLowDateTime = (uint) filetime.LowDateTime;
+                        break;
+
                     case PropertyType.Binary:
                         byte[] barray = (byte[]) prop;
                         pv.bin.cb = (uint) barray.Length;
