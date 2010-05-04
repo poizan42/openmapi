@@ -296,7 +296,7 @@ namespace NMapi.Provider.Styx {
         #region C-Glue
 
         [DllImport ("libcmapi", CharSet = CharSet.Auto)]
-        public static extern int CMapi_Initialize (out IntPtr obj, [MarshalAs (UnmanagedType.LPStr)] string dll, InitFlags flags);
+        public static extern int CMapi_Initialize (out IntPtr obj, [MarshalAs (UnmanagedType.LPWStr)] string dll, InitFlags flags);
 
         [DllImport ("libcmapi")]
         private static extern int CMapi_Uninitialize (IntPtr obj);
