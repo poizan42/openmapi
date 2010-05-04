@@ -12,6 +12,7 @@ namespace NMapi.Test
 
 	[TestFixture]
 	[Category("Networking")]
+	[Category("Win32")]
 	public class StyxTests
 	{
 		
