@@ -73,17 +73,30 @@ namespace NMapi.Provider.Styx
 
         public GetSearchCriteriaResult GetSearchCriteria (int flags) {
 
-            IntPtr RestrictionHandle;
-            IntPtr ContailerListHandle;
+            IntPtr RestrictionHandle = IntPtr.Zero;
+            IntPtr ContainerListHandle = IntPtr.Zero;
             uint SearchState;
+            GetSearchCriteriaResult res = null;
 
-            int hr = CMapi_Container_GetSearchCriteria (cobj, (uint) flags, out RestrictionHandle, out ContailerListHandle, out SearchState);
+            int hr = CMapi_Container_GetSearchCriteria (cobj, (uint) flags, out RestrictionHandle, out ContainerListHandle, out SearchState);
+
+            if(RestrictionHandle != IntPtr.Zero || ContainerListHandle != IntPtr.Zero) {
+                res = new GetSearchCriteriaResult ();
+                res.Restriction = null;
+                res.ContainerList = null;
+                res.SearchState = (int) SearchState;
+            }
+
+            if(RestrictionHandle != IntPtr.Zero) {
+                res.Restriction = Transmogrify.PtrToRestriction (RestrictionHandle);
+                CMapi.FreeBuffer(RestrictionHandle);
+            }
+            if(ContainerListHandle != IntPtr.Zero) {
+                res.ContainerList = Transmogrify.PtrToEntryList (ContainerListHandle);
+                CMapi.FreeBuffer(ContainerListHandle);
+            }
+
             Transmogrify.CheckHResult (hr);
-
-            GetSearchCriteriaResult res = new GetSearchCriteriaResult ();
-            res.ContainerList = Transmogrify.PtrToEntryList (ContailerListHandle);
-            res.SearchState = (int) SearchState;
-            res.Restriction = Transmogrify.PtrToRestriction (RestrictionHandle);
 
             return res;
         }
@@ -105,7 +118,7 @@ namespace NMapi.Provider.Styx
         }
 
         public IBase OpenEntry (byte[] entryID) {
-            return OpenEntry (entryID, null, 16 /* XXX MAPI_BEST_ACCESS */);
+            return OpenEntry (entryID, null, NMAPI.MAPI_BEST_ACCESS);
         }
 
         public void SetSearchCriteria (Restriction restriction, EntryList containerList, int searchFlags) {

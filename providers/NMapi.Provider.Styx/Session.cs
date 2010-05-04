@@ -37,6 +37,10 @@ namespace NMapi.Provider.Styx
 
 //        bool LoggedOn = false;
 
+        /* XXX Missing: nearly everything. But this is uncritical currently, as the pure MAPI session methods are
+                        currently not really used by NMapi or any front ends. Anyway, this implementation needs
+                        cleanup to be more MAPI compliant than UMAPI compliant */
+
         public Session () : base () {
         }
 
@@ -63,9 +67,9 @@ namespace NMapi.Provider.Styx
 
                 int hr = CMapi_Session_QueryIdentity (cobj, out idLength, out idValue);
 
-                if(idLength > 0 && idValue != IntPtr.Zero) {
+                if(idValue != IntPtr.Zero) {
                     entryID = new byte[idLength];
-                    Marshal.Copy(idValue, entryID, 0, (int) idLength);
+                    if(idLength > 0) Marshal.Copy(idValue, entryID, 0, (int) idLength);
                     CMapi.FreeBuffer(idValue);
                 }
                 Transmogrify.CheckHResult (hr);

@@ -57,6 +57,8 @@ namespace NMapi.Provider.Styx
 
         #region IMsgStore Members
 
+        /* XXX Missing: FinishedMsg, NotifyNewMail, SetLockState */
+
         public void AbortSubmit (byte[] entryID, int flags) {
             uint EidSize = entryID == null ? 0 : (uint) entryID.Length;
             int hr = CMapi_MsgStore_AbortSubmit (cobj, EidSize, entryID, (uint) flags);
@@ -115,16 +117,30 @@ namespace NMapi.Provider.Styx
         }
 
         public GetReceiveFolderResult GetReceiveFolder (string messageClass, int flags) {
-            IntPtr ExplicitClass;
-            IntPtr Eid;
+            IntPtr ExplicitClass = IntPtr.Zero;
+            IntPtr Eid = IntPtr.Zero;
             uint EidLength;
+            GetReceiveFolderResult res = null;
+
             int hr = CMapi_MsgStore_GetReceiveFolder (cobj, messageClass, (uint) flags, out EidLength, out Eid, out ExplicitClass);
+
+            if(Eid != IntPtr.Zero || ExplicitClass != IntPtr.Zero) {
+                res = new GetReceiveFolderResult ();
+                res.ExplicitClass = null;
+                res.EntryID = null;
+            }
+            if(Eid != IntPtr.Zero) {
+                res.EntryID = new byte[(int) EidLength];
+                Marshal.Copy (Eid, res.EntryID, 0, (int) EidLength);
+                CMapi.FreeBuffer(Eid);
+            }
+            if(ExplicitClass != IntPtr.Zero) {
+                res.ExplicitClass = Marshal.PtrToStringAuto (ExplicitClass);
+                CMapi.FreeBuffer(ExplicitClass);
+            }
+
             Transmogrify.CheckHResult (hr);
 
-            GetReceiveFolderResult res = new GetReceiveFolderResult ();
-            res.ExplicitClass = Marshal.PtrToStringAuto (ExplicitClass);
-            res.EntryID = new byte[(int) EidLength];
-            Marshal.Copy (Eid, res.EntryID, 0, (int) EidLength);
             return res;
         }
 

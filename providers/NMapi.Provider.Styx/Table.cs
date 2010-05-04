@@ -45,7 +45,7 @@ namespace NMapi.Provider.Styx {
 
         #region IMapiTable Membsers
 
-        /* XXX Missing: CollapseRow, ExpandRow, GetCollapseState, GetStatus, QuerySortOrder, SetCollapseState */
+        /* XXX Missing: CollapseRow, ExpandRow, GetCollapseState, QuerySortOrder, SetCollapseState */
 
         public void Abort () {
             int hr = CMapi_Table_Abort (cobj);
@@ -250,7 +250,19 @@ namespace NMapi.Provider.Styx {
         }
 
         public GetStatusResult Status {
-            get { throw new NotImplementedException (); }
+            get {
+                uint tableStatus;
+                uint tableType;
+
+                int hr = CMapi_Table_GetStatus(cobj, out tableStatus, out tableType);
+                Transmogrify.CheckHResult (hr);
+
+                GetStatusResult ret = new GetStatusResult();
+                ret.TableStatus = (int) tableStatus;
+                ret.TableType = (int) tableType;
+                return ret;
+            }
+            
         }
 
         public void Unadvise (EventConnection txcOutlookHackConnection) {
