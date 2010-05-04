@@ -435,7 +435,7 @@ runtests: bin/NMapi.Test.dll
 	-nunit-console2 $^ -nologo -labels -exclude=Networking -exclude=Win32 -xml=testresults.xml
 
 runalltests: bin/NMapi.Test.dll
-	-nunit-console2 $^ -nologo -labels -xml=testresults.xml
+	-nunit-console2 $^ -nologo -labels -exclude=Win32 -xml=testresults.xml
 
 #
 # Sample
