@@ -77,22 +77,20 @@ namespace NMapi.Provider.Styx
 
         public byte[] Read(int len) {
             byte[] pv = new byte[len];
-            ulong pcbRead;
+            uint pcbRead;
 
-            CMapi_Stream_Read(cobj, pv, (ulong) len, out pcbRead);
+            CMapi_Stream_Read(cobj, pv, (uint) len, out pcbRead);
 
             if(pcbRead <= 0) return null;
 
-            if(pcbRead < (ulong) len) {
+            if(pcbRead < (uint) len) {
                 byte[] ret = new byte[pcbRead];
                 Buffer.BlockCopy(pv, 0, ret, 0, (int) pcbRead);
                 return ret;
             } else return pv;
         }
 
-        public void GetData (System.IO.Stream destination)
-        {
-            
+        public void GetData (System.IO.Stream destination) {
             byte [] buffer;
             while (true) {
                 buffer = Read (BLOCKSIZE);
@@ -126,15 +124,14 @@ namespace NMapi.Provider.Styx
         }
 
         public void Write(byte[] pc) {
-            ulong pcbWritten;
+            uint pcbWritten;
 
-            CMapi_Stream_Write(cobj, pc, (ulong) pc.Length, out pcbWritten);
+            CMapi_Stream_Write(cobj, pc, (uint) pc.Length, out pcbWritten);
 
-            if((ulong) pc.Length >= pcbWritten) throw(MapiException.Make("IStream::Write() didn't write whole buffer"));
+            if(pc.Length >= pcbWritten) throw(MapiException.Make("IStream::Write() didn't write whole buffer"));
         }
 
-        public void PutData (System.IO.Stream source)
-        {
+        public void PutData (System.IO.Stream source) {
             byte [] buffer = new byte [BLOCKSIZE];
             int len;
             while (true) {
@@ -209,7 +206,7 @@ namespace NMapi.Provider.Styx
         private static extern void CMapi_Stream_LockRegion(IntPtr stream, ulong libOffset, long cb, int dwLockType);
 
         [DllImport ("libcmapi")]
-        private static extern void CMapi_Stream_Read(IntPtr stream, byte[] pv, ulong cb, out ulong pcbRead);
+        private static extern void CMapi_Stream_Read(IntPtr stream, byte[] pv, uint cb, out uint pcbRead);
 
         [DllImport ("libcmapi")]
         private static extern void CMapi_Stream_Revert(IntPtr stream);
@@ -227,7 +224,7 @@ namespace NMapi.Provider.Styx
         private static extern void CMapi_Stream_UnlockRegion(IntPtr stream, ulong libOffset, long cb, int dwLockType);
 
         [DllImport ("libcmapi")]
-        private static extern void CMapi_Stream_Write(IntPtr stream, byte[] pc, ulong cb, out ulong pcbWritten);
+        private static extern void CMapi_Stream_Write(IntPtr stream, byte[] pc, uint cb, out uint pcbWritten);
 
         [DllImport ("libcmapi")]
         private static extern void CMapi_Stream_QueryInterface(IntPtr stream, IntPtr riid, out IntPtr ppvObject);
