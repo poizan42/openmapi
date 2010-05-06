@@ -22,6 +22,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 
 using NMapi;
+using NMapi.Flags;
 using NMapi.Properties;
 using NMapi.Provider.Styx.Interop;
 
@@ -91,8 +92,26 @@ namespace NMapi.Provider.Styx
                 int hr = CMapi_Prop_OpenProperty (cobj, (uint) propTag, ifHandle, (uint) interfaceOptions, (uint) flags, out UnkHandle);
                 Transmogrify.CheckHResult (hr);
 
-                Unknown unk = new Unknown (UnkHandle);
-                return unk;
+                IBase ret = null;
+
+                /* XXX this might fall apart with an amazingly puwerful ka-boom
+                 *     remove this comment if the opposite is proven */
+                if(interFace.Equals(InterfaceIdentifiers.IStream)) ret = new Stream(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMapiSession)) ret = new Session(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMapiTable)) ret = new Table(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMapiProp)) ret = new Prop(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMsgStore)) ret = new MsgStore(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMessage)) ret = new Message(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IAttachment)) ret = new Attachment(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMapiContainer)) ret = new Container(UnkHandle);
+                else if(interFace.Equals(InterfaceIdentifiers.IMapiFolder)) ret = new Folder(UnkHandle);
+
+                if(ret == null) {
+                    Console.WriteLine("OpenEntry() - cannot create type for interface {0}, fallback to Unknown()", interFace);
+                    ret = new Unknown(UnkHandle);
+                }
+
+                return ret;
             }
         }
 
