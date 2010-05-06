@@ -942,16 +942,25 @@ namespace NMapi.Provider.Styx.Interop
                 return IntPtr.Zero;
             }
 
-            IntPtr RealArray = MemCtx.Alloc<uint> (list.AEntries.Length + 1);
+            /* XXX not nice, but rare */
+            IntPtr RealArray = MemCtx.Alloc<byte> (Marshal.SizeOf(typeof(NativeSizedArray)) * list.AEntries.Length + Marshal.SizeOf(typeof(uint)));
 
             Marshal.WriteInt32 (RealArray, list.AEntries.Length);
             IntPtr iter = (IntPtr) ((int) RealArray + Marshal.SizeOf (typeof (UInt32)));
 
             foreach (AdrEntry entry in list.AEntries) {
-                NativeSizedArray Array = new NativeSizedArray ();
-                Array.Data = PropArrayToPtr (entry.PropVals, out Array.Count, MemCtx);
-                Marshal.StructureToPtr (Array, iter, false);
-                iter = (IntPtr) ((int) iter + Marshal.SizeOf (Array));
+                /* XXX this shouldn't happen, but we are still having ONC-RPC */
+                if(entry != null && entry.PropVals != null) {
+                    NativeSizedArray Array = new NativeSizedArray ();
+                    Array.Data = PropArrayToPtr (entry.PropVals, out Array.Count, MemCtx);
+                    Marshal.WriteInt32 (iter, 0);
+                    iter = (IntPtr) ((int) iter + Marshal.SizeOf (typeof (UInt32)));
+                    Marshal.StructureToPtr (Array, iter, false);
+                    iter = (IntPtr) ((int) iter + Marshal.SizeOf (Array));
+                } else {
+                    System.Console.WriteLine("WARNING: AdrListToPointer() AdrList with broken entries");
+                    return IntPtr.Zero;
+                }
             }
 
             return RealArray;

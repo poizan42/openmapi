@@ -92,7 +92,7 @@ namespace NMapi.Provider.Styx
         public void ModifyRecipients (int flags, AdrList mods) {
             using (MemContext MemCtx = new MemContext ()) {
                 IntPtr ModsHandle = Transmogrify.AdrListToPointer (mods, MemCtx);
-                CMapi_Message_ModifyRecipients (cobj, (uint) flags, ModsHandle);
+                if(ModsHandle != IntPtr.Zero) CMapi_Message_ModifyRecipients (cobj, (uint) flags, ModsHandle);
             }
         }
 
