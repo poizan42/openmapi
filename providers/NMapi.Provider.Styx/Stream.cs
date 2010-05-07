@@ -128,7 +128,7 @@ namespace NMapi.Provider.Styx
 
             CMapi_Stream_Write(cobj, pc, (uint) pc.Length, out pcbWritten);
 
-            if(pc.Length >= pcbWritten) throw(MapiException.Make("IStream::Write() didn't write whole buffer"));
+            if(pcbWritten < pc.Length) throw(MapiException.Make("IStream::Write() didn't write whole buffer"));
         }
 
         public void PutData (System.IO.Stream source) {
@@ -138,7 +138,11 @@ namespace NMapi.Provider.Styx
                 len = source.Read (buffer, 0, buffer.Length);
                 if (len <= 0)
                     break;
-                Write (buffer);
+                if(len < buffer.Length) {
+                    byte[] wr = new byte[len];
+                    Buffer.BlockCopy(buffer, 0, wr, 0, len);
+                    Write(wr);
+                } else Write (buffer);
             }
         }
 
