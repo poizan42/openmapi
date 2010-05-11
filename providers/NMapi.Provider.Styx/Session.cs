@@ -118,17 +118,44 @@ namespace NMapi.Provider.Styx
             return new MsgStore (StoreHandle);
         }
 
+        public Table GetMsgStoresTable(int flags) {
+            IntPtr TableHandle = IntPtr.Zero;
+            Table table = null;
+
+            int hr = CMapi_Session_GetMsgStoresTable (cobj, (uint) flags, out TableHandle);
+
+            if(TableHandle != IntPtr.Zero) {
+                table = new Table (TableHandle);
+            }
+            Transmogrify.CheckHResult (hr);
+
+            return table;
+        }
+
+        public MsgStore OpenMsgStore(uint uiParam, byte[] entryId, NMapiGuid interFace, OpenStoreFlags flags) {
+            using (MemContext MemCtx = new MemContext ()) {
+                IntPtr storeHandle = IntPtr.Zero;
+                IntPtr ifHandle = Transmogrify.GuidToPtr (interFace, MemCtx);
+                MsgStore ret = null;
+
+                int hr = CMapi_Session_OpenMsgStore (cobj, uiParam, (uint) entryId.Length, entryId, ifHandle, (uint) flags, out storeHandle);
+                Transmogrify.CheckHResult (hr);
+
+                if(storeHandle != IntPtr.Zero) {
+                    ret = new MsgStore(storeHandle);
+                }
+
+                return ret;
+            }
+        }
+
         public IMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic) {
 
             if (CMapi.IsNative == false) {
                 return OpenStoreUMapi (isPublic);
             }
 
-            IntPtr TableHandle;
-            int hr = CMapi_Session_GetMsgStoresTable (cobj, 0, out TableHandle);
-            Transmogrify.CheckHResult (hr);
-
-            Table table = new Table (TableHandle);
+            Table table = GetMsgStoresTable(0);
             try {
 
                 PropertyTag[] cols = PropertyTag.ArrayFromIntegers (Property.EntryId,
@@ -154,11 +181,7 @@ namespace NMapi.Provider.Styx
                     throw new MapiNoSupportException ("Didn't found exactly one store, found " + RowSet.Count + " stores");
                 }
 
-                IntPtr storeHandle;
-                hr = CMapi_Session_OpenMsgStore (cobj, 0, (uint) StoreId.Length, StoreId, IntPtr.Zero, (uint) flags, out storeHandle);
-                Transmogrify.CheckHResult (hr);
-                return new MsgStore (storeHandle);
-
+                return OpenMsgStore(0, StoreId, null, flags);
             } catch (Exception e) {
                 /* XXX WTF? */
                 throw new NotSupportedException ("Error opening Message Store", e);
