@@ -21,18 +21,18 @@
 // License along with this software; if not, write to the Free
 // Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 // 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-//	
+//
 //-->
 
 <!--
 	===========================================
 	 Definition of the OpenMapi/MAPI interface
 	===========================================
-	
-	This file defines the Mapi API in a generic xml format. 
-	The definition is first preprocessed by an xslt stylesheet for each 
+
+	This file defines the Mapi API in a generic xml format.
+	The definition is first preprocessed by an xslt stylesheet for each
 	language to interpret the nameing convention "hints" and some variables:
-	
+
 	^ 	a new "word". Underscore in C/Python, UpperCase in C#/Java
 			If this is at the start of an method identifier lowerCase in Java.
 	# 	UpperCase in C#/Java, but NOT á new word, no underscore in C/Pyton
@@ -42,37 +42,37 @@
 	$$INTERFACE - the id of the current interface (also can be used comments)
 	$$METHOD    - the id of the current method (also can be used comments)
 	$$MSDN_     - a reference to MSDN.
-	
+
 	So, for example:
-	
+
 	<interface id="^I#MAPI^Prop" implements="^I#Base">
 		<method id="^Get^Last^Error">
 
-	Would be translated to ... 
-	
+	Would be translated to ...
+
 	C# - mapi.cs.xml:
-	
+
 	<interface id="IMapiProp" implements="IBase">
 		<method id="GetLastError">
-	
+
 	Java - mapi.java.xml:
-	
+
 	<interface id="IMapiProp" implements="IBase">
 		<method id="getLastError">
 
 	Python - mapi.py.xml:
-	
+
 	<interface id="imapi_prop" implements="ibase">
 		<method id="get_last_error">
-	
+
 	The C definition is created, yb simply stripping all symbols:
-	
+
 	<interface id="IMAPIProp" implements="IBase">
 		<method id="GetLastError">
-			
-	
+
+
 	The resulting definitions are then used by other XSLT scripts.
-	For example the C# defintion is used to generate the NMapi API, 
+	For example the C# defintion is used to generate the NMapi API,
 	the RemoteCall enumeration and the call interface in the proxy server.
 
 //-->
@@ -80,7 +80,7 @@
 	<interface id="^I#Base" implements="^I#Disposable">
 		<doc>
 			<summary>
-				This is an abstract base-class that provides common 
+				This is an abstract base-class that provides common
 				functionality for all the other Mapi-Classes.
 			</summary>
 		</doc>
@@ -103,7 +103,7 @@
 	<interface id="^I#MAPI^Prop" implements="^I#Base">
 		<doc>
 			<summary>
-				The $$INTERFACE interface is the basic interface that is supported by  
+				The $$INTERFACE interface is the basic interface that is supported by
 				most MAPI-Objects (more precisely by all objects that support properties.)
 			</summary>
 			<remarks>$$MSDN_526807.aspx</remarks>
@@ -179,7 +179,7 @@
 			<doc>
 				<summary>Resolves the named properties for several Property-Tags in the specified namespace (guid).</summary>
 				<remarks>
-					"lppPropTags" and "lppPropNames" are returned in the 
+					"lppPropTags" and "lppPropNames" are returned in the
 					<see cref="C:GetNamesFromIDsResult">GetNamesFromIDsResult</see> class.
 					<para>$$MSDN_528577.aspx</para>
 				</remarks>
@@ -199,13 +199,13 @@
 			<param type="int">flags</param>
 		</method>
 	</interface>
-	
+
 
 	<interface id="^I#MAPI^Container" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>
-				The $$INTERFACE interface. This abstract class implements common 
-				functions of containers. Concrete container classes like IMapiFolder 
+				The $$INTERFACE interface. This abstract class implements common
+				functions of containers. Concrete container classes like IMapiFolder
 			 	always inherit from this class.
 			</summary>
 			<remarks>$$MSDN_527118.aspx</remarks>
@@ -213,8 +213,8 @@
 		<method id="^Get^Contents^Table">
 			<doc>
 				<summary>
-					Returns an IMapiTable object representing the Contents-Table 
-					of the container. The table provides fast access to objects 
+					Returns an IMapiTable object representing the Contents-Table
+					of the container. The table provides fast access to objects
 					stored in the container.
 				</summary>
 				<remarks>$$MSDN_528853.aspx</remarks>
@@ -225,8 +225,8 @@
 		<method id="^Get^Hierarchy^Table">
 			<doc>
 				<summary>
-					Returns an IMapiTable object representing the Hierarchy-Table 
-					of the container. The table provides fast access to sub-containers 
+					Returns an IMapiTable object representing the Hierarchy-Table
+					of the container. The table provides fast access to sub-containers
 					of the container (e.g. Sub-Folders of an IMapiFolder).
 				</summary>
 				<remarks>$$MSDN_528330.aspx</remarks>
@@ -277,8 +277,8 @@
 			<param type="int">flags</param>
 		</method>
 	</interface>
-	
-	
+
+
 	<interface id="^I#MAPI^Folder" implements="^I#Mapi^Container">
 		<doc>
 			<summary>The $$INTERFACE interface. This class provides access to Mapi-Folders.</summary>
@@ -408,12 +408,12 @@
 		</method>
 //-->
 	</interface>
-	
+
 
 	<interface id="^I#Message" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>
-				The $$INTERFACE class implements the IMessage-Mapi-Interface and 
+				The $$INTERFACE class implements the IMessage-Mapi-Interface and
 				provides access to Message-Objects.
 			</summary>
 			<remarks>$$MSDN_527112.aspx</remarks>
@@ -441,7 +441,7 @@
 			<doc>
 				<summary>Creates a new attachment.</summary>
 				<remarks>
-					Note: lpulAttachmentNum and lppAttach re returned in the 
+					Note: lpulAttachmentNum and lppAttach re returned in the
 					CreateAttachResult structure.
 
 					$$MSDN_529067.aspx
@@ -472,7 +472,7 @@
 		<method id="^Modify^Recipients">
 			<doc>
 				<summary>
-					Changes (or adds and removes, depending on the flags) 
+					Changes (or adds and removes, depending on the flags)
 					recipients of the current message.
 				</summary>
 				<remarks>$$MSDN_531489.aspx</remarks>
@@ -498,8 +498,8 @@
 			<param type="int">flags</param>
 		</method>
 	</interface>
-	
-	
+
+
 	<interface id="^I#Msg^Store" implements="^I#MAPI^Prop, ^I#Advisor"><!-- TODO: multiple interfaces! //-->
 		<doc>
 			<summary>Represents a MessageStore, the entry point to access any stored data.</summary>
@@ -536,7 +536,7 @@
 		<method id="^Compare^Entry^I#Ds">
 			<doc>
 				<summary>
-					Returns true if the two Entry-IDs refer to the same object. 
+					Returns true if the two Entry-IDs refer to the same object.
 					Please note, that both Entry-IDs should be stored in the same store.
 				</summary>
 				<remarks>$$MSDN_531531.aspx</remarks>
@@ -578,7 +578,7 @@
 		<method id="^Set^Receive^Folder">
 			<doc>
 				<summary>
-					Sets a folder as the default Folder for a class of messages. 
+					Sets a folder as the default Folder for a class of messages.
 					Incoming messages of that message class are stored in that folder.
 				</summary>
 				<remarks>$$MSDN_531141.aspx</remarks>
@@ -591,7 +591,7 @@
 		<method id="^Get^Receive^Folder">
 			<doc>
 				<summary>
-					Gets the default folder for a class of messages. Incoming 
+					Gets the default folder for a class of messages. Incoming
 					messages of that message class are stored in that folder.
 				</summary>
 				<remarks>
@@ -614,7 +614,7 @@
 		<method id="^Abort^Submit">
 			<doc>
 				<summary>
-					This call will try to cancel the submission of a message, 
+					This call will try to cancel the submission of a message,
 					(with the Entry-ID passed in entryID) that has already been submitted.
 				</summary>
 				<remarks>$$MSDN_530671.aspx</remarks>
@@ -630,7 +630,7 @@
 			</doc>
 			<returns map="true">^I#MAPI^Table^Reader</returns>
 			<param type="int">flags</param>
-		</method>		
+		</method>
 		<method id="^Get^Outgoing^Queue" rpcId="GetOutgoingQueue">
 			<doc>
 				<summary></summary>
@@ -712,7 +712,7 @@
 			<returns>string</returns>
 			<param type="string">category</param>
 			<param type="string">id</param>
-			<param type="int">flags</param>		
+			<param type="int">flags</param>
 		</method>
 		<method id="^Get^Config^Null">
 			<doc>
@@ -724,9 +724,9 @@
 			<param type="string">id</param>
 			<param type="int">flags</param>
 		</method>
-		
+
 		<!-- BEGIN: AB-methods on Session object. //-->
-		
+
 		<method id="^Ab^Get^User^List">
 			<doc>
 				<summary></summary>
@@ -766,7 +766,26 @@
 			</doc>
 			<returns>^ADDRESS</returns>
 			<param type="string">internalAddress</param>
-		</method>		
+		</method>
+		<method id="^Get^Msg^Stores^Table">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns>^I#MAPI^Table</returns>
+			<param type="int">flags</param>
+		</method>
+		<method id="^Open^Msg^Store">
+			<doc>
+				<summary></summary>
+				<remarks></remarks>
+			</doc>
+			<returns map="true">^I#Msg^Store</returns>
+			<param type="uint">uiParam</param>
+			<param type="byte[]">entryId</param>
+			<param type="^N#Mapi^Guid">interFace</param>
+			<param type="^Open^Store^Flags">flags</param>
+		</method>
 	</interface>
 
 	<interface id="^I#Modify^Table" implements="^I#Base">
@@ -796,7 +815,7 @@
 			<param type="^ROW^ENTRY">pEntry</param>
 		</method>
 	</interface>
-	
+
 	<interface id="^I#MAPI^Table^Reader" implements="^I#Base">
 		<doc>
 			<summary>Retrieves all rows from a table. </summary>
@@ -816,12 +835,12 @@
 			<param type="int">cRows</param>
 		</method>
 	</interface>
-	
-	
+
+
 	<interface id="^I#MAPI^Table" implements="^I#Base, ^I#Advisor"><!-- TODO: multiple interfaces! //-->
 		<doc>
 			<summary>
-				The $$INTERFACE interface provides fast access to a set of 
+				The $$INTERFACE interface provides fast access to a set of
 				properties of the items in a container.
 			</summary>
 			<remarks>$$MSDN_527898.aspx</remarks>
@@ -829,7 +848,7 @@
 		<method id="^Advise" rpcId="Advise_2">
 			<doc>
 				<summary>
-					Register an AdviseSink for the specified events. An integer 
+					Register an AdviseSink for the specified events. An integer
 					that identifies the connection is returned.
 				</summary>
 				<remarks>$$MSDN_526773.aspx</remarks>
@@ -842,7 +861,7 @@
 		<method id="^Advise">
 			<doc>
 				<summary>
-					Register an AdviseSink for the specified events. An integer 
+					Register an AdviseSink for the specified events. An integer
 					that identifies the connection is returned.
 				</summary>
 				<remarks>$$MSDN_526773.aspx</remarks>
@@ -865,7 +884,7 @@
 		<method id="^Get^Last^Error">
 			<doc>
 				<summary>
-					Returns information about the last error. If the last 
+					Returns information about the last error. If the last
 					error is unknown, null is returned.
 				</summary>
 				<remarks>$$MSDN_531476.aspx</remarks>
@@ -1057,11 +1076,11 @@
 			<summary> The $$INTERFACE interface.</summary>
 			<remarks>$$MSDN_529617.aspx</remarks>
 		</doc>
-	</interface>	
+	</interface>
 	<interface id="^I#Stream" implements="^I#Base">
 		<doc>
 			<summary>
-				Provides access to large data objects like 
+				Provides access to large data objects like
 				Property.Body or Property.AttachDataBin.
 			</summary>
 			<remarks>$$MSDN_529617.aspx</remarks>
@@ -1141,9 +1160,9 @@
 			<param type="int[]">flagList</param>
 		</method>
 	</interface>
-	
-	
-	
+
+
+
 	<interface id="^I#Addr^Book" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>The $$INTERFACE interface.</summary>
@@ -1244,7 +1263,7 @@
 			<param type="int">flags</param>
 			<param type="^Property^Tag[]">propTagArray</param>
 			<param type="^Adr^List">adrList</param>
-		</method>			
+		</method>
 	</interface>
 
 
@@ -1338,18 +1357,18 @@
 			<param type="^Adr^List">recipList</param>
 		</method>
 	</interface>
-	
-	
-	
+
+
+
 	<interface id="^I#Dist^List" implements="^I#MAPI^Container">
 		<doc>
 			<summary>The $$INTERFACE interface.</summary>
 			<remarks></remarks>
 		</doc>
 	</interface>
-	
-	
-	
+
+
+
 	<interface id="^I#Mail^User" implements="^I#MAPI^Prop">
 		<doc>
 			<summary>The $$INTERFACE interface.</summary>
@@ -1357,3 +1376,5 @@
 		</doc>
 	</interface>
 </interfaces>
+
+<!-- vi:set noexpandtab: -->

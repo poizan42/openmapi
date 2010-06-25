@@ -118,7 +118,8 @@ namespace NMapi.Provider.Styx
             return new MsgStore (StoreHandle);
         }
 
-        public Table GetMsgStoresTable(int flags) {
+        public IMapiTable GetMsgStoresTable (int flags)
+        {
             IntPtr TableHandle = IntPtr.Zero;
             Table table = null;
 
@@ -132,7 +133,8 @@ namespace NMapi.Provider.Styx
             return table;
         }
 
-        public MsgStore OpenMsgStore(uint uiParam, byte[] entryId, NMapiGuid interFace, OpenStoreFlags flags) {
+        public IMsgStore OpenMsgStore (uint uiParam, byte [] entryId, NMapiGuid interFace, OpenStoreFlags flags)
+        {
             using (MemContext MemCtx = new MemContext ()) {
                 IntPtr storeHandle = IntPtr.Zero;
                 IntPtr ifHandle = Transmogrify.GuidToPtr (interFace, MemCtx);
@@ -155,7 +157,8 @@ namespace NMapi.Provider.Styx
                 return OpenStoreUMapi (isPublic);
             }
 
-            Table table = GetMsgStoresTable(0);
+            var table = GetMsgStoresTable (0);
+
             try {
 
                 PropertyTag[] cols = PropertyTag.ArrayFromIntegers (Property.EntryId,
@@ -207,22 +210,22 @@ namespace NMapi.Provider.Styx
 	{
 		throw new MapiNoSupportException (); // TODO!
 	}
-	
+
 	public Address AbGetUserData (byte[] entryId)
 	{
 		throw new MapiNoSupportException (); // TODO!
 	}
-	
+
 	public DateTime AbGetChangeTime (int flags)
 	{
 		throw new MapiNoSupportException (); // TODO!
 	}
-	
+
 	public Address AbGetUserDataBySmtpAddress (string smtpAddress)
 	{
 		throw new MapiNoSupportException (); // TODO!
 	}
-	
+
 	public Address AbGetUserDataByInternalAddress (string internalAddress)
 	{
 		throw new MapiNoSupportException (); // TODO!

@@ -33,7 +33,7 @@ namespace NMapi {
 
 	/// <summary>
 	///  The representation of a NMapi session. This is the starting
-	///  point for every use of NMapi. The first call must be the 
+	///  point for every use of NMapi. The first call must be the
 	///  <see cref="M:MapiSession.Logon()">MAPISession.Logon</see> method.
 	/// </summary>
 	public class TeamXChangeMapiSession : IMapiSession
@@ -43,7 +43,7 @@ namespace NMapi {
 		private TeamXChangeMsgStore privatemdb;
 		private TeamXChangeMsgStore publicmdb;
 
-		public TeamXChangeMapiSession () 
+		public TeamXChangeMapiSession ()
 		{
 		}
 
@@ -55,7 +55,7 @@ namespace NMapi {
 		/// <summary>
 		///  Call Dispose when you are finished using the
 		///  MapiSession-Class in order to release network resources.
-		///  After calling the method the class is in an unusable state. 
+		///  After calling the method the class is in an unusable state.
 		///  You should release all refernces to it, so it can be garbage-collected.
 		/// </summary>
 		public void Dispose ()
@@ -63,7 +63,7 @@ namespace NMapi {
 			Dispose (true);
 			GC.SuppressFinalize(this);
 		}
-		
+
 		protected void Dispose (bool disposing)
 		{
 			if (isDisposed)
@@ -91,18 +91,18 @@ namespace NMapi {
 			privatemdb = null;
 			publicmdb = null;
 			session = null;
-			
+
 			isDisposed = true;
 		}
 
 		/// <summary>
 		///  This is the same as <see cref="M:MapiSession.Dispose()">Dispose ()</see>
 		/// </summary>
-		public void Close () 
+		public void Close ()
 		{
 			Dispose ();
 		}
-		
+
 		/// <summary>
 		///  Logon to the server.
 		/// </summary>
@@ -138,7 +138,7 @@ namespace NMapi {
 		{
 			Logon2 (host, port, Common.SessionFlags.LogonIsUMapi, user, password, 65001, 0);
 		}
-	
+
 		/// <exception cref="MapiException">Throws MapiException</exception>
 		private void Logon2 (string host, int port, int sessionFlags, string user, string password, int codePage, int localeId)
 		{
@@ -157,7 +157,7 @@ namespace NMapi {
 				session.Logon2 (user, password, sessionFlags, codePage, localeId);
 				privatemdb = (TeamXChangeMsgStore) OpenStore (OpenStoreFlags.Write, null, false);
 				publicmdb  = (TeamXChangeMsgStore) OpenStore (OpenStoreFlags.Write, null, true);
-			} 
+			}
 			catch (MapiException e) {
 				if (privatemdb != null) {
 					privatemdb.Close2 ();
@@ -172,11 +172,11 @@ namespace NMapi {
 		}
 
 		/// <exception cref="T:NMapi.MapiException">MapiException</exception>
-		public IMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic) 
+		public IMsgStore OpenStore (OpenStoreFlags flags, string user, bool isPublic)
 		{
 			return session.OpenStore (flags, user, isPublic);
 		}
-		
+
 		/// <summary>
 		///  Get the private (personal) store of the session.
 		/// </summary>
@@ -206,7 +206,7 @@ namespace NMapi {
 				return binProp.Value.lpb;
 			}
 		}
-	
+
 		/// <summary>
 		///  Gets a server config variable.
 		/// </summary>
@@ -221,7 +221,7 @@ namespace NMapi {
 			session = (privatemdb != null) ? privatemdb.session : publicmdb.session;
 			return session.GetConfig (category, id, flags);
 		}
-	
+
 		/// <summary>
 		///  Gets a server config variable.
 		/// </summary>
@@ -241,38 +241,38 @@ namespace NMapi {
 				throw e;
 			}
 		}
-		
-		
-		
-		
+
+
+
+
 		public Address[] AbGetUserList (int flags)
 		{
 			throw new MapiNoSupportException (); // TODO!
 		}
-		
+
 		public Address AbGetUserData (byte[] entryId)
 		{
 			throw new MapiNoSupportException (); // TODO!
 		}
-		
+
 		public DateTime AbGetChangeTime (int flags)
 		{
 			throw new MapiNoSupportException (); // TODO!
 		}
-		
+
 		public Address AbGetUserDataBySmtpAddress (string smtpAddress)
 		{
 			throw new MapiNoSupportException (); // TODO!
 		}
-		
+
 		public Address AbGetUserDataByInternalAddress (string internalAddress)
 		{
 			throw new MapiNoSupportException (); // TODO!
 		}
-		
-		
-		
-		
+
+
+
+
 		public Address ResolveEntryID (byte [] eid)
 		{
 			return session.ResolveEntryID (eid);
@@ -282,7 +282,7 @@ namespace NMapi {
 		{
 			return session.ResolveSmtpAddress (smtpaddress, displayname);
 		}
-		
+
 		/// <summary>
 		///  Register a unique client id for synchronization.
 		///  Also puts store into cached mode
@@ -292,7 +292,17 @@ namespace NMapi {
 		{
 			session.RegisterSyncClientID (id);
 		}
-		
-	}
 
+		public Table.IMapiTable GetMsgStoresTable (int flags)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public IMsgStore OpenMsgStore (uint uiParam, byte [] entryId, NMapiGuid interFace, OpenStoreFlags flags)
+		{
+			throw new NotImplementedException ();
+		}
+	}
 }
+
+// vi:set noexpandtab:
